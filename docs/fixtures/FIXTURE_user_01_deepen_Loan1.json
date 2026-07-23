@@ -1,0 +1,93 @@
+{
+  "_fixture_notes": [
+    "Phase 1 test fixture. Fake user. Built the COMPLIANT way per D-010: every holding carries an",
+    "internal alias, never a real product or institution name. Characteristics follow D-013's field",
+    "lists per product type. This is what the backend would actually send to Sonnet.",
+    "Exercises 5 of D-013's 8 types, plus one deliberate GAP (no life cover against the home loan)",
+    "so the D-012 surfacing case can be tested against the same fixture.",
+    "Amounts in INR. Written 23-Jul-2026.",
+    "D-028: the `deepen` field is set by the BACKEND in production. For Phase 1 testing it is hand-written here to simulate that. Variant files carry different values; the base file omits it entirely to test the absent-field fallback."
+  ],
+  "baseline": {
+    "monthly_take_home": 145000,
+    "monthly_fixed_outgoings": 71000,
+    "dependents": [
+      "spouse",
+      "one child, age 4"
+    ],
+    "emergency_fund_months": 1.4
+  },
+  "goals": [
+    {
+      "goal": "child's education",
+      "horizon_years": 14,
+      "target_amount": 4000000,
+      "currently_funded_by": null
+    },
+    {
+      "goal": "be debt-free before retirement",
+      "horizon_years": 18,
+      "target_amount": null,
+      "currently_funded_by": "Loan-1"
+    }
+  ],
+  "holdings": [
+    {
+      "alias": "Loan-1",
+      "product_type": "home_loan",
+      "principal": 5200000,
+      "outstanding_balance": 4000000,
+      "interest_rate": 9.0,
+      "tenure_months": 216,
+      "emi_amount": 38000,
+      "start_date": "2023-08-01"
+    },
+    {
+      "alias": "Card-1",
+      "product_type": "credit_card_debt",
+      "credit_limit": 400000,
+      "outstanding_balance": 86000,
+      "interest_rate": 42.0,
+      "minimum_due": 4300,
+      "payment_due_date": "2026-08-07",
+      "billing_cycle_date": "2026-07-18"
+    },
+    {
+      "alias": "Deposit-1",
+      "product_type": "savings_balance",
+      "current_balance": 200000,
+      "interest_rate": 3.0,
+      "_note": "Idle savings balance, not an FD. This is the 2 lakh in the D-015 worked example."
+    },
+    {
+      "alias": "Fund-A",
+      "product_type": "equity_mutual_fund",
+      "expense_ratio": 1.7,
+      "lock_in_period": null,
+      "investment_mode": "SIP",
+      "monthly_sip_amount": 8000,
+      "invested_amount": 288000,
+      "current_value": 341000,
+      "start_date": "2023-04-01",
+      "risk_bucket": "high"
+    },
+    {
+      "alias": "Retire-1",
+      "product_type": "ppf_epf",
+      "retirement_fund_type": "EPF",
+      "current_balance": 620000,
+      "annual_contribution": 104400,
+      "interest_rate": 8.25
+    }
+  ],
+  "known_gaps": [
+    {
+      "gap": "no_term_insurance",
+      "_note": "Deliberate. User carries a 40L home loan and has dependents, with no life cover recorded. This is the D-012 AI-surfacing case — the model should be able to open on the SITUATION (per D-015 rule 1) without pitching a product (per D-009)."
+    }
+  ],
+  "deepen": {
+    "alias": "Loan-1",
+    "reason": "the user asked about prepaying this loan"
+  }
+}
