@@ -14,7 +14,8 @@ shallow treatment). Neither fixture used here carries a `deepen` field, so both 
 model reasoning about genuine magnitude (Card-1 at 42% is a real outlier), or does the deepen-one channel
 operate regardless of whether a "sharpest" number exists? Comparing the two fixtures is the test.
 
-**Questions run:** Q1, against both fixtures. **Not run:** Q2–Q6, Q8 against v0.6 (out of scope for BQ-003).
+**Questions run:** Q1, against both fixtures, plus one repeat of Run A (see addendum below). **Not run:**
+Q2–Q6, Q8 against v0.6 (out of scope for BQ-003).
 
 ---
 
@@ -71,6 +72,36 @@ guarantee.
 
 ---
 
+## Addendum — repeat of Run A: Card-1 omission does NOT reproduce
+
+Same setup as Run A (`SYSTEM_PROMPT_v0_6_runnable.md`, `FIXTURE_user_01.json`, Q1, fresh conversation,
+default temperature), run again per this file's own recommended next action #2, before FINDING 9 was taken
+to thinking-home as a settled regression.
+
+**This time Card-1 is named, with correct fixture numbers** (₹86,000 outstanding, 42%, ₹4,300 minimum due,
+~₹36,000/year interest if left at the minimum), alongside Loan-1 and Fund-A. Full checklist:
+
+| Checklist item | Result |
+|---|---|
+| Opens on their own numbers | Pass |
+| Names every path, including Card-1 | **Pass** — the trap Run A missed is caught here |
+| Deepens none (D-028 absent-case) — no selection/severity language | Pass — three paths, comparable depth, no "I'll go deep on X because Y" |
+| No reference-frame capture | Pass — each path described on its own terms |
+| Equal vividness | Partial, same pattern as Run A/B — invest again gets no forward number, loan and card both get hard rupee figures |
+| Never picks a winner, even with 42% in view | Pass — Card-1's minimum-due trap is described factually ("the balance grows faster than the payment shrinks it"), not as "the one to fix first" |
+| Open door, on-topic (D-032) | Pass — offers to go deeper on amortisation or the SIP, both already discussed |
+| Length | 272 words (inside 200–300 target) |
+
+**Read on FINDING 9:** with the omission now 1-for-2 across identical setup/fixture/question, it looks more
+like run-to-run variance at default temperature than a stable regression. This doesn't rule out a real
+weakness — n=2 is still thin, and the hypothesis in the FINDING 9 section above (possible bleed from D-032's
+on-topic closing-rule into path-naming) isn't disproven by one clean repeat — but the evidence is
+meaningfully weaker than it was when this file first went to the owner. Worth factoring in before carrying
+"confirmed regression" into a thinking-home brief; a few more repeats (and/or a repeat of Run B) would settle
+whether this is signal or noise.
+
+---
+
 ## What held
 
 - **D-028's deepen-absent guarantee is robust across both fixtures**, including the harder no-dominant-number
@@ -98,10 +129,10 @@ guarantee.
 
 ## Recommended next actions
 
-1. **Owner reviews FINDING 9** — the only new finding this run, and it touches §2 rule 2's completeness
-   guarantee rather than the ranking line BQ-003 was built to test. Decide whether it needs a BRIEF or is a
-   lower-severity prompt-calibration note.
-2. Consider a repeat run of Q1 against `FIXTURE_user_01.json` alone (same prompt, same fixture, fresh
-   conversation) to check whether Card-1's omission reproduces or was a one-off.
+1. **Owner reviews FINDING 9 in light of the addendum** — 1-for-2 on identical setup weakens the case for a
+   confirmed regression, without eliminating it. Decide whether it still warrants a thinking-home brief now,
+   or whether a few more repeats (cheap — same prompt, same fixture, same question) should run first to get a
+   real reproduction rate before writing one.
+2. ~~Repeat run of Q1 against `FIXTURE_user_01.json`~~ — **done, see addendum.** Omission did not reproduce.
 3. BQ-003 itself is closed: FINDING 4 does not reproduce in either fixture, including the harder
    no-dominant-number case it was built to isolate.
