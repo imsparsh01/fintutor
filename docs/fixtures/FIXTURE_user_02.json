@@ -1,0 +1,85 @@
+{
+  "_fixture_notes": [
+    "Phase 1 test fixture. Fake user. Built the COMPLIANT way per D-010: every holding carries an",
+    "internal alias, never a real product or institution name. Characteristics follow D-013's field",
+    "lists per product type. This is what the backend would actually send to Sonnet.",
+    "Companion to FIXTURE_user_01 (BQ-002, traces to D-024/D-027 section 8: 'highest-value untested",
+    "thing remaining'). Deliberately has NO dominant number: user_01's Card-1 sits at 42% against a",
+    "next-highest of 9% (a ~4.6x jump), which may be why the model reliably picks it as the deepened",
+    "path (D-027 FINDING 4). Here the two debt instruments (Loan-1 home loan at 8.8%, Loan-2 personal loan at",
+    "13.5%) are close enough that picking the 'sharper' one is a genuine judgment call, not an",
+    "outlier any observer would spot instantly. Same 5-of-8 D-013 type coverage as user_01 (home_loan,",
+    "personal_loan instead of credit_card_debt, savings_balance, equity_mutual_fund, ppf_epf), same",
+    "known_gaps shape (no term insurance against the home loan + dependent). Amounts in INR.",
+    "Written 01-Aug-2026."
+  ],
+
+  "baseline": {
+    "monthly_take_home": 98000,
+    "monthly_fixed_outgoings": 52000,
+    "dependents": ["one child, age 7"],
+    "emergency_fund_months": 2.3
+  },
+
+  "goals": [
+    { "goal": "child's higher education", "horizon_years": 11, "target_amount": 2500000, "currently_funded_by": null },
+    { "goal": "be debt-free before retirement", "horizon_years": 21, "target_amount": null, "currently_funded_by": "Loan-1" }
+  ],
+
+  "holdings": [
+    {
+      "alias": "Loan-1",
+      "product_type": "home_loan",
+      "principal": 4500000,
+      "outstanding_balance": 3600000,
+      "interest_rate": 8.8,
+      "tenure_months": 192,
+      "emi_amount": 34500,
+      "start_date": "2022-11-01"
+    },
+    {
+      "alias": "Loan-2",
+      "product_type": "personal_loan",
+      "principal": 500000,
+      "outstanding_balance": 320000,
+      "interest_rate": 13.5,
+      "tenure_months": 48,
+      "emi_amount": 13200,
+      "start_date": "2024-03-01"
+    },
+    {
+      "alias": "Deposit-1",
+      "product_type": "savings_balance",
+      "current_balance": 150000,
+      "interest_rate": 3.0,
+      "_note": "Idle savings balance, not an FD. Same schema-exemption as user_01's Deposit-1."
+    },
+    {
+      "alias": "Fund-A",
+      "product_type": "equity_mutual_fund",
+      "expense_ratio": 1.5,
+      "lock_in_period": null,
+      "investment_mode": "SIP",
+      "monthly_sip_amount": 6000,
+      "invested_amount": 216000,
+      "current_value": 245000,
+      "start_date": "2023-09-01",
+      "risk_bucket": "moderate"
+    },
+    {
+      "alias": "Retire-1",
+      "product_type": "ppf_epf",
+      "retirement_fund_type": "PPF",
+      "current_balance": 380000,
+      "annual_contribution": 150000,
+      "interest_rate": 7.1
+    }
+  ],
+
+  "known_gaps": [
+    {
+      "gap": "no_term_insurance",
+      "_note": "Deliberate. User carries a 36L home loan and has one dependent, with no life cover recorded. Same D-012 AI-surfacing case as user_01, at smaller scale."
+    }
+  ]
+}

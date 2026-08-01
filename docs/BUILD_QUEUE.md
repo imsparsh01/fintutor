@@ -14,15 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-002 — Build second fixture with no dominant number
-**Traces to:** D-024, D-027 (§8: "highest-value untested thing remaining")
-**Task:** Create `docs/fixtures/FIXTURE_user_02.json` modelled on `FIXTURE_user_01.json` but deliberately
-**without a dominant number** — no equivalent of Card-1 at 42%. Same schema, comparable complexity.
-**Done when:** fixture exists, is schema-valid against user_01's shape, committed.
-**Escalate if:** building it requires adding a new field or product type to the schema — Tier 3 scope.
-
----
-
 ### BQ-003 — Run Q1 against both fixtures and compare
 **Depends on:** BQ-002
 **Traces to:** D-027 (FINDING 4 may be an artifact of user_01's loud number)
@@ -54,6 +45,12 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-002 — Build second fixture with no dominant number — done 01-Aug-2026
+Added `docs/fixtures/FIXTURE_user_02.json`. Same schema and per-holding key sets as user_01 (verified
+programmatically), 5 of 8 D-013 types exercised, same `known_gaps` shape. Swapped user_01's
+`credit_card_debt` (42%) for a `personal_loan` (13.5%): the two debt rates (8.8%/13.5%) sit at a 1.53x
+ratio vs. user_01's 4.67x jump (9%/42%) — no landslide "worst" number. No new field/type added.
 
 ### BQ-001 — Run Q7 and Q8 against prompt v0.5 — done 01-Aug-2026
 Both run manually by owner on Console Workbench (v0.5 prompt + FIXTURE_user_01, fresh conversation each),
