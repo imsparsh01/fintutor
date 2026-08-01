@@ -46,6 +46,12 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-006 — Regenerate system prompt to v0.6 (open-door, on-topic only) — done 01-Aug-2026
+Regenerated `docs/prompts/SYSTEM_PROMPT_v0_6_runnable.md` from TEACHING_SYSTEM_PROMPT.md (D-032). Diffed
+against v0.5 before writing: only the header changelog comment and one new §2 rule 3 paragraph ("the open
+door leads to the room the user is already in — never a new one") changed. §1, §3, §4 (stub, still
+mechanical from D-013 + D-028), and §5 are byte-identical to v0.5 — D-032 doesn't touch them.
+
 ### BQ-002 — Build second fixture with no dominant number — done 01-Aug-2026
 Added `docs/fixtures/FIXTURE_user_02.json`. Same schema and per-holding key sets as user_01 (verified
 programmatically), 5 of 8 D-013 types exercised, same `known_gaps` shape. Swapped user_01's
