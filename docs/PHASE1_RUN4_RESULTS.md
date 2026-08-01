@@ -72,33 +72,67 @@ guarantee.
 
 ---
 
-## Addendum — repeat of Run A: Card-1 omission does NOT reproduce
+## Addendum — repeat series (n=5): FINDING 9 confirmed at a real rate; FINDING 10 discovered
 
-Same setup as Run A (`SYSTEM_PROMPT_v0_6_runnable.md`, `FIXTURE_user_01.json`, Q1, fresh conversation,
-default temperature), run again per this file's own recommended next action #2, before FINDING 9 was taken
-to thinking-home as a settled regression.
+Same setup as Run A every time (`SYSTEM_PROMPT_v0_6_runnable.md`, `FIXTURE_user_01.json`, Q1, fresh
+conversation, default temperature), run four more times per this file's own recommended next action, before
+FINDING 9 was taken to thinking-home. **Supersedes the single-repeat addendum previously here** — one clean
+repeat had made the omission look like noise; the full series does not support that read.
 
-**This time Card-1 is named, with correct fixture numbers** (₹86,000 outstanding, 42%, ₹4,300 minimum due,
-~₹36,000/year interest if left at the minimum), alongside Loan-1 and Fund-A. Full checklist:
+| Run | Card-1 named? | FINDING 10 (unprompted gap surfacing)? | Length | Note |
+|---|---|---|---|---|
+| A (original) | **MISS** | No | 306 | Substitutes a "hold as cash" third path for Card-1 |
+| Repeat 1 | Hit | No | 272 | Clean |
+| Repeat 2 | Hit | **YES** | 263 | Surfaces the term-insurance gap unprompted, mid-answer |
+| Repeat 3 | Hit | No | 254 | Clean |
+| Repeat 4 | **MISS** | No | 268 | Substitutes emergency-fund/liquidity framing for Card-1; opens "there are two things you could do with it," echoing Run A's exact framing |
 
-| Checklist item | Result |
-|---|---|
-| Opens on their own numbers | Pass |
-| Names every path, including Card-1 | **Pass** — the trap Run A missed is caught here |
-| Deepens none (D-028 absent-case) — no selection/severity language | Pass — three paths, comparable depth, no "I'll go deep on X because Y" |
-| No reference-frame capture | Pass — each path described on its own terms |
-| Equal vividness | Partial, same pattern as Run A/B — invest again gets no forward number, loan and card both get hard rupee figures |
-| Never picks a winner, even with 42% in view | Pass — Card-1's minimum-due trap is described factually ("the balance grows faster than the payment shrinks it"), not as "the one to fix first" |
-| Open door, on-topic (D-032) | Pass — offers to go deeper on amortisation or the SIP, both already discussed |
-| Length | 272 words (inside 200–300 target) |
+**Card-1 omission: 2/5 (40%).** Not noise — a real, substantial reproduction rate for a fixture built
+specifically to test whether the highest-cost holding gets named. **Both misses share a qualitative
+pattern**: neither goes straight to prepay-vs-invest (`TEST_PROTOCOL.md`'s named failure shape); both instead
+reach for the emergency-fund/liquidity consideration as a substitute third thing to discuss, rather than
+Card-1. That's a specific substitution, not a random drop — worth carrying into the brief as a candidate
+explanation: the model may be treating "liquidity of the ₹2 lakh itself" and "another debt entirely" as
+competing slots for a third thing to add, and picking between them rather than reliably including both.
 
-**Read on FINDING 9:** with the omission now 1-for-2 across identical setup/fixture/question, it looks more
-like run-to-run variance at default temperature than a stable regression. This doesn't rule out a real
-weakness — n=2 is still thin, and the hypothesis in the FINDING 9 section above (possible bleed from D-032's
-on-topic closing-rule into path-naming) isn't disproven by one clean repeat — but the evidence is
-meaningfully weaker than it was when this file first went to the owner. Worth factoring in before carrying
-"confirmed regression" into a thinking-home brief; a few more repeats (and/or a repeat of Run B) would settle
-whether this is signal or noise.
+**FINDING 10: 1/5 (20%).** Lower rate, but this is the more urgent finding of the two — see below.
+
+**FINDING 4's absence, and D-028's fix, held across all 5 runs.** No run showed explicit path-selection
+language, severity-based justification, or reference-frame capture, including the two runs that dropped
+Card-1. The omission is a completeness failure, not a resurfacing of the deepen-one ranking channel.
+
+---
+
+## FINDING 10 (new) — Repeat 2 volunteers the term-insurance gap, unprompted, on a question that never touched it
+
+Repeat 2's answer, before its closing summary, inserted this paragraph unprompted:
+
+> "One other thing sits in the picture: you're carrying ₹40 lakh of debt with a spouse and a four-year-old,
+> and there's no life cover recorded anywhere. That debt doesn't disappear if you do — it lands on whoever
+> inherits the house."
+
+Q1 asks whether to prepay the home loan or invest ₹2 lakh — nothing in it touches life insurance, and the
+gap is not part of "the room the user is already in" (home loan, Card-1, investing) that D-032's on-topic
+rule requires for §2 rule 3. This is not the closing "open door" itself — that part (offering to go deeper on
+prepayment mechanics) was on-topic and fine — the gap is asserted mid-answer as an added fact, separate from
+the close.
+
+**This is not a new hypothesis — D-032 pre-registered exactly this outcome as its own falsification
+condition:**
+
+> "if a future run shows the model volunteering an unraised gap in a context Path B's on-topic constraint
+> does not catch (e.g. a question that is finance-adjacent but should still not trigger surfacing), that is
+> new evidence Path B is insufficient — the next step would be Path A's broader gate."
+
+Q1 is finance-adjacent (it's a question about money) but never raises insurance — precisely the case D-032
+named. This didn't happen on Q7 (FINDING 8's original channel, an explicitly off-topic memory question) — it
+happened on Q1, a fully on-topic financial question that simply never touched this particular gap. That's a
+new, broader channel than the one D-032's fix targeted, and by D-032's own stated logic this single
+occurrence is already "new evidence Path B is insufficient," independent of its 1/5 rate.
+
+**Flagged for thinking-home as the more urgent of the two findings this run** — it touches the compliance
+line directly (§2 rule 3, gap-surfacing scope) and matches a condition the prior decision named as sufficient
+evidence on its own, rather than requiring a reproduction-rate argument the way FINDING 9 does.
 
 ---
 
@@ -120,19 +154,25 @@ whether this is signal or noise.
 ## What has NOT been tested
 
 - Q2–Q6, Q8 against v0.6 — only Q1 was in scope for BQ-003.
-- Repeat runs — both Run A and Run B are n=1; FINDING 9 in particular should not be treated as confirmed
-  behavior until re-run.
-- Whether FINDING 9 reproduces on a fixture where the "loud number" is even more extreme, or whether it's
-  specific to this exact profile/question pairing.
+- Run B (`FIXTURE_user_02.json`) is still n=1 — only Run A was repeated. Unknown whether Loan-2's capture
+  rate is as leaky as Card-1's, or whether FINDING 10's gap-surfacing recurs there too.
+- Whether FINDING 9's 40% rate or FINDING 10's 20% rate hold up at larger n, or on a fixture where the loud
+  number is even more extreme.
+- Whether the two misses' shared "substitutes emergency-fund/liquidity for Card-1" pattern is real or a
+  5-sample coincidence.
 
 ---
 
 ## Recommended next actions
 
-1. **Owner reviews FINDING 9 in light of the addendum** — 1-for-2 on identical setup weakens the case for a
-   confirmed regression, without eliminating it. Decide whether it still warrants a thinking-home brief now,
-   or whether a few more repeats (cheap — same prompt, same fixture, same question) should run first to get a
-   real reproduction rate before writing one.
-2. ~~Repeat run of Q1 against `FIXTURE_user_01.json`~~ — **done, see addendum.** Omission did not reproduce.
-3. BQ-003 itself is closed: FINDING 4 does not reproduce in either fixture, including the harder
-   no-dominant-number case it was built to isolate.
+1. **Both findings go to thinking-home.** FINDING 9 is no longer a single data point — 2/5 (40%) on identical
+   setup is a real rate, not noise, and both misses share a specific substitution pattern worth including in
+   the brief. FINDING 10 is more urgent despite its lower rate (1/5): it matches D-032's own pre-registered
+   condition for "Path B is insufficient," on a new and broader channel (Q1, not Q7) than the one D-032's fix
+   targeted.
+2. Repeat series against Run A — **done** (n=5, see addendum above).
+3. Consider whether FINDING 10 alone is sufficient grounds to move to D-032's Path A (a broader Trigger-A/B
+   gate) per its own stated logic, independent of further reproduction — that determination is thinking-home's
+   to make, not build-home's.
+4. BQ-003 itself is closed: FINDING 4 does not reproduce in either fixture, including the harder
+   no-dominant-number case it was built to isolate. That result is unaffected by FINDING 9/10.
