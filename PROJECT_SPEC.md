@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v1.8, 23-Jul-2026)
+# FinTutor — Project Spec (v2.0, 25-Jul-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -56,21 +56,34 @@ Anyone earning who wants to self-manage their finances and build literacy — no
 Primary moment: "financially unmanaged but willing." Not defined by age; defined by intent.
 
 ## 4. What the MVP does (scope — keep ruthless)
+> **Scope expanded at D-031 (25-Jul-2026).** The app is structured as **persistent, user-facing category
+> sections** — one per holding family — not a menu-less surface. AI-surfacing remains the PRIMARY way a
+> holding enters a section (D-012 stands on primacy); the menu/manual path is the SECONDARY way. See D-031
+> for the direction-vs-MVP-build split; only the MVP-build cut is listed here.
+
 1. Register / login
-2. Onboarding: the user's baseline profile (income, loans, investments, goals) is built through an
-   AI-guided conversation, not a static form — see D-012. (Reworded from prior form-fill wording; exact
-   onboarding mechanism still to be designed — flagged in D-012, not yet resolved.)
-3. Portfolio view: see their financial picture in one place
-4. Guided teaching moments (AI-surfaced, not button-tap): rather than the user tapping "Add investment /
-   Add loan," the AI surfaces relevant product types organically within conversation and triggers a
-   structured teaching sequence (mechanism → applied to their numbers) when the user shows interest. A
-   manual "add a holding" fallback also exists in MVP for holdings the AI hasn't surfaced yet. See D-012.
-   The set of product types the AI can surface + capture is the taxonomy in D-013 (8 types across
-   investments / loans / insurance).
-5. Reminders: EMI dates, credit-card payment dates
-6. (Open-ended chat comes LATER — not in MVP)
+2. Onboarding: the user's baseline profile (income, holdings, goals) is built through an AI-guided
+   conversation, not a static form — see D-012. (Exact onboarding mechanism still to be designed.)
+3. **Persistent category sections (MVP: three holding families).** Dedicated sections for **Investments,
+   Loans, Insurance** (the D-013 taxonomy). Each holding is visible in its section with its details;
+   per-item management (what the user can view/edit/act on) is a named open decision — see §8 "Decision 2".
+   Real estate, Cash & bank, and Alternatives are DECIDED DIRECTION but deferred to immediately post-Phase-1
+   (D-031).
+4. **Consolidated view:** see the whole financial picture in one place (net worth / portfolio across sections).
+5. **Budgeting / cash-flow and Goals & planning (MVP).** Included as critical AND foundational — they are
+   NOT products; they reference holdings and change the data model every other object reads from, so their
+   model is designed before build (see §8 "Decision 3", D-031).
+6. Guided teaching moments (AI-surfaced, not button-tap): the AI surfaces relevant product types organically
+   in conversation and triggers a structured teaching sequence (mechanism → applied to their numbers) when
+   the user shows interest. AI confirmation ("yes, I have a loan" + details) creates a real tracked holding
+   in its section. A manual add/browse path is the secondary route into the same sections. See D-012, D-031.
+7. Reminders: EMI dates, credit-card payment dates
+8. (Open-ended chat comes LATER — not in MVP)
 
 ## 5. Explicitly NOT in the MVP (parked)
+- **Real estate, Cash & bank balances, Alternatives/other holding families** — DECIDED DIRECTION (D-031), but
+  deferred to immediately post-Phase-1. Cheap to add later (more instances of the D-013 pattern, not new
+  machinery); pointless to build before the teaching engine is validated on three families.
 - Open-ended chat ("ask anything")
 - Bank / account aggregator integration (auto-pulling transactions)
 - Multi-user / social / sharing
@@ -136,6 +149,22 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       right to surface an unrecorded product type, and how structured fields get captured progressively once
       the user shows interest. Also needs: a re-thought AI-driven onboarding mechanism (no longer assumed to
       be a form), and a minimal-but-real manual fallback UI. All four undesigned as of this entry.
+      **Trigger scope narrowed (25-Jul-2026):** proactive/unprompted "cold" surfacing (Trigger B) is OUT of
+      MVP; only in-surface/in-conversation surfacing (Trigger A) is MVP. Confirmed with owner.
+- [ ] **Decision 3 — Budgeting/Goals data model (FOUNDATIONAL, do before build) (D-031).** Budgeting and
+      goals are MVP but are NOT products — they reference holdings (a goal is funded by holdings; a budget
+      flows into them). How do these non-product objects sit in the baseline alongside product holdings?
+      This changes the shape every other object reads from, so it is designed before build to prevent rework.
+      Next foundational design session. Not laptop-blocked.
+- [ ] **Decision 2 — Per-item management depth (D-031).** What is the user's authority over a holding, per
+      field — view only? edit? delete? recategorize? correct AI-captured values? Scoped now, DESIGNED LATER:
+      its quality depends on Decision 3's data model existing AND ideally on Phase 1 producing one real
+      section to react to. Designing it in a vacuum now would produce a worse answer.
+- [ ] **Corrected UX principles section in PRODUCT_PRINCIPLES.md (D-031).** The implied UX stance
+      (persistent sections, AI-primary/manual-secondary, aliases never shown, no quizzes, progressive
+      capture) is to be extracted and written as a UX section — but only AFTER Decisions 2 and 3 exist,
+      because it extracts from them. Aesthetic layer (visual style, density, motion, hierarchy) deliberately
+      left for when real screen decisions force it.
 - [ ] Write the data privacy policy (D-010): what's masked before reaching the LLM (product names, and
       likely PII like full name/PAN/phone), vs. what's encrypted/protected at rest in Postgres. Needs a
       decision on retention and account-deletion behavior too.
@@ -164,13 +193,19 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - [ ] **Design the backend `deepen` selection logic (deferred by D-028).** The hard question is relocated,
       not answered: the backend needs a rule for which holding to deepen, without the model's contextual read
       of the question. Will fire trigger 5 as a build decision when picked up. Not next-session work.
-- [ ] Open prompt question (FINDING 7, not escalated): may the model supply market-typical figures it was not
-      given (e.g. typical term-cover premiums), and must they be marked illustrative? Recurs on every D-012
-      surfacing case by definition.
+- [x] **FINDING 7 RESOLVED (D-029).** Path C adopted: any figure not traceable to the profile is given as a
+      range, never a point estimate, with a standing "typical, not yours" frame built into how ranges are
+      introduced. Guarded against range-washing by binding to §2 rule 4's legibility standard. See
+      TEACHING_SYSTEM_PROMPT.md §2 rule 5 / §5, and SYSTEM_PROMPT_v0_5_runnable.md (build-home regeneration
+      pending — BQ-005).
 - [ ] **Second fixture, no dominant number** — highest-value untested thing remaining. Card-1 at 42% is the
       loudest number in user_01 and FINDING 4 may be partly an artifact of it. Run Q1 against both fixtures.
 - [ ] Q7 (memory claim) and Q8 (irrelevant-holding discipline) still never run, across both runs. Add to the
       next full run.
+- [ ] **BLOCKED (external, 25-Jul-2026) — build-home unavailable.** Laptop running Claude Code is out for
+      Apple service. All build-home tasks (second fixture, test runs, prompt regeneration to v0.5 / BQ-005)
+      cannot proceed until it returns. Not a project decision; no decision entry. Thinking-home work continues
+      unaffected.
 - [ ] (PARKED — D-022) Conversation memory — session-to-session dialogue recall. Fired the hard scope trigger
       (protocol §2.1 trigger 5) plus a data-retention angle (trigger 2) during the §1/§5 prompt session, so it
       was escalated and parked rather than absorbed. Revisit only after Phase 1 is validated AND the D-010
@@ -186,6 +221,26 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.0 (25-Jul-2026) — **App structure + MVP scope expansion (D-031).** Major bump: the app is now structured
+  as persistent user-facing category sections (partially superseding D-012's "no menu / backend-only
+  taxonomy" clause — AI-surfacing stays primary, menu is secondary). Scope logged in two layers: DIRECTION
+  (six holding families — investments, loans, insurance, real estate, cash & bank, alternatives — plus
+  budgeting, goals, and per-item management) vs. MVP BUILD (three families only + budgeting + goals +
+  per-item management; real estate / cash / alternatives deferred to immediately post-Phase-1). §4 and §5
+  rewritten accordingly. Recorded as a real increase against the "keep ruthless" instruction and P4; the
+  owner judged it justified (tracking the whole financial picture is the product's point) and the system
+  recorded the direction/build split as the counter-discipline. Three new §8 items: Decision 3
+  (budgeting/goals data model — foundational, before build), Decision 2 (per-item management depth — scoped
+  now, designed later), and the corrected UX principles section (after 2 and 3). Rule extracted:
+  direction-scope and build-scope are logged separately so a want can be committed to without being built now.
+- v1.9 (25-Jul-2026) — **BRIEF-003 resolved (D-029)** — FINDING 7 (Q2 supplying a market-typical figure the
+  fixture didn't contain) closed. Path C adopted: non-profile numbers are given as ranges with a standing
+  "typical, not yours" frame, never point estimates, guarded against range-washing by §2 rule 4's existing
+  legibility standard. Rule extracted: a rule introducing a number must state its provenance — the third
+  instance of the FINDING 1/4/7 error class (a rule governing one channel, silent about an adjacent one).
+  §2 gains rule 5 and §5 gains a typical-figure phrasing example in TEACHING_SYSTEM_PROMPT.md; the runnable
+  regeneration to v0.5 is build-home work, queued as BQ-005. Also recorded: the laptop build-home is
+  temporarily out of service (Apple repair) — all build-home tasks paused; see new §8 item.
 - v1.8 (23-Jul-2026) — **BRIEF-002 resolved (D-028)** — the second architectural move of the project, after
   D-010. The model no longer selects which path to deepen: the backend sets a `deepen` field carrying the
   alias and a reason, and the model obeys it. Three owner sub-decisions kept the guarantee intact: an absent

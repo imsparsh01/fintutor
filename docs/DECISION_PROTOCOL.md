@@ -1,4 +1,4 @@
-# FinTutor — Decision Protocol (v1.1, 23-Jul-2026)
+# FinTutor — Decision Protocol (v1.2, 25-Jul-2026)
 
 > **Status: COMPLETE (v1.0).** All six sections are written. §6 is a live section that fills by accretion —
 > it is empty by design, not unfinished.
@@ -249,7 +249,7 @@ section is built to prevent, and §3.5 makes it visible.
 | Lens | The question it asks | The objection only it can raise |
 |---|---|---|
 | **Compliance** | Does this move toward or away from the SEBI line — the advisory boundary, product-naming, data handling? | "This is legally exposed regardless of how well it works." |
-| **Product** | Does this serve *teach-not-advise* and *zero-friction capture*? Does it fit how the app should feel? | "This works but it is not what FinTutor is." |
+| **Product** | Does this satisfy the principles in PRODUCT_PRINCIPLES.md? Does it fit how the app should feel? | "This works but it is not what FinTutor is." |
 | **Technical** | Is this buildable by one person with Claude Code, and is it reversible in practice? | "This is right in principle and not deliverable by this team." |
 | **Cost-and-Scope** | Does it consume owner attention or add ongoing maintenance drag? | "Nothing here is wrong; it just costs more than it returns." |
 
@@ -352,6 +352,36 @@ data exists (touched-data test, §2.2 — reversible now, not later).
 Note what makes this a real deliberation rather than four agreements: Technical raised something no other
 lens could see, Product honestly declined to weigh in rather than padding, and the recorded reversibility
 window is what keeps the decision at Tier 2 legitimately.
+
+### 3.7 The Product routing rule (owner's call, 25-Jul-2026 — authorizes D-030)
+
+The Product lens now reads against a substantive point of view (PRODUCT_PRINCIPLES.md) rather than an
+informal sense of "how the app should feel." This makes a class of product decisions **routable without the
+owner** — which is the point, and also the risk, so the rule is bounded tightly.
+
+**The rule:** a product decision that is **cleanly resolved by an existing principle** is Tier 1 — applied
+and logged, not escalated. The owner is asked (Tier 3) only when:
+1. **two principles conflict** and resolving the tradeoff is a values call, or
+2. **no principle covers** the decision, or
+3. the decision would **establish or amend** a principle rather than apply one.
+
+**This rule does not suspend the checklist.** It sits at the same place every Tier-1 determination sits —
+*after* §2.1's trigger checklist has run and found nothing. A principle-covered decision that still trips any
+trigger (touches compliance, grows scope, is low-reversibility per the touched-data test) is **not Tier 1**,
+no matter how cleanly the principle applies. Concretely: P2 (teach-not-advise) is also a compliance object, so
+any decision touching *where* the advisory line sits fires trigger 2 and goes to Tier 3 regardless of P2
+seeming to "resolve" it — the principle describes the settled line, it does not license moving it.
+
+**Why this is safe** (the same argument as §2.6 and §3.5): every such decision is **logged**, so a silent
+Tier-1 application is auditable after the fact and carries the Tier-2 retroactive veto — the owner can reverse
+any principle-application they disagree with on review. The safety rests on two things holding: the checklist
+running first (§2.0), and the principles being genuine tests rather than vibes (enforced by
+PRODUCT_PRINCIPLES.md's own inclusion bar). If either weakens, this rule must be re-opened.
+
+**A "clean" resolution is a high bar.** If applying the principle requires interpreting what the principle
+*means* in a case it did not foresee, that is the §4.3 narrowing situation, not a clean application — and for
+a compliance-flavored principle (P2, P6) that interpretation is Tier 3. Clean means: the principle's test,
+run as written, produces one answer without needing to be stretched.
 
 ## 4. Conflict and precedence rules (COMPLETE)
 
@@ -544,6 +574,31 @@ never by redesigning §1. One entry so far.
   answer, not the register of the question.
 - **Date:** 23-Jul-2026
 
+### P-002 — When a rule is routed around twice, the third fix should be architectural
+- **What happened:** During the product-principles extraction pass (D-030), a candidate stated as a product
+  principle — *"when a prompt-level rule has been routed around twice, the third attempt should be
+  architectural"* — was found to be a principle about **how the project fixes things**, not about how the
+  app behaves. It does not belong in PRODUCT_PRINCIPLES.md (which tests product decisions); it belongs here,
+  as a decision-making precedent.
+- **The pattern:** established twice already. D-010 turned "the model must not name products" (a policy the
+  model follows) into aliasing (a guarantee the architecture provides). D-028 turned "the model must not
+  choose which path to deepen" into the backend `deepen` field, after two prompt-level fixes (D-025's rule 5,
+  then the sentence-level guard) were each routed around by the same behaviour re-expressing itself through a
+  new channel.
+- **The rule, stated for reuse:** when a behaviour has evaded **two** instruction-level fixes, the third fix
+  should change the architecture (move the decision into backend logic or a data guarantee), not write a
+  third instruction. Two re-routes are evidence about the instrument, not the wording — a third instruction
+  will likely be routed around through whatever channel remains open.
+- **How it routes a decision:** a proposed third instruction-level fix to a twice-routed behaviour should be
+  treated as fired trigger 5 (the architectural alternative is almost always a scope increase) and escalated
+  — the owner decides whether to pay the architectural cost or accept the leak. This is what happened at
+  D-028 (Path C, chosen over two cheaper prompt-level options).
+- **New category / rule created:** none — this is a decision-making heuristic, logged as precedent, not a new
+  taxonomy category. It compounds the protocol the way a rule-extraction test does: it converts a family of
+  "should we write another rule?" decisions into an application of a set test (has this been routed around
+  twice?).
+- **Date:** 25-Jul-2026
+
 **Review trigger:** if §6 reaches roughly ten entries, the taxonomy in §1 is probably wrong rather than
 incomplete — that is the signal to revisit §1 deliberately, as its own Tier-3 decision. Below ten, keep
 appending; do not redesign.
@@ -551,6 +606,17 @@ appending; do not redesign.
 ---
 
 ## Change log
+- v1.2 (25-Jul-2026) — Product lens given substantive content (authorizes **D-030**). §3.1 Product lens now
+  reads against **PRODUCT_PRINCIPLES.md** rather than an informal "how the app should feel." New **§3.7** —
+  the Product routing rule: a product decision cleanly resolved by an existing principle is Tier 1 (applied,
+  logged, not escalated); the owner is asked only when principles conflict, none covers the decision, or the
+  decision would set/amend a principle. The rule explicitly does not suspend the §2.1 checklist — a
+  principle-covered decision that trips any trigger (notably: P2 is a compliance object, so advisory-line
+  moves fire trigger 2) is not Tier 1. Safety rests on the checklist running first (§2.0) and on principles
+  being genuine tests, both auditable via logging + retroactive veto. New **P-002** precedent appended to §6:
+  the "routed around twice → third fix is architectural" pattern (from D-010, D-028), placed here rather than
+  in PRODUCT_PRINCIPLES.md because it governs how the project fixes things, not how the app behaves. This is
+  accretion + one calibration edit to §3, not a redesign; protocol design remains closed at v1.0.
 - v1.1 (23-Jul-2026) — First §6 precedent entry appended: **P-001**, recording that conversation memory
   entered a prompt-drafting session as a tone question and fired trigger 5 (plus trigger 2 on data handling),
   escalating to Tier 3 and parking as D-022. Two calibration findings recorded: the checklist-before-tier
