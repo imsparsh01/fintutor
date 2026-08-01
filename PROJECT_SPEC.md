@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v2.0, 25-Jul-2026)
+# FinTutor — Project Spec (v2.1, 01-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -206,12 +206,13 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       schema-exempt by design, or does it need a formal 9th D-013 type? Low-stakes but should be answered
       before BQ-002 executes, so Claude Code isn't left guessing whether to reuse it as precedent or escalate
       it as a scope trigger.
-- [ ] Q7 (memory claim) and Q8 (irrelevant-holding discipline) still never run, across both runs. Add to the
-      next full run.
-- [ ] **BLOCKED (external, 25-Jul-2026) — build-home unavailable.** Laptop running Claude Code is out for
-      Apple service. All build-home tasks (second fixture, test runs, prompt regeneration to v0.5 / BQ-005)
-      cannot proceed until it returns. Not a project decision; no decision entry. Thinking-home work continues
-      unaffected.
+- [x] **Q7 (memory claim) and Q8 (irrelevant-holding discipline) — RUN (BQ-001, 01-Aug-2026), see
+      PHASE1_RUN3_RESULTS.md.** Q8 clean pass. Q7 passed its own checklist but produced FINDING 8
+      (unprompted gap-surfacing with ranking language on a purely off-topic question) — **RESOLVED, D-032.**
+      §2 rule 3 (open door) amended to be on-topic only. Runnable regeneration to v0.6 is a new build-home
+      task, not yet queued in BUILD_QUEUE.md.
+- [x] **RESOLVED (01-Aug-2026) — laptop back in service.** The BLOCKED item recorded 25-Jul-2026 no longer
+      applies; build-home is operational (BQ-005, BQ-001, and this session's work all ran on it).
 - [ ] (PARKED — D-022) Conversation memory — session-to-session dialogue recall. Fired the hard scope trigger
       (protocol §2.1 trigger 5) plus a data-retention angle (trigger 2) during the §1/§5 prompt session, so it
       was escalated and parked rather than absorbed. Revisit only after Phase 1 is validated AND the D-010
@@ -227,6 +228,17 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.1 (01-Aug-2026) — **FINDING 8 resolved (D-032).** BQ-001 (Q7/Q8 run) closed §8's last untested item; Q8
+  clean, Q7 produced FINDING 8 — unprompted gap-surfacing with ranking language ("worth looking at") on a
+  purely off-topic question. Diagnosed as NOT a P-002 case (no rule had ever governed this channel — D-031's
+  Trigger-A/B narrowing was decided at spec level but never transcribed into the prompt) — a missing rule
+  being written for the first time, not a routed-around one. Path B adopted: §2 rule 3 (the open-door offer)
+  tightened to on-topic only, using Q8's clean on-topic offer as the deciding control evidence over Q7's
+  off-topic one. Path A (blanket Trigger-A/B gate) and Path C (backend field) held in reserve, pending
+  evidence Path B doesn't hold. Laptop-repair BLOCKED item retired (machine operational). GitHub remote
+  established this session (github.com/imsparsh01/fintutor, public) as a lighter-weight transport for
+  laptop-to-thinking-home file sync — Project knowledge remains the source of truth for the five tracked
+  governance files; GitHub is transport, not a replacement store.
 - v2.0 (25-Jul-2026) — **App structure + MVP scope expansion (D-031).** Major bump: the app is now structured
   as persistent user-facing category sections (partially superseding D-012's "no menu / backend-only
   taxonomy" clause — AI-surfacing stays primary, menu is secondary). Scope logged in two layers: DIRECTION
