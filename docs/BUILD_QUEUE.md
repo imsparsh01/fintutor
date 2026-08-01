@@ -14,16 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-001 — Run Q7 and Q8 against prompt v0.5
-**Traces to:** D-024, D-027 (both runs recorded Q7/Q8 as never executed)
-**Note:** run against v0.5 once BQ-005 is done (was originally written against v0.4).
-**Task:** Run Q7 (memory claim) and Q8 (irrelevant-holding discipline) following `docs/TEST_PROTOCOL.md`,
-using `docs/fixtures/FIXTURE_user_01.json`. Record results in the format of `docs/PHASE1_RUN2_RESULTS.md`.
-**Done when:** both questions run, outputs captured, results file written, committed.
-**Escalate if:** either question produces a compliance-line failure — that is a finding for thinking-home.
-
----
-
 ### BQ-002 — Build second fixture with no dominant number
 **Traces to:** D-024, D-027 (§8: "highest-value untested thing remaining")
 **Task:** Create `docs/fixtures/FIXTURE_user_02.json` modelled on `FIXTURE_user_01.json` but deliberately
@@ -64,6 +54,13 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-001 — Run Q7 and Q8 against prompt v0.5 — done 01-Aug-2026
+Both run manually by owner on Console Workbench (v0.5 prompt + FIXTURE_user_01, fresh conversation each),
+outputs scored against TEST_PROTOCOL.md. Results in `docs/PHASE1_RUN3_RESULTS.md`. Q8 clean pass. Q7 passes
+its own checklist but produced **FINDING 8** (new): unprompted, ranking-language surfacing of the term-insurance
+gap on a question with no financial content — touches §3 rule 5 and D-012's Trigger A/B scope narrowing.
+**Flagged for thinking-home per the escalate-if clause — not resolved in build-home.**
 
 ### BQ-005 — Regenerate system prompt to v0.5 (provenance rule) — done 01-Aug-2026
 Regenerated `docs/prompts/SYSTEM_PROMPT_v0_5_runnable.md` from TEACHING_SYSTEM_PROMPT.md (D-029): §2 gains
