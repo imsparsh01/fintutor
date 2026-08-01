@@ -14,13 +14,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-003 — Run Q1 against both fixtures and compare
-**Depends on:** BQ-002
-**Traces to:** D-027 (FINDING 4 may be an artifact of user_01's loud number)
-**Task:** Run Q1 against both fixtures using v0.5. Compare whether the structural-ranking behaviour in
-FINDING 4 persists when no dominant number exists.
-**Done when:** both outputs captured, comparison written up, committed.
-**Escalate if:** the comparison suggests D-028's `deepen` field needs to behave differently — architecture.
+_(empty — see BLOCKED)_
 
 ---
 
@@ -45,6 +39,17 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-003 — Run Q1 against both fixtures and compare — done 01-Aug-2026
+Run manually by owner on Console Workbench, against `SYSTEM_PROMPT_v0_6_runnable.md` (queued against v0.5,
+but v0.6 superseded it by the time this ran — executed against v0.6 per explicit owner instruction this
+session; that's a stronger, not weaker, test since v0.6 postdates the D-028 fix FINDING 4 traces to).
+Results in `docs/PHASE1_RUN4_RESULTS.md`. **FINDING 4 does not reproduce in either fixture** — D-028's
+deepen-absent guarantee holds under both the dominant-number (user_01) and no-dominant-number (user_02)
+condition, including the harder ambiguous-magnitude case user_02 was built to test. **New finding (FINDING
+9, not FINDING 4):** the user_01 run drops Card-1 (42%) entirely — a different failure shape (omission, not
+over-attention) than what BQ-003 was scoped to test. Doesn't match the escalate-if clause (not a `deepen`
+field behavior issue). **Flagged for thinking-home, not resolved in build-home.**
 
 ### BQ-006 — Regenerate system prompt to v0.6 (open-door, on-topic only) — done 01-Aug-2026
 Regenerated `docs/prompts/SYSTEM_PROMPT_v0_6_runnable.md` from TEACHING_SYSTEM_PROMPT.md (D-032). Diffed
