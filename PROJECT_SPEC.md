@@ -200,6 +200,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       pending — BQ-005).
 - [ ] **Second fixture, no dominant number** — highest-value untested thing remaining. Card-1 at 42% is the
       loudest number in user_01 and FINDING 4 may be partly an artifact of it. Run Q1 against both fixtures.
+      **Small open sub-question, surfaced by Claude Code while scoping BQ-002 (25-Jul-2026, not yet
+      answered):** `FIXTURE_user_01.json` uses a `savings_balance` product type (Deposit-1: idle cash,
+      `current_balance` + `interest_rate` only) that is NOT one of D-013's 8 taxonomy types. Is idle cash
+      schema-exempt by design, or does it need a formal 9th D-013 type? Low-stakes but should be answered
+      before BQ-002 executes, so Claude Code isn't left guessing whether to reuse it as precedent or escalate
+      it as a scope trigger.
 - [ ] Q7 (memory claim) and Q8 (irrelevant-holding discipline) still never run, across both runs. Add to the
       next full run.
 - [ ] **BLOCKED (external, 25-Jul-2026) — build-home unavailable.** Laptop running Claude Code is out for
