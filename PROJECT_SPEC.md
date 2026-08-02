@@ -227,14 +227,16 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       name every already-relevant holding. Prompt regenerated as SYSTEM_PROMPT_v0_7_runnable.md.
       **FINDING 9 is NOT resolved by this decision** — the model still drops Card-1 from answers 2/5 runs;
       it needs its own path and remains a separate open item. See D-035 in docs/DECISION_LOG.md.
-- [x] **FINDING 9 (Card-1 omission) — RESOLVED (D-037, Tier 2, REVIEW-FLAGGED, 02-Aug-2026), pending
-      verification.** Classified via the actual trigger checklist rather than defaulted to Tier 3: naming a
-      collateral-relevant holding is already compliance-safe per D-025's existing carve-out, so this is a
-      product-judgment interpretation of D-015 (Tier 2), not a new compliance line. §2 rule 2 now explicitly
-      requires naming a materially higher-cost holding and forbids substituting a vaguer consideration for
-      it. Prompt regenerated as SYSTEM_PROMPT_v0_8_runnable.md. REVIEW-FLAGGED for owner's retroactive veto —
-      evidence base is 3 misses across 10 runs, modest. **Not yet confirmed** — BQ-008 (queued) re-tests
-      before this counts as settled, same discipline as every prior fix here.
+- [x] **FINDING 9 (Card-1 omission) — RESOLVED (D-037, Tier 2, REVIEW-FLAGGED, 02-Aug-2026) — VERIFIED
+      03-Aug-2026 (BQ-008).** Classified via the actual trigger checklist rather than defaulted to Tier 3:
+      naming a collateral-relevant holding is already compliance-safe per D-025's existing carve-out, so this
+      is a product-judgment interpretation of D-015 (Tier 2), not a new compliance line. §2 rule 2 now
+      explicitly requires naming a materially higher-cost holding and forbids substituting a vaguer
+      consideration for it. Prompt regenerated as SYSTEM_PROMPT_v0_8_runnable.md. BQ-008 (n=5, fresh) came
+      back 5/5 — Card-1 named unprompted in every run, no substitution pattern, FINDING 10 still 0/5, and
+      FINDING 11's "worth" phrasing 0/5 under D-036's clarified test. Still REVIEW-FLAGGED for the owner's
+      retroactive veto per Tier 2's design, but the fix itself is confirmed working. See
+      docs/PHASE1_RUN6_RESULTS.md.
 - [x] **BRIEF-005 RESOLVED (D-036, 02-Aug-2026) — no fix.** Owner judged that "worth X" bridging language
       without an attached comparative/ordering word ("first," "more than") does not cross the true-vs-attend
       line — confirmed explicitly for the two verbatim "worth having in view" instances, not just the softer
@@ -252,6 +254,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.7 (03-Aug-2026) — **BQ-008 verified D-037's FINDING 9 fix: 5/5 clean.** Card-1 named unprompted in
+  every run, no vaguer-consideration substitution, FINDING 10 still 0/5, FINDING 11 "worth" phrasing 0/5
+  under D-036's clarified test. Results in docs/PHASE1_RUN6_RESULTS.md; BUILD_QUEUE.md's BQ-008 moved to
+  DONE. Also fixed a test-tooling bug found along the way: scripts/run_phase1_test.py's max_tokens=1024 was
+  too low for a thinking-enabled model, causing 2/5 empty responses on first attempt (stop_reason=max_tokens,
+  thinking consumed the full budget) — raised default to 4096, not a prompt/compliance change.
 - v2.6 (02-Aug-2026) — **FINDING 9 resolved at Tier 2 (D-037), REVIEW-FLAGGED, pending verification.** Ran
   FINDING 9 through the actual §2.1 trigger checklist instead of defaulting to a Tier-3 brief: naming a
   collateral-relevant holding without ranking it is already required by D-025's existing carve-out, so this

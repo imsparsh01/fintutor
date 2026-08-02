@@ -46,7 +46,10 @@ def load_env(repo_root: Path) -> None:
         os.environ.setdefault(key.strip(), value.strip())
 
 
-def call_claude(api_key: str, model: str, system_text: str, user_text: str, max_tokens: int = 1024) -> str:
+def call_claude(api_key: str, model: str, system_text: str, user_text: str, max_tokens: int = 4096) -> dict:
+    """Returns the full parsed response body, not just the text — callers that only
+    want the text should read result["_text"]. Keeping the raw body lets us diagnose
+    empty/truncated responses (stop_reason, usage, etc.) instead of guessing."""
     url = "https://api.anthropic.com/v1/messages"
     payload = json.dumps({
         "model": model,
@@ -66,7 +69,8 @@ def call_claude(api_key: str, model: str, system_text: str, user_text: str, max_
     )
     with urllib.request.urlopen(req, timeout=60) as resp:
         body = json.loads(resp.read().decode("utf-8"))
-    return "".join(block.get("text", "") for block in body.get("content", []))
+    body["_text"] = "".join(block.get("text", "") for block in body.get("content", []))
+    return body
 
 
 def main() -> None:
@@ -114,10 +118,11 @@ def main() -> None:
     print()
 
     ok = 0
+    empty = 0
     for i in range(1, args.n + 1):
         print(f"  run {i}/{args.n}...", end=" ", flush=True)
         try:
-            text = call_claude(api_key, args.model, system_text, user_text)
+            body = call_claude(api_key, args.model, system_text, user_text)
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", errors="replace")[:300]
             print(f"FAILED ({e.code}): {detail}")
@@ -125,15 +130,28 @@ def main() -> None:
         except Exception as e:
             print(f"FAILED: {e}")
             continue
+        text = body.get("_text", "")
         (out_dir / f"run_{i}.txt").write_text(text)
         ok += 1
-        print(f"done ({len(text.split())} words)")
+        if not text:
+            empty += 1
+            # Empty response but no HTTP error — save the raw body so we can see
+            # stop_reason / usage instead of guessing why nothing came back.
+            (out_dir / f"run_{i}_raw.json").write_text(json.dumps(body, indent=2))
+            stop_reason = body.get("stop_reason", "?")
+            usage = body.get("usage", {})
+            print(f"done (0 words) — EMPTY, stop_reason={stop_reason}, usage={usage} — see run_{i}_raw.json")
+        else:
+            print(f"done ({len(text.split())} words)")
         if i < args.n:
             time.sleep(1)
 
     print()
-    if ok == args.n:
+    if ok == args.n and empty == 0:
         print(f"All {ok} runs saved. Tell Claude it's done and point it at:")
+    elif empty:
+        print(f"{ok}/{args.n} runs saved, {empty} came back empty (see *_raw.json in the output folder).")
+        print("Tell Claude what happened, or re-run.")
     else:
         print(f"{ok}/{args.n} runs saved (some failed — see above). Tell Claude what happened, or re-run.")
     print(f"  {out_dir.relative_to(repo_root)}")

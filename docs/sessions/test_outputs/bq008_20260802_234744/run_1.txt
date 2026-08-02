@@ -1,0 +1,9 @@
+That ₹2 lakh is currently sitting in savings earning about 3% — call it ₹6,000 a year. Before getting into the loan-versus-invest question, it's worth naming something else in the picture: you're carrying ₹86,000 on a card at 42%. That's a materially different cost than either the loan or an investment — at that rate, the card alone is running up roughly ₹36,000 a year in interest if left as is. Whatever you decide about the ₹2 lakh, that number exists independently of this decision.
+
+Now, the two paths for the ₹2 lakh itself.
+
+**Path one: prepay the home loan.** It's outstanding ₹40 lakh at 9%, 18 years left. Putting ₹2 lakh against principal now removes that principal from the 9% compounding for the rest of the tenure. Over 18 years, that one prepayment works out to well over ₹2 lakh in interest that never gets charged, and it shortens how long the loan runs. The tradeoff: once it's in, it's in — you can't pull that ₹2 lakh back out if you need cash for something else, and your emergency fund right now covers only about 1.4 months of outgoings, which is thin.
+
+**Path two: invest it** — say, into your existing equity fund or something similar. That mechanism is a thread of its own: expected return, market risk, how long the money stays invested, and the fact that returns aren't guaranteed the way the 9% saved by prepaying is. Happy to walk through that in depth if you want it.
+
+The shape of it: prepaying is a certain 9% saved. Investing is an uncertain shot at more, with the money staying liquid. And the 42% sitting on the card is a separate fact worth keeping in view alongside whichever of these two paths you're weighing.

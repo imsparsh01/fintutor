@@ -1,0 +1,9 @@
+Right now that ₹2 lakh is sitting in savings earning about 3% — roughly ₹6,000 a year. There are two things you could do with it, and they work differently, so let me lay both out.
+
+Before that though — you're also carrying a card balance of ₹86,000 at 42%. That's a materially different problem from either the loan or the ₹2 lakh question: at that rate, it's generating close to ₹36,000 a year in interest against you, far more than either path below moves in a year. Worth having the number in view alongside this decision.
+
+Path one: put the ₹2 lakh against the home loan. It's at 9%, so ₹2 lakh off the outstanding principal removes that 9% from compounding against you for however much of the remaining tenure it would otherwise have sat there — over the loan's life that's well into six figures of interest saved, and it shortens things slightly. The tradeoff: that money is then locked into the house. You can't pull it back out if you need cash suddenly, and your emergency fund currently covers only about 1.4 months of outgoings — thin, with a spouse and a young child depending on the income.
+
+Path two: invest it instead, aiming for a return above 9%. Whether that's realistic depends on the mechanism of expected return versus risk versus how long the money stays invested — that's a full thread on its own, and I can walk through it if you want.
+
+The core contrast: prepaying is a guaranteed 9% saved, but the cash disappears into the house. Investing keeps the door open on liquidity but the return isn't guaranteed. Same ₹2 lakh, two different shapes of outcome.

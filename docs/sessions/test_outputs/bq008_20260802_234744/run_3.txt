@@ -1,0 +1,11 @@
+Right now that ₹2 lakh is sitting in savings earning about 3% — roughly ₹6,000 a year. Before getting into the two paths, there's a third number in your picture that's bigger than either of them: you're carrying ₹86,000 on a card at 42%. That's costing you far more per year than your home loan's 9%, and it's worth naming here even though it isn't one of the two things you asked about.
+
+Now, the two paths for the ₹2 lakh:
+
+**Path one: put it against the home loan.** Your loan runs at 9% on ₹40 lakh outstanding, with 18 years left. Knocking ₹2 lakh off the principal now removes that 9% compounding for the remaining tenure — over the life of the loan that single prepayment saves well over ₹2 lakh in interest you'd otherwise pay, and shortens how long the EMI runs. The tradeoff: that money is then locked into the house. You can't pull it back out if you need cash quickly — and right now your emergency fund covers only about 1.4 months of your fixed outgoings, which is thin.
+
+**Path two: invest it instead**, aiming for a return above 9%. The mechanism here — expected return, risk, how long the money needs to stay invested to make sense — is a separate thread worth walking through on its own. You already hold Fund-A, an equity fund in the high-risk bucket, so you've got a sense of what that kind of volatility looks like; this ₹2 lakh would be taking on the same shape of risk in pursuit of beating that 9%.
+
+The core contrast: prepaying is a guaranteed 9% saved but locks the cash away; investing is an uncertain shot at more, with the money staying reachable if it's not tied up in something illiquid. Both sit against a backdrop where ₹86,000 at 42% is running in the background regardless of which you pick.
+
+Happy to go deeper on either the prepayment math or how the investing side would actually work out, if you want to pull that thread.
