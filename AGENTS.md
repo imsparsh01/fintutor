@@ -1,20 +1,19 @@
 # FinTutor Operating Rules
 
-You are Claude, working in the single home for FinTutor — a mobile app that teaches
-personal finance from first principles, never advises. As of **D-033 (02-Aug-2026)**
-this repo is the only home: build files (`app/`, `backend/`) and the governance/
-strategy files (`PROJECT_SPEC.md`, `docs/DECISION_LOG.md`, `docs/DECISION_PROTOCOL.md`,
-`PROJECT_GOVERNANCE.md`) live together, and you can read and write all of them in the
-same session. The old "laptop = build, Claude Project = think" split (and its manual
-sync ritual) is retired — see D-033 in `docs/DECISION_LOG.md`.
+You are an agent (Codex or similar) working in the single home for FinTutor — a mobile app that teaches
+personal finance from first principles, never advises. As of **D-033 (02-Aug-2026)** this repo is the only
+home: build files (`app/`, `backend/`) and the governance/strategy files (`PROJECT_SPEC.md`,
+`docs/DECISION_LOG.md`, `docs/DECISION_PROTOCOL.md`, `PROJECT_GOVERNANCE.md`) live together, and you can
+read and write all of them in the same session. The old "laptop = build, [Project] = think" split (and its
+manual sync ritual) is retired — see D-033 in `docs/DECISION_LOG.md`. This file mirrors `CLAUDE.md`; keep
+them consistent if either changes.
 
-Retiring the technical wall does not retire the discipline it protected. Bounded,
-mechanical execution still stays separate from deliberate decisions about money,
-compliance, product philosophy, and anything low-reversibility — that separation is
-now **self-enforced**, by you, via the tiered decision protocol and the file
-permissions below, not by an access boundary. If something requires a decision that
-isn't a bounded, already-decided build task, **stop and ask the owner** — do not
-guess, do not proceed, do not invent an answer to keep moving.
+Retiring the technical wall does not retire the discipline it protected. Bounded, mechanical execution still
+stays separate from deliberate decisions about money, compliance, product philosophy, and anything
+low-reversibility — that separation is now **self-enforced**, by you, via the tiered decision protocol and
+the file permissions below, not by an access boundary. If something requires a decision that isn't a
+bounded, already-decided build task, **stop and ask the owner** — do not guess, do not proceed, do not
+invent an answer to keep moving.
 
 ## Before doing anything in a session
 
@@ -39,7 +38,7 @@ never as a side effect of a build or strategy task:**
 - `PROJECT_GOVERNANCE.md`
 - `docs/DECISION_PROTOCOL.md`
 - `HOW_TO_RUN_THIS_PROJECT.md`
-- `CLAUDE.md` (this file)
+- `CLAUDE.md` and `AGENTS.md` (the operating-rules files)
 
 These are technically editable now (there is no separate home keeping you out of
 them), which is exactly why the rule has to be procedural: if a task seems to require
@@ -54,9 +53,8 @@ edits follow.
   clearly Tier 1 (bounded, reversible, contained entirely within this session,
   doesn't touch money-logic, doesn't touch the teach-not-advise line, doesn't grow
   MVP scope) — OR write up a Tier 2/3 entry that documents a decision the owner just
-  made in conversation (as this file's own D-033 entry does). Never edit or delete
-  existing entries. If you're unsure whether something is Tier 1, treat it as
-  not-Tier-1 and ask instead.
+  made in conversation. Never edit or delete existing entries. If you're unsure
+  whether something is Tier 1, treat it as not-Tier-1 and ask instead.
 - `PROJECT_SPEC.md` — you may propose an edit (e.g. checking off a Section 8 item
   that's now genuinely done) but do not silently rewrite it. State the proposed
   change and why, get confirmation, then apply it.

@@ -5,9 +5,13 @@
 > Claude Code should be pointed at this file at the start of each session.
 
 > **ORIENTATION (read this when you're confused about where something belongs):**
-> **The laptop is where the app is BUILT. This Claude Project is where the app is THOUGHT ABOUT.**
-> Code, folders, git → laptop (Claude Code). Strategy, decisions, roadmap, teaching design → here (this Project).
-> This spec is the bridge: it lives in both places, kept in sync.
+> **Single home as of D-033 (02-Aug-2026).** One repo, one tool (Cowork/Claude Code), covering both build
+> work and strategy/compliance/decision work — the old "laptop = build, Claude Project = think" split (and
+> its manual download/upload sync ritual) is retired. The discipline that split protected — bounded,
+> mechanical execution kept separate from deliberate decisions on money, compliance, and irreversible calls
+> — still applies, now self-enforced via DECISION_PROTOCOL.md's tiers and CLAUDE.md's file-permission lanes
+> rather than by a technical access boundary. This spec remains the single source of truth, with no separate
+> copy to keep in sync.
 
 > **HOW DECISIONS GET MADE (added v1.0):** Decisions are no longer all routed through the owner by default.
 > DECISION_PROTOCOL.md defines a tiered system — Tier 1 auto-decided, Tier 2 deliberated through evaluation
@@ -228,6 +232,14 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.2 (02-Aug-2026) — **Two homes retired: single unified home (D-033).** The owner moved from Cowork (built
+  on Claude Code) pointed at a separate, manually-synced Claude Project, to Cowork pointed directly at this
+  repo — meaning PROJECT_SPEC.md, DECISION_LOG.md, DECISION_PROTOCOL.md, and PROJECT_GOVERNANCE.md now live
+  in one place, read/write in the same session that builds code, with no download/upload sync ritual. The
+  orientation block above rewritten accordingly. The discipline the split protected (bounded execution vs.
+  deliberate decision-making) is preserved via DECISION_PROTOCOL.md's tiers and CLAUDE.md's file-permission
+  lanes, now self-enforced rather than access-enforced. CLAUDE.md, PROJECT_GOVERNANCE.md,
+  HOW_TO_RUN_THIS_PROJECT.md, README.md, and AGENTS.md updated in the same pass to drop two-home framing.
 - v2.1 (01-Aug-2026) — **FINDING 8 resolved (D-032).** BQ-001 (Q7/Q8 run) closed §8's last untested item; Q8
   clean, Q7 produced FINDING 8 — unprompted gap-surfacing with ranking language ("worth looking at") on a
   purely off-topic question. Diagnosed as NOT a P-002 case (no rule had ever governed this channel — D-031's

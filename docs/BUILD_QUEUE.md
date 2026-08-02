@@ -1,14 +1,14 @@
 # FinTutor — Build Queue
 
-**This is the build-home worklist. Claude Code reads this file to find its task.**
+**This is the build worklist. Claude reads this file to find its build task.**
 
 Rules for this file:
 - Nothing enters this queue until the decision behind it has an ID in `docs/DECISION_LOG.md`.
-- Items here are **already decided** — Claude Code executes them, it does not re-open them.
+- Items here are **already decided** — Claude executes them, it does not re-open them.
 - If executing an item requires a new decision (new library, schema change, anything on
   the `CLAUDE.md` hard-stop list), **STOP and escalate to the owner**. Do not decide it here.
 - One item per session. Move it to DONE with a date when complete.
-- This file lives only on the laptop. It is NOT uploaded to the Claude Project.
+- This file is build-task-tracking only (single home as of D-033 — see `docs/DECISION_LOG.md`).
 
 ---
 

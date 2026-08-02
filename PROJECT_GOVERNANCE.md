@@ -1,24 +1,28 @@
 # FinTutor Build — Project Governance
 
-> This is the operating charter for the **Claude Project** (the thinking-home).
+> This is the operating charter for **strategy and decision-making sessions**.
 > It is NOT about the code. It's about how we run the strategy, keep the thread, and make decisions.
-> Upload this + PROJECT_SPEC.md as Project knowledge so every strategy session is grounded.
+> As of D-033 (02-Aug-2026) this lives in the same repo and the same tool as the build work — see
+> `CLAUDE.md`'s orientation note and `docs/DECISION_LOG.md`'s D-033 entry for what changed and why.
 
 ---
 
-## What this Project is for
-This Claude Project is where FinTutor is **thought about** — strategy, architecture decisions, roadmap,
-teaching-engine design, compliance thinking, and prioritization. Code is built on the laptop with Claude Code.
-**Laptop = build. Project = think.** When confused about where something belongs, that line settles it.
+## What this file is for
+Strategy, architecture decisions, roadmap, teaching-engine design, compliance thinking, and prioritization
+still need a different mode of attention than writing code — slower, more deliberate, proportional to
+reversibility. This file is the charter for that mode. It used to be enforced by running in a physically
+separate Claude Project ("Laptop = build. Project = think."); that access boundary is gone (D-033), so the
+separation is now something you hold deliberately within one home, not something the tooling holds for you.
 
-## The documents that live here (Project knowledge)
+## The documents this charter governs
 1. **PROJECT_SPEC.md** — the single source of truth. Scope, philosophy, stack, decisions, change log.
-2. **PROJECT_GOVERNANCE.md** (this file) — how we run the Project.
+2. **PROJECT_GOVERNANCE.md** (this file) — how we run strategy/decision sessions.
 3. **DECISION_LOG.md** — one entry per meaningful decision, with the *why*.
-4. (Later) system prompts, compliance notes, teaching-design docs as they're created.
+4. System prompts, compliance notes, teaching-design docs (`docs/prompts/*`, `docs/BRIEF-*.md`, etc.).
 
 ## How a strategy session runs (the ritual)
-1. Start: "We're in the FinTutor Build project. Read the spec + governance. Today I want to think about [X]."
+1. Start: "Read the spec + governance. Today I want to think about [X]." (Doesn't require a separate
+   Project anymore — just say explicitly that this is a strategy session, not a build session.)
 2. Work through ONE strategic question — don't sprawl across five topics in one session.
 3. Any decision reached → gets written into DECISION_LOG.md + reflected in PROJECT_SPEC.md.
 4. End: confirm what changed and what the next strategic question is.
@@ -29,11 +33,6 @@ teaching-engine design, compliance thinking, and prioritization. Code is built o
 - **Reversible vs irreversible:** mark decisions that are cheap to change (a library) vs expensive (the whole
   data model, the "teach not advise" stance). Spend thinking-time proportional to reversibility.
 - **One source of truth.** If the spec and a conversation disagree, the spec wins — or you update the spec.
-
-## Keeping the two homes in sync (laptop ↔ Project)
-- After a **strategy session here** that changed the spec → download it → put in laptop repo → git commit.
-- After a **build session** that forced a decision → update spec locally → re-upload here.
-- The spec is one document that physically exists in two places, always kept matched.
 
 ## Anti-patterns to catch yourself doing
 - **Tooling as procrastination.** Polishing folders/docs instead of doing Phase 1. Set up once, then build.

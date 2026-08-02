@@ -1,7 +1,8 @@
 # How to run this project (your operating manual)
 
-You are the **owner/orchestrator**. Claude Code writes the code. Your job is structure, decisions, and
-keeping the thread. This file explains how.
+You are the **owner/orchestrator**. Claude (via Cowork/Claude Code) writes the code and, since D-033
+(02-Aug-2026), also runs strategy/decision sessions in this same repo — there's no separate Claude Project to
+maintain anymore. Your job is structure, decisions, and keeping the thread. This file explains how.
 
 ## The golden rule
 **PROJECT_SPEC.md is the source of truth.** Start every Claude Code session by telling it to read the spec.
