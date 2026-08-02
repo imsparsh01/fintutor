@@ -231,13 +231,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       02-Aug-2026), down from the 2/5 baseline against v0.6 — did not get worse from the D-035 fix, but n is
       too small to call it improved. Needs its own brief once a path is worth modeling. See
       PHASE1_RUN4_RESULTS.md, PHASE1_RUN5_RESULTS.md.
-- [ ] **BRIEF-005 ESCALATED (02-Aug-2026) — FINDING 11, does the "worth [X]" bridging pattern need its own
-      rule?** "Worth" framing recurs on Card-1 mentions in 4/5 runs against v0.7, with the exact phrase §3
-      rule 5 already names as forbidden ("worth having in view") reproduced verbatim in 2/5 — including once
-      on non-holding material (the emergency-fund figure), suggesting a possibly broader bridging habit, not
-      only a holdings-ranking one. Three paths modeled (narrower named-category patch / structural no-lead-in
-      rule / backend post-generation scan), none chosen. See BRIEF-005_worth_framing_recurrence.md and
-      docs/DECISION_LOG.md. Blocks further §3 rule 5 prompt work until resolved.
+- [x] **BRIEF-005 RESOLVED (D-036, 02-Aug-2026) — no fix.** Owner judged that "worth X" bridging language
+      without an attached comparative/ordering word ("first," "more than") does not cross the true-vs-attend
+      line — confirmed explicitly for the two verbatim "worth having in view" instances, not just the softer
+      variants. D-025's named example is narrowed: "first" was the operative failure, not the phrase alone.
+      No prompt change. Comparative/ordering "worth X" phrasing remains forbidden. See D-036 in
+      docs/DECISION_LOG.md.
 - [ ] (PARKED — D-014) Build Claude Code execution subagents to carry out already-decided build tasks
       (starting with the D-012 pieces). Deliberately deferred until after Phase 1 (teaching engine) is
       validated and the relevant design decisions are made. User decides; agents execute. Not next-session
@@ -249,6 +248,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.5 (02-Aug-2026) — **BRIEF-005 resolved (D-036), no fix.** FINDING 11's "worth X" framing (found scoring
+  BQ-007) is judged not to cross the compliance line, including the two verbatim "worth having in view"
+  occurrences — owner confirmed this explicitly after the distinction between those and the softer variants
+  was raised. D-025's named FAIL example narrowed: the word "first" (ordering) was the operative failure,
+  not "worth having in view" alone. Comparative/ordering "worth X" phrasing remains forbidden; nothing else
+  about D-025 changes. No prompt file touched.
 - v2.4 (02-Aug-2026) — **BQ-007 run against v0.7 (first live-API test run, via `scripts/run_phase1_test.py`
   run locally by the owner — the build sandbox blocks authenticated calls to `api.anthropic.com`).** D-035's
   fix confirmed: FINDING 10 does not reproduce, 0/5. FINDING 9 at 1/5 (20%, down from 2/5 baseline, n too
