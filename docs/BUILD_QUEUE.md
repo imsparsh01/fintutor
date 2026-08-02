@@ -14,7 +14,21 @@ Rules for this file:
 
 ## READY — pick one of these
 
-_(none currently — see DONE for BQ-008)_
+### BQ-009 — Add Income and Goal objects to the backend baseline schema
+**Depends on:** BQ-011 (backend skeleton must exist first)
+**Traces to:** D-038
+**What:** Add `Income { sources: [{label, amount, frequency}] }` and `Goal { target_amount, target_date,
+category, funded_by: [{holding_id, earmarked_amount}] }` as first-class objects in the baseline, sibling to
+Holdings. Goal progress is computed live from `funded_by` holdings' current values — do not store a
+progress/current_amount field on Goal itself. No Budget object in this task (see BQ-010).
+
+### BQ-010 — Implement live budget computation (no stored Budget object)
+**Depends on:** BQ-011 (backend skeleton), BQ-009 (Income object)
+**Traces to:** D-038
+**What:** Compute budget on read, never store it: income total (from Income, BQ-009) minus recurring
+outflows read live off holding records (EMI amount, SIP investment amount, insurance premium fields per
+D-013) minus a stored list of discretionary categories (`{label, planned_amount}`). Depends on BQ-009's
+Income object existing.
 
 ---
 
@@ -39,6 +53,20 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-011 — Bootstrap FastAPI backend skeleton (SQLAlchemy + Alembic) — done 03-Aug-2026
+`backend/` now has a real FastAPI app: `app/main.py` (FastAPI instance + `/health` and `/health/db`),
+`app/core/config.py` (pydantic-settings, reads `DATABASE_URL`/`ANTHROPIC_API_KEY` from the repo-root
+`.env`), `app/db/session.py` (SQLAlchemy engine/session, `Base` for future models — gracefully `None` if
+`DATABASE_URL` isn't set rather than crashing at import), `app/models/` (empty, for BQ-009), and Alembic
+migration tooling (`alembic.ini`, `alembic/env.py`, `alembic/script.py.mako`, `alembic/versions/`) wired to
+pull the connection string from the same settings object. `requirements.txt` added; a `backend/.venv`
+virtualenv was created and dependencies installed and verified locally (gitignored, not committed).
+Verified end-to-end: app imports cleanly, dev server starts, `GET /health` → `200 {"status":"ok"}`,
+`GET /health/db` → `503` with a clear "DATABASE_URL is not set" message (correct behavior — no credential
+exists yet). **Still open:** the owner needs to add `DATABASE_URL` (Supabase Postgres connection string) to
+`.env` directly before `/health/db` can return 200 and before BQ-009/BQ-010 can be verified against a real
+database. See D-041.
 
 ### BQ-008 — Re-run the Q1 repeat series (n=5) against v0.8 — done 02-Aug-2026
 Run by the owner locally via `scripts/run_phase1_test.py` (first attempt returned 3/5 valid + 2/5 empty with

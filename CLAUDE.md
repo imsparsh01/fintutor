@@ -117,6 +117,10 @@ This list applies regardless of whether the session is framed as "building" or
    work at session end. If push fails (stale lock, auth, network), say so plainly
    rather than silently leaving it unpushed.
 
+`docs/CEO_DASHBOARD.md` / `.html` are refreshed **on demand** only — when the owner
+asks for a status summary or something visual — not as part of this checklist (D-042,
+superseding D-040 on this point only).
+
 ## What "done" means
 
 Code or decision runs through to a real artifact + the owner understands at a high

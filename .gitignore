@@ -6,5 +6,7 @@
 *secret*
 node_modules/
 __pycache__/
+.venv/
+*.egg-info/
 *.pyc
 .DS_Store

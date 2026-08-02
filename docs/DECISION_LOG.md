@@ -1214,3 +1214,121 @@
 - **Dependency flag:** needs a re-test (queued as BQ-008) before this counts as confirmed, same discipline as
   every prior prompt fix here.
 - **Date:** 02-Aug-2026
+
+### D-038 — Budgeting/Goals data model resolved (Decision 3): explicit thin links, computed budget, new Income object
+- **Tier:** 2 — no §2.1 trigger fired (no money movement; goals/budgets are the user's own labels, not
+  products, so D-009 doesn't reach them; no goals/budget data exists yet so the touched-data test keeps this
+  reversible; already committed MVP scope per §4 item 5, not an increase; classifiable — same
+  product/technical boundary shape as D-011/D-013). Real tradeoffs existed between candidate paths, which is
+  what puts it at Tier 2 rather than Tier 1.
+- **Decision:** Resolves PROJECT_SPEC.md §8 "Decision 3." Three sub-parts:
+  1. **Goal→holding funding links are explicit and thin.** `Goal { target_amount, target_date, category,
+     funded_by: [{holding_id, earmarked_amount}] }`. Progress is always computed live as the sum of earmarked
+     holdings' current values — never duplicated onto the Goal record. Rejected: tag-based inference (breaks
+     down when one holding should split across two goals — ambiguous percentage) and no structural link at
+     all (guts the teaching mechanism — can't produce "this SIP is funding 60% of your house goal").
+  2. **Budget is a fully computed view, not a stored object.** No "Budget" row exists in the database.
+     Recurring outflows (EMI, SIP amount, insurance premium) are read live off the holding records that
+     already carry those fields (D-013). Only Income (see below) and a short list of discretionary
+     categories (`{label, planned_amount}`) are stored, because those have no holding to live on. Rejected:
+     a stored, periodically-reconciled monthly snapshot — real product upside (enables "your budget changed
+     since last month" moments) but not needed for MVP, which teaches from the live baseline and has already
+     parked historical/trend recall (D-022).
+  3. **Income is a new first-class object**, sibling to Holdings in the baseline: `Income { sources:
+     [{label, amount, frequency}] }`. Not a live tradeoff — it's the only place income can go once it sits
+     outside D-013's product taxonomy; feeds sub-part 2's computation directly.
+- **Rule extracted (reusable, same shape as D-013's split-vs-merge test):** **the reference-vs-store test** —
+  if a number already lives on a holding record, Goals/Budget reference it live and never duplicate it; if a
+  number has no holding home (income, discretionary categories, goal targets), it is stored directly on the
+  new object. This is what makes sub-parts 1 and 2 consistent with each other and converts future
+  "does X get its own field or a live reference" questions from judgment into application.
+- **Lenses:**
+```
+      Compliance      PASS      Goal/budget labels are the user's own categories, not third-party
+                                 products or securities — D-009/D-010 don't reach them. No new data
+                                 leaves to the LLM under a different shape than D-010 already governs.
+      Product         PASS      Explicit links + live computation directly serve D-015's
+                                 mechanism-plus-personal-context requirement; the rejected stored-
+                                 snapshot path would add real product value (trend-teaching) but
+                                 that's not an MVP capability, so choosing against it isn't a loss
+                                 against anything currently promised.
+      Technical       PASS      Simplest of the candidate paths in all three sub-parts — no new
+                                 reconciliation object (vs. stored Budget), no ambiguous split logic
+                                 (vs. tag-based goal funding).
+      Cost-and-Scope  PASS      Avoids the ongoing reconciliation/sync burden a stored Budget
+                                 snapshot would add, and avoids the split-logic maintenance a
+                                 tag-based goal link would add.
+```
+  All four PASS — no CONCERN, no deadlock, nothing to answer beyond the reasoning above.
+- **Why:** Path A won on all three sub-parts because it's the option that gives the teaching engine real,
+  live material without adding a data object or reconciliation burden that MVP doesn't need yet. The
+  alternatives weren't wrong, just paying cost for capability (historical trend-teaching) that's explicitly
+  post-MVP per D-022's own logic — the same reasoning, applied to a new data shape rather than conversation
+  memory.
+- **Reversibility:** High right now — no goals/budget data exists yet (touched-data test, §2.2), so this is
+  exactly the "schema field added before any data is captured" case the test names as reversible. This
+  becomes low-reversibility the moment real user Goal/Income records are populated under this shape — build
+  against it with that window in mind.
+- **Feeds:** unblocks build tasks for the Income/Goal schema additions and the live budget computation logic
+  (queued in `docs/BUILD_QUEUE.md`). Also partially unblocks PROJECT_SPEC.md §8 "Decision 2" (per-item
+  management depth), which was waiting on this data model existing — its other dependency (a real Phase 1
+  section to react to) still stands.
+- **Date:** 03-Aug-2026
+
+### D-039 — Created `docs/CEO_DASHBOARD.md` as the standing status-reporting source file (Tier 1)
+- **Tier:** 1 — process/PM tooling, no trigger fires, same category as D-007/D-014. One-line log per §2.3.
+- **Date:** 03-Aug-2026
+
+### D-040 — Dashboard refresh added to the mandatory end-of-session checklist; local HTML snapshot added (owner-confirmed in conversation)
+- **Tier:** 1 — process/PM tooling, no trigger fires (same category as D-007/D-014/D-039). Logged as a full
+  entry rather than a bare one-liner only because it authorizes an edit to CLAUDE.md, which is deliberate-
+  only per the file-permission rules — the owner's explicit "yes" in conversation is the decision this
+  entry documents, following the same before-not-around pattern as D-033.
+- **Decision:** (1) `docs/CEO_DASHBOARD.md` is refreshed at the end of every session, added as step 2 of
+  CLAUDE.md's "End of every session" checklist. (2) A static rendered snapshot, `docs/CEO_DASHBOARD.html`,
+  is regenerated alongside it each time — a real file in the repo the owner can open directly (double-click
+  → opens in browser) without asking Claude or going through claude.ai's Artifact hosting. It is a snapshot
+  as of last regeneration, not live; the masthead's "last synced" date is the freshness signal.
+- **Why:** the owner wants a project-status view they can reach on their own, on demand, without a chat
+  round-trip — a plain markdown file doesn't render visually, and the previously-published Artifact lives
+  on claude.ai rather than in the folder the owner actually opens. A committed static HTML file solves both.
+- **Reversibility:** High — process text + a regenerated file, nothing else depends on it.
+- **Date:** 03-Aug-2026
+
+### D-041 — Backend scaffolding stack: FastAPI + SQLAlchemy + Alembic (owner-confirmed)
+- **Tier:** owner-decided directly in conversation — escalated per CLAUDE.md's explicit hard stop on
+  introducing a new library/architectural pattern (no de-minimis exception, same logic as trigger 5).
+  Logged as a full entry rather than a bare one-liner because it's a real architecture choice other code
+  will depend on, not routine mechanics.
+- **Decision:** `backend/` is bootstrapped this session (BQ-011) as a FastAPI app using SQLAlchemy for the
+  ORM/query layer and Alembic for migrations, connecting to the existing Supabase-hosted Postgres
+  (`fintutor-dev`, D-008). Supabase continues to own auth/hosting (D-005) — this only adds a conventional
+  data-access layer on top of the same Postgres instance. Scope for this session is the skeleton only (app
+  structure, DB connection wiring, migrations tooling, a health-check endpoint) — the D-013 Holdings model
+  and D-038's Income/Goal/Budget model are deliberately deferred to their own session (BQ-009/BQ-010),
+  respecting BUILD_QUEUE.md's one-item-per-session discipline.
+- **Why:** SQLAlchemy + Alembic over the Supabase Python client directly — real migration tooling matters
+  once the schema starts growing (Holdings' 8-type taxonomy, then Income/Goal/Budget, then whatever
+  Decision 2 produces), and it's the conventional pairing for FastAPI + Postgres regardless of which
+  managed platform hosts the database.
+- **Reversibility:** Medium once real data exists (touched-data test) — no data exists yet, so this is the
+  cheap window to make this call.
+- **Dependency flag:** needs `DATABASE_URL` (the Supabase Postgres connection string) added to `.env` by
+  the owner before the DB connection can be verified end-to-end — Claude does not have and should not be
+  given this credential through chat.
+- **Date:** 03-Aug-2026
+
+### D-042 — Dashboard refresh moved from automatic-every-session to on-demand only (owner-confirmed)
+- **Tier:** owner-decided directly in conversation — logged as a full entry rather than a one-liner because
+  it edits CLAUDE.md (deliberate-only), same escalation pattern as D-033/D-040.
+- **Supersedes:** D-040 — in respect of the automatic-every-session refresh cadence only. The rest of D-040
+  stands unchanged: `docs/CEO_DASHBOARD.html` remains a real, committed, double-clickable local file, and
+  `docs/CEO_DASHBOARD.md` remains the source-of-truth data file for it.
+- **Decision:** `docs/CEO_DASHBOARD.md` / `.html` are refreshed **on demand** — whenever the owner asks for
+  a status summary, CEO dashboard, or "something visual" — not automatically as a step in every session's
+  wrap-up. CLAUDE.md's "End of every session" checklist reverts to its pre-D-040 three steps; the dashboard
+  step is removed.
+- **Why:** the owner judged the every-session refresh as more overhead than it returns — the dashboard's
+  job is served fine by refreshing only when it's actually going to be looked at.
+- **Reversibility:** High — process text only.
+- **Date:** 03-Aug-2026

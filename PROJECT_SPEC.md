@@ -155,15 +155,18 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       be a form), and a minimal-but-real manual fallback UI. All four undesigned as of this entry.
       **Trigger scope narrowed (25-Jul-2026):** proactive/unprompted "cold" surfacing (Trigger B) is OUT of
       MVP; only in-surface/in-conversation surfacing (Trigger A) is MVP. Confirmed with owner.
-- [ ] **Decision 3 — Budgeting/Goals data model (FOUNDATIONAL, do before build) (D-031).** Budgeting and
-      goals are MVP but are NOT products — they reference holdings (a goal is funded by holdings; a budget
-      flows into them). How do these non-product objects sit in the baseline alongside product holdings?
-      This changes the shape every other object reads from, so it is designed before build to prevent rework.
-      Next foundational design session. Not laptop-blocked.
+- [x] **Decision 3 — Budgeting/Goals data model RESOLVED (D-038, 03-Aug-2026).** Goals hold explicit thin
+      funding links to holdings (`funded_by: [{holding_id, earmarked_amount}]`), progress computed live,
+      never duplicated. Budget is a fully computed view — no stored object; recurring outflows (EMI, SIP,
+      premium) read live off holding records, only Income and discretionary categories are stored. Income is
+      a new first-class sibling object to Holdings. Reference-vs-store test extracted: a number with a
+      holding home is referenced live; a number without one (income, discretionary categories, goal targets)
+      is stored directly. See D-038.
 - [ ] **Decision 2 — Per-item management depth (D-031).** What is the user's authority over a holding, per
       field — view only? edit? delete? recategorize? correct AI-captured values? Scoped now, DESIGNED LATER:
       its quality depends on Decision 3's data model existing AND ideally on Phase 1 producing one real
-      section to react to. Designing it in a vacuum now would produce a worse answer.
+      section to react to. Designing it in a vacuum now would produce a worse answer. Decision 3 dependency
+      now satisfied (D-038); the Phase-1-section dependency still stands.
 - [ ] **Corrected UX principles section in PRODUCT_PRINCIPLES.md (D-031).** The implied UX stance
       (persistent sections, AI-primary/manual-secondary, aliases never shown, no quizzes, progressive
       capture) is to be extracted and written as a UX section — but only AFTER Decisions 2 and 3 exist,
@@ -254,6 +257,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.8 (03-Aug-2026) — **Decision 3 resolved (D-038).** Budgeting/goals data model: explicit thin funding
+  links from Goals to holdings (progress computed live), Budget as a fully computed view with no stored
+  object, new first-class Income object. Reference-vs-store test extracted as a reusable rule. Unblocks
+  backend schema build tasks (queued in BUILD_QUEUE.md) and partially unblocks Decision 2.
 - v2.7 (03-Aug-2026) — **BQ-008 verified D-037's FINDING 9 fix: 5/5 clean.** Card-1 named unprompted in
   every run, no vaguer-consideration substitution, FINDING 10 still 0/5, FINDING 11 "worth" phrasing 0/5
   under D-036's clarified test. Results in docs/PHASE1_RUN6_RESULTS.md; BUILD_QUEUE.md's BQ-008 moved to
