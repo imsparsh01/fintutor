@@ -221,13 +221,18 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       (protocol §2.1 trigger 5) plus a data-retention angle (trigger 2) during the §1/§5 prompt session, so it
       was escalated and parked rather than absorbed. Revisit only after Phase 1 is validated AND the D-010
       data privacy policy settles retention/deletion.
-- [ ] **BRIEF-004 ESCALATED (02-Aug-2026) — does the gap-surfacing rule (D-032) need to widen, without
-      worsening FINDING 9?** Run 4's n=5 repeat series found the model dropping Card-1 (the fixture's
-      dominant 42% holding) entirely 2/5 runs (FINDING 9), and volunteering the term-insurance gap
-      unprompted, mid-answer, on an on-topic question 1/5 runs (FINDING 10) — a condition D-032 pre-registered
-      as sufficient evidence its fix is insufficient. Three paths modeled (narrow patch / broader standalone
-      gate / backend-architectural), none chosen. See BRIEF-004_gap_surfacing_scope.md and
-      docs/DECISION_LOG.md. Blocks further §2/§3 prompt work until resolved.
+- [x] **BRIEF-004 RESOLVED (D-035, 02-Aug-2026) — Path A adopted.** §2 rule 3's on-topic gap-surfacing
+      constraint now explicitly governs the whole answer, not only the closing offer, closing the mid-answer
+      channel FINDING 10 used — with an explicit guard clause so it does not loosen rule 2's requirement to
+      name every already-relevant holding. Prompt regenerated as SYSTEM_PROMPT_v0_7_runnable.md.
+      **FINDING 9 is NOT resolved by this decision** — the model still drops Card-1 from answers 2/5 runs;
+      it needs its own path and remains a separate open item. See D-035 in docs/DECISION_LOG.md.
+- [ ] **FINDING 9 (Card-1 omission, 40% rate) — still open, not addressed by D-035.** The model drops the
+      fixture's dominant holding from the answer entirely in 2 of 5 identical repeat runs, substituting an
+      emergency-fund/liquidity consideration instead. Deliberately left unresolved by BRIEF-004/D-035 (fixing
+      it was out of scope for the gap-surfacing decision, and the two findings needed to be evaluated for
+      interaction, not solved by the same broad instruction). Needs its own brief once a path is worth
+      modeling. See PHASE1_RUN4_RESULTS.md.
 - [ ] (PARKED — D-014) Build Claude Code execution subagents to carry out already-decided build tasks
       (starting with the D-012 pieces). Deliberately deferred until after Phase 1 (teaching engine) is
       validated and the relevant design decisions are made. User decides; agents execute. Not next-session
@@ -239,6 +244,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.3 (02-Aug-2026) — **BRIEF-004 resolved (D-035).** Path A adopted: §2 rule 3's on-topic gap-surfacing
+  constraint extended from governing only the closing offer to governing the whole answer, closing the
+  mid-answer insertion channel FINDING 10 used, with an explicit guard clause protecting rule 2's
+  path-naming completeness so the fix doesn't bleed into and worsen FINDING 9. Prompt regenerated as
+  SYSTEM_PROMPT_v0_7_runnable.md. FINDING 9 (Card-1 omission, 40%) deliberately left open — not addressed
+  by this decision, remains its own §8 item.
 - v2.2 (02-Aug-2026) — **Two homes retired: single unified home (D-033).** The owner moved from Cowork (built
   on Claude Code) pointed at a separate, manually-synced Claude Project, to Cowork pointed directly at this
   repo — meaning PROJECT_SPEC.md, DECISION_LOG.md, DECISION_PROTOCOL.md, and PROJECT_GOVERNANCE.md now live
