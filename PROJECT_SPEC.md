@@ -231,14 +231,13 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       02-Aug-2026), down from the 2/5 baseline against v0.6 — did not get worse from the D-035 fix, but n is
       too small to call it improved. Needs its own brief once a path is worth modeling. See
       PHASE1_RUN4_RESULTS.md, PHASE1_RUN5_RESULTS.md.
-- [ ] **FINDING 11 (new, 02-Aug-2026) — "worth [X]" framing recurs on Card-1 mentions, 4/5 runs against v0.7,
-      with the exact phrase §3 rule 5 already names as forbidden ("worth having in view") reproduced verbatim
-      in 2/5.** Surfaced by BQ-007 while scoring the full Q1 checklist, not something BQ-007 was scoped to
-      check. Touches §3 rule 5 directly (compliance-category) — Tier 3. Open question worth noting: whether
-      this is the same channel FINDING 6/D-025 already closed (ranking among paths) or a distinct one (the
-      model bridging into a rule-2-required but not user-asked-about holding) — same shape as the
-      same-channel-or-new question BRIEF-004 raised for FINDING 10. Not yet written up as a brief. See
-      PHASE1_RUN5_RESULTS.md.
+- [ ] **BRIEF-005 ESCALATED (02-Aug-2026) — FINDING 11, does the "worth [X]" bridging pattern need its own
+      rule?** "Worth" framing recurs on Card-1 mentions in 4/5 runs against v0.7, with the exact phrase §3
+      rule 5 already names as forbidden ("worth having in view") reproduced verbatim in 2/5 — including once
+      on non-holding material (the emergency-fund figure), suggesting a possibly broader bridging habit, not
+      only a holdings-ranking one. Three paths modeled (narrower named-category patch / structural no-lead-in
+      rule / backend post-generation scan), none chosen. See BRIEF-005_worth_framing_recurrence.md and
+      docs/DECISION_LOG.md. Blocks further §3 rule 5 prompt work until resolved.
 - [ ] (PARKED — D-014) Build Claude Code execution subagents to carry out already-decided build tasks
       (starting with the D-012 pieces). Deliberately deferred until after Phase 1 (teaching engine) is
       validated and the relevant design decisions are made. User decides; agents execute. Not next-session
