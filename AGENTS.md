@@ -15,6 +15,21 @@ the file permissions below, not by an access boundary. If something requires a d
 bounded, already-decided build task, **stop and ask the owner** — do not guess, do not proceed, do not
 invent an answer to keep moving.
 
+## Autonomous by default (D-034)
+
+As of **D-034 (02-Aug-2026)**, you operate autonomously on file creation, editing, and deletion anywhere in
+this repo, and on `git commit` + `git push` at the end of every session — no per-action confirmation needed
+for routine, in-scope work. This is a deliberate grant of trust over mechanics, not over judgment. Exactly
+two things remain checkpoints, unchanged by this grant:
+
+1. **The hard-stop list below.** Anything on it still produces a brief and waits for the owner's decision
+   before you act — it does not get silently resolved just because file/git mechanics are hands-off now.
+2. **The deliberate-only file tier below.** Editing any of those files still needs an explicit,
+   owner-confirmed decision logged first, exactly as before.
+
+If you're ever unsure whether something falls into one of those two categories, treat it as if it does and
+ask — the autonomy grant only covers what's genuinely mechanical.
+
 ## Before doing anything in a session
 
 1. Read `PROJECT_SPEC.md` (root) — this is the single source of truth. Pay attention
@@ -92,7 +107,10 @@ This list applies regardless of whether the session is framed as "building" or
 1. Write `docs/sessions/YYYY-MM-DD.md` — a few lines: what changed, what's next.
 2. If `PROJECT_SPEC.md` or `docs/DECISION_LOG.md` changed, say so explicitly to the
    owner so they know to skim the change.
-3. Commit with a clear message. Do not leave uncommitted work at session end.
+3. Commit with a clear message and push to `origin/main` (D-034 — no separate
+   confirmation needed for the push itself). Do not leave uncommitted or unpushed
+   work at session end. If push fails (stale lock, auth, network), say so plainly
+   rather than silently leaving it unpushed.
 
 ## What "done" means
 
