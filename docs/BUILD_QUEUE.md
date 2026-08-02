@@ -14,7 +14,17 @@ Rules for this file:
 
 ## READY — pick one of these
 
-_(empty — see BLOCKED)_
+### BQ-008 — Re-run the Q1 repeat series (n=5) against v0.8
+**Traces to:** D-037 (Tier 2, REVIEW-FLAGGED — resolves FINDING 9)
+**Task:** Run Q1 against `FIXTURE_user_01.json` five times using `SYSTEM_PROMPT_v0_8_runnable.md` (same
+setup as BQ-007 — use `scripts/run_phase1_test.py --label bq008`). Score each run for: (a) FINDING 9 — is
+Card-1 named in all 5, and does the emergency-fund/liquidity-substitution pattern stop; (b) make sure
+FINDING 10 still doesn't reproduce (confirm D-035's fix wasn't disturbed by the new paragraph); (c) re-check
+for FINDING 11-style "worth" framing now that D-036 has clarified what's actually forbidden (ordering words
+only).
+**Escalate if:** Card-1 still gets dropped at a similar rate — that's real evidence the fix didn't work and
+needs owner attention, not another silent iteration. Otherwise append results to a new PHASE1_RUN6_RESULTS.md
+and move this to DONE.
 
 ---
 

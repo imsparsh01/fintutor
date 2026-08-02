@@ -227,10 +227,14 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       name every already-relevant holding. Prompt regenerated as SYSTEM_PROMPT_v0_7_runnable.md.
       **FINDING 9 is NOT resolved by this decision** — the model still drops Card-1 from answers 2/5 runs;
       it needs its own path and remains a separate open item. See D-035 in docs/DECISION_LOG.md.
-- [ ] **FINDING 9 (Card-1 omission) — still open.** Reproduced at 1/5 (20%) against v0.7 (BQ-007,
-      02-Aug-2026), down from the 2/5 baseline against v0.6 — did not get worse from the D-035 fix, but n is
-      too small to call it improved. Needs its own brief once a path is worth modeling. See
-      PHASE1_RUN4_RESULTS.md, PHASE1_RUN5_RESULTS.md.
+- [x] **FINDING 9 (Card-1 omission) — RESOLVED (D-037, Tier 2, REVIEW-FLAGGED, 02-Aug-2026), pending
+      verification.** Classified via the actual trigger checklist rather than defaulted to Tier 3: naming a
+      collateral-relevant holding is already compliance-safe per D-025's existing carve-out, so this is a
+      product-judgment interpretation of D-015 (Tier 2), not a new compliance line. §2 rule 2 now explicitly
+      requires naming a materially higher-cost holding and forbids substituting a vaguer consideration for
+      it. Prompt regenerated as SYSTEM_PROMPT_v0_8_runnable.md. REVIEW-FLAGGED for owner's retroactive veto —
+      evidence base is 3 misses across 10 runs, modest. **Not yet confirmed** — BQ-008 (queued) re-tests
+      before this counts as settled, same discipline as every prior fix here.
 - [x] **BRIEF-005 RESOLVED (D-036, 02-Aug-2026) — no fix.** Owner judged that "worth X" bridging language
       without an attached comparative/ordering word ("first," "more than") does not cross the true-vs-attend
       line — confirmed explicitly for the two verbatim "worth having in view" instances, not just the softer
@@ -248,6 +252,18 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.6 (02-Aug-2026) — **FINDING 9 resolved at Tier 2 (D-037), REVIEW-FLAGGED, pending verification.** Ran
+  FINDING 9 through the actual §2.1 trigger checklist instead of defaulting to a Tier-3 brief: naming a
+  collateral-relevant holding without ranking it is already required by D-025's existing carve-out, so this
+  is a product-judgment interpretation of D-015 (Tier 2, mandatory REVIEW-FLAG per §4.3), not a new
+  compliance-line question. §2 rule 2 now requires naming a materially higher-cost holding outside the two
+  decision paths and forbids substituting a vaguer consideration for it — targets the exact pattern all
+  three FINDING 9 misses shared (emergency-fund/liquidity framing standing in for Card-1). Lens table:
+  Compliance PASS, Product CONCERN (answered by narrow scoping), Technical PASS, Cost-and-Scope CONCERN
+  (answered by keeping it to one paragraph). Prompt regenerated as SYSTEM_PROMPT_v0_8_runnable.md. BQ-008
+  queued to verify before this is treated as settled. This is the first decision here to demonstrate Tier 2's
+  actual design — acted immediately, logged with full lens reasoning, flagged for the owner's retroactive
+  veto rather than gated on it.
 - v2.5 (02-Aug-2026) — **BRIEF-005 resolved (D-036), no fix.** FINDING 11's "worth X" framing (found scoring
   BQ-007) is judged not to cross the compliance line, including the two verbatim "worth having in view"
   occurrences — owner confirmed this explicitly after the distinction between those and the softer variants
