@@ -227,12 +227,18 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       name every already-relevant holding. Prompt regenerated as SYSTEM_PROMPT_v0_7_runnable.md.
       **FINDING 9 is NOT resolved by this decision** — the model still drops Card-1 from answers 2/5 runs;
       it needs its own path and remains a separate open item. See D-035 in docs/DECISION_LOG.md.
-- [ ] **FINDING 9 (Card-1 omission, 40% rate) — still open, not addressed by D-035.** The model drops the
-      fixture's dominant holding from the answer entirely in 2 of 5 identical repeat runs, substituting an
-      emergency-fund/liquidity consideration instead. Deliberately left unresolved by BRIEF-004/D-035 (fixing
-      it was out of scope for the gap-surfacing decision, and the two findings needed to be evaluated for
-      interaction, not solved by the same broad instruction). Needs its own brief once a path is worth
-      modeling. See PHASE1_RUN4_RESULTS.md.
+- [ ] **FINDING 9 (Card-1 omission) — still open.** Reproduced at 1/5 (20%) against v0.7 (BQ-007,
+      02-Aug-2026), down from the 2/5 baseline against v0.6 — did not get worse from the D-035 fix, but n is
+      too small to call it improved. Needs its own brief once a path is worth modeling. See
+      PHASE1_RUN4_RESULTS.md, PHASE1_RUN5_RESULTS.md.
+- [ ] **FINDING 11 (new, 02-Aug-2026) — "worth [X]" framing recurs on Card-1 mentions, 4/5 runs against v0.7,
+      with the exact phrase §3 rule 5 already names as forbidden ("worth having in view") reproduced verbatim
+      in 2/5.** Surfaced by BQ-007 while scoring the full Q1 checklist, not something BQ-007 was scoped to
+      check. Touches §3 rule 5 directly (compliance-category) — Tier 3. Open question worth noting: whether
+      this is the same channel FINDING 6/D-025 already closed (ranking among paths) or a distinct one (the
+      model bridging into a rule-2-required but not user-asked-about holding) — same shape as the
+      same-channel-or-new question BRIEF-004 raised for FINDING 10. Not yet written up as a brief. See
+      PHASE1_RUN5_RESULTS.md.
 - [ ] (PARKED — D-014) Build Claude Code execution subagents to carry out already-decided build tasks
       (starting with the D-012 pieces). Deliberately deferred until after Phase 1 (teaching engine) is
       validated and the relevant design decisions are made. User decides; agents execute. Not next-session
@@ -244,6 +250,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.4 (02-Aug-2026) — **BQ-007 run against v0.7 (first live-API test run, via `scripts/run_phase1_test.py`
+  run locally by the owner — the build sandbox blocks authenticated calls to `api.anthropic.com`).** D-035's
+  fix confirmed: FINDING 10 does not reproduce, 0/5. FINDING 9 at 1/5 (20%, down from 2/5 baseline, n too
+  small to call improved). **New: FINDING 11** — "worth [X]" framing on Card-1 mentions in 4/5 runs, with
+  the prompt's own named-forbidden phrase ("worth having in view") reproduced verbatim in 2/5. Flagged for
+  thinking-home, not yet written as a brief. See PHASE1_RUN5_RESULTS.md.
 - v2.3 (02-Aug-2026) — **BRIEF-004 resolved (D-035).** Path A adopted: §2 rule 3's on-topic gap-surfacing
   constraint extended from governing only the closing offer to governing the whole answer, closing the
   mid-answer insertion channel FINDING 10 used, with an explicit guard clause protecting rule 2's

@@ -1,0 +1,9 @@
+Right now that ₹2 lakh is sitting in your savings balance earning about 3% — roughly ₹6,000 a year. There are two real things you could do with it, and they work very differently. Let me lay both out.
+
+**Path one: put it against Loan-1.** That loan is running at 9% on ₹40 lakh outstanding, with 18 years still left. Knocking ₹2 lakh off the principal now removes that 9% from compounding against you for whatever's left of the tenure — over the remaining years, that one prepayment can quietly save well over ₹2 lakh in interest you'd otherwise pay, and it can shorten the loan itself. The tradeoff: that money is then locked into the house. You can't pull it back out easily if you need cash.
+
+**Path two: invest it instead** — you already have Fund-A running as an SIP, so you know the mechanism: returns aren't guaranteed, they float with the market, and the money stays liquid, unlike a prepayment. Whether it beats 9% over your horizon is genuinely uncertain — that's a separate thread on risk and expected return worth going into on its own, if you want.
+
+One more thing worth naming since it's sitting in the same picture: Card-1 is carrying ₹86,000 at 42%. That's a materially different rate than either the loan or an investment, so it's worth having in view as you decide where the ₹2 lakh goes.
+
+The core contrast: prepaying the loan is a guaranteed 9% saved; investing is an uncertain shot at more, with your cash staying reachable. Same ₹2 lakh, two different shapes of outcome. Want to go deeper into either the prepayment math or how the investing side plays out?

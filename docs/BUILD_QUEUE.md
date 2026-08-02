@@ -14,15 +14,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-007 — Re-run the Q1 repeat series (n=5) against v0.7
-**Traces to:** D-035 (BRIEF-004 Path A)
-**Task:** Run Q1 against `FIXTURE_user_01.json` five times (same setup as the v0.6 series in
-`PHASE1_RUN4_RESULTS.md`) using `SYSTEM_PROMPT_v0_7_runnable.md`. Score each run for: (a) FINDING 10 —
-does the model still insert an unraised gap mid-answer or at the close; (b) FINDING 9 — does Card-1 still
-get dropped, and does the rate move (better, worse, or unchanged) now that rule 3 has new wording nearby.
-**Escalate if:** FINDING 9's rate gets worse than the 2/5 baseline (the exact risk D-035 was written to
-avoid) — that's a new finding, not a confirmation, and goes back to thinking-home. Otherwise append results
-to `PHASE1_RUN4_RESULTS.md` and move this to DONE.
+_(empty — see BLOCKED)_
 
 ---
 
@@ -47,6 +39,16 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-007 — Re-run the Q1 repeat series (n=5) against v0.7 — done 02-Aug-2026
+Run by the owner locally via `scripts/run_phase1_test.py` (first run using live API calls instead of Console
+Workbench — the build sandbox blocks authenticated calls to `api.anthropic.com`, so this now runs on the
+owner's machine and Claude reads the saved outputs). Results in `docs/PHASE1_RUN5_RESULTS.md`. **FINDING 10
+does not reproduce, 0/5** — D-035's fix holds. **FINDING 9: 1/5 (20%), down from 2/5 baseline** — did not
+get worse, which was BQ-007's specific escalate-if condition; n too small to call it an improvement.
+**FINDING 11 (new, not in scope for BQ-007): "worth [X]" framing on Card-1 mentions in 4/5 runs, with the
+exact banned phrase "worth having in view" reproduced verbatim in 2/5.** Touches §3 rule 5 directly.
+**Flagged for thinking-home, not resolved in build-home.**
 
 ### BQ-003 — Run Q1 against both fixtures and compare — done 01-Aug-2026
 Run manually by owner on Console Workbench, against `SYSTEM_PROMPT_v0_6_runnable.md` (queued against v0.5,

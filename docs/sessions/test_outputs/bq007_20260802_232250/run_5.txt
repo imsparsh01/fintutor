@@ -1,0 +1,9 @@
+Right now that ₹2 lakh is sitting in Deposit-1 earning about 3% — roughly ₹6,000 a year. You've got two real paths for it, and they work very differently, so let me lay both out and then go deeper on one.
+
+Path one: put it against Loan-1. That loan is costing you 9% a year on ₹40 lakh outstanding, over 18 years left. Knocking ₹2 lakh off the principal now removes that 9% compounding for the rest of the tenure — over the remaining years, that single prepayment saves you well over ₹2 lakh in interest you'd otherwise pay, and can shorten the loan itself. The tradeoff: that money is then locked into the house. You can't pull it back out if you need cash suddenly — and with 1.4 months of emergency fund sitting behind a home loan and two dependents, that's worth having in view.
+
+Path two: invest it — say, into something like Fund-A, which is already carrying a SIP and sitting in the high-risk bucket. The mechanism there is different: you're not guaranteed 9%, you're hoping for more than 9% over time, with the money staying liquid and the value moving with the market in the meantime. That's a thread of its own — happy to walk through how equity returns and volatility actually behave over a horizon like yours, if useful.
+
+Also worth noting: Card-1 is separately running at 42% on ₹86,000 outstanding — a completely different rate, sitting alongside these other two.
+
+The core contrast: prepaying the loan is a guaranteed 9% saved but locks the cash away; investing is an uncertain shot at beating 9%, but keeps the money reachable. Same ₹2 lakh, two different shapes of outcome.

@@ -1,0 +1,7 @@
+Right now that ₹2 lakh is sitting in Deposit-1 earning about 3% — roughly ₹6,000 a year. There are two things you could do with it, and they work differently, so let me lay both out and go deep on one.
+
+Path one: put it against Loan-1. That loan is costing you 9% a year on ₹40 lakh outstanding, over 18 years left. Knocking ₹2 lakh off the principal now means that chunk stops accruing 9% for the rest of the tenure — over 18 years, that one prepayment saves you well over ₹2 lakh in interest that would otherwise have been paid, and it can also shorten the tenure if you keep the EMI the same. The tradeoff: that money is then locked into the house. You can't pull it back out if you need cash quickly — and with 1.4 months of emergency fund sitting behind a four-year-old dependent, that liquidity matters.
+
+Path two: invest it instead — into something like Fund-A, or elsewhere — aiming for a return above the loan's 9%. The mechanism there is a whole thread of its own: expected return, market risk, how long the money stays invested, what a SIP versus a lump sum does to the outcome. We can walk through that in depth if you want.
+
+The core of it: prepaying the loan is a guaranteed 9% saved, no market risk, but the cash stops being reachable. Investing is an uncertain shot at more than 9%, with the money staying liquid if you need it. Same ₹2 lakh, two very different shapes of outcome.
