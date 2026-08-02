@@ -221,6 +221,13 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       (protocol §2.1 trigger 5) plus a data-retention angle (trigger 2) during the §1/§5 prompt session, so it
       was escalated and parked rather than absorbed. Revisit only after Phase 1 is validated AND the D-010
       data privacy policy settles retention/deletion.
+- [ ] **BRIEF-004 ESCALATED (02-Aug-2026) — does the gap-surfacing rule (D-032) need to widen, without
+      worsening FINDING 9?** Run 4's n=5 repeat series found the model dropping Card-1 (the fixture's
+      dominant 42% holding) entirely 2/5 runs (FINDING 9), and volunteering the term-insurance gap
+      unprompted, mid-answer, on an on-topic question 1/5 runs (FINDING 10) — a condition D-032 pre-registered
+      as sufficient evidence its fix is insufficient. Three paths modeled (narrow patch / broader standalone
+      gate / backend-architectural), none chosen. See BRIEF-004_gap_surfacing_scope.md and
+      docs/DECISION_LOG.md. Blocks further §2/§3 prompt work until resolved.
 - [ ] (PARKED — D-014) Build Claude Code execution subagents to carry out already-decided build tasks
       (starting with the D-012 pieces). Deliberately deferred until after Phase 1 (teaching engine) is
       validated and the relevant design decisions are made. User decides; agents execute. Not next-session
