@@ -57,7 +57,8 @@ never as a side effect of a build or strategy task:**
 - `PROJECT_GOVERNANCE.md`
 - `docs/DECISION_PROTOCOL.md`
 - `HOW_TO_RUN_THIS_PROJECT.md`
-- `CLAUDE.md` (this file)
+- `CLAUDE.md` (this file — `AGENTS.md` is a git-tracked symlink to it as of D-045, so editing
+  either name edits the same file)
 
 These are technically editable now (there is no separate home keeping you out of
 them), which is exactly why the rule has to be procedural: if a task seems to require
@@ -74,7 +75,9 @@ edits follow.
   MVP scope) — OR write up a Tier 2/3 entry that documents a decision the owner just
   made in conversation (as this file's own D-033 entry does). Never edit or delete
   existing entries. If you're unsure whether something is Tier 1, treat it as
-  not-Tier-1 and ask instead.
+  not-Tier-1 and ask instead. As of D-046: write the full entry as its own file in
+  `docs/decisions/D-0NN-slug.md`, and append only a short index entry (title + one
+  line + link) here.
 - `PROJECT_SPEC.md` — you may propose an edit (e.g. checking off a Section 8 item
   that's now genuinely done) but do not silently rewrite it. State the proposed
   change and why, get confirmation, then apply it.

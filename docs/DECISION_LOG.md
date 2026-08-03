@@ -2,6 +2,10 @@
 
 > One entry per meaningful decision. Format: what / why / reversibility / date.
 > Rule: a decision isn't real until it's here. Don't reopen a logged decision without new information.
+>
+> Starting at D-045 (see D-046): full write-ups live in `docs/decisions/D-0NN-slug.md`; entries
+> below are a short index (title + one-line summary + link) instead of the full inline text.
+> D-001–D-044 above this note are untouched and stay inline.
 
 ---
 
@@ -1379,3 +1383,20 @@
 - **Reversibility:** Medium — JSONB→relational is a real migration once holdings data exists; constraining
   `product_type` to an enum later is cheap and additive once the savings_balance question is answered.
 - **Date:** 03-Aug-2026
+
+### D-045 — AGENTS.md collapsed to a symlink of CLAUDE.md (owner-confirmed)
+Full entry: `docs/decisions/D-045-agents-md-symlink.md`. Kills the AGENTS.md/CLAUDE.md manual-mirror
+drift risk (AGENTS.md had already gone stale, missing D-042) by making AGENTS.md a git-tracked
+symlink to CLAUDE.md — one canonical file, zero sync risk going forward. Reversibility: High.
+Date: 03-Aug-2026.
+
+### D-046 — Decision log modularization: new decisions get their own file, going forward only (owner-confirmed)
+Full entry: `docs/decisions/D-046-decision-log-modularization.md`. Starting at D-045, full write-ups
+live in `docs/decisions/D-0NN-slug.md`; this file gets a short index entry instead. D-001–D-044
+stay inline, untouched. Reversibility: High. Date: 03-Aug-2026.
+
+### D-047 — Local pre-commit hook enforcing session-log discipline (owner-confirmed)
+Full entry: `docs/decisions/D-047-session-log-precommit-hook.md`. `.githooks/pre-commit` blocks a
+commit touching `app/`/`backend/` unless a `docs/sessions/*.md` file is staged alongside it;
+requires one-time `git config core.hooksPath .githooks` per clone (see README.md). Mechanizes the
+existing session-log habit; no new infra. Reversibility: High. Date: 03-Aug-2026.

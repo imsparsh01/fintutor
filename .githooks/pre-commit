@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# D-047: block commits that touch app/ or backend/ without a matching docs/sessions/*.md log.
+# One-time setup per clone: git config core.hooksPath .githooks
+set -euo pipefail
+
+staged=$(git diff --cached --name-only)
+
+touches_code=false
+touches_session_log=false
+
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  if [[ "$f" == app/* || "$f" == backend/* ]]; then
+    touches_code=true
+  fi
+  if [[ "$f" == docs/sessions/*.md ]]; then
+    touches_session_log=true
+  fi
+done <<< "$staged"
+
+if $touches_code && ! $touches_session_log; then
+  echo "pre-commit: this commit touches app/ or backend/ but no docs/sessions/*.md session log is staged." >&2
+  echo "Add today's session log to this commit, or use --no-verify if this is intentional." >&2
+  exit 1
+fi
+
+exit 0
