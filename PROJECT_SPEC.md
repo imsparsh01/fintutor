@@ -57,7 +57,21 @@ user's own money — never advises, only educates so the user makes their own in
 
 ## 3. Target user
 Anyone earning who wants to self-manage their finances and build literacy — not hand it to an advisor.
-Primary moment: "financially unmanaged but willing." Not defined by age; defined by intent.
+Primary moment: "financially unmanaged but willing." Not defined by age; defined by intent. *(This framing
+itself is an open question as of D-053/BRIEF-008 — see the note below.)*
+
+> **MVP founding segment locked at D-053 (03-Aug-2026), broadened at D-054 (03-Aug-2026).** MVP design and
+> Phase-3 (private structured testing) target **early-career earners with a single income stream and low
+> financial complexity** (0–2 holding types, no legacy portfolio) — the segment both an independently-run
+> product-fit lens and a business/GTM lens converged on (BRIEF-008). D-054 resolved that this founding
+> segment is **not** narrowed further to one sub-slice: it spans three internal profiles surfaced by a
+> follow-up two-lens pass (BRIEF-009) — by financial-habit maturity (fresh starters / reactive dabblers /
+> habit-formers) and, judged by the owner to describe the same three people, by career-stage/timing
+> (campus-to-first-job / settled early-career / early-stage startup-gig). Design must serve all three, not
+> treat one as the "real" target and the others as edge cases. **All other candidate segments** (fragmented
+> multi-holding, gig/variable income, debt-heavy/reactive, household financial coordinators, dual-income
+> households, NRIs) **are DIRECTION, not MVP BUILD** — parked for post-MVP phases, same
+> direction-vs-build split D-031 used for holding families. See BRIEF-008, BRIEF-009, D-053, D-054.
 
 ## 4. What the MVP does (scope — keep ruthless)
 > **Scope expanded at D-031 (25-Jul-2026).** The app is structured as **persistent, user-facing category
@@ -260,6 +274,15 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.9 (03-Aug-2026) — **§3 Target user narrowed for MVP (D-053, D-054).** MVP design and Phase-3 testing
+  now target a founding segment — early-career, single-income, low-complexity earners — chosen because an
+  independently-run product-fit lens and a business/GTM lens converged on it (BRIEF-008). D-054 kept the
+  segment un-narrowed further: it spans three internal profiles from a follow-up two-lens pass (BRIEF-009),
+  judged to describe the same three people from two angles, and design must serve all three. Every other
+  candidate segment recorded as DIRECTION, not MVP BUILD, parked for post-MVP — same split D-031 used for
+  holding families. §3's original "not defined by age; defined by intent" line is kept, flagged as an open
+  question (both lenses independently used age/career-stage as their real distinguishing axis), not
+  rewritten — a decision for a future session, not assumed here.
 - v2.8 (03-Aug-2026) — **Decision 3 resolved (D-038).** Budgeting/goals data model: explicit thin funding
   links from Goals to holdings (progress computed live), Budget as a fully computed view with no stored
   object, new first-class Income object. Reference-vs-store test extracted as a reusable rule. Unblocks
