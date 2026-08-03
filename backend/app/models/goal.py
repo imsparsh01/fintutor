@@ -34,8 +34,8 @@ class Goal(Base):
 class GoalFunding(Base):
     """funded_by: [{holding_id, earmarked_amount}] — the thin link half of D-038's Goal.
 
-    holding_id has no FK: no Holdings table exists yet (owner decision, BQ-009 session).
-    Wire up the real foreign key once Holdings is built.
+    holding_id is a real FK to holdings.id, wired up once Holdings was built (see D-043,
+    which deferred this exact wiring).
     """
 
     __tablename__ = "goal_fundings"
@@ -46,7 +46,12 @@ class GoalFunding(Base):
     goal_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("goals.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    holding_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    holding_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("holdings.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     earmarked_amount: Mapped[float] = mapped_column(Numeric(14, 2), nullable=False)
 
     goal: Mapped["Goal"] = relationship(back_populates="funded_by")
