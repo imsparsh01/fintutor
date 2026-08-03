@@ -46,6 +46,20 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-013 — Surfacing candidate selection (WHICH half of D-012's trigger logic) — done 03-Aug-2026
+Traces to D-051 (BRIEF-007 resolved, Path A staged). Added `backend/app/services/surfacing.py`'s
+`compute_surfacing_candidates()` — a fixed pairing-rule table run against stored Holdings only, no
+model judgment anywhere. v1 table: `home_loan`/`personal_loan` present + no `term_insurance` held →
+candidate `term_insurance`, regardless of `endowment_ulip` (owner-confirmed the gap stands either
+way — D-013 split Term from Endowment/ULIP because the teaching moment differs). Rule order is the
+fixed precedence a future WHEN-stage tie-break would use; v1's single rule never exercises it.
+Exposed via `GET /surfacing-candidates?user_id=`. **WHEN stays gated per D-051** — nothing here
+decides to surface anything to a user; that requires D-032's on-topic constraint re-verified via
+Phase-1 fixture testing first. Verified end-to-end against the live Supabase DB across four
+scenarios (loan + no insurance → candidate; loan + Endowment/ULIP but no Term → candidate, correctly
+not suppressed; loan + Term already held → no candidate; no loans → no candidate); test rows deleted
+after verification.
+
 ### BQ-010 — Implement live budget computation (no stored Budget object) — done 03-Aug-2026
 Traces to D-038. Added `backend/app/models/discretionary_category.py` (new `discretionary_categories`
 table — owner chose this over a JSONB field on Income, logged as **D-048**) and

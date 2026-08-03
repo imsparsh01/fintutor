@@ -1427,3 +1427,12 @@ Reversibility: High. Date: 03-Aug-2026.
   Approval Queue in the existing dashboard, listing open `docs/BRIEF-*.md` files with no resolving
   decision yet. No other part of the proposal was adopted.
 - **Date:** 03-Aug-2026
+
+### D-051 — BRIEF-007 resolved: Path A adopted, staged (WHICH now, WHEN verified before shipping)
+Full entry: `docs/decisions/D-051-surfacing-candidate-selection.md`. WHICH (candidate selection) is
+mechanical, backend-only, no model judgment — built now as BQ-013. WHEN stays gated on re-verifying
+D-032's on-topic constraint in this new scenario via Phase-1 fixture testing before it ships. Ties
+broken by fixed precedence in the pairing table, same architectural-guarantee pattern as D-028's
+`deepen` field. Path C rejected (would reverse D-012's explicit commitment, unlike BQ-004's
+deferral); Path B rejected (repeats D-028's known routed-around pattern). Reversibility: High.
+Date: 03-Aug-2026.

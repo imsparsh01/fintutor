@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import engine, get_db
 from app.services.budget import compute_budget
+from app.services.surfacing import compute_surfacing_candidates
 
 logger = logging.getLogger("fintutor.health")
 
@@ -21,6 +22,11 @@ def health() -> dict[str, str]:
 @app.get("/budget")
 def get_budget(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     return compute_budget(db, user_id)
+
+
+@app.get("/surfacing-candidates")
+def get_surfacing_candidates(user_id: uuid.UUID, db: Session = Depends(get_db)) -> list[dict]:
+    return compute_surfacing_candidates(db, user_id)
 
 
 @app.get("/health/db")
