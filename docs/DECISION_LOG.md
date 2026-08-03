@@ -1482,3 +1482,12 @@ fast-forward-merge it into `main` and push `main` too, so parallel sessions pull
 immediately — unless `main` has diverged, in which case stop and ask rather than force-resolve. Owner
 explicitly chose direct merge over PR-first when asked; recorded as a tradeoff (no review checkpoint),
 not silently absorbed. Reversibility: High. Date: 03-Aug-2026.
+
+### D-057 — B2B2C employer-channel GTM groundwork sequenced earlier (pure sequencing, no MVP scope change)
+Full entry: `docs/decisions/D-057-b2b2c-gtm-sequencing.md`. No §2.1 trigger fired — deliberately
+narrowed to this reading after the owner disambiguated "weight B2B2C earlier" against three concrete
+paths (pure GTM sequencing / employer-sponsored signup / employer dashboard); the other two would have
+fired the hard scope trigger (touching §5's payments/subscriptions exclusion, and real data-trust
+exposure for the dashboard case) and remain open, unresolved forks. Owner chose pure sequencing:
+employer outreach/pitch groundwork starts now, parallel to Phase 2, ahead of Phase 3 completing. No
+`PROJECT_SPEC.md` or `BUILD_QUEUE.md` change. Reversibility: High. Date: 04-Aug-2026.

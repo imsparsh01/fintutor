@@ -42,6 +42,10 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 - UX principles section in PRODUCT_PRINCIPLES.md (thinking-home, after Decisions 2 & 3).
 - FINDING 7 provenance — RESOLVED (D-029); execution was BQ-005 (see DONE).
 - Conversation memory (PARKED — D-022). Subagents (PARKED — D-014). Legal review of D-009.
+- B2B2C employer-channel GTM groundwork (D-057) — business-development track (outreach, pitch material,
+  candidate pilot employers), thinking-home only. No product/build surface exists for this yet; two
+  further B2B2C paths (employer-sponsored signup, employer dashboard) remain open, unresolved forks that
+  would each need their own Tier-3 decision before entering this queue.
 
 ---
 
