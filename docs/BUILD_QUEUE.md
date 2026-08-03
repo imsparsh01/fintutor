@@ -47,6 +47,23 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-015 — Backend unit-test suite for compute_budget/compute_surfacing_candidates — done 04-Aug-2026
+Traces to D-053, owner-directed mid-conversation off a read-only test-coverage review. Added
+`backend/tests/` (pytest): `conftest.py`'s `FakeSession`/`FakeQuery` fake out `db.query(Model)...` so
+`compute_budget()` and `compute_surfacing_candidates()` are unit tested with no real database — both
+functions only ever call `.filter(...).all()`, never anything Postgres-specific. 35 tests across
+`test_budget.py` (income normalization, all three recurring-outflow buckets, discretionary
+totals/net), `test_surfacing.py` (including the D-051 Endowment/ULIP non-suppression rule), and
+`test_main.py` (all four endpoints via `TestClient` + `get_db` override, including that `/health/db`
+never echoes a raw exception). `pytest`/`httpx` added via new `backend/requirements-dev.txt` (kept
+separate from `requirements.txt`). **Found, did not fix:** `compute_budget()` reads a SIP holding's
+cumulative `invested_amount` instead of its monthly `monthly_sip_amount` — a money-calculation bug,
+left as one deliberately failing (red) test pending owner sign-off per CLAUDE.md's hard-stop list.
+Verified: `pytest -q` from `backend/` → 34 passed, 1 failed (the documented red test) at hand-off.
+**Still open:** the fix itself (needs explicit owner confirmation before `budget.py` is touched); no
+CI wired up yet (tests only run when invoked locally); real-database/integration test strategy
+(migrations, constraints, FK cascades) not addressed by this pass.
+
 ### BQ-014 — Bootstrap Expo app skeleton (React Navigation, Supabase auth) — done 04-Aug-2026
 Traces to D-052. First code ever in `app/`. Expo + TypeScript project (`create-expo-app`,
 blank-typescript template) — stripped its auto-generated `AGENTS.md`/`CLAUDE.md`/`.claude/`/`LICENSE`

@@ -1445,3 +1445,12 @@ Navigation chosen over Expo Router — owner's call, explicit manual routing ove
 convention. Onboarding/capture logic, per-item management explicitly out of scope for this pass.
 Needs Supabase URL + anon key in `app/.env` before auth can be verified end-to-end; degrades
 gracefully without it. Reversibility: Medium. Date: 04-Aug-2026.
+
+### D-053 — Introduce pytest as the backend unit-test framework; unit-test compute_budget/compute_surfacing_candidates
+Full entry: `docs/decisions/D-053-backend-unit-test-suite.md`. Owner approved acting on a test-coverage
+review's top recommendation. pytest + httpx adopted (`backend/requirements-dev.txt`); 35 tests added
+for `compute_budget()`/`compute_surfacing_candidates()`/`_to_monthly()`/the four endpoints, using a
+fake DB session (no real database needed for this slice). Found, but did NOT fix, a money-calculation
+bug: `compute_budget()` reads a SIP holding's cumulative `invested_amount` instead of its monthly
+`monthly_sip_amount` — left as a documented failing test pending owner sign-off (hard-stop). CI and
+real-database/integration-test strategy both left open. Reversibility: High. Date: 04-Aug-2026.
