@@ -1464,3 +1464,12 @@ founding-segment boundary (and every other BRIEF-008 candidate staying parked) i
 caveat flagged, not silently dropped: BRIEF-009 called it an unverified guess; this decision proceeds on
 the owner's judgment, to be revisited if design/testing later contradicts it. Reversibility: High.
 Date: 03-Aug-2026.
+
+### D-055 — BRIEF-010's escalated fork resolved: ESOPs added to the product-type taxonomy as MVP scope
+Full entry: `docs/decisions/D-055-esop-added-to-taxonomy.md`. Tier 3 (Trigger 5, MVP scope increase).
+ESOPs added to D-013's taxonomy as a 9th MVP type, in MVP scope — not parked — because ESOP confusion
+was independently named the startup/gig profile's #1 pain point (BRIEF-010) and leaving it out would
+ship that profile with thinner day-one value than the other two D-054 profiles. Supersedes D-013 on
+type-count only. Membership decided now; ESOP's characteristics schema is a deferred follow-on task, not
+designed as a side effect of this decision. Not conflated with the separately still-open `savings_balance`
+9th-type question in §8. Reversibility: High. Date: 03-Aug-2026.

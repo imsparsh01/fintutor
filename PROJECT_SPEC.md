@@ -130,10 +130,16 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   alias + the product's real characteristics to the LLM. Any re-humanizing of the LLM's response back into
   something the user recognizes happens in the backend, after the LLM call — never by asking the LLM to
   produce or process the real name.
-- **Product-type taxonomy is backend-internal (D-013).** The 8 MVP product types (Equity MF, Debt MF,
-  Stocks, FD/RD, PPF/EPF, Home Loan, Personal Loan, Credit Card Debt, Term Insurance, Endowment/ULIP — 8
-  distinct characteristic schemas) live in the backend as the schema behind the alias/characteristics layer.
-  They are NOT a user-facing menu (D-012); the teaching engine reaches into them when a moment calls for it.
+- **Product-type taxonomy is backend-internal (D-013, extended by D-055).** The MVP product types (Equity
+  MF, Debt MF, Stocks, FD/RD, PPF/EPF, Home Loan, Personal Loan, Credit Card Debt, Term Insurance,
+  Endowment/ULIP, **ESOP — added at D-055**) live in the backend as the schema behind the alias/
+  characteristics layer. They are NOT a user-facing menu (D-012); the teaching engine reaches into them
+  when a moment calls for it. *(Note: D-013's original text says "8 distinct characteristic schemas" while
+  enumerating 10 type names — a pre-existing inconsistency, not introduced or resolved here; left as-is
+  rather than silently reconciled as a side effect of adding ESOP.)* **ESOP's characteristics field
+  schema is not yet designed** — D-055 settled taxonomy membership only; the field list (grant date,
+  vesting schedule, strike price, FMV, exercise mechanics, etc.) is deferred, same two-step pattern
+  D-011/D-013 used for the original types.
 
 ## 7. Tech stack (DECIDED v0.2)
 - App:        React Native via Expo (cross-platform iOS+Android, JS/TS) ✅
@@ -274,6 +280,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.0 (03-Aug-2026) — **ESOP added to the product-type taxonomy (D-055), resolving BRIEF-010's escalated
+  fork.** ESOP confusion was independently named the startup/gig founding-sub-profile's (D-054) top pain
+  point (BRIEF-010); owner chose to add it to MVP scope rather than park it, so that profile isn't
+  launched with structurally thinner day-one value. Taxonomy membership only — the characteristics field
+  schema (vesting, strike price, exercise mechanics, etc.) is deferred as its own design task, same
+  two-step pattern D-011/D-013 used originally.
 - v2.9 (03-Aug-2026) — **§3 Target user narrowed for MVP (D-053, D-054).** MVP design and Phase-3 testing
   now target a founding segment — early-career, single-income, low-complexity earners — chosen because an
   independently-run product-fit lens and a business/GTM lens converged on it (BRIEF-008). D-054 kept the

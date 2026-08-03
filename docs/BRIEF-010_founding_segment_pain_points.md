@@ -108,8 +108,9 @@ does that profile launch with structurally thinner day-1 value than the other tw
   worth deciding whether that's an acceptable MVP gap or a reason to reconsider how much weight that profile
   carries early, without reopening D-054 itself.
 
-**Not decided here.** Flagging per `CLAUDE.md`'s hard-stop rule (MVP scope growth, however small, stops and
-escalates) rather than defaulting either way.
+**Resolved — D-055.** Owner chose Path A: ESOPs added to the taxonomy, in MVP scope. See
+`docs/decisions/D-055-esop-added-to-taxonomy.md`. Taxonomy membership only — the characteristics field
+schema is a deferred follow-on task, not designed by this decision.
 
 ---
 
@@ -126,5 +127,5 @@ user's behalf. Worth keeping visible for the next stage so it isn't quietly over
 ## Not yet decided
 
 No solution/screen mapping done — that's the next sequenced session (pain points → GenAI-surfaced teaching
-moments), per the plan agreed earlier. The ESOP/taxonomy fork above is the one open item that needs the
-owner's call before that mapping session can treat the startup/gig profile as fully in scope.
+moments), per the plan agreed earlier. The ESOP/taxonomy fork is resolved (D-055); ESOP's characteristics
+field schema is a separate, not-yet-started design task.
