@@ -1469,3 +1469,12 @@ runs `pytest -q` from `backend/` on push/PR touching `backend/**` — no secrets
 suite fakes the DB session and never calls the LLM. Does not cover `app/` (no tests exist yet) or
 Phase 1 prompt testing (needs a live API key — separate decision, not made here). Reversibility:
 High. Date: 04-Aug-2026.
+
+### D-056 — Introduce jest-expo as the app unit-test framework; test app/lib, wire up CI
+Full entry: `docs/decisions/D-056-app-unit-test-suite-and-ci.md`. Direct sequel to D-053/D-055, picked
+up when the owner asked to continue from the CEO dashboard's "What's next" list. `jest-expo@57.0.3`
+(SDK-matched to `expo@57.0.9`) adopted. 10 tests added covering `app/lib/backend.ts`'s
+`pingBackendHealth()` and `app/lib/supabase.ts`'s `isSupabaseConfigured` derivation.
+`.github/workflows/app-tests.yml` added (npm ci, tsc --noEmit, jest --ci on push/PR touching
+`app/**`), mirroring D-055's backend workflow. Component/screen tests not covered — business logic
+only, matching the backend suite's scoping. Reversibility: High. Date: 04-Aug-2026.

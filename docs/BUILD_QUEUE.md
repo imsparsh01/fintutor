@@ -47,6 +47,21 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-017 — App unit-test suite (app/lib) + CI — done 04-Aug-2026
+Traces to D-056. Direct sequel to BQ-015/BQ-016, picked up per the CEO dashboard's "What's next" list
+after the owner asked to continue. Added `jest-expo@57.0.3` (SDK-matched to `expo@57.0.9`) as the app
+test framework — `npm install`, since `npx expo install`'s compatibility-check network call is
+blocked by this sandbox's proxy (fell back to plain npm, versions verified compatible via `npm ls`).
+10 tests: `app/lib/backend.test.ts` (all four branches of `pingBackendHealth()`) and
+`app/lib/supabase.test.ts` (`isSupabaseConfigured`'s four env-presence combinations, via
+`jest.isolateModules` since the module computes its exports at import time). Along the way: fixed a
+pre-existing tsconfig gap (`@types/jest` wasn't being picked up — added an explicit `"types": ["jest"]`
+to `tsconfig.json`) and used `globalThis.fetch` instead of `global.fetch` in the new tests (Expo's base
+tsconfig has no Node lib, so `global` isn't declared — `globalThis` is also the more RN-idiomatic
+choice). Added `.github/workflows/app-tests.yml` (npm ci, tsc --noEmit, jest --ci), mirroring BQ-016's
+backend workflow. Verified: `tsc --noEmit` clean, `jest --ci` → 10/10 passed. **Still open:**
+component/screen rendering tests (Login/Register/tab screens) — this pass covered `app/lib/` only.
+
 ### BQ-016 — Wire up CI: GitHub Actions runs the backend pytest suite — done 04-Aug-2026
 Traces to D-055. Owner delegated the choice among three follow-on options from BQ-015's hand-off (CI,
 a real-database/integration-test strategy, re-running the Phase 1 prompt regression battery); CI
