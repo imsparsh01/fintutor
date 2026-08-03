@@ -11,6 +11,12 @@
 > point only). When you do refresh it, numbers must be re-derived from the source files above, never
 > hand-adjusted, and `docs/CEO_DASHBOARD.html` (the local double-clickable visual snapshot) should be
 > regenerated to match.
+>
+> **Pending Approval Queue upkeep (D-050):** on each refresh, list every `docs/BRIEF-*.md` that has no
+> resolving decision yet in `docs/DECISION_LOG.md` (a brief counts as resolved once a later entry
+> references it — see D-049 resolving BRIEF-006 as the pattern). One row per open brief, paths condensed
+> to a single clause each. This section only, single-operator repo — no concurrent-writer conflict to
+> design around.
 
 **Last synced:** 03-Aug-2026, against DECISION_LOG.md through D-041, BUILD_QUEUE.md (BQ-011 done,
 BQ-009/BQ-010 unblocked), PROJECT_SPEC.md v2.8.
@@ -31,6 +37,15 @@ BQ-009/BQ-010 unblocked), PROJECT_SPEC.md v2.8.
   03-Aug-2026). **Mobile app (`app/`): still 0 files, not started.**
 - **Build queue:** 2 READY (BQ-009, BQ-010 — both now unblocked), 1 BLOCKED (BQ-004), 1 newly DONE
   (BQ-011).
+
+## Pending Approval Queue
+
+*(Added 03-Aug-2026, D-050. This section is current as of this edit; the rest of the dashboard below
+was not re-derived this pass — see the note at the end of this file.)*
+
+| Brief | Question | Status | Paths (condensed) |
+|---|---|---|---|
+| BRIEF-007 | How does the system decide WHICH unrecorded product type to surface, and WHEN? | **Awaiting owner decision** | **A:** mechanical candidate-list + fixed tie-break — closes WHICH, narrows WHEN, needs a maintained pairing table · **B:** leave both to the model — cheap, but repeats the exact pattern D-028 already found gets routed around · **C:** defer surfacing from MVP entirely — reverses D-012's explicit "core MVP, all types" commitment, not just a stub |
 
 ## Needs the owner's input right now
 
@@ -112,3 +127,12 @@ BQ-009/BQ-010 unblocked), PROJECT_SPEC.md v2.8.
 - Findings resolved: **10 / 10 (100%)**
 - Owner-level escalations (BRIEFs): **5 raised, 5 resolved**
 - Current prompt: **v0.8**, last verified clean **5/5** (BQ-008, 03-Aug-2026)
+
+---
+
+**Staleness note (03-Aug-2026):** only the Pending Approval Queue section above was added/refreshed
+this pass, per the owner's specific request. Everything else on this page (Snapshot, timeline,
+blockers, risks, "recent decisions," compliance pulse) still reflects the last full sync noted at the
+top of this file and has NOT been re-derived — it does not yet include D-042 through D-049 (BQ-010,
+budget computation, the deepen-selection deferral, or BRIEF-007 itself outside the queue). Ask for a
+full status summary to trigger a complete refresh.

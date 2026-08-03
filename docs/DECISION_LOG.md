@@ -1415,3 +1415,15 @@ fixture stub), the narrow-classifier path (A) doesn't actually satisfy D-028's o
 the mechanical path (B) either converges on "deepen nothing" anyway or needs `app/` screens that
 don't exist. BQ-004 re-scoped: blocked on a real conversation interface, not just an undecided rule.
 Reversibility: High. Date: 03-Aug-2026.
+
+### D-050 — Added a "Pending Approval Queue" section to CEO_DASHBOARD.md (Tier 1)
+- **Tier:** 1 — process/PM tooling, no trigger fires, same category as D-007/D-014/D-039. One-line
+  log per §2.3.
+- **Context:** owner researched a much larger "departmental agents" operating-model proposal
+  (multi-persona agents, async GitHub-issue orchestration, a parallel `DECISION_MATRIX.md`, MCP-first,
+  repo restructuring) — evaluated in conversation, not adopted: it substantially duplicates
+  DECISION_PROTOCOL.md, reverses D-042's on-demand dashboard cadence, and reopens the MCP question
+  already held earlier this session. Owner chose the minimal, non-conflicting piece only: a Pending
+  Approval Queue in the existing dashboard, listing open `docs/BRIEF-*.md` files with no resolving
+  decision yet. No other part of the proposal was adopted.
+- **Date:** 03-Aug-2026
