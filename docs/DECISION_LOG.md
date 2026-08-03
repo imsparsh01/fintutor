@@ -1478,3 +1478,13 @@ up when the owner asked to continue from the CEO dashboard's "What's next" list.
 `.github/workflows/app-tests.yml` added (npm ci, tsc --noEmit, jest --ci on push/PR touching
 `app/**`), mirroring D-055's backend workflow. Component/screen tests not covered — business logic
 only, matching the backend suite's scoping. Reversibility: High. Date: 04-Aug-2026.
+
+### D-057 — Primary persona defined; flagship first flow chosen ("where does my salary go?")
+Full entry: `docs/decisions/D-057-primary-persona-and-flagship-flow.md`. Owner directly challenged the
+lack of a real product despite 56 decisions and a tested backend — ran a lightweight CIRCLES-style
+pass in conversation instead of building further blind. Primary persona (v1): a financially-illiterate
+fresher, 2–3 months into their first job, founder-intuition-driven, explicitly not user-research-
+validated. Flagship first flow: first-paycheck budgeting reality check, reusing `compute_budget()`
+(D-038/BQ-010) as the fastest path to something demoable. `PROJECT_SPEC.md` §3 rewritten, new §8 item
+added flagging that Phase 1's compliance testing was validated against a mismatched fixture
+(mid-career household, not this persona). Reversibility: High. Date: 04-Aug-2026.

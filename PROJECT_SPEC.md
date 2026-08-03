@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v2.1, 01-Aug-2026)
+# FinTutor — Project Spec (v2.9, 04-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -56,8 +56,17 @@ user's own money — never advises, only educates so the user makes their own in
   afterthought bolted on before launch. See D-010.
 
 ## 3. Target user
-Anyone earning who wants to self-manage their finances and build literacy — not hand it to an advisor.
-Primary moment: "financially unmanaged but willing." Not defined by age; defined by intent.
+**Primary persona (v1, 04-Aug-2026 — D-057):** a fresh graduate, 21–24, 2–3 months into their first
+salaried job, in a tier 1/2/3 India city (or remote from tier 3). Well-educated in their field,
+financially illiterate — never taught personal finance, actively intimidated by jargon, tax, and
+compliance language. No organized finances yet: a salary account, maybe an employer EPF deduction they
+don't understand, no real investments, minimal or no debt. Needs a guide that explains *why*, doesn't
+judge, doesn't overwhelm — not a portfolio optimizer.
+Primary moment: "just got paid, has no idea where to start." The broader vision (any earner who wants
+to self-manage rather than hand it to an advisor) still stands as the eventual audience — this is who
+gets served *first*, not the ceiling of who it's for.
+**Open:** defined 04-Aug-2026 from founder intuition, no user research yet — a hypothesis, not
+validated. Revisit once the first flagship flow has real users.
 
 ## 4. What the MVP does (scope — keep ruthless)
 > **Scope expanded at D-031 (25-Jul-2026).** The app is structured as **persistent, user-facing category
@@ -253,6 +262,15 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       (starting with the D-012 pieces). Deliberately deferred until after Phase 1 (teaching engine) is
       validated and the relevant design decisions are made. User decides; agents execute. Not next-session
       work — a PM-level task to pull forward once there's a validated core to build against.
+- [ ] **Phase 1 fixtures don't match the primary persona (found 04-Aug-2026, D-057).** All 6 Phase 1 test
+      runs (10/10 findings resolved) validated the teaching engine against `FIXTURE_user_01` — a
+      mid-career household (₹145,000/month, home loan, spouse, child, 5 diversified holdings). The
+      primary persona is now a fresher 2–3 months into their first job with a sparse profile (salary,
+      maybe EPF, no real investments, minimal debt). The compliance *rules* tested (never name a product,
+      never rank, hold the line under distress) are likely persona-independent, but nothing has actually
+      been checked against a profile this sparse. Needs a fresh fixture + at least a spot-check before
+      "10/10 resolved" can be trusted to apply to the actual first user. Not urgent, but should happen
+      before/alongside building the flagship flow below.
 
 ## 9. Key learnings & decisions log
 - (v0.1) Chose context engineering over fine-tuning for the tutor. Model already knows finance; we supply
@@ -260,6 +278,15 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v2.9 (04-Aug-2026) — **§3 Target user replaced with a real primary persona (D-057)**, first CIRCLES-
+  style product pass done this session: a fresh graduate, 21–24, 2–3 months into their first job,
+  financially illiterate and intimidated by jargon — not the vague "anyone earning" placeholder that
+  stood since v0.1. Flagship first flow chosen: "where does my salary go?" (budgeting reality check),
+  reusing the already-built `compute_budget()` logic (D-038/BQ-010) as the fastest path to something
+  real and demoable. New §8 open item: Phase 1's 10/10-resolved compliance testing was run against
+  `FIXTURE_user_01`, a mid-career household profile that doesn't match this persona — needs a fresh
+  fixture before that result can be trusted to transfer. (Header version bumped from the stale v2.1 to
+  match this file's own change log, which had drifted ahead of it since v2.2.)
 - v2.8 (03-Aug-2026) — **Decision 3 resolved (D-038).** Budgeting/goals data model: explicit thin funding
   links from Goals to holdings (progress computed live), Budget as a fully computed view with no stored
   object, new first-class Income object. Reference-vs-store test extracted as a reusable rule. Unblocks
