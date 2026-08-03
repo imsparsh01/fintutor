@@ -47,6 +47,17 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-016 — Wire up CI: GitHub Actions runs the backend pytest suite — done 04-Aug-2026
+Traces to D-055. Owner delegated the choice among three follow-on options from BQ-015's hand-off (CI,
+a real-database/integration-test strategy, re-running the Phase 1 prompt regression battery); CI
+picked as the one fully executable from this session — no live Anthropic API access here, and the
+other two need undecided infrastructure choices. Added `.github/workflows/backend-tests.yml`:
+`ubuntu-latest`, Python 3.11, installs `backend/requirements-dev.txt`, runs `pytest -q` from
+`backend/`, triggered on push/PR touching `backend/**`. No secrets required — the suite fakes the DB
+session and never calls the LLM. Does not cover `app/` (no test suite exists there yet) or Phase 1
+prompt testing (would need the Anthropic API key stored as a repo secret — a separate decision, not
+made here). **Still open:** app/ test coverage, DB/integration test strategy, Phase 1 regression gap.
+
 ### BQ-015 — Backend unit-test suite for compute_budget/compute_surfacing_candidates — done 04-Aug-2026
 Traces to D-053, owner-directed mid-conversation off a read-only test-coverage review. Added
 `backend/tests/` (pytest): `conftest.py`'s `FakeSession`/`FakeQuery` fake out `db.query(Model)...` so

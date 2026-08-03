@@ -1460,3 +1460,12 @@ Full entry: `docs/decisions/D-054-fix-sip-budget-outflow-field.md`. Owner explic
 one-line fix flagged in D-053: `compute_budget()` now reads `monthly_sip_amount` instead of the
 cumulative `invested_amount` for a SIP holding's recurring monthly outflow. Suite now 35/35 green
 (was 34/35). Reversibility: High. Date: 04-Aug-2026.
+
+### D-055 — Add CI: GitHub Actions runs the backend pytest suite on push/PR
+Full entry: `docs/decisions/D-055-backend-ci-github-actions.md`. Owner delegated the choice among
+three follow-on options; CI picked as the one fully executable from this session (no live Anthropic
+API access here; DB/integration-test strategy still undecided). `.github/workflows/backend-tests.yml`
+runs `pytest -q` from `backend/` on push/PR touching `backend/**` — no secrets needed, since the
+suite fakes the DB session and never calls the LLM. Does not cover `app/` (no tests exist yet) or
+Phase 1 prompt testing (needs a live API key — separate decision, not made here). Reversibility:
+High. Date: 04-Aug-2026.
