@@ -21,9 +21,15 @@ Rules for this file:
 ## BLOCKED — do not start
 
 ### BQ-004 — Backend `deepen` selection logic
-**Traces to:** D-028 (explicitly deferred)
-**Blocked because:** the selection rule itself is undecided. Thinking-home must decide the rule first.
-**Unblocks when:** a decision entry exists in `docs/DECISION_LOG.md` specifying the rule.
+**Traces to:** D-028 (explicitly deferred), re-scoped by D-049 (BRIEF-006)
+**Blocked because:** no real conversation/question-intake interface exists yet (`app/` is empty) to
+design the selection rule against, and nothing currently needs it — Phase 1 testing already
+simulates `deepen` via D-028's hand-written fixture stub. D-049 also found that the two paths
+buildable today either don't actually close the compliance gap (a narrow classifier model call) or
+do little useful work in practice (text/alias matching, absent real UI signal).
+**Unblocks when:** `app/` has a real conversation interface producing an actual user question the
+backend can read — AND a decision exists specifying the selection rule itself (D-049 deferred the
+rule, it did not settle it; BRIEF-006's regulatory question is still open for whenever this resumes).
 
 ---
 

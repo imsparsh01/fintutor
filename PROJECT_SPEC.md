@@ -197,9 +197,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       — no case falls back to model discretion. Stubbed by hand in fixtures for now. Supersedes D-015's
       selection clause only.
 - [x] Fix FINDING 5 — no-self-narration line added to §1 (D-028).
-- [ ] **Design the backend `deepen` selection logic (deferred by D-028).** The hard question is relocated,
-      not answered: the backend needs a rule for which holding to deepen, without the model's contextual read
-      of the question. Will fire trigger 5 as a build decision when picked up. Not next-session work.
+- [ ] **Design the backend `deepen` selection logic (deferred by D-028, re-scoped 03-Aug-2026 by
+      D-049/BRIEF-006).** The hard question is relocated, not answered: the backend needs a rule for
+      which holding to deepen, without the model's contextual read of the question. Deliberately not
+      picked up now — no real conversation interface exists yet to design the rule against, and
+      nothing currently needs it (Phase 1 uses D-028's fixture stub). Blocked on `app/` gaining a real
+      question-intake flow, not just on this rule being decided.
 - [x] **FINDING 7 RESOLVED (D-029).** Path C adopted: any figure not traceable to the profile is given as a
       range, never a point estimate, with a standing "typical, not yours" frame built into how ranges are
       introduced. Guarded against range-washing by binding to §2 rule 4's legibility standard. See

@@ -1407,3 +1407,11 @@ a new `discretionary_categories` table over a JSONB field on Income. Also covers
 `compute_budget()`/`GET /budget` build: monthly-normalization convention for Income/insurance
 frequencies, and the product_type slugs the computation keys on. Reversibility: High.
 Date: 03-Aug-2026.
+
+### D-049 — BRIEF-006 resolved: deepen-selection logic deferred (Path C), BQ-004 re-scoped to a real interface existing
+Full entry: `docs/decisions/D-049-deepen-selection-deferred.md`. Tier 3 (triggers 2 and 5 both
+fired). Backend selection logic not built now — nothing consumes it yet (Phase 1 uses D-028's
+fixture stub), the narrow-classifier path (A) doesn't actually satisfy D-028's own guarantee, and
+the mechanical path (B) either converges on "deepen nothing" anyway or needs `app/` screens that
+don't exist. BQ-004 re-scoped: blocked on a real conversation interface, not just an undecided rule.
+Reversibility: High. Date: 03-Aug-2026.
