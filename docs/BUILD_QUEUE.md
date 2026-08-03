@@ -22,8 +22,9 @@ Rules for this file:
 
 ### BQ-004 — Backend `deepen` selection logic
 **Traces to:** D-028 (explicitly deferred), re-scoped by D-049 (BRIEF-006)
-**Blocked because:** no real conversation/question-intake interface exists yet (`app/` is empty) to
-design the selection rule against, and nothing currently needs it — Phase 1 testing already
+**Blocked because:** no real conversation/question-intake interface exists yet — `app/` now has a
+navigation+auth shell (BQ-014) but no chat/question surface at all — to design the selection rule
+against, and nothing currently needs it — Phase 1 testing already
 simulates `deepen` via D-028's hand-written fixture stub. D-049 also found that the two paths
 buildable today either don't actually close the compliance gap (a narrow classifier model call) or
 do little useful work in practice (text/alias matching, absent real UI signal).
@@ -55,16 +56,24 @@ setup, owner's call over Expo Router): `AuthStack` (Login/Register, Supabase-bac
 session; `MainTabs` (bottom tabs) shown once authenticated, with placeholder screens for
 Investments/Loans/Insurance/Consolidated per D-031. `app/lib/supabase.ts` degrades to a null client
 with a clear `NotConfiguredScreen` (mirrors `backend/app/db/session.py`'s missing-`DATABASE_URL`
-pattern) rather than crashing when `EXPO_PUBLIC_SUPABASE_URL`/`_ANON_KEY` are absent — they are, so
-this is the actual state right now. `app/lib/backend.ts` pings `/health`, surfaced on the
-Consolidated screen. Verified: `tsc --noEmit` clean, Metro bundled cleanly (1069 modules, no
-errors/warnings). Visual simulator verification could not be completed — the iOS Simulator panel
-tool crash-looped and its own error said retrying would not help; flagged to the owner rather than
-claimed as done. **Also fixed:** root `.gitignore`'s `.env.*` rule was unintentionally catching
-`app/.env.example` (a safe template, no secrets) — added a `!.env.example` negation.
-**Still open:** Supabase URL + anon key need adding to `app/.env` before auth can be verified
-end-to-end (see D-052's dependency flag); visual confirmation in the simulator once the panel
-recovers.
+pattern) rather than crashing when `EXPO_PUBLIC_SUPABASE_URL`/`_ANON_KEY` are absent. `app/lib/backend.ts`
+pings `/health`, surfaced on the Consolidated screen. Verified: `tsc --noEmit` clean, Metro bundled
+cleanly (1069 modules, no errors/warnings). **Also fixed:** root `.gitignore`'s `.env.*` rule was
+unintentionally catching `app/.env.example` (a safe template, no secrets) — added a `!.env.example`
+negation.
+
+**Update, same day:** owner navigated the Supabase dashboard (Settings → API Keys) with me watching
+via the Browser pane; found the project URL (`https://ojdyrmkyallorfmbsxbo.supabase.co`) and the
+Publishable key (Supabase's own current term for the client-safe key — explicitly labeled "safe to
+share publicly," not the Secret/service_role key). Owner confirmed writing both into `app/.env`.
+Re-verified headlessly: started the dev server, confirmed the log shows `EXPO_PUBLIC_SUPABASE_URL`/
+`_ANON_KEY` loaded, and confirmed both values are correctly inlined in the served JS bundle — so
+`isSupabaseConfigured` now evaluates `true` and the app should show Login/Register, not
+`NotConfiguredScreen`. D-052's dependency flag is resolved.
+**Still open:** the iOS Simulator panel tool crash-looped both times it was tried and its own error
+said retrying would not help — visual/interactive confirmation (actually seeing the login screen,
+testing register/login against the real Supabase project) is still pending the panel recovering;
+not claimed as verified beyond what the headless bundle check can show.
 
 ### BQ-013 — Surfacing candidate selection (WHICH half of D-012's trigger logic) — done 03-Aug-2026
 Traces to D-051 (BRIEF-007 resolved, Path A staged). Added `backend/app/services/surfacing.py`'s
