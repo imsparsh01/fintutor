@@ -14,21 +14,16 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-009 — Add Income and Goal objects to the backend baseline schema
-**Depends on:** BQ-011 (backend skeleton must exist first)
-**Traces to:** D-038
-**What:** Add `Income { sources: [{label, amount, frequency}] }` and `Goal { target_amount, target_date,
-category, funded_by: [{holding_id, earmarked_amount}] }` as first-class objects in the baseline, sibling to
-Holdings. Goal progress is computed live from `funded_by` holdings' current values — do not store a
-progress/current_amount field on Goal itself. No Budget object in this task (see BQ-010).
-
 ### BQ-010 — Implement live budget computation (no stored Budget object)
-**Depends on:** BQ-011 (backend skeleton), BQ-009 (Income object)
+**Depends on:** BQ-011 (backend skeleton), BQ-009 (Income object) — both done
 **Traces to:** D-038
 **What:** Compute budget on read, never store it: income total (from Income, BQ-009) minus recurring
 outflows read live off holding records (EMI amount, SIP investment amount, insurance premium fields per
 D-013) minus a stored list of discretionary categories (`{label, planned_amount}`). Depends on BQ-009's
-Income object existing.
+Income object existing. **Note:** no Holdings model exists yet (see BQ-009's DONE entry) — the
+"recurring outflows read live off holding records" half of this task has nothing to read from yet.
+Flag this to the owner at the start of the BQ-010 session rather than silently building a Holdings
+stub to unblock it.
 
 ---
 
@@ -53,6 +48,20 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-009 — Add Income and Goal objects to the backend baseline schema — done 03-Aug-2026
+Added `backend/app/models/income.py` (`Income`: `id`, `user_id`, `sources` JSONB list of
+`{label, amount, frequency}`) and `backend/app/models/goal.py` (`Goal`: `id`, `user_id`, `target_amount`,
+`target_date`, `category`, plus a `GoalFunding` child table for `funded_by` — `goal_id` FK cascade-delete,
+`holding_id`, `earmarked_amount`). No progress/current_amount field stored on Goal — computed live from
+`funded_by`, per D-038. **Gap surfaced and resolved with owner before writing code:** no Holdings table
+exists anywhere yet (models/ was empty going into this session), so `funded_by.holding_id` has nothing to
+reference. Owner chose: store `holding_id` as a loose UUID column, no FK constraint, until Holdings gets
+built in a future BQ item — applied the same resolution to `user_id` on both new models (no Users table
+either; Supabase Auth owns that). Alembic migration `069bc85fc512` generated via autogenerate, reviewed,
+and applied against the real Supabase DB. Verified end-to-end: insert/read/cascade-delete round-trip on
+both models against the live database, plus `/health` and `/health/db` both still 200 with the new models
+loaded.
 
 ### BQ-011 — Bootstrap FastAPI backend skeleton (SQLAlchemy + Alembic) — done 03-Aug-2026
 `backend/` now has a real FastAPI app: `app/main.py` (FastAPI instance + `/health` and `/health/db`),
