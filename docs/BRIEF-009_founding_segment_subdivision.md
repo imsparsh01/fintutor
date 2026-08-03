@@ -43,6 +43,8 @@ career-stage bucket and could span either of the business lens's first two. This
 tested — worth keeping in mind if/when the owner picks a starting sub-segment, since the two framings may
 turn out to describe overlapping populations rather than genuinely independent choices.
 
-## Not yet decided
+## Resolved — D-054
 
-No sub-segment chosen. This file exists to hand the owner a fast menu, not to pick for them.
+Owner judged the two lenses' cuts describe the same three populations from two angles, not six distinct
+ones. No sub-segment picked to start with — all three stay fully in MVP scope as the founding segment's
+internal diversity. See `docs/decisions/D-054-founding-segment-full-coverage.md`.

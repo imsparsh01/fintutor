@@ -1454,3 +1454,13 @@ post-MVP, not discarded. Debt-heavy/reactive segment's P2 stress-test question r
 effect (not in founding population). §3's "not defined by age" framing left open, not silently
 changed. Further subdivision of the chosen segment queued as next work. Reversibility: Medium.
 Date: 03-Aug-2026.
+
+### D-054 — BRIEF-009 resolved: no sub-segment picked to start with — all three cuts treated as one population, fully in MVP scope
+Full entry: `docs/decisions/D-054-founding-segment-full-coverage.md`. Owner judged the Product lens's
+three sub-segments (by habit maturity) and the Business lens's three sub-segments (by career-stage) in
+BRIEF-009 describe the same three populations from two angles, not six. All three stay fully in MVP
+scope as the founding segment's internal diversity — no narrowing, no exclusion. D-053's outer
+founding-segment boundary (and every other BRIEF-008 candidate staying parked) is unchanged. Correlation
+caveat flagged, not silently dropped: BRIEF-009 called it an unverified guess; this decision proceeds on
+the owner's judgment, to be revisited if design/testing later contradicts it. Reversibility: High.
+Date: 03-Aug-2026.
