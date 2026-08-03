@@ -1473,3 +1473,12 @@ ship that profile with thinner day-one value than the other two D-054 profiles. 
 type-count only. Membership decided now; ESOP's characteristics schema is a deferred follow-on task, not
 designed as a side effect of this decision. Not conflated with the separately still-open `savings_balance`
 9th-type question in §8. Reversibility: High. Date: 03-Aug-2026.
+
+### D-056 — End-of-session ritual extended: designated branch pushed AND fast-forward-merged to main, so parallel sessions stay synced (owner-confirmed)
+Full entry: `docs/decisions/D-056-end-of-session-main-sync.md`. Extends D-034. This session found that
+every decision was logged and pushed correctly but stayed invisible to a parallel fresh session, because
+the working branch was never merged to `main`. Going forward: push the designated branch as before, then
+fast-forward-merge it into `main` and push `main` too, so parallel sessions pulling `main` see the latest
+immediately — unless `main` has diverged, in which case stop and ask rather than force-resolve. Owner
+explicitly chose direct merge over PR-first when asked; recorded as a tradeoff (no review checkpoint),
+not silently absorbed. Reversibility: High. Date: 03-Aug-2026.

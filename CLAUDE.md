@@ -115,10 +115,19 @@ This list applies regardless of whether the session is framed as "building" or
 1. Write `docs/sessions/YYYY-MM-DD.md` — a few lines: what changed, what's next.
 2. If `PROJECT_SPEC.md` or `docs/DECISION_LOG.md` changed, say so explicitly to the
    owner so they know to skim the change.
-3. Commit with a clear message and push to `origin/main` (D-034 — no separate
-   confirmation needed for the push itself). Do not leave uncommitted or unpushed
-   work at session end. If push fails (stale lock, auth, network), say so plainly
-   rather than silently leaving it unpushed.
+3. Commit with a clear message and push to the session's designated working branch
+   (D-034 — no separate confirmation needed for the push itself). Do not leave
+   uncommitted or unpushed work at session end. If push fails (stale lock, auth,
+   network), say so plainly rather than silently leaving it unpushed.
+4. **Sync to `main` (D-056).** If the designated branch is a clean fast-forward ahead
+   of `main` (no divergence), merge it into `main` and push `main` too — this is what
+   lets a parallel session pull `origin/main` and see this session's work immediately,
+   rather than needing to know this session's specific branch name. If `main` has
+   diverged (not a clean fast-forward), stop and tell the owner rather than
+   force-resolving the conflict autonomously — this is the one exception D-056 carves
+   out of the autonomy grant. Note: D-056 also means direct-merge-to-main carries no
+   PR review checkpoint, by the owner's explicit choice — revisit if that's ever
+   wanted back.
 
 `docs/CEO_DASHBOARD.md` / `.html` are refreshed **on demand** only — when the owner
 asks for a status summary or something visual — not as part of this checklist (D-042,
