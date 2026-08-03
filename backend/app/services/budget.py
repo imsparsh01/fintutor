@@ -29,8 +29,10 @@ def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
     """Live budget view per D-038/BQ-010 — nothing here is stored, only read and summed.
 
     income_total: Income.sources, frequency-normalized to monthly.
-    recurring_outflows_total: EMI / SIP investment amount / insurance premium, read live
+    recurring_outflows_total: EMI / SIP monthly contribution / insurance premium, read live
       off Holding.characteristics (D-013 fields) — the three items D-038 names explicitly.
+      SIP uses `monthly_sip_amount`, not `invested_amount` (which is cumulative total
+      invested to date, not a monthly figure — D-054).
     discretionary_total: DiscretionaryCategory.planned_amount, summed as-is.
     """
     income_total = sum(
@@ -45,7 +47,7 @@ def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
         if holding.product_type in _EMI_TYPES:
             recurring_outflows_total += float(c.get("emi_amount") or 0)
         elif holding.product_type in _SIP_CAPABLE_TYPES and c.get("investment_mode") == "SIP":
-            recurring_outflows_total += float(c.get("invested_amount") or 0)
+            recurring_outflows_total += float(c.get("monthly_sip_amount") or 0)
         elif holding.product_type in _PREMIUM_TYPES:
             recurring_outflows_total += _to_monthly(
                 c.get("premium") or 0, c.get("premium_frequency")

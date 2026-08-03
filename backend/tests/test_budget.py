@@ -84,10 +84,9 @@ class TestComputeBudgetOutflows:
         figure. Per FIXTURE_user_01.json's Fund-A: monthly_sip_amount=8000,
         invested_amount=288000 — the correct monthly outflow is 8000, not 288000.
 
-        NOTE: this currently FAILS against app/services/budget.py, which reads
-        `invested_amount` for the SIP outflow instead of `monthly_sip_amount`. Left
-        as a documented red test pending an explicit fix decision (money-calculation
-        change — hard-stop per CLAUDE.md) rather than being silently patched here.
+        Regression test for the bug fixed in D-054 (owner-confirmed): budget.py
+        previously read `invested_amount` for the SIP outflow instead of
+        `monthly_sip_amount`.
         """
         db = FakeSession({Holding: [
             make_holding(

@@ -59,10 +59,10 @@ never echoes a raw exception). `pytest`/`httpx` added via new `backend/requireme
 separate from `requirements.txt`). **Found, did not fix:** `compute_budget()` reads a SIP holding's
 cumulative `invested_amount` instead of its monthly `monthly_sip_amount` — a money-calculation bug,
 left as one deliberately failing (red) test pending owner sign-off per CLAUDE.md's hard-stop list.
-Verified: `pytest -q` from `backend/` → 34 passed, 1 failed (the documented red test) at hand-off.
-**Still open:** the fix itself (needs explicit owner confirmation before `budget.py` is touched); no
-CI wired up yet (tests only run when invoked locally); real-database/integration test strategy
-(migrations, constraints, FK cascades) not addressed by this pass.
+**Update, same day:** owner explicitly confirmed the fix — applied, logged as **D-054**. Verified:
+`pytest -q` from `backend/` → 35 passed, 0 failed. **Still open:** no CI wired up yet (tests only run
+when invoked locally); real-database/integration test strategy (migrations, constraints, FK cascades)
+not addressed by this pass.
 
 ### BQ-014 — Bootstrap Expo app skeleton (React Navigation, Supabase auth) — done 04-Aug-2026
 Traces to D-052. First code ever in `app/`. Expo + TypeScript project (`create-expo-app`,

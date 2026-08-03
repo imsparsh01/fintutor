@@ -1454,3 +1454,9 @@ fake DB session (no real database needed for this slice). Found, but did NOT fix
 bug: `compute_budget()` reads a SIP holding's cumulative `invested_amount` instead of its monthly
 `monthly_sip_amount` — left as a documented failing test pending owner sign-off (hard-stop). CI and
 real-database/integration-test strategy both left open. Reversibility: High. Date: 04-Aug-2026.
+
+### D-054 — Fix compute_budget() SIP outflow field (owner-confirmed)
+Full entry: `docs/decisions/D-054-fix-sip-budget-outflow-field.md`. Owner explicitly confirmed the
+one-line fix flagged in D-053: `compute_budget()` now reads `monthly_sip_amount` instead of the
+cumulative `invested_amount` for a SIP holding's recurring monthly outflow. Suite now 35/35 green
+(was 34/35). Reversibility: High. Date: 04-Aug-2026.
