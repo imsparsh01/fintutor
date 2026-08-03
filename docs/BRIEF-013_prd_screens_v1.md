@@ -74,15 +74,18 @@ structured field exists), but guarantees every user reaches a working first valu
 breakdown) even if they never say another word — directly answers BRIEF-011's "app must earn value from
 thin data, inside two minutes" requirement for the campus-to-first-job profile specifically.
 
-**Not decided here.** Both are real, reversible, cheap-to-build options; the choice is a product-philosophy
-call (purity to D-012 vs. guaranteed first-session value) more than a technical one — flagged for the
-owner rather than picked.
+**Resolved — D-058.** Neither Path A nor Path B as originally framed — the owner chose a third
+combination, discussed and settled in conversation: **ungated**, with the chip-guided conversation
+(Option C: tappable conversation starters, no structured field anywhere) as the **default landing
+screen** right after registration, paired with an explicit **skip** affordance so it's never a hard gate.
+See `docs/decisions/D-058-onboarding-shape.md` for the full reasoning and what's left to normal
+build-time execution (exact chip copy, the resume-after-skip UI).
 
 ---
 
 ## What only the owner needs to weigh in on
 
-1. **Onboarding shape — Path A or B** (or a third option, if neither fits).
+1. ~~Onboarding shape~~ — **Resolved, D-058.**
 2. **Sanity-check on the comparison-view proposal** — flag if the neutral-ordering approach or the
    full-screen-modal shape seems wrong before it's built; otherwise treated as accepted by default since
    it was proposed as a single low-risk shape, not a fork requiring a pick.

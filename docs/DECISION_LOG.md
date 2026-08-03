@@ -1492,3 +1492,12 @@ apply once something concrete needs judging, per protocol, unchanged. Compliance
 only incidentally (via the two generative lenses self-flagging); now applied explicitly as its own step —
 demonstrated on BRIEF-011, surfacing one real CONCERN (fresh-starters sequencing copy) that self-flagging
 alone hadn't named as clearly. Tier 1 — process/method note, no trigger fires. Date: 03-Aug-2026.
+
+### D-058 — Onboarding shape resolved: ungated, chip-guided conversation as the default landing screen, fully skippable
+Full entry: `docs/decisions/D-058-onboarding-shape.md`. Resolves BRIEF-013's onboarding fork. Owner chose
+a third combination, not the plain A/B framing first proposed: the chip-guided conversation (Option C —
+tappable starters, no structured field anywhere) is the default landing screen right after registration,
+but with an explicit skip affordance so it's never a hard gate — removes onboarding friction while still
+giving every user the guided entry point fresh starters specifically need (BRIEF-010). No hard-stop
+trigger fires; reinforces P1/D-012 rather than contradicting a principle. Reversibility: High.
+Date: 03-Aug-2026.
