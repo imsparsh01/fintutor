@@ -1,8 +1,10 @@
 # BRIEF-011 — Pain points mapped to GenAI-surfaced teaching solutions
 
 > Findings, not a decision, except one escalated hard-stop item below. Next sequenced piece after
-> BRIEF-010 (pain points) — this maps them to concrete solutions, still within teach-never-advise. Same
-> two-independent-lens method: Product/teaching-design lens, Business/adoption-retention lens.
+> BRIEF-010 (pain points) — this maps them to concrete solutions, still within teach-never-advise. Two
+> independent generative lenses (Product/teaching-design, Business/adoption-retention) produced the raw
+> content; `DECISION_PROTOCOL.md`'s standing Compliance lens (§3.2) is then applied directly, as its own
+> section below, per the always-runs rule — the two are complementary, not substitutes for each other.
 > **Date raised:** 03-Aug-2026, same session as D-053 through D-056.
 
 ---
@@ -100,6 +102,41 @@ to design the logic itself. Owner's call on how (or whether) to proceed before a
 touches this specific piece.
 
 ---
+
+## Compliance lens check (DECISION_PROTOCOL.md §3.2, applied directly — not run when this brief was first
+written; added on the owner's prompt about whether the standing lens framework was still in use)
+
+Per protocol, the Compliance lens always runs, no exceptions. Applied here against P2 (teach never
+advise — the line is what the output DOES) and the specific precedents it's built from (D-025 no
+ordering/ranking language even on request; D-028 structural prioritization is advice too; D-032 gap
+surfacing must stay on-topic; D-036/D-037 name the real gap concretely, never prescribe the fix).
+
+**PASS, no concern:** EPF mechanism explainer; Consolidated-view completeness nudge; EMI/premium
+reminders; inline jargon explainers; reactive-dabblers' reflective-question flow (never states fit);
+habit-formers' category-gap surfacing (names the gap concretely per D-037's own standard, never
+prescribes what fills it — same shape, not in tension); the three decision-shaped moments' side-by-side
+path structure (matches the already-validated §2 pattern); onboarding value-ratchet; "your numbers
+changed" nudges.
+
+**CONCERN, not a BLOCK — flagged for careful wording when this is actually built:** the fresh-starters
+sequencing explainer (buffer → protection → growth). Even framed as "here's how these needs typically
+relate, not what to do first," presenting them in a fixed order risks the exact pattern BRIEF-002/D-028
+found the model routing into before — structural ordering standing in for a banned recommendation, without
+using any forbidden phrase. Not blocked, because it's a general, typically-true relationship rather than a
+judgment on the user's own situation, but whoever writes the actual copy needs this precedent in view, not
+just the general "teach never advise" instinct.
+
+**PASS, with a reasoning note (so it isn't re-litigated as a concern later):** the breakeven-calculator and
+"number to watch" devices the Business lens proposed. These pass D-025's own test — *does this tell the
+user what is TRUE, or what to ATTEND to* — because a breakeven point is a computed fact (where two paths
+are mathematically equal), not a directive. They only stay compliant if implementation copy keeps them
+phrased as facts ("this is the threshold where X and Y are equal") rather than urgency framing ("watch
+this because it matters most") — a copy-discipline note for later, not a design change now.
+
+**Not evaluated — out of this lens's scope:** Technical and Cost-and-Scope lenses weren't run here, since
+nothing in BRIEF-011 proposes a concrete build yet (still pre-PRD/pre-screens) — those two are better
+applied once there's an actual technical proposal to weigh, per their own definitions in
+`DECISION_PROTOCOL.md` §3.
 
 ## Not yet decided
 

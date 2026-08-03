@@ -1482,3 +1482,13 @@ fast-forward-merge it into `main` and push `main` too, so parallel sessions pull
 immediately — unless `main` has diverged, in which case stop and ask rather than force-resolve. Owner
 explicitly chose direct merge over PR-first when asked; recorded as a tradeoff (no review checkpoint),
 not silently absorbed. Reversibility: High. Date: 03-Aug-2026.
+
+### D-057 — Method clarification: two-lens generative research is additional to DECISION_PROTOCOL.md, not a replacement for its evaluation lenses (Tier 1)
+Owner asked whether the Product/Business two-lens technique used for BRIEF-008/009/010/011 was on top of
+the standing decision framework or instead of it. Clarified and now practiced: the two lenses generate
+candidate content for open questions with no decision yet to evaluate; `DECISION_PROTOCOL.md`'s own four
+evaluation lenses (Compliance always-runs, Product/Technical/Cost-and-Scope relevance-selected) still
+apply once something concrete needs judging, per protocol, unchanged. Compliance lens had been running
+only incidentally (via the two generative lenses self-flagging); now applied explicitly as its own step —
+demonstrated on BRIEF-011, surfacing one real CONCERN (fresh-starters sequencing copy) that self-flagging
+alone hadn't named as clearly. Tier 1 — process/method note, no trigger fires. Date: 03-Aug-2026.
