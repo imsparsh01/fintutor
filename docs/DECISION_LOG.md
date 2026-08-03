@@ -1436,3 +1436,12 @@ broken by fixed precedence in the pairing table, same architectural-guarantee pa
 `deepen` field. Path C rejected (would reverse D-012's explicit commitment, unlike BQ-004's
 deferral); Path B rejected (repeats D-028's known routed-around pattern). Reversibility: High.
 Date: 03-Aug-2026.
+
+### D-052 — App scaffold stack: Expo + TypeScript + React Navigation (manual setup); Supabase JS client for auth (owner-confirmed)
+Full entry: `docs/decisions/D-052-app-scaffold-stack.md`. `app/` bootstrapped now (BQ-014) — bare
+skeleton only: auth stack (Supabase-backed login/register) + a tab shell with placeholder
+Investments/Loans/Insurance/Consolidated screens (D-031), plus a backend `/health` ping. React
+Navigation chosen over Expo Router — owner's call, explicit manual routing over file-based
+convention. Onboarding/capture logic, per-item management explicitly out of scope for this pass.
+Needs Supabase URL + anon key in `app/.env` before auth can be verified end-to-end; degrades
+gracefully without it. Reversibility: Medium. Date: 04-Aug-2026.

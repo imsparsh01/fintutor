@@ -46,6 +46,26 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-014 — Bootstrap Expo app skeleton (React Navigation, Supabase auth) — done 04-Aug-2026
+Traces to D-052. First code ever in `app/`. Expo + TypeScript project (`create-expo-app`,
+blank-typescript template) — stripped its auto-generated `AGENTS.md`/`CLAUDE.md`/`.claude/`/`LICENSE`
+boilerplate immediately, since a second, different operating-rules pair nested in `app/` would have
+directly recreated the exact drift risk D-045 eliminated at the repo root. React Navigation (manual
+setup, owner's call over Expo Router): `AuthStack` (Login/Register, Supabase-backed) shown with no
+session; `MainTabs` (bottom tabs) shown once authenticated, with placeholder screens for
+Investments/Loans/Insurance/Consolidated per D-031. `app/lib/supabase.ts` degrades to a null client
+with a clear `NotConfiguredScreen` (mirrors `backend/app/db/session.py`'s missing-`DATABASE_URL`
+pattern) rather than crashing when `EXPO_PUBLIC_SUPABASE_URL`/`_ANON_KEY` are absent — they are, so
+this is the actual state right now. `app/lib/backend.ts` pings `/health`, surfaced on the
+Consolidated screen. Verified: `tsc --noEmit` clean, Metro bundled cleanly (1069 modules, no
+errors/warnings). Visual simulator verification could not be completed — the iOS Simulator panel
+tool crash-looped and its own error said retrying would not help; flagged to the owner rather than
+claimed as done. **Also fixed:** root `.gitignore`'s `.env.*` rule was unintentionally catching
+`app/.env.example` (a safe template, no secrets) — added a `!.env.example` negation.
+**Still open:** Supabase URL + anon key need adding to `app/.env` before auth can be verified
+end-to-end (see D-052's dependency flag); visual confirmation in the simulator once the panel
+recovers.
+
 ### BQ-013 — Surfacing candidate selection (WHICH half of D-012's trigger logic) — done 03-Aug-2026
 Traces to D-051 (BRIEF-007 resolved, Path A staged). Added `backend/app/services/surfacing.py`'s
 `compute_surfacing_candidates()` — a fixed pairing-rule table run against stored Holdings only, no
