@@ -1445,3 +1445,12 @@ Navigation chosen over Expo Router — owner's call, explicit manual routing ove
 convention. Onboarding/capture logic, per-item management explicitly out of scope for this pass.
 Needs Supabase URL + anon key in `app/.env` before auth can be verified end-to-end; degrades
 gracefully without it. Reversibility: Medium. Date: 04-Aug-2026.
+
+### D-053 — BRIEF-008 resolved: Path A adopted — early-career, low-complexity segment as sole MVP founding target; others parked, not discarded
+Full entry: `docs/decisions/D-053-founding-user-segment.md`. Tier 3, resolves BRIEF-008. The segment
+both independently-run lenses converged on (early-career, single-income, low-complexity salaried) is
+now the sole founding target for MVP design + Phase-3 testing; all other candidates parked for
+post-MVP, not discarded. Debt-heavy/reactive segment's P2 stress-test question resolved as a side
+effect (not in founding population). §3's "not defined by age" framing left open, not silently
+changed. Further subdivision of the chosen segment queued as next work. Reversibility: Medium.
+Date: 03-Aug-2026.
