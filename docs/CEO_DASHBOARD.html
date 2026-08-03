@@ -1,638 +1,397 @@
-<title>FinTutor — Founder Dashboard</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinTutor — Status</title>
 <style>
   :root {
-    --surface: #F0F3F4;
-    --surface-raised: #FFFFFF;
-    --surface-sunken: #E5EAEB;
-    --ink: #141B22;
-    --ink-soft: #51606C;
-    --ink-faint: #8494A0;
-    --border: #DAE1E3;
-    --accent: #146776;
-    --accent-soft: #DEEEF0;
-    --good: #1F7A52;
-    --good-soft: #DDF0E6;
-    --warn: #9C6A1E;
-    --warn-soft: #F6EAD4;
-    --critical: #A23B30;
-    --critical-soft: #F6DEDA;
-    --shadow: 0 1px 2px rgba(20,27,34,.06), 0 10px 28px -14px rgba(20,27,34,.22);
-
-    --font-display: ui-serif, "Iowan Old Style", "Source Serif Pro", Georgia, "Times New Roman", serif;
-    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    --ink: #1B2430;
+    --ink-muted: #5B6572;
+    --ink-faint: #8992A0;
+    --ground: #EEF1EF;
+    --surface: #FFFFFF;
+    --surface-raised: #FBFBFA;
+    --border: #DCE1DE;
+    --border-soft: #E7EBE8;
+    --accent: #1F7A5C;
+    --accent-ink: #14523E;
+    --accent-soft: #E4F0EA;
+    --good: #1F7A5C;
+    --good-soft: #E4F0EA;
+    --warn: #96650F;
+    --warn-soft: #FBF0DD;
+    --critical: #A83A3A;
+    --critical-soft: #FBE7E5;
+    --info: #35618C;
+    --info-soft: #E4EDF5;
+    --shadow: 0 1px 2px rgba(20, 30, 25, 0.04), 0 1px 1px rgba(20, 30, 25, 0.03);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --surface: #0B1416;
-      --surface-raised: #111B1F;
-      --surface-sunken: #0E1719;
-      --ink: #E7EEEF;
-      --ink-soft: #93A6AC;
-      --ink-faint: #5C6C71;
-      --border: #223032;
-      --accent: #55B7C6;
-      --accent-soft: #153036;
-      --good: #4FB884;
-      --good-soft: #133024;
-      --warn: #D8A652;
-      --warn-soft: #332512;
-      --critical: #DB7C69;
-      --critical-soft: #331C17;
-      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px -14px rgba(0,0,0,.55);
+      --ink: #E7EAE7;
+      --ink-muted: #9BA5A0;
+      --ink-faint: #6C766F;
+      --ground: #10151A;
+      --surface: #171E22;
+      --surface-raised: #1C242A;
+      --border: #2A3239;
+      --border-soft: #232B31;
+      --accent: #3FBF8F;
+      --accent-ink: #7FDAB6;
+      --accent-soft: #16302A;
+      --good: #3FBF8F;
+      --good-soft: #16302A;
+      --warn: #E0A83E;
+      --warn-soft: #322818;
+      --critical: #E27D7A;
+      --critical-soft: #3A2020;
+      --info: #7FB0DE;
+      --info-soft: #1D2A38;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.2);
     }
   }
   :root[data-theme="dark"] {
-    --surface: #0B1416; --surface-raised: #111B1F; --surface-sunken: #0E1719;
-    --ink: #E7EEEF; --ink-soft: #93A6AC; --ink-faint: #5C6C71; --border: #223032;
-    --accent: #55B7C6; --accent-soft: #153036;
-    --good: #4FB884; --good-soft: #133024;
-    --warn: #D8A652; --warn-soft: #332512;
-    --critical: #DB7C69; --critical-soft: #331C17;
-    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px -14px rgba(0,0,0,.55);
+    --ink: #E7EAE7; --ink-muted: #9BA5A0; --ink-faint: #6C766F;
+    --ground: #10151A; --surface: #171E22; --surface-raised: #1C242A;
+    --border: #2A3239; --border-soft: #232B31;
+    --accent: #3FBF8F; --accent-ink: #7FDAB6; --accent-soft: #16302A;
+    --good: #3FBF8F; --good-soft: #16302A;
+    --warn: #E0A83E; --warn-soft: #322818;
+    --critical: #E27D7A; --critical-soft: #3A2020;
+    --info: #7FB0DE; --info-soft: #1D2A38;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.2);
   }
   :root[data-theme="light"] {
-    --surface: #F0F3F4; --surface-raised: #FFFFFF; --surface-sunken: #E5EAEB;
-    --ink: #141B22; --ink-soft: #51606C; --ink-faint: #8494A0; --border: #DAE1E3;
-    --accent: #146776; --accent-soft: #DEEEF0;
-    --good: #1F7A52; --good-soft: #DDF0E6;
-    --warn: #9C6A1E; --warn-soft: #F6EAD4;
-    --critical: #A23B30; --critical-soft: #F6DEDA;
-    --shadow: 0 1px 2px rgba(20,27,34,.06), 0 10px 28px -14px rgba(20,27,34,.22);
+    --ink: #1B2430; --ink-muted: #5B6572; --ink-faint: #8992A0;
+    --ground: #EEF1EF; --surface: #FFFFFF; --surface-raised: #FBFBFA;
+    --border: #DCE1DE; --border-soft: #E7EBE8;
+    --accent: #1F7A5C; --accent-ink: #14523E; --accent-soft: #E4F0EA;
+    --good: #1F7A5C; --good-soft: #E4F0EA;
+    --warn: #96650F; --warn-soft: #FBF0DD;
+    --critical: #A83A3A; --critical-soft: #FBE7E5;
+    --info: #35618C; --info-soft: #E4EDF5;
+    --shadow: 0 1px 2px rgba(20, 30, 25, 0.04), 0 1px 1px rgba(20, 30, 25, 0.03);
   }
 
   * { box-sizing: border-box; }
-  html, body { background: var(--surface); }
   body {
-    font-family: var(--font-body);
-    color: var(--ink);
     margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.45;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 22px 64px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 24px 72px; }
 
-  /* ---------- Masthead ---------- */
-  .masthead {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    gap: 16px; flex-wrap: wrap;
-    padding-bottom: 18px; margin-bottom: 22px;
-    border-bottom: 1px solid var(--border);
-  }
-  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-  .brand h1 {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 2rem;
-    letter-spacing: -0.01em;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .brand .tagline {
-    font-family: var(--font-mono);
-    font-size: .72rem;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-  .meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .synced {
-    font-family: var(--font-mono);
-    font-size: .72rem;
-    color: var(--ink-faint);
-  }
-  .phase-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--accent-soft); color: var(--accent);
-    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-    border-radius: 999px; padding: 5px 12px 5px 10px;
-    font-size: .78rem; font-weight: 600;
-  }
-  .phase-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .font-display { font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; }
+  .font-mono { font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, monospace; font-variant-numeric: tabular-nums; }
 
-  /* ---------- Stat row ---------- */
-  .stats {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
-    margin-bottom: 26px;
+  /* ---------- Header ---------- */
+  header.top {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;
+    padding-bottom: 20px; margin-bottom: 28px; border-bottom: 1px solid var(--border);
   }
+  header.top .title { font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: 30px; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+  header.top .mission { color: var(--ink-muted); font-size: 14.5px; margin-top: 6px; max-width: 52ch; }
+  header.top .synced { text-align: right; font-size: 12px; color: var(--ink-faint); font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, monospace; white-space: nowrap; }
+
+  /* ---------- Stat strip ---------- */
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 32px; }
   .stat {
-    background: var(--surface-raised); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 14px 12px; box-shadow: var(--shadow);
   }
-  .stat .label {
-    font-size: .68rem; text-transform: uppercase; letter-spacing: .07em;
-    color: var(--ink-faint); font-weight: 600; margin-bottom: 8px;
-  }
-  .stat .value {
-    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-    font-size: 1.65rem; font-weight: 600; line-height: 1;
-    color: var(--ink);
-  }
-  .stat .value.accent { color: var(--accent); }
-  .stat .value.good { color: var(--good); }
-  .stat .value.critical { color: var(--critical); }
-  .stat .sub { font-size: .74rem; color: var(--ink-soft); margin-top: 5px; }
+  .stat .label { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+  .stat .value { font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, monospace; font-variant-numeric: tabular-nums; font-size: 20px; font-weight: 600; margin-top: 4px; letter-spacing: -0.01em; }
+  .stat .sub { font-size: 11.5px; color: var(--ink-muted); margin-top: 2px; }
+  .stat .value.accent { color: var(--accent-ink); }
 
-  /* ---------- Grid ---------- */
-  .grid { display: grid; grid-template-columns: 1.62fr 1fr; gap: 22px; align-items: start; }
-  .col { display: flex; flex-direction: column; gap: 22px; }
+  /* ---------- Section shell ---------- */
+  section { margin-bottom: 32px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  .section-head h2 { font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: 18px; font-weight: 600; margin: 0; }
+  .section-head .note { font-size: 12px; color: var(--ink-faint); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
 
-  .card {
-    background: var(--surface-raised); border: 1px solid var(--border);
-    border-radius: 12px; box-shadow: var(--shadow); overflow: hidden;
+  /* ---------- Phase rail ---------- */
+  .rail-card { padding: 22px 22px 18px; }
+  .rail { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-bottom: 4px; }
+  .rail-node { position: relative; padding: 0 10px 0 0; }
+  .rail-node .dot-line { display: flex; align-items: center; margin-bottom: 10px; }
+  .rail-node .dot {
+    width: 13px; height: 13px; border-radius: 50%; flex: 0 0 auto; z-index: 1;
+    border: 2px solid var(--border);
   }
-  .card-head {
-    padding: 15px 18px 12px;
-    display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .card-head h2 {
-    font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; margin: 0;
-  }
-  .card-head .hint { font-size: .72rem; color: var(--ink-faint); font-family: var(--font-mono); }
-  .card-body { padding: 16px 18px 18px; }
+  .rail-node .line { height: 2px; flex: 1; background: var(--border); }
+  .rail-node:last-child .line { display: none; }
+  .rail-node.done .dot { background: var(--good); border-color: var(--good); }
+  .rail-node.done .line { background: var(--good); opacity: 0.45; }
+  .rail-node.current .dot { background: var(--surface); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .rail-node .phase-label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); }
+  .rail-node .phase-name { font-size: 13.5px; font-weight: 600; margin-top: 2px; }
+  .rail-node .phase-status { display: inline-block; margin-top: 6px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.03em; padding: 2px 7px; border-radius: 20px; }
+  .rail-node.done .phase-status { background: var(--good-soft); color: var(--good); }
+  .rail-node.current .phase-status { background: var(--accent-soft); color: var(--accent-ink); }
+  .rail-node.todo .phase-status { background: var(--border-soft); color: var(--ink-faint); }
 
-  /* ---------- Phase roadmap ---------- */
-  .roadmap { list-style: none; margin: 0; padding: 0; }
-  .roadmap li {
-    display: grid; grid-template-columns: 24px 1fr; column-gap: 12px;
-    position: relative; padding-bottom: 20px;
-  }
-  .roadmap li:last-child { padding-bottom: 0; }
-  .roadmap .node-col { position: relative; display: flex; justify-content: center; }
-  .roadmap .node {
-    width: 20px; height: 20px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .62rem; font-weight: 700; font-family: var(--font-mono);
-    z-index: 1; border: 2px solid var(--surface-raised);
-  }
-  .roadmap .line {
-    position: absolute; top: 20px; bottom: -20px; left: 50%;
-    width: 2px; transform: translateX(-1px);
-    background: var(--border);
-  }
-  .roadmap li:last-child .line { display: none; }
-  .roadmap .node.done { background: var(--good); color: var(--surface-raised); }
-  .roadmap .node.active { background: var(--accent); color: var(--surface-raised); box-shadow: 0 0 0 4px var(--accent-soft); }
-  .roadmap .node.todo { background: var(--surface-sunken); color: var(--ink-faint); }
-  .roadmap .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; flex-wrap: wrap; }
-  .roadmap .title { font-weight: 600; font-size: .92rem; }
-  .roadmap .status {
-    font-family: var(--font-mono); font-size: .64rem; text-transform: uppercase; letter-spacing: .06em;
-    padding: 1px 7px; border-radius: 4px; font-weight: 700;
-  }
-  .status.done { color: var(--good); background: var(--good-soft); }
-  .status.active { color: var(--accent); background: var(--accent-soft); }
-  .status.todo { color: var(--ink-faint); background: var(--surface-sunken); }
-  .roadmap .desc { font-size: .82rem; color: var(--ink-soft); max-width: 62ch; }
+  .subphase-wrap { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .subphase-wrap .caption { font-size: 11px; color: var(--ink-faint); margin-bottom: 10px; }
+  .subphase-list { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .sub-item { padding: 9px 8px; border-radius: 8px; background: var(--surface-raised); border: 1px solid var(--border-soft); }
+  .sub-item .tag { font-family: ui-monospace, monospace; font-size: 10px; color: var(--ink-faint); }
+  .sub-item .name { font-size: 11.5px; font-weight: 600; margin-top: 3px; line-height: 1.25; min-height: 28px; }
+  .sub-item .mark { margin-top: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.02em; }
+  .sub-item.done { border-color: color-mix(in srgb, var(--good) 30%, var(--border-soft)); }
+  .sub-item.done .mark { color: var(--good); }
+  .sub-item.current { background: var(--accent-soft); border-color: var(--accent); }
+  .sub-item.current .mark { color: var(--accent-ink); }
+  .sub-item.todo .mark { color: var(--ink-faint); }
 
-  /* ---------- Chart ---------- */
-  .chart-wrap { overflow-x: auto; }
-  svg.chart { display: block; width: 100%; height: auto; min-width: 480px; }
-  .gridline { stroke: var(--border); stroke-width: 1; }
-  .axis-label { font-family: var(--font-mono); font-size: 9px; fill: var(--ink-faint); }
-  .area-fill { fill: var(--accent); opacity: .12; }
-  .line-path { fill: none; stroke: var(--accent); stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
-  .pt { fill: var(--surface-raised); stroke: var(--accent); stroke-width: 2; }
-  .pt.end { fill: var(--accent); r: 5; }
-  .gap-band { fill: var(--ink-faint); opacity: .06; }
-  .gap-label { font-family: var(--font-mono); font-size: 9px; fill: var(--ink-faint); }
-  .crosshair { stroke: var(--ink-faint); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0; pointer-events: none; }
-  .hover-dot { fill: var(--accent); opacity: 0; pointer-events: none; }
-  .tooltip {
-    position: absolute; pointer-events: none; opacity: 0;
-    background: var(--ink); color: var(--surface);
-    font-family: var(--font-mono); font-size: .72rem;
-    padding: 6px 9px; border-radius: 6px; white-space: nowrap;
-    transform: translate(-50%, -130%);
-    transition: opacity .1s ease;
-    z-index: 5;
-  }
-  .end-label { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; fill: var(--accent); }
+  /* ---------- Two column ---------- */
+  .grid-2 { display: grid; grid-template-columns: 1.1fr 1fr; gap: 18px; align-items: start; }
 
-  /* ---------- Watchlist (risks/blockers/next) ---------- */
-  .watchlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-  .watchlist li {
-    display: flex; gap: 10px; padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .watchlist li:last-child { border-bottom: none; padding-bottom: 0; }
-  .watchlist li:first-child { padding-top: 0; }
-  .stripe { width: 3px; border-radius: 2px; flex-shrink: 0; align-self: stretch; }
-  .stripe.critical { background: var(--critical); }
-  .stripe.warn { background: var(--warn); }
-  .stripe.good { background: var(--good); }
-  .stripe.accent { background: var(--accent); }
-  .wl-title { font-size: .86rem; font-weight: 600; margin-bottom: 2px; }
-  .wl-desc { font-size: .8rem; color: var(--ink-soft); }
-  .wl-tag {
-    font-family: var(--font-mono); font-size: .62rem; text-transform: uppercase; letter-spacing: .05em;
-    font-weight: 700; margin-left: 6px;
-  }
-  .wl-tag.critical { color: var(--critical); }
-  .wl-tag.warn { color: var(--warn); }
-  .wl-tag.good { color: var(--good); }
+  .ranked-list { list-style: none; margin: 0; padding: 4px 0; }
+  .ranked-list li { display: flex; gap: 12px; padding: 11px 20px; border-bottom: 1px solid var(--border-soft); }
+  .ranked-list li:last-child { border-bottom: none; }
+  .ranked-list .n { font-family: ui-monospace, monospace; color: var(--ink-faint); font-size: 12px; padding-top: 1px; flex: 0 0 16px; }
+  .ranked-list .txt strong { display: block; font-size: 13.5px; font-weight: 600; }
+  .ranked-list .txt span { font-size: 12px; color: var(--ink-muted); }
 
-  /* ---------- Ledger ---------- */
-  table.ledger { width: 100%; border-collapse: collapse; font-size: .84rem; }
-  table.ledger th {
-    text-align: left; font-size: .66rem; text-transform: uppercase; letter-spacing: .06em;
-    color: var(--ink-faint); font-weight: 600; padding: 0 10px 8px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  table.ledger td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
-  table.ledger tr:last-child td { border-bottom: none; }
-  .tier-chip {
-    font-family: var(--font-mono); font-size: .66rem; font-weight: 700;
-    padding: 2px 7px; border-radius: 4px; white-space: nowrap;
-  }
-  .tier-chip.t2 { background: var(--accent-soft); color: var(--accent); }
-  .tier-chip.t3 { background: var(--warn-soft); color: var(--warn); }
-  .did { font-family: var(--font-mono); color: var(--ink-faint); font-size: .78rem; white-space: nowrap; }
-  .ddate { font-family: var(--font-mono); color: var(--ink-faint); font-size: .78rem; white-space: nowrap; }
+  .blocked-row { display: flex; gap: 12px; padding: 13px 20px; border-top: 1px solid var(--border); background: var(--surface-raised); border-radius: 0 0 12px 12px; }
+  .blocked-row .stripe { width: 3px; background: var(--warn); border-radius: 3px; flex: 0 0 auto; }
+  .blocked-row .txt strong { font-size: 13px; }
+  .blocked-row .txt div { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+
+  .risk-list { list-style: none; margin: 0; padding: 4px 0; }
+  .risk-item { display: flex; gap: 12px; padding: 11px 20px; border-bottom: 1px solid var(--border-soft); align-items: flex-start; }
+  .risk-item:last-child { border-bottom: none; }
+  .risk-item .chip { flex: 0 0 auto; font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; margin-top: 1px; }
+  .risk-item .chip.critical { background: var(--critical-soft); color: var(--critical); }
+  .risk-item .chip.warning { background: var(--warn-soft); color: var(--warn); }
+  .risk-item .chip.info { background: var(--info-soft); color: var(--info); }
+  .risk-item .txt strong { display: block; font-size: 13px; font-weight: 600; }
+  .risk-item .txt span { font-size: 12px; color: var(--ink-muted); }
+
+  .approvals-card { padding: 18px 20px; display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  .approvals-card .badge { width: 30px; height: 30px; border-radius: 50%; background: var(--good-soft); color: var(--good); display: flex; align-items: center; justify-content: center; font-weight: 700; flex: 0 0 auto; }
+  .approvals-card strong { font-size: 13.5px; }
+  .approvals-card div.d { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+
+  /* ---------- Activity chart ---------- */
+  .chart-card { padding: 20px 22px 16px; }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; margin-top: 8px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .bar-col .bar { width: 100%; max-width: 34px; background: var(--accent); border-radius: 3px 3px 2px 2px; opacity: 0.88; position: relative; }
+  .bar-col .bar.zero { background: var(--border); height: 3px !important; opacity: 1; }
+  .bar-col .count { font-family: ui-monospace, monospace; font-size: 10.5px; color: var(--ink-muted); margin-bottom: 4px; }
+  .bar-col .date { font-size: 9.5px; color: var(--ink-faint); margin-top: 7px; text-align: center; line-height: 1.2; }
+  .chart-note { font-size: 11px; color: var(--ink-faint); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-soft); }
 
   /* ---------- Compliance pulse ---------- */
-  .pulse {
-    margin-top: 22px;
-    background: var(--surface-raised); border: 1px solid var(--border);
-    border-radius: 12px; box-shadow: var(--shadow);
-    padding: 18px 22px;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; align-items: center;
-  }
-  .pulse-item .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.3rem; font-weight: 700; color: var(--good); }
-  .pulse-item .lbl { font-size: .72rem; color: var(--ink-soft); margin-top: 2px; }
-  .pulse-title {
-    font-family: var(--font-display); font-size: .95rem; font-weight: 600;
-    grid-column: 1 / -1; padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 2px;
-    display: flex; align-items: center; gap: 8px;
-  }
+  .pulse { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .pulse-item { padding: 16px 18px; border-right: 1px solid var(--border-soft); }
+  .pulse-item:last-child { border-right: none; }
+  .pulse-item .label { font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); }
+  .pulse-item .value { font-family: ui-monospace, monospace; font-size: 19px; font-weight: 600; margin-top: 4px; }
+  .pulse-item .value.good { color: var(--good); }
+  .pulse-item .value.warn { color: var(--warn); }
+  .pulse-flag { display: flex; gap: 10px; padding: 12px 18px; background: var(--warn-soft); border-top: 1px solid var(--border-soft); border-radius: 0 0 12px 12px; }
+  .pulse-flag .chip { flex: 0 0 auto; font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; background: var(--warn); color: var(--surface); margin-top: 1px; }
+  .pulse-flag span { font-size: 12.5px; color: var(--ink); }
+
+  /* ---------- Recent decisions ---------- */
+  table.decisions { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.decisions th { text-align: left; font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; padding: 10px 20px 8px; border-bottom: 1px solid var(--border); }
+  table.decisions td { padding: 10px 20px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+  table.decisions tr:last-child td { border-bottom: none; }
+  table.decisions .id { font-family: ui-monospace, monospace; font-weight: 600; white-space: nowrap; }
+  table.decisions .tier { font-size: 11px; color: var(--ink-muted); white-space: nowrap; }
+  table.decisions .what { color: var(--ink); }
+  table.decisions .date { font-family: ui-monospace, monospace; font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
+
+  /* ---------- Footer stamp ---------- */
+  .stamp { margin-top: 8px; padding: 16px 20px; border-radius: 12px; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border)); font-size: 13px; color: var(--ink); }
+  .stamp b { color: var(--accent-ink); }
 
   @media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; }
-    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stats { grid-template-columns: repeat(3, 1fr); }
+    .rail { grid-template-columns: repeat(5, 1fr); }
+    .subphase-list { grid-template-columns: repeat(4, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
     .pulse { grid-template-columns: repeat(2, 1fr); }
   }
-  @media (max-width: 520px) {
-    .stats { grid-template-columns: 1fr; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
+  @media (max-width: 560px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .subphase-list { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
+</head>
+<body>
 
 <div class="wrap">
 
-  <div class="masthead">
-    <div class="brand">
-      <h1>FinTutor</h1>
-      <span class="tagline">Founder Status Dashboard</span>
+  <header class="top">
+    <div>
+      <p class="title">FinTutor — Status</p>
+      <p class="mission">Mobile app teaching personal finance from first principles, applied to the user's own money — never advises.</p>
     </div>
-    <div class="meta">
-      <span class="synced">Last synced 03 Aug 2026 · through D-041</span>
-      <span class="phase-pill"><span class="dot"></span>Phase 2 in progress — backend skeleton live</span>
+    <div class="synced">
+      DAY 13 · 04-AUG-2026<br>
+      synced through D-055 / BQ-016
     </div>
-  </div>
+  </header>
 
   <div class="stats">
-    <div class="stat">
-      <div class="label">Day</div>
-      <div class="value accent">12</div>
-      <div class="sub">since kickoff, 22 Jul</div>
-    </div>
-    <div class="stat">
-      <div class="label">Decisions logged</div>
-      <div class="value">41</div>
-      <div class="sub">+5 owner escalations, all resolved</div>
-    </div>
-    <div class="stat">
-      <div class="label">Findings closed</div>
-      <div class="value good">10 / 10</div>
-      <div class="sub">100% of testing findings resolved</div>
-    </div>
-    <div class="stat">
-      <div class="label">System prompt</div>
-      <div class="value">v0.8</div>
-      <div class="sub">verified 5/5 clean, 03 Aug</div>
-    </div>
-    <div class="stat">
-      <div class="label">Backend files</div>
-      <div class="value good">11</div>
-      <div class="sub">FastAPI skeleton live · mobile app still 0</div>
-    </div>
+    <div class="stat"><div class="label">Build day</div><div class="value">13</div><div class="sub">since 22-Jul-2026</div></div>
+    <div class="stat"><div class="label">Decisions</div><div class="value">55</div><div class="sub">D-001 – D-055</div></div>
+    <div class="stat"><div class="label">Findings closed</div><div class="value accent">10 / 10</div><div class="sub">100%, 6 test runs</div></div>
+    <div class="stat"><div class="label">Prompt</div><div class="value">v0.8</div><div class="sub">5/5 clean (BQ-008)</div></div>
+    <div class="stat"><div class="label">Backend tests</div><div class="value accent">35 / 35</div><div class="sub">CI green</div></div>
+    <div class="stat"><div class="label">App (app/)</div><div class="value">15 files</div><div class="sub">skeleton only, 0 tests</div></div>
   </div>
 
-  <div class="grid">
-    <div class="col">
-
-      <div class="card">
-        <div class="card-head">
-          <h2>Phase roadmap</h2>
-          <span class="hint">phase-gated · no calendar dates committed</span>
+  <section>
+    <div class="section-head"><h2>Phase roadmap</h2><div class="note">phase-gated, no calendar dates committed</div></div>
+    <div class="card rail-card">
+      <div class="rail">
+        <div class="rail-node done">
+          <div class="dot-line"><div class="dot"></div><div class="line"></div></div>
+          <div class="phase-label">Phase 0</div><div class="phase-name">Governance &amp; Spec</div>
+          <span class="phase-status">DONE</span>
         </div>
-        <div class="card-body">
-          <ul class="roadmap">
-            <li>
-              <div class="node-col"><div class="node done">✓</div><div class="line"></div></div>
-              <div>
-                <div class="title-row"><span class="title">0 · Governance &amp; spec</span><span class="status done">Done</span></div>
-                <div class="desc">Stack locked, philosophy set, compliance stance decided. 22–23 Jul.</div>
-              </div>
-            </li>
-            <li>
-              <div class="node-col"><div class="node done">✓</div><div class="line"></div></div>
-              <div>
-                <div class="title-row"><span class="title">1 · Teaching engine validation</span><span class="status done">Done</span></div>
-                <div class="desc">6 live test runs, prompt v0.3 → v0.8, all 10 findings closed. 23 Jul – 03 Aug.</div>
-              </div>
-            </li>
-            <li>
-              <div class="node-col"><div class="node active">●</div><div class="line"></div></div>
-              <div>
-                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">In progress</span></div>
-                <div class="desc">Backend skeleton live (FastAPI + SQLAlchemy + Alembic, BQ-011). Income/Goal schema and live budget computation queued next (BQ-009/010). Mobile app not started.</div>
-              </div>
-            </li>
-            <li>
-              <div class="node-col"><div class="node todo">3</div><div class="line"></div></div>
-              <div>
-                <div class="title-row"><span class="title">3 · Private structured testing</span><span class="status todo">Not started</span></div>
-                <div class="desc">Real users against a built app, not a fixture.</div>
-              </div>
-            </li>
-            <li>
-              <div class="node-col"><div class="node todo">4</div></div>
-              <div>
-                <div class="title-row"><span class="title">4 · Legal review &amp; public launch</span><span class="status todo">Not started</span></div>
-                <div class="desc">Blocked on an India securities/fintech lawyer's review of the compliance stance.</div>
-              </div>
-            </li>
-          </ul>
+        <div class="rail-node done">
+          <div class="dot-line"><div class="dot"></div><div class="line"></div></div>
+          <div class="phase-label">Phase 1</div><div class="phase-name">Teaching Engine Validation</div>
+          <span class="phase-status">DONE</span>
+        </div>
+        <div class="rail-node current">
+          <div class="dot-line"><div class="dot"></div><div class="line"></div></div>
+          <div class="phase-label">Phase 2</div><div class="phase-name">App &amp; Backend Build</div>
+          <span class="phase-status">IN PROGRESS</span>
+        </div>
+        <div class="rail-node todo">
+          <div class="dot-line"><div class="dot"></div><div class="line"></div></div>
+          <div class="phase-label">Phase 3</div><div class="phase-name">Private Structured Testing</div>
+          <span class="phase-status">NOT STARTED</span>
+        </div>
+        <div class="rail-node todo">
+          <div class="dot-line"><div class="dot"></div><div class="line"></div></div>
+          <div class="phase-label">Phase 4</div><div class="phase-name">Legal Review &amp; Launch</div>
+          <span class="phase-status">NOT STARTED</span>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-head">
-          <h2>Decision activity</h2>
-          <span class="hint">cumulative decisions logged, by date</span>
+      <div class="subphase-wrap">
+        <div class="caption">WHERE WE ARE INSIDE PHASE 2 — sub-phases a → g</div>
+        <div class="subphase-list">
+          <div class="sub-item done"><div class="tag">2a</div><div class="name">Backend scaffold</div><div class="mark">✓ done</div></div>
+          <div class="sub-item done"><div class="tag">2b</div><div class="name">Core schema</div><div class="mark">✓ done</div></div>
+          <div class="sub-item done"><div class="tag">2c</div><div class="name">Business logic</div><div class="mark">✓ done</div></div>
+          <div class="sub-item done"><div class="tag">2d</div><div class="name">Backend tests + CI</div><div class="mark">✓ done today</div></div>
+          <div class="sub-item done"><div class="tag">2e</div><div class="name">App skeleton</div><div class="mark">✓ done</div></div>
+          <div class="sub-item current"><div class="tag">2f</div><div class="name">Real capture / conversation UI</div><div class="mark">→ next up</div></div>
+          <div class="sub-item todo"><div class="tag">2g</div><div class="name">App test coverage</div><div class="mark">not started</div></div>
         </div>
-        <div class="card-body">
-          <div class="chart-wrap" id="chartWrap" style="position:relative;">
-            <svg class="chart" viewBox="0 0 640 226" id="chartSvg">
-              <!-- gridlines (domain 0-42, headroom above 41) -->
-              <line class="gridline" x1="40" y1="192"   x2="624" y2="192"/>
-              <line class="gridline" x1="40" y1="150.1" x2="624" y2="150.1"/>
-              <line class="gridline" x1="40" y1="108.2" x2="624" y2="108.2"/>
-              <line class="gridline" x1="40" y1="66.3"  x2="624" y2="66.3"/>
-              <line class="gridline" x1="40" y1="24.4"  x2="624" y2="24.4"/>
-              <text class="axis-label" x="34" y="195"   text-anchor="end">0</text>
-              <text class="axis-label" x="34" y="153.1" text-anchor="end">10</text>
-              <text class="axis-label" x="34" y="111.2" text-anchor="end">20</text>
-              <text class="axis-label" x="34" y="69.3"  text-anchor="end">30</text>
-              <text class="axis-label" x="34" y="27.4"  text-anchor="end">40</text>
+      </div>
+    </div>
+  </section>
 
-              <!-- repair-gap band -->
-              <rect class="gap-band" x="186" y="16" width="340.7" height="176"/>
-              <text class="gap-label" x="356" y="11" text-anchor="middle">build-home offline (laptop repair)</text>
-
-              <!-- area + line -->
-              <path class="area-fill" d="M40,162.7 L88.7,74.7 L186,62.1 L526.7,57.9 L575.3,37.0 L624,20.2 L624,192 L40,192 Z"/>
-              <path class="line-path" d="M40,162.7 L88.7,74.7 L186,62.1 L526.7,57.9 L575.3,37.0 L624,20.2"/>
-
-              <!-- points -->
-              <circle class="pt" data-x="40"   data-y="162.7" data-d="22 Jul" data-v="7"  cx="40"   cy="162.7" r="3.5"/>
-              <circle class="pt" data-x="88.7" data-y="74.7"  data-d="23 Jul" data-v="28" cx="88.7" cy="74.7"  r="3.5"/>
-              <circle class="pt" data-x="186"  data-y="62.1"  data-d="25 Jul" data-v="31" cx="186"  cy="62.1"  r="3.5"/>
-              <circle class="pt" data-x="526.7" data-y="57.9" data-d="1 Aug"  data-v="32" cx="526.7" cy="57.9" r="3.5"/>
-              <circle class="pt" data-x="575.3" data-y="37.0" data-d="2 Aug"  data-v="37" cx="575.3" cy="37.0" r="3.5"/>
-              <circle class="pt end" data-x="624" data-y="20.2" data-d="3 Aug · today" data-v="41" cx="624" cy="20.2" r="5"/>
-
-              <text class="end-label" x="586" y="14">41</text>
-
-              <text class="axis-label" x="40" y="210" text-anchor="middle">22 Jul</text>
-              <text class="axis-label" x="88.7" y="210" text-anchor="middle">23 Jul</text>
-              <text class="axis-label" x="186" y="210" text-anchor="middle">25 Jul</text>
-              <text class="axis-label" x="526.7" y="210" text-anchor="middle">1 Aug</text>
-              <text class="axis-label" x="575.3" y="210" text-anchor="middle">2 Aug</text>
-              <text class="axis-label" x="624" y="210" text-anchor="end">3 Aug</text>
-
-              <line class="crosshair" id="crosshair" x1="0" y1="16" x2="0" y2="192"/>
-              <circle class="hover-dot" id="hoverDot" r="5.5"/>
-            </svg>
-            <div class="tooltip" id="tooltip"></div>
+  <section class="grid-2">
+    <div>
+      <div class="section-head"><h2>What's next</h2></div>
+      <div class="card">
+        <ol class="ranked-list">
+          <li><span class="n">1</span><span class="txt"><strong>Design &amp; build the real capture/conversation UI in app/</strong><span>The single biggest unblock — opens BQ-004, D-051's WHEN half, and Decision 2.</span></span></li>
+          <li><span class="n">2</span><span class="txt"><strong>Add app/ test coverage</strong><span>Same gap the backend just closed — currently 0 tests on the mobile app.</span></span></li>
+          <li><span class="n">3</span><span class="txt"><strong>Decide a DB/integration-test strategy</strong><span>For model + migration + FK-cascade tests; today's suite deliberately avoided needing this.</span></span></li>
+          <li><span class="n">4</span><span class="txt"><strong>Re-run Phase 1 regression battery (Q2–Q8)</strong><span>Against current prompt v0.8 — owner must run locally, sandbox blocks live API calls.</span></span></li>
+          <li><span class="n">5</span><span class="txt"><strong>Write the data privacy policy</strong><span>D-010 open item — masking vs. encryption-at-rest, retention/deletion.</span></span></li>
+          <li><span class="n">6</span><span class="txt"><strong>Schedule legal review of D-009</strong><span>Not blocking MVP dev, but easy to forget until launch is close.</span></span></li>
+        </ol>
+        <div class="blocked-row">
+          <div class="stripe"></div>
+          <div class="txt"><strong>Blocked — BQ-004 (deepen selection logic)</strong>
+            <div>Needs a real conversation interface to design against (item 1, above) plus a selection-rule decision. Decision 2 shares the same root blocker.</div>
           </div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h2>Recent decisions</h2>
-          <span class="hint">last 6, see docs/DECISION_LOG.md for full ledger</span>
-        </div>
-        <div class="card-body" style="overflow-x:auto;">
-          <table class="ledger">
-            <thead><tr><th>ID</th><th>Tier</th><th>Date</th><th>What</th></tr></thead>
-            <tbody>
-              <tr><td class="did">D-041</td><td><span class="tier-chip t2">Owner</span></td><td class="ddate">03 Aug</td><td>Backend stack confirmed (FastAPI+SQLAlchemy+Alembic); BQ-011 skeleton shipped and verified.</td></tr>
-              <tr><td class="did">D-040</td><td><span class="tier-chip t2">Tier 1</span></td><td class="ddate">03 Aug</td><td>Dashboard auto-refresh added to end-of-session checklist; local HTML snapshot introduced.</td></tr>
-              <tr><td class="did">D-039</td><td><span class="tier-chip t2">Tier 1</span></td><td class="ddate">03 Aug</td><td>Created docs/CEO_DASHBOARD.md as the standing status-reporting source file.</td></tr>
-              <tr><td class="did">D-038</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">03 Aug</td><td>Budgeting/Goals data model resolved — thin links, computed budget, new Income object.</td></tr>
-              <tr><td class="did">D-037</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">02 Aug</td><td>FINDING 9 (Card-1 omission) resolved — verified 5/5 clean.</td></tr>
-              <tr><td class="did">D-036</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">02 Aug</td><td>BRIEF-005 resolved — "worth X" framing judged compliant, no fix needed.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
     </div>
 
-    <div class="col">
-
+    <div>
+      <div class="section-head"><h2>Key risks</h2></div>
       <div class="card">
-        <div class="card-head"><h2>Needs your input</h2></div>
-        <div class="card-body">
-          <ul class="watchlist">
-            <li>
-              <div class="stripe critical"></div>
-              <div>
-                <div class="wl-title">Add DATABASE_URL to .env<span class="wl-tag critical">Action</span></div>
-                <div class="wl-desc">Supabase dashboard → Project Settings → Database → Connection string (URI format), for the <code>fintutor-dev</code> project. Add it directly to <code>.env</code> yourself, not in chat. Unblocks full verification of BQ-009/BQ-010 and the live <code>/health/db</code> check.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        <ul class="risk-list">
+          <li class="risk-item"><span class="chip critical">critical</span><span class="txt"><strong>Legal review of D-009 not done</strong><span>India securities/fintech lawyer sign-off — non-negotiable before public launch.</span></span></li>
+          <li class="risk-item"><span class="chip warning">warning</span><span class="txt"><strong>app/ has no real product yet</strong><span>15 skeleton files (nav + auth), 0 feature screens, 0 tests.</span></span></li>
+          <li class="risk-item"><span class="chip warning">warning</span><span class="txt"><strong>Phase 1 regression coverage narrowed</strong><span>Only Q1 re-verified across prompt v0.5→v0.8; Q2–Q8 last checked around Run 2/3 — found this session.</span></span></li>
+          <li class="risk-item"><span class="chip info">info</span><span class="txt"><strong>Data privacy policy undesigned</strong><span>What's masked pre-LLM vs. encrypted at rest, plus retention/deletion (D-010).</span></span></li>
+          <li class="risk-item"><span class="chip info">info</span><span class="txt"><strong>Compliance tested on 2 fixtures only</strong><span>Second, "no dominant number" fixture still not run against most questions.</span></span></li>
+          <li class="risk-item"><span class="chip info">info</span><span class="txt"><strong>Solo-owner bottleneck</strong><span>Tier 2/3 decisions still need real owner attention every session.</span></span></li>
+        </ul>
       </div>
-
-      <div class="card">
-        <div class="card-head"><h2>Key risks</h2></div>
-        <div class="card-body">
-          <ul class="watchlist">
-            <li>
-              <div class="stripe critical"></div>
-              <div>
-                <div class="wl-title">Legal review not done<span class="wl-tag critical">Critical</span></div>
-                <div class="wl-desc">Compliance stance (D-009) needs an India securities/fintech lawyer's sign-off before public launch. Not urgent for MVP dev — easy to forget until it's late.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe warn"></div>
-              <div>
-                <div class="wl-title">Mobile app still 0 files<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Backend skeleton landed today, which narrows this — but the user-facing product still doesn't exist yet.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe warn"></div>
-              <div>
-                <div class="wl-title">Data privacy policy undesigned<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Retention + at-rest PII protection still need to be written before real user data exists.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe warn"></div>
-              <div>
-                <div class="wl-title">Only 2 test fixtures<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">All findings closed against these two profiles — wider real usage may surface new ones.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+      <div class="card approvals-card">
+        <div class="badge">✓</div>
+        <div><strong>Pending approval queue: clear</strong><div class="d">0 open BRIEFs — all 7 raised (BRIEF-001–007) are resolved.</div></div>
       </div>
-
-      <div class="card">
-        <div class="card-head"><h2>Blockers</h2></div>
-        <div class="card-body">
-          <ul class="watchlist">
-            <li>
-              <div class="stripe warn"></div>
-              <div>
-                <div class="wl-title">BQ-004 — deepen-selection rule</div>
-                <div class="wl-desc">Waiting on a design decision, not urgent, thinking-home only.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe warn"></div>
-              <div>
-                <div class="wl-title">Decision 2 — per-item management</div>
-                <div class="wl-desc">Needs a real Phase 1 app section to react to before it's designed well.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe good"></div>
-              <div>
-                <div class="wl-title">BQ-011 shipped — skeleton no longer blocks anything</div>
-                <div class="wl-desc">BQ-009/BQ-010 now have a real codebase to build against.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h2>What's next</h2></div>
-        <div class="card-body">
-          <ul class="watchlist">
-            <li>
-              <div class="stripe accent"></div>
-              <div>
-                <div class="wl-title">1. BQ-009 — Income + Goal schema</div>
-                <div class="wl-desc">Ready to build, skeleton now exists.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe accent"></div>
-              <div>
-                <div class="wl-title">2. BQ-010 — live budget computation</div>
-                <div class="wl-desc">Ready, depends on BQ-009.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe accent"></div>
-              <div>
-                <div class="wl-title">3. Decision 2 design</div>
-                <div class="wl-desc">Once a real section exists to react to.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe accent"></div>
-              <div>
-                <div class="wl-title">4. Put legal review on the calendar</div>
-                <div class="wl-desc">Not blocking now — will be blocking eventually.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-
     </div>
-  </div>
+  </section>
 
-  <div class="pulse">
-    <div class="pulse-title">Compliance pulse — the thing this app can't afford to get wrong</div>
-    <div class="pulse-item"><div class="num">10 / 10</div><div class="lbl">testing findings resolved</div></div>
-    <div class="pulse-item"><div class="num">5 / 5</div><div class="lbl">owner escalations (BRIEFs) resolved</div></div>
-    <div class="pulse-item"><div class="num">v0.8</div><div class="lbl">current system prompt</div></div>
-    <div class="pulse-item"><div class="num">5 / 5</div><div class="lbl">last verification run, clean</div></div>
+  <section>
+    <div class="section-head"><h2>Activity — decisions logged per day</h2><div class="note">cumulative: 55</div></div>
+    <div class="card chart-card">
+      <div class="bars">
+        <div class="bar-col"><div class="count">7</div><div class="bar" style="height:28%"></div><div class="date">22 Jul</div></div>
+        <div class="bar-col"><div class="count">21</div><div class="bar" style="height:100%"></div><div class="date">23 Jul</div></div>
+        <div class="bar-col"><div class="count">3</div><div class="bar" style="height:12%"></div><div class="date">25 Jul</div></div>
+        <div class="bar-col"><div class="count">·</div><div class="bar zero"></div><div class="date">26–31 Jul</div></div>
+        <div class="bar-col"><div class="count">1</div><div class="bar" style="height:4%"></div><div class="date">1 Aug</div></div>
+        <div class="bar-col"><div class="count">5</div><div class="bar" style="height:20%"></div><div class="date">2 Aug</div></div>
+        <div class="bar-col"><div class="count">14</div><div class="bar" style="height:66%"></div><div class="date">3 Aug</div></div>
+        <div class="bar-col"><div class="count">4</div><div class="bar" style="height:16%"></div><div class="date">4 Aug</div></div>
+      </div>
+      <div class="chart-note">24 Jul and 26–31 Jul: zero — build-home laptop offline (Apple repair). 3 Aug is the densest day on record (backend schema + business logic shipped in one pass).</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Compliance pulse</h2></div>
+    <div class="card">
+      <div class="pulse">
+        <div class="pulse-item"><div class="label">Findings raised</div><div class="value">10</div></div>
+        <div class="pulse-item"><div class="label">Findings resolved</div><div class="value good">10 / 10</div></div>
+        <div class="pulse-item"><div class="label">Owner escalations</div><div class="value">7 / 7</div></div>
+        <div class="pulse-item"><div class="label">Current prompt</div><div class="value">v0.8</div></div>
+      </div>
+      <div class="pulse-flag">
+        <span class="chip">watch</span>
+        <span>Clean 5/5 result (BQ-008) is Q1-only — the other seven questions haven't been re-verified since prompt v0.3–v0.5, despite four rule changes landing since.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Recent decisions</h2><div class="note">last 6</div></div>
+    <div class="card">
+      <table class="decisions">
+        <thead><tr><th>ID</th><th>Tier</th><th>What</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td class="id">D-055</td><td class="tier">owner-confirmed</td><td class="what">CI: GitHub Actions runs the backend pytest suite on push/PR.</td><td class="date">04 Aug</td></tr>
+          <tr><td class="id">D-054</td><td class="tier">owner-confirmed</td><td class="what">Fixed compute_budget() SIP outflow field — was reading cumulative invested_amount instead of monthly_sip_amount.</td><td class="date">04 Aug</td></tr>
+          <tr><td class="id">D-053</td><td class="tier">owner-confirmed</td><td class="what">Introduced pytest; 35 unit tests added for compute_budget/compute_surfacing_candidates.</td><td class="date">04 Aug</td></tr>
+          <tr><td class="id">D-052</td><td class="tier">owner-confirmed</td><td class="what">App scaffold stack: Expo + TypeScript + React Navigation; Supabase JS client for auth.</td><td class="date">04 Aug</td></tr>
+          <tr><td class="id">D-051</td><td class="tier">3</td><td class="what">BRIEF-007 resolved — surfacing candidate selection (WHICH) built now; WHEN stays gated on re-verification.</td><td class="date">03 Aug</td></tr>
+          <tr><td class="id">D-050</td><td class="tier">1</td><td class="what">Pending Approval Queue section added to this dashboard.</td><td class="date">03 Aug</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="stamp">
+    <b>This session (04-Aug):</b> ran a read-only test-coverage review → built a 35-test backend unit-test suite (D-053/BQ-015) → found and fixed a live money-calculation bug in the budget SIP outflow (D-054) → wired up CI and verified it green on its first real run (D-055/BQ-016).
   </div>
 
 </div>
-
-<script>
-  (function() {
-    var svg = document.getElementById('chartSvg');
-    var tooltip = document.getElementById('tooltip');
-    var wrap = document.getElementById('chartWrap');
-    var crosshair = document.getElementById('crosshair');
-    var hoverDot = document.getElementById('hoverDot');
-    var pts = Array.prototype.slice.call(svg.querySelectorAll('.pt'));
-
-    function nearest(mx) {
-      var best = pts[0], bestD = Infinity;
-      pts.forEach(function(p) {
-        var x = parseFloat(p.getAttribute('data-x'));
-        var d = Math.abs(x - mx);
-        if (d < bestD) { bestD = d; best = p; }
-      });
-      return best;
-    }
-
-    function showFor(p) {
-      var x = parseFloat(p.getAttribute('data-x'));
-      var y = parseFloat(p.getAttribute('data-y'));
-      var d = p.getAttribute('data-d');
-      var v = p.getAttribute('data-v');
-      crosshair.setAttribute('x1', x); crosshair.setAttribute('x2', x);
-      crosshair.style.opacity = 1;
-      hoverDot.setAttribute('cx', x); hoverDot.setAttribute('cy', y);
-      hoverDot.style.opacity = 1;
-
-      var rect = svg.getBoundingClientRect();
-      var wrapRect = wrap.getBoundingClientRect();
-      var scale = rect.width / 640;
-      var px = (x * scale) + (rect.left - wrapRect.left);
-      var py = (y * scale) + (rect.top - wrapRect.top);
-      tooltip.style.left = px + 'px';
-      tooltip.style.top = py + 'px';
-      tooltip.style.opacity = 1;
-      tooltip.textContent = d + '  ·  ' + v + ' decisions';
-    }
-
-    function hide() {
-      crosshair.style.opacity = 0;
-      hoverDot.style.opacity = 0;
-      tooltip.style.opacity = 0;
-    }
-
-    svg.addEventListener('mousemove', function(e) {
-      var rect = svg.getBoundingClientRect();
-      var scale = 640 / rect.width;
-      var mx = (e.clientX - rect.left) * scale;
-      showFor(nearest(mx));
-    });
-    svg.addEventListener('mouseleave', hide);
-    svg.addEventListener('touchstart', function(e) {
-      var rect = svg.getBoundingClientRect();
-      var scale = 640 / rect.width;
-      var mx = (e.touches[0].clientX - rect.left) * scale;
-      showFor(nearest(mx));
-    }, {passive: true});
-  })();
-</script>
+</body>
+</html>
