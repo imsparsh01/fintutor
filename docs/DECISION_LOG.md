@@ -1400,3 +1400,10 @@ Full entry: `docs/decisions/D-047-session-log-precommit-hook.md`. `.githooks/pre
 commit touching `app/`/`backend/` unless a `docs/sessions/*.md` file is staged alongside it;
 requires one-time `git config core.hooksPath .githooks` per clone (see README.md). Mechanizes the
 existing session-log habit; no new infra. Reversibility: High. Date: 03-Aug-2026.
+
+### D-048 — Discretionary categories stored as their own table, sibling to Income/Goal (owner-confirmed)
+Full entry: `docs/decisions/D-048-discretionary-categories-table.md`. Executing BQ-010, owner chose
+a new `discretionary_categories` table over a JSONB field on Income. Also covers BQ-010's
+`compute_budget()`/`GET /budget` build: monthly-normalization convention for Income/insurance
+frequencies, and the product_type slugs the computation keys on. Reversibility: High.
+Date: 03-Aug-2026.

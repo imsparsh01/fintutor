@@ -1,0 +1,68 @@
+import uuid
+
+from sqlalchemy.orm import Session
+
+from app.models import DiscretionaryCategory, Holding, Income
+
+# D-013 product_type slugs whose recurring outflow is a loan EMI.
+_EMI_TYPES = {"home_loan", "personal_loan"}
+# D-013 product_type slugs that can carry a SIP (recurring) contribution.
+_SIP_CAPABLE_TYPES = {"equity_mutual_fund", "debt_mutual_fund"}
+# D-013 product_type slugs whose recurring outflow is an insurance premium.
+_PREMIUM_TYPES = {"term_insurance", "endowment_ulip"}
+
+
+def _to_monthly(amount: float, frequency: str | None) -> float:
+    """Normalize an amount + frequency (Income.sources / premium_frequency) to a monthly figure."""
+    freq = (frequency or "monthly").strip().lower()
+    if freq in ("annual", "annually", "yearly", "year"):
+        return float(amount) / 12
+    if freq in ("quarterly", "quarter"):
+        return float(amount) / 3
+    if freq in ("weekly", "week"):
+        return float(amount) * 52 / 12
+    # "monthly"/"month" and any unrecognized value are treated as already-monthly.
+    return float(amount)
+
+
+def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
+    """Live budget view per D-038/BQ-010 — nothing here is stored, only read and summed.
+
+    income_total: Income.sources, frequency-normalized to monthly.
+    recurring_outflows_total: EMI / SIP investment amount / insurance premium, read live
+      off Holding.characteristics (D-013 fields) — the three items D-038 names explicitly.
+    discretionary_total: DiscretionaryCategory.planned_amount, summed as-is.
+    """
+    income_total = sum(
+        _to_monthly(source["amount"], source.get("frequency"))
+        for income in db.query(Income).filter(Income.user_id == user_id).all()
+        for source in income.sources
+    )
+
+    recurring_outflows_total = 0.0
+    for holding in db.query(Holding).filter(Holding.user_id == user_id).all():
+        c = holding.characteristics or {}
+        if holding.product_type in _EMI_TYPES:
+            recurring_outflows_total += float(c.get("emi_amount") or 0)
+        elif holding.product_type in _SIP_CAPABLE_TYPES and c.get("investment_mode") == "SIP":
+            recurring_outflows_total += float(c.get("invested_amount") or 0)
+        elif holding.product_type in _PREMIUM_TYPES:
+            recurring_outflows_total += _to_monthly(
+                c.get("premium") or 0, c.get("premium_frequency")
+            )
+
+    discretionary_categories = (
+        db.query(DiscretionaryCategory).filter(DiscretionaryCategory.user_id == user_id).all()
+    )
+    discretionary_total = sum(float(row.planned_amount) for row in discretionary_categories)
+
+    return {
+        "income_total": round(income_total, 2),
+        "recurring_outflows_total": round(recurring_outflows_total, 2),
+        "discretionary_total": round(discretionary_total, 2),
+        "net": round(income_total - recurring_outflows_total - discretionary_total, 2),
+        "discretionary_categories": [
+            {"label": row.label, "planned_amount": float(row.planned_amount)}
+            for row in discretionary_categories
+        ],
+    }

@@ -1,9 +1,12 @@
 import logging
+import uuid
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
-from app.db.session import engine
+from app.db.session import engine, get_db
+from app.services.budget import compute_budget
 
 logger = logging.getLogger("fintutor.health")
 
@@ -13,6 +16,11 @@ app = FastAPI(title="FinTutor API")
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/budget")
+def get_budget(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return compute_budget(db, user_id)
 
 
 @app.get("/health/db")

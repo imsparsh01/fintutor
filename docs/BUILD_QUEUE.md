@@ -14,13 +14,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-010 — Implement live budget computation (no stored Budget object)
-**Depends on:** BQ-011 (backend skeleton), BQ-009 (Income object), BQ-012 (Holdings model) — all done
-**Traces to:** D-038
-**What:** Compute budget on read, never store it: income total (from Income, BQ-009) minus recurring
-outflows read live off holding records (EMI amount, SIP investment amount, insurance premium fields per
-D-013) minus a stored list of discretionary categories (`{label, planned_amount}`). Now fully unblocked —
-`Holding.characteristics` (BQ-012) is where EMI/SIP/premium fields actually live.
+*(empty — see BLOCKED below)*
 
 ---
 
@@ -45,6 +39,19 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-010 — Implement live budget computation (no stored Budget object) — done 03-Aug-2026
+Traces to D-038. Added `backend/app/models/discretionary_category.py` (new `discretionary_categories`
+table — owner chose this over a JSONB field on Income, logged as **D-048**) and
+`backend/app/services/budget.py`'s `compute_budget()`, exposed via `GET /budget?user_id=`. Nothing
+stored: income total (from Income, frequency-normalized to monthly) minus recurring outflows read
+live off `Holding.characteristics` (EMI for home_loan/personal_loan, SIP investment amount for
+equity/debt mutual funds only when `investment_mode == "SIP"`, insurance premium for
+term_insurance/endowment_ulip, frequency-normalized) minus discretionary categories, summed as-is.
+Alembic migration `ce8262c241ff` applied against the live Supabase DB. Verified end-to-end: inserted
+a test user's Income/holdings/discretionary rows, confirmed `/budget` matches the hand-computed
+total exactly (including correctly excluding a lumpsum-mode fund from recurring outflows), test rows
+deleted after verification.
 
 ### BQ-012 — Build the real Holdings model — done 03-Aug-2026
 Owner-directed mid-session, as the direct follow-up to BQ-009's flagged gap (no Holdings table existed to
