@@ -1,4 +1,4 @@
-# FinTutor — Product Principles (v1.1, 25-Jul-2026)
+# FinTutor — Product Principles (v1.2, 04-Aug-2026)
 
 > **What this is.** The substantive product point of view that non-technical decisions are checked
 > against. DECISION_PROTOCOL.md governs *how* a decision is made and *who* owns it; this file supplies
@@ -70,23 +70,69 @@ money is forbidden. The user always gets their real names, real numbers, real wo
 - **What it forbids:** showing the user "Fund-A" instead of their fund's real name; letting privacy
   machinery make the app feel sterile or foreign to the person whose data it is.
 
+### P7 — Engagement design may use the full behavioral toolkit, but only on behavior — never on the user's real financial data.
+**Test:** Does this game/engagement element (reward, streak, mascot reaction, XP, fictional skin) respond
+to something the user *did in the app* — opened it, completed a teaching moment, hit a session count — or
+to their *actual financial data* — a number, a holding, net worth? The first is permitted without
+restriction, deliberately including techniques associated with habit-forming design (streaks, variable/
+unpredictable reward feedback, the full Hook Loop architecture). The second is forbidden: real financial
+data is always shown straight, undecorated — never scored, never used to drive a character's mood, never
+wrapped in game fiction.
+
+- **Scope:** app-wide, anywhere a habit/retention/engagement mechanic is designed.
+- **Traced to:** D-060 (full adoption of engagement mechanics — streaks, variable reward, Hook Loop — as
+  an explicit, on-the-record carve-out from P4's start-strict default, not a supersession of it) and D-061
+  (interprets P6 into gamification design for the first time — game elements may react to behavior, never
+  to real financial data).
+- **What it forbids:** XP/levels/badges tied to net worth or a specific holding; a mascot whose mood is
+  driven by the user's financial figures; an RPG/fantasy skin wrapping real loan or investment data; any
+  progress mechanic that scores or fictionalizes a real number from the living baseline.
+- **Relationship to P4:** this principle is a named, scoped exception to P4's "start strict, relax
+  deliberately" default — chosen explicitly and knowingly (D-060), not by drift. P4 continues to govern
+  every other permissiveness dial in the product, including compliance-adjacent ones, unchanged.
+- **Relationship to P2:** the permission this principle grants is for *general app engagement* only. A
+  mechanic that ties a specific reward, streak, or badge to a specific financial action or choice (not
+  just app usage) is not covered by P7's blanket permission — that shape of feature steers a financial
+  decision via a game-shaped nudge and needs its own P2 (teach-never-advise) check when it's actually
+  designed.
+
 ---
 
 ## Deliberately unprincipled (for now)
 
-**The UX/UI surface has no principles yet — but a UX section is now pending (D-031).** The founding four
-above were extracted from teaching-engine and compliance decisions. As of D-031, the app's structure
-(persistent category sections, AI-primary/manual-secondary population, aliases never shown, no
-comprehension gates, progressive capture) implies a real UX stance that CAN be extracted — but only once
-its upstream decisions exist: Decision 3 (budgeting/goals data model) and Decision 2 (per-item management
-depth), both open in PROJECT_SPEC §8. The UX section is written AFTER those, because it extracts from
-them. The **aesthetic layer** (visual style, density, motion, colour, information hierarchy) remains
-genuinely unprincipled and will stay so until real screen decisions force it — inventing it now would
-violate the extraction discipline this file is built on.
+**Gamification/engagement design now has a principle — P7 (D-060, D-061).** Unlike the founding four
+(extracted from decisions already made), P7 was decided through live, explicit deliberation in a
+dedicated founding UX/gamification-framework session — working through a 25-principle candidate list
+cluster by cluster, with real tension surfaced and real tradeoffs stated, rather than extracted from a
+prior decision's implied stance.
+
+**The broader UX/interaction-model principles D-031 anticipated remain unwritten — but no longer blocked.**
+As of D-031, the app's structure (persistent category sections, AI-primary/manual-secondary population,
+aliases never shown, no comprehension gates, progressive capture) implies a real UX stance that CAN be
+extracted. It was gated on Decision 3 (budgeting/goals data model) and Decision 2 (per-item management
+depth) both existing — both are now resolved (D-038, D-059) — so this is genuinely available to write
+whenever it's picked up as its own task, not invented ahead of its dependencies just because the gate
+happens to be open now.
+
+The **aesthetic layer** (visual style, density, motion, colour, information hierarchy) remains genuinely
+unprincipled and will stay so until real screen decisions force it — inventing it now would violate the
+extraction discipline this file is built on.
 
 ---
 
 ## Change log
+- v1.2 (04-Aug-2026) — **P7 added: engagement design may use the full behavioral toolkit, but only on
+  behavior, never on real financial data.** First principle decided through live deliberation rather than
+  extracted from a prior decision — from a dedicated founding UX/gamification-framework session working a
+  25-candidate-principle list cluster by cluster. Traces to D-060 (full adoption of Duolingo-style
+  engagement mechanics — streaks, variable reward, the Hook Loop — an explicit, named exception to P4's
+  start-strict default) and D-061 (interprets P6 into gamification design for the first time — game
+  elements may react to app behavior, never to the user's real financial data). Two candidate principles
+  from the same session — gated feature-unlock sequencing, social/group stakes — were NOT adopted; both
+  already contradicted standing decisions (D-058, PROJECT_SPEC.md §5) and needed no new principle.
+  "Deliberately unprincipled" section updated: gamification now has a principle; the broader UX/
+  interaction-model section D-031 anticipated is unblocked (Decision 2 and 3 both resolved) but still
+  unwritten, pending its own session; the aesthetic layer remains untouched.
 - v1.1 (25-Jul-2026) — Updated the "deliberately unprincipled" note per **D-031**: a UX principles section is
   now pending (not indefinite), to be extracted once Decision 3 (budgeting/goals model) and Decision 2
   (per-item management depth) exist. Aesthetic layer still deliberately unprincipled. No change to the
