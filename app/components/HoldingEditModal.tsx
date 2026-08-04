@@ -1,12 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
 import { useAuth } from '../lib/AuthContext';
 import { deleteHolding, updateHolding, type Holding } from '../lib/holdings';
 import { ALL_PRODUCT_TYPES, humanizeProductType } from '../lib/taxonomy';
 
-// Edit/delete/recategorize UI (D-059, Path C) — full direct-manipulation authority
-// over a holding. Characteristics (the per-type field blob) aren't editable here yet;
-// the backend PATCH already accepts them, this is a UI scoping choice for a first pass.
+// Characteristics are form-edited as strings, converted to their real type on save.
+// A field left blank is omitted from the payload rather than sent as an empty string.
+function initialCharacteristicsState(
+  productType: string,
+  holding: Holding
+): Record<string, string> {
+  if (productType !== holding.product_type) return {};
+  const fields = CHARACTERISTICS_SCHEMA[productType] ?? [];
+  const state: Record<string, string> = {};
+  for (const field of fields) {
+    const value = holding.characteristics[field.key];
+    state[field.key] = value === null || value === undefined ? '' : String(value);
+  }
+  return state;
+}
+
+// Edit/delete/recategorize UI (D-059, Path C) — full direct-manipulation authority over
+// a holding, including the per-type characteristics field blob (BQ-028), keyed off the
+// known D-013 field list per product_type (see lib/characteristicsSchema.ts).
 export function HoldingEditModal({
   holding,
   onClose,
@@ -20,18 +37,37 @@ export function HoldingEditModal({
   const [alias, setAlias] = useState(holding.alias);
   const [displayName, setDisplayName] = useState(holding.display_name ?? '');
   const [productType, setProductType] = useState(holding.product_type);
+  const [characteristics, setCharacteristics] = useState(() =>
+    initialCharacteristicsState(holding.product_type, holding)
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Recategorizing changes which fields apply — a different product type's
+  // characteristics aren't meaningful carried over, so the section resets.
+  useEffect(() => {
+    setCharacteristics(initialCharacteristicsState(productType, holding));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productType]);
+
+  const fields = CHARACTERISTICS_SCHEMA[productType] ?? [];
 
   const save = async () => {
     if (!userId) return;
     setSaving(true);
     setError(null);
     try {
+      const characteristicsPayload: Record<string, unknown> = {};
+      for (const field of fields) {
+        const raw = characteristics[field.key];
+        if (raw === undefined || raw === '') continue;
+        characteristicsPayload[field.key] = field.kind === 'number' ? Number(raw) : raw;
+      }
       await updateHolding(userId, holding.id, {
         alias,
         display_name: displayName || null,
         product_type: productType,
+        characteristics: characteristicsPayload,
       });
       onChanged();
       onClose();
@@ -94,6 +130,51 @@ export function HoldingEditModal({
           ))}
         </View>
 
+        <Text style={styles.label}>Characteristics</Text>
+        {fields.length === 0 ? (
+          <Text style={styles.noFieldsText}>
+            {productType === 'esop'
+              ? "ESOP's field list isn't designed yet (D-055) — nothing to edit here for now."
+              : 'No known fields for this product type.'}
+          </Text>
+        ) : (
+          fields.map((field) => (
+            <View key={field.key}>
+              <Text style={styles.fieldLabel}>{field.label}</Text>
+              {field.kind === 'enum' ? (
+                <View style={styles.chipRow}>
+                  {field.options?.map((option) => (
+                    <Pressable
+                      key={option}
+                      style={[styles.chip, characteristics[field.key] === option && styles.chipSelected]}
+                      onPress={() => setCharacteristics((prev) => ({ ...prev, [field.key]: option }))}
+                    >
+                      <Text
+                        style={[
+                          styles.chipText,
+                          characteristics[field.key] === option && styles.chipTextSelected,
+                        ]}
+                      >
+                        {option}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : (
+                <TextInput
+                  style={styles.input}
+                  value={characteristics[field.key] ?? ''}
+                  onChangeText={(text) =>
+                    setCharacteristics((prev) => ({ ...prev, [field.key]: text }))
+                  }
+                  keyboardType={field.kind === 'number' ? 'numeric' : 'default'}
+                  placeholder={field.label}
+                />
+              )}
+            </View>
+          ))
+        )}
+
         {error && <Text style={styles.errorText}>{error}</Text>}
 
         <Pressable style={[styles.button, styles.saveButton]} onPress={save} disabled={saving}>
@@ -116,6 +197,8 @@ const styles = StyleSheet.create({
   container: { padding: 24, paddingTop: 48, backgroundColor: '#fff' },
   title: { fontSize: 20, fontWeight: '600', marginBottom: 24 },
   label: { fontSize: 13, color: '#666', marginBottom: 6, marginTop: 16 },
+  fieldLabel: { fontSize: 13, color: '#666', marginBottom: 6, marginTop: 12 },
+  noFieldsText: { fontSize: 13, color: '#888', fontStyle: 'italic' },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#ccc',

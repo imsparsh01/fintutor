@@ -14,14 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-028 — Holdings characteristics (field-level) editing UI
-**Traces to:** D-059 (Decision 2, Path C) — the full-authority decision already covers this; it's a UI
-gap, not an open decision. `characteristics` (interest_rate, expense_ratio, tenure, EMI amount, etc. —
-the D-013 per-type fields) can't be edited from the app yet; only `alias`/`display_name`/`product_type`
-can (BQ-027). Backend `PATCH /holdings/{id}` already accepts a `characteristics` dict — this is UI-only
-work: a dynamic form keyed off `product_type`'s known field list. Deliberately deferred, not dropped —
-owner chose to log and pick up later within MVP rather than build now. Unblocked, ready whenever picked.
-
 ### BQ-022 — Holding-detail view, as a home for teaching content
 **Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
 done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is now specifically a
@@ -75,6 +67,23 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-028 — Holdings characteristics (field-level) editing UI — done 04-Aug-2026
+Traces to D-059 (Decision 2, Path C), unblocked (BQ-027 already had the alias/display_name/product_type
+half). Added `app/lib/characteristicsSchema.ts` — D-013's per-type field lists transcribed for form
+rendering (`{key, label, kind: 'text'|'number'|'date'|'enum', options?}`), covering all 8 original D-013
+types (`fd_rd`/`ppf_epf` merges reuse their single field set; loan and fund types share their common
+shapes since D-013 gave them identical field lists). **`esop` is deliberately absent** — D-055 added it to
+the taxonomy but left its characteristics schema undesigned; the UI shows an explicit "not designed yet"
+message rather than a guessed field list. Extended `HoldingEditModal.tsx` with a dynamic "Characteristics"
+section below the product-type picker: enum fields (`investment_mode`, `deposit_mode`,
+`retirement_fund_type`) render as the same chip-toggle pattern already used for product type; everything
+else is a plain `TextInput` (numeric keyboard for number fields, no date-picker dependency — dates stay
+`YYYY-MM-DD` text, matching BQ-020's goal-date convention). Recategorizing (changing `product_type` in the
+same modal) resets the characteristics section, since a different type's fields aren't meaningful carried
+over. A blank field is omitted from the save payload rather than sent as an empty string. Verified: `npx
+tsc --noEmit` clean, `npx expo export --platform android` bundled cleanly (926 modules, no errors). Not
+verified end-to-end against a live device/backend.
 
 ### BQ-020 — Budgeting/Goals tab (frontend, new tab) — done 04-Aug-2026
 Traces to BRIEF-013, unblocked by BQ-010/BQ-016/BQ-017. Added `app/lib/budget.ts`, `income.ts`, `goals.ts`
