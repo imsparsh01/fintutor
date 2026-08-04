@@ -1502,6 +1502,19 @@ giving every user the guided entry point fresh starters specifically need (BRIEF
 trigger fires; reinforces P1/D-012 rather than contradicting a principle. Reversibility: High.
 Date: 03-Aug-2026.
 
+### D-060 — Founding UX framework, cluster 1 of 3 resolved: engagement mechanics (streaks, variable reward, Hook Loop) adopted in full
+Full entry: `docs/decisions/D-060-engagement-mechanics-full-adoption.md`. Tier 3 — two triggers fired:
+trigger 3 (contradicts P4's "start strict, relax deliberately" — this decision adopts the permissive form
+immediately, no strict-first step) and trigger 5 (MVP scope increase — no gamification/engagement layer
+exists in `PROJECT_SPEC.md` §4 today). Owner chose full adoption of loss-aversion streaks, variable/
+unpredictable reward feedback, and the full Hook Loop architecture — "same playbook as Duolingo,"
+explicitly aware of the gambling/social-media mechanic-shape, judged as building a good habit around a
+good product rather than exploiting the user. Recorded as a scoped carve-out to P4 (P4 still governs other
+permissiveness dials, compliance-adjacent ones especially) not a supersession. Explicit boundary flagged:
+does not pre-clear tying a specific reward/streak to a specific financial action — that still needs its
+own P2 check when designed. Only 1 of 3 contested UX clusters from this session; §4 scope addition not
+yet applied, pending whether to batch with clusters 2/3. Reversibility: High. Date: 04-Aug-2026.
+
 ### D-059 — Decision 2 resolved: Path C adopted — full per-field edit, delete, and recategorize authority over holdings
 Full entry: `docs/decisions/D-059-per-item-management-depth.md`. Tier 3 (trigger 2, user financial data
 handling), resolves `PROJECT_SPEC.md` §8's Decision 2, open since D-031. Users get full direct-manipulation
