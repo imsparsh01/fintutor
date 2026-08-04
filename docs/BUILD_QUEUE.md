@@ -22,18 +22,13 @@ can (BQ-027). Backend `PATCH /holdings/{id}` already accepts a `characteristics`
 work: a dynamic form keyed off `product_type`'s known field list. Deliberately deferred, not dropped —
 owner chose to log and pick up later within MVP rather than build now. Unblocked, ready whenever picked.
 
-### BQ-029 — Engagement/streak state model + API (backend)
-**Traces to:** D-060, P7 (`PRODUCT_PRINCIPLES.md`). Daily app-open streak tracking per user
-(`current_streak`, `longest_streak`, `last_active_date`) — increments on a new calendar day's first open,
-resets on a missed day. Pure app-behavior tracking (opens), not derived from any financial data — stays
-inside P7's permitted half. Unblocked, no dependency.
-
 ### BQ-030 — Variable reward trigger logic (backend)
 **Traces to:** D-060, P7. Server-authoritative logic deciding, on an app-open event, whether a small
 unpredictable reward fires (deliberately variable-ratio, not a fixed schedule — that unpredictability is
 the point per D-060). Scoped to app-open only for now — the richer trigger set D-060 anticipated
 (rewarding a completed teaching moment) needs the chat surface to exist first (BQ-023/BQ-024), so that
-extension is a natural follow-on, not part of this item. Depends on BQ-029 for the event to react to.
+extension is a natural follow-on, not part of this item. Unblocked — BQ-029 now exists (`POST
+/streak/open` is the event to react to).
 
 ### BQ-031 — Streak + reward UI (frontend)
 **Traces to:** D-060, D-061, P7. Visible streak counter and celebratory reward feedback (visual/haptic,
@@ -114,6 +109,25 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-029 — Engagement/streak state model + API (backend) — done 04-Aug-2026
+Traces to D-060, P7. Added `backend/app/models/streak_state.py` (`StreakState`: `current_streak`,
+`longest_streak`, `last_active_date`, unique on `user_id`, one row per user) and
+`backend/app/services/streaks.py` (`get_streak` — read-only, returns zeroed defaults if no row exists
+yet; `record_app_open` — increments on a new calendar day's first open (server date), resets to 1 on a
+missed day, no-ops if today was already recorded, so a client can safely call it on every foreground;
+`longest_streak` is a monotonic high-water mark, never resets down). Two routes in `main.py`: `GET
+/streak`, `POST /streak/open`. Hand-wrote the Alembic migration
+(`974126e6d41f_add_streak_states_table_bq_029_d_060.py`) rather than autogenerating — no `DATABASE_URL`
+in this remote session to reflect against, same limitation every migration since BQ-011 has hit — but
+matched column-for-column against the exact `sa.UUID()`/`sa.Date()`/`sa.Integer()` conventions the three
+prior migrations already established (verified by grep across all `alembic/versions/*.py`), not applied
+against the live Supabase DB yet (owner's local credentials needed, same as BQ-011 on). Verified:
+`alembic history` resolves the new revision as head with the correct chain; `python -m py_compile`
+clean; app imports and both routes register in a fresh venv; the streak increment/reset/no-op logic unit-
+tested against a mocked DB session across four cases (first open, same-day repeat, consecutive day,
+missed-day reset with `longest_streak` preserved) — all passed. Unblocks BQ-030 (now has
+`POST /streak/open` as its reactive event), moved to READY.
 
 ### BQ-018 — Consolidated net-worth aggregation endpoint — done 04-Aug-2026
 Traces to BRIEF-013 + **D-065** (escalated mid-build: no formula was already decided, unlike BQ-010/

@@ -20,6 +20,7 @@ from app.services.holdings import (
     update_holding,
 )
 from app.services.income import create_income, list_income, update_income
+from app.services.streaks import get_streak, record_app_open
 from app.services.surfacing import compute_surfacing_candidates
 
 logger = logging.getLogger("fintutor.health")
@@ -191,6 +192,16 @@ def post_goal(user_id: uuid.UUID, body: GoalCreate, db: Session = Depends(get_db
             status_code=400,
             detail="One or more funded_by.holding_id values don't exist",
         )
+
+
+@app.get("/streak")
+def get_streak_state(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return get_streak(db, user_id)
+
+
+@app.post("/streak/open")
+def post_streak_open(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return record_app_open(db, user_id)
 
 
 @app.get("/health/db")
