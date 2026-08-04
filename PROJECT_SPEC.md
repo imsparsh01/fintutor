@@ -97,6 +97,13 @@ itself is an open question as of D-053/BRIEF-008 — see the note below.)*
    in its section. A manual add/browse path is the secondary route into the same sections. See D-012, D-031.
 7. Reminders: EMI dates, credit-card payment dates
 8. (Open-ended chat comes LATER — not in MVP)
+9. **Engagement/gamification layer (D-060, D-061).** Duolingo-style engagement mechanics — streaks,
+   variable/unpredictable reward feedback, the full Hook Loop architecture (trigger → action → variable
+   reward → investment) — drive daily app usage, adopted in full per D-060. Bounded by D-061: cosmetic,
+   behavior-reactive game elements (mascot reactions, celebratory feedback tied to app usage) are
+   permitted; no game element (XP, badge, level, mascot mood, fictional/RPG skin) may be derived from or
+   reactive to the user's real financial data — real numbers are always shown straight, undecorated, never
+   scored or fictionalized.
 
 ## 5. Explicitly NOT in the MVP (parked)
 - **Real estate, Cash & bank balances, Alternatives/other holding families** — DECIDED DIRECTION (D-031), but
@@ -281,6 +288,14 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.2 (04-Aug-2026) — **Gamification/engagement layer added to MVP scope (D-060, D-061).** New §4 item
+  9: Duolingo-style engagement mechanics (streaks, variable reward, Hook Loop) adopted in full (D-060) — a
+  real scope increase (trigger 5), explicitly recorded as running counter to P4's start-strict default
+  rather than a clean application of it. Bounded by D-061: game elements may react to app behavior but
+  never to the user's real financial data — an interpretation of P6 extended into gamification design for
+  the first time. Two other candidate principles from the same session — gated feature-unlock sequencing,
+  social/group stakes — were NOT adopted; both already contradict standing decisions (D-058, §5) and
+  needed no new decision. Scope edit deliberately batched rather than applied incrementally per cluster.
 - v3.1 (04-Aug-2026) — **Decision 2 resolved (D-059).** Per-item management depth: Path C adopted — full
   per-field edit, delete, and `product_type` recategorization via a standard UI, not routed exclusively
   through AI conversation. Chosen over view-only/delete-only alternatives because the chat surface
