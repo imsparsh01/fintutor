@@ -14,11 +14,60 @@ Rules for this file:
 
 ## READY — pick one of these
 
-*(empty — see BLOCKED below)*
+### BQ-015 — Holdings CRUD API (GET list, GET one, POST create)
+**Traces to:** D-013/D-055 taxonomy, D-010/D-011 aliasing, Holding model (BQ-012). No new decision —
+pure execution of already-decided architecture (SQLAlchemy model exists, FastAPI pattern established
+by `/budget`, `/surfacing-candidates`). The true foundational unblock: Investments/Loans/Insurance
+display, the holding-detail view, Consolidated aggregation, and the teaching endpoint's baseline
+assembly (D-001) all need this before they can use real data instead of nothing.
+
+### BQ-016 — Income CRUD API (GET, POST/PUT)
+**Traces to:** D-038, Income model (BQ-009). `compute_budget()` already reads Income internally, but
+nothing lets a user's income actually get written via the app yet.
+
+### BQ-017 — Goals CRUD API (GET list, POST create)
+**Traces to:** D-038, Goal/GoalFunding models (BQ-009/BQ-012). Needed for the Goals half of the
+Budgeting/Goals tab (BRIEF-013).
 
 ---
 
 ## BLOCKED — do not start
+
+### BQ-018 — Consolidated net-worth aggregation endpoint
+**Blocked on:** BQ-015 (needs a holdings list to sum across the three families).
+
+### BQ-019 — Wire Investments/Loans/Insurance screens to real Holdings API
+**Blocked on:** BQ-015. Replaces BQ-014's placeholder screens with real list views per section.
+
+### BQ-020 — Budgeting/Goals tab (frontend, new tab)
+**Blocked on:** BQ-016 (Income write), BQ-017 (Goals). `GET /budget` already exists (BQ-010) but the
+tab itself doesn't (BRIEF-013 found this gap by checking `MainTabs.tsx` directly).
+
+### BQ-021 — Consolidated screen wired to real aggregation
+**Blocked on:** BQ-018.
+
+### BQ-022 — Holding-detail view (read-only)
+**Traces to:** BRIEF-013 — explicitly NOT Decision 2 (per-item management/edit authority, still
+BLOCKED below); this is a display-only surface for teaching content to have a home.
+**Blocked on:** BQ-015.
+
+### BQ-023 — Core teaching/chat backend endpoint
+**Traces to:** the actual product core — assembles the living baseline (D-001: holdings + income +
+goals) per user, calls the Anthropic API with system prompt v0.8, returns teaching content.
+**Blocked on:** BQ-015, BQ-016, BQ-017 (needs real data to assemble a baseline from).
+
+### BQ-024 — Chat/conversational UI screen (frontend)
+**Blocked on:** BQ-023.
+
+### BQ-025 — Onboarding flow (D-058: chip-guided, no structured field, default landing screen, skippable)
+**Traces to:** D-058.
+**Blocked on:** BQ-023, BQ-024 — onboarding IS a conversation, so the conversational surface has to
+exist first.
+
+### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
+**Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default, not yet flagged
+otherwise).
+**Blocked on:** BQ-023, BQ-024.
 
 ### BQ-004 — Backend `deepen` selection logic
 **Traces to:** D-028 (explicitly deferred), re-scoped by D-049 (BRIEF-006)
@@ -29,8 +78,19 @@ simulates `deepen` via D-028's hand-written fixture stub. D-049 also found that 
 buildable today either don't actually close the compliance gap (a narrow classifier model call) or
 do little useful work in practice (text/alias matching, absent real UI signal).
 **Unblocks when:** `app/` has a real conversation interface producing an actual user question the
-backend can read — AND a decision exists specifying the selection rule itself (D-049 deferred the
-rule, it did not settle it; BRIEF-006's regulatory question is still open for whenever this resumes).
+backend can read (BQ-023/BQ-024 would produce exactly that) — AND a decision exists specifying the
+selection rule itself (D-049 deferred the rule, it did not settle it; BRIEF-006's regulatory question
+is still open for whenever this resumes).
+
+---
+
+### Variable-income budgeting (startup/gig profile) — not queued
+Traces to BRIEF-011's escalated hard-stop (money-calculation logic). Not added to READY or BLOCKED —
+waiting on the owner's decision before any BQ item is even scoped for it.
+
+### ESOP characteristics schema — not queued
+Traces to D-055 (taxonomy membership only). Needs its own design pass (split-vs-merge test, same as
+D-013's original methodology) before it's a buildable BQ item — not yet done.
 
 ---
 
