@@ -22,7 +22,38 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-*(nothing blocked right now)*
+### CRITICAL — No way to add a new holding anywhere in the app
+**Traces to:** found during the 04-Aug-2026 comprehensive live-verification pass (real backend + real
+browser session, not a code-read guess) — confirmed both by reading `HoldingsList.tsx`/`InvestmentsScreen.tsx`/
+`LoansScreen.tsx`/`InsuranceScreen.tsx` (no add affordance exists) and by live UI: the empty-state copy
+itself says "they'll show up here once surfaced or added," but neither path exists. BQ-027/D-059 built
+full edit/delete/recategorize for holdings that already exist; nothing was ever built to create the
+first one. `/chat` has no tool-calling/function-call setup either, so the AI-surfaced creation path
+(D-012's primary path) doesn't exist. `POST /holdings` works correctly (verified live) — this is a
+frontend-only gap, not a backend one.
+**Why this is CRITICAL, not just another disclosed gap:** it's not a shipped tradeoff, it's a silent hole
+in decision coverage — D-059 (Decision 2) resolved *editing* depth but never addressed *creation*, and
+nobody caught that until this pass. A real new user following the product's own intended flow cannot get
+a single holding into their profile. This blocks the entire "living baseline" concept end to end.
+**Blocked because:** no decision exists on the shape — a plain manual-add form (which product types get
+one, whether it reuses `CHARACTERISTICS_SCHEMA` the same way `HoldingEditModal` does), how it sits against
+D-012's AI-primary/manual-secondary philosophy (a manual form isn't supposed to be the *primary* path, but
+right now it'd be the *only* path), and whether AI-surfaced creation is even in scope for this pass or a
+separate, later piece of work.
+**Unblocks when:** the owner decides the shape — likely wants its own brief, same pattern as BRIEF-017.
+
+---
+
+### MEDIUM — No discretionary-spending-category CRUD exists anywhere
+**Traces to:** the same 04-Aug-2026 verification pass. `compute_budget()` (BQ-010/D-038) reads and sums
+`DiscretionaryCategory` rows, and `BudgetingScreen.tsx` displays that total — but no backend route
+(checked `main.py`: none exists) and no frontend form were ever built to create one. Confirmed live: the
+Budget card's "Discretionary" line stays ₹0 for every real user, permanently, until this is built.
+**Blocked because:** D-038 decided the model shape (`label`, `planned_amount`) but the CRUD surface for it
+was apparently never explicitly scoped into BQ-010 — worth a quick confirmation of scope before treating
+this as mechanical, rather than assuming.
+**Unblocks when:** the owner confirms this is worth a small BQ item (likely close to mechanical — the
+shape is already fully decided by D-038, unlike the holding-creation gap above).
 
 ---
 
