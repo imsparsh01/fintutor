@@ -287,36 +287,36 @@
       <span class="tagline">Founder Status Dashboard</span>
     </div>
     <div class="meta">
-      <span class="synced">Last synced 03 Aug 2026 · through D-041</span>
-      <span class="phase-pill"><span class="dot"></span>Phase 2 in progress — backend skeleton live</span>
+      <span class="synced">Last synced 04 Aug 2026 · through D-071</span>
+      <span class="phase-pill"><span class="dot"></span>Phase 2 far along — live-device verification is the gap</span>
     </div>
   </div>
 
   <div class="stats">
     <div class="stat">
       <div class="label">Day</div>
-      <div class="value accent">12</div>
+      <div class="value accent">14</div>
       <div class="sub">since kickoff, 22 Jul</div>
     </div>
     <div class="stat">
       <div class="label">Decisions logged</div>
-      <div class="value">41</div>
-      <div class="sub">+5 owner escalations, all resolved</div>
+      <div class="value">69</div>
+      <div class="sub">16 owner escalations, 15 resolved</div>
     </div>
     <div class="stat">
       <div class="label">Findings closed</div>
-      <div class="value good">10 / 10</div>
+      <div class="value good">11 / 11</div>
       <div class="sub">100% of testing findings resolved</div>
     </div>
     <div class="stat">
       <div class="label">System prompt</div>
       <div class="value">v0.8</div>
-      <div class="sub">verified 5/5 clean, 03 Aug</div>
+      <div class="sub">verified 5/5 clean, 02 Aug</div>
     </div>
     <div class="stat">
-      <div class="label">Backend files</div>
-      <div class="value good">11</div>
-      <div class="sub">FastAPI skeleton live · mobile app still 0</div>
+      <div class="label">Code files</div>
+      <div class="value good">26 + 44</div>
+      <div class="sub">backend + app · was 11 + 0 on 03 Aug</div>
     </div>
   </div>
 
@@ -341,21 +341,21 @@
               <div class="node-col"><div class="node done">✓</div><div class="line"></div></div>
               <div>
                 <div class="title-row"><span class="title">1 · Teaching engine validation</span><span class="status done">Done</span></div>
-                <div class="desc">6 live test runs, prompt v0.3 → v0.8, all 10 findings closed. 23 Jul – 03 Aug.</div>
+                <div class="desc">6 live test runs, prompt v0.3 → v0.8, all 11 findings closed. 23 Jul – 03 Aug.</div>
               </div>
             </li>
             <li>
               <div class="node-col"><div class="node active">●</div><div class="line"></div></div>
               <div>
-                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">In progress</span></div>
-                <div class="desc">Backend skeleton live (FastAPI + SQLAlchemy + Alembic, BQ-011). Income/Goal schema and live budget computation queued next (BQ-009/010). Mobile app not started.</div>
+                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">Far along</span></div>
+                <div class="desc">26 backend files, 44 app files. Nearly every MVP screen/endpoint is built: auth, onboarding, chat, holdings CRUD, budgeting/goals, consolidated view, streaks + mascot, all 3 comparison views. Open: general Chat-tab <code>deepen</code> case, variable-income budgeting decision, data privacy policy — and zero real-device verification yet.</div>
               </div>
             </li>
             <li>
               <div class="node-col"><div class="node todo">3</div><div class="line"></div></div>
               <div>
                 <div class="title-row"><span class="title">3 · Private structured testing</span><span class="status todo">Not started</span></div>
-                <div class="desc">Real users against a built app, not a fixture.</div>
+                <div class="desc">Can't meaningfully start before Phase 2's live-verification gap closes.</div>
               </div>
             </li>
             <li>
@@ -377,42 +377,44 @@
         <div class="card-body">
           <div class="chart-wrap" id="chartWrap" style="position:relative;">
             <svg class="chart" viewBox="0 0 640 226" id="chartSvg">
-              <!-- gridlines (domain 0-42, headroom above 41) -->
+              <!-- gridlines (domain 0-75, headroom above 69) -->
               <line class="gridline" x1="40" y1="192"   x2="624" y2="192"/>
-              <line class="gridline" x1="40" y1="150.1" x2="624" y2="150.1"/>
-              <line class="gridline" x1="40" y1="108.2" x2="624" y2="108.2"/>
-              <line class="gridline" x1="40" y1="66.3"  x2="624" y2="66.3"/>
-              <line class="gridline" x1="40" y1="24.4"  x2="624" y2="24.4"/>
+              <line class="gridline" x1="40" y1="156.8" x2="624" y2="156.8"/>
+              <line class="gridline" x1="40" y1="121.6" x2="624" y2="121.6"/>
+              <line class="gridline" x1="40" y1="86.4"  x2="624" y2="86.4"/>
+              <line class="gridline" x1="40" y1="51.2"  x2="624" y2="51.2"/>
               <text class="axis-label" x="34" y="195"   text-anchor="end">0</text>
-              <text class="axis-label" x="34" y="153.1" text-anchor="end">10</text>
-              <text class="axis-label" x="34" y="111.2" text-anchor="end">20</text>
-              <text class="axis-label" x="34" y="69.3"  text-anchor="end">30</text>
-              <text class="axis-label" x="34" y="27.4"  text-anchor="end">40</text>
+              <text class="axis-label" x="34" y="159.8" text-anchor="end">15</text>
+              <text class="axis-label" x="34" y="124.6" text-anchor="end">30</text>
+              <text class="axis-label" x="34" y="89.4"  text-anchor="end">45</text>
+              <text class="axis-label" x="34" y="54.2"  text-anchor="end">60</text>
 
               <!-- repair-gap band -->
-              <rect class="gap-band" x="186" y="16" width="340.7" height="176"/>
-              <text class="gap-label" x="356" y="11" text-anchor="middle">build-home offline (laptop repair)</text>
+              <rect class="gap-band" x="160" y="16" width="300" height="176"/>
+              <text class="gap-label" x="310" y="11" text-anchor="middle">build-home offline (laptop repair)</text>
 
               <!-- area + line -->
-              <path class="area-fill" d="M40,162.7 L88.7,74.7 L186,62.1 L526.7,57.9 L575.3,37.0 L624,20.2 L624,192 L40,192 Z"/>
-              <path class="line-path" d="M40,162.7 L88.7,74.7 L186,62.1 L526.7,57.9 L575.3,37.0 L624,20.2"/>
+              <path class="area-fill" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,30.1 L624,192 L40,192 Z"/>
+              <path class="line-path" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,30.1"/>
 
               <!-- points -->
-              <circle class="pt" data-x="40"   data-y="162.7" data-d="22 Jul" data-v="7"  cx="40"   cy="162.7" r="3.5"/>
-              <circle class="pt" data-x="88.7" data-y="74.7"  data-d="23 Jul" data-v="28" cx="88.7" cy="74.7"  r="3.5"/>
-              <circle class="pt" data-x="186"  data-y="62.1"  data-d="25 Jul" data-v="31" cx="186"  cy="62.1"  r="3.5"/>
-              <circle class="pt" data-x="526.7" data-y="57.9" data-d="1 Aug"  data-v="32" cx="526.7" cy="57.9" r="3.5"/>
-              <circle class="pt" data-x="575.3" data-y="37.0" data-d="2 Aug"  data-v="37" cx="575.3" cy="37.0" r="3.5"/>
-              <circle class="pt end" data-x="624" data-y="20.2" data-d="3 Aug · today" data-v="41" cx="624" cy="20.2" r="5"/>
+              <circle class="pt" data-x="40"  data-y="175.6" data-d="22 Jul" data-v="7"  cx="40"  cy="175.6" r="3.5"/>
+              <circle class="pt" data-x="100" data-y="131.0" data-d="23 Jul" data-v="26" cx="100" cy="131.0" r="3.5"/>
+              <circle class="pt" data-x="160" data-y="124.0" data-d="25 Jul" data-v="29" cx="160" cy="124.0" r="3.5"/>
+              <circle class="pt" data-x="460" data-y="121.6" data-d="1 Aug"  data-v="30" cx="460" cy="121.6" r="3.5"/>
+              <circle class="pt" data-x="515" data-y="109.9" data-d="2 Aug"  data-v="35" cx="515" cy="109.9" r="3.5"/>
+              <circle class="pt" data-x="570" data-y="62.9"  data-d="3 Aug"  data-v="55" cx="570" cy="62.9"  r="3.5"/>
+              <circle class="pt end" data-x="624" data-y="30.1" data-d="4 Aug · today" data-v="69" cx="624" cy="30.1" r="5"/>
 
-              <text class="end-label" x="586" y="14">41</text>
+              <text class="end-label" x="586" y="24">69</text>
 
               <text class="axis-label" x="40" y="210" text-anchor="middle">22 Jul</text>
-              <text class="axis-label" x="88.7" y="210" text-anchor="middle">23 Jul</text>
-              <text class="axis-label" x="186" y="210" text-anchor="middle">25 Jul</text>
-              <text class="axis-label" x="526.7" y="210" text-anchor="middle">1 Aug</text>
-              <text class="axis-label" x="575.3" y="210" text-anchor="middle">2 Aug</text>
-              <text class="axis-label" x="624" y="210" text-anchor="end">3 Aug</text>
+              <text class="axis-label" x="100" y="210" text-anchor="middle">23 Jul</text>
+              <text class="axis-label" x="160" y="210" text-anchor="middle">25 Jul</text>
+              <text class="axis-label" x="460" y="210" text-anchor="middle">1 Aug</text>
+              <text class="axis-label" x="515" y="210" text-anchor="middle">2 Aug</text>
+              <text class="axis-label" x="570" y="210" text-anchor="middle">3 Aug</text>
+              <text class="axis-label" x="624" y="210" text-anchor="end">4 Aug</text>
 
               <line class="crosshair" id="crosshair" x1="0" y1="16" x2="0" y2="192"/>
               <circle class="hover-dot" id="hoverDot" r="5.5"/>
@@ -431,12 +433,12 @@
           <table class="ledger">
             <thead><tr><th>ID</th><th>Tier</th><th>Date</th><th>What</th></tr></thead>
             <tbody>
-              <tr><td class="did">D-041</td><td><span class="tier-chip t2">Owner</span></td><td class="ddate">03 Aug</td><td>Backend stack confirmed (FastAPI+SQLAlchemy+Alembic); BQ-011 skeleton shipped and verified.</td></tr>
-              <tr><td class="did">D-040</td><td><span class="tier-chip t2">Tier 1</span></td><td class="ddate">03 Aug</td><td>Dashboard auto-refresh added to end-of-session checklist; local HTML snapshot introduced.</td></tr>
-              <tr><td class="did">D-039</td><td><span class="tier-chip t2">Tier 1</span></td><td class="ddate">03 Aug</td><td>Created docs/CEO_DASHBOARD.md as the standing status-reporting source file.</td></tr>
-              <tr><td class="did">D-038</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">03 Aug</td><td>Budgeting/Goals data model resolved — thin links, computed budget, new Income object.</td></tr>
-              <tr><td class="did">D-037</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">02 Aug</td><td>FINDING 9 (Card-1 omission) resolved — verified 5/5 clean.</td></tr>
-              <tr><td class="did">D-036</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">02 Aug</td><td>BRIEF-005 resolved — "worth X" framing judged compliant, no fix needed.</td></tr>
+              <tr><td class="did">D-071</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>BRIEF-006 narrowed: <code>deepen</code> wired deterministically for the "Ask about this" entry point only; general Chat-tab case stays open.</td></tr>
+              <tr><td class="did">D-070</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Tax-saving narrowed to "unused 80C room" — no rupee figure, avoids a maintained slab table.</td></tr>
+              <tr><td class="did">D-069</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>ESOP "cost of exercising today" confirmed — cliff-gated linear vesting, deterministic exercise cost.</td></tr>
+              <tr><td class="did">D-068</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Loan-vs-invest hurdle-rate comparison confirmed — both prepayment modes always shown.</td></tr>
+              <tr><td class="did">D-067</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Comparison-view detection: user-triggered for v1, auto-detection deferred to real usage evidence.</td></tr>
+              <tr><td class="did">D-066</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">04 Aug</td><td>ESOP characteristics schema resolved — single type, <code>grant_type</code> distinguishes options/RSU.</td></tr>
             </tbody>
           </table>
         </div>
@@ -453,8 +455,22 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Add DATABASE_URL to .env<span class="wl-tag critical">Action</span></div>
-                <div class="wl-desc">Supabase dashboard → Project Settings → Database → Connection string (URI format), for the <code>fintutor-dev</code> project. Add it directly to <code>.env</code> yourself, not in chat. Unblocks full verification of BQ-009/BQ-010 and the live <code>/health/db</code> check.</div>
+                <div class="wl-title">Open the real app once<span class="wl-tag critical">Action</span></div>
+                <div class="wl-desc">Every frontend item since 03 Aug has only been verified by type-checking and bundle export — never actually run. The iOS Simulator panel tool has crash-looped every time it's been tried here. Until this happens, "it works" is unearned for the whole app.</div>
+              </div>
+            </li>
+            <li>
+              <div class="stripe warn"></div>
+              <div>
+                <div class="wl-title">Decide variable-income budgeting<span class="wl-tag warn">Decision</span></div>
+                <div class="wl-desc">BRIEF-011's escalated hard-stop (money-calculation logic) — nothing gets scoped for the startup/gig profile until this is decided.</div>
+              </div>
+            </li>
+            <li>
+              <div class="stripe warn"></div>
+              <div>
+                <div class="wl-title">Write the data privacy policy<span class="wl-tag warn">Decision</span></div>
+                <div class="wl-desc">D-010's open item — masking rules beyond product names, at-rest protection, retention/deletion. The schema now holds the real-shaped data this is supposed to govern.</div>
               </div>
             </li>
           </ul>
@@ -468,15 +484,15 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Legal review not done<span class="wl-tag critical">Critical</span></div>
-                <div class="wl-desc">Compliance stance (D-009) needs an India securities/fintech lawyer's sign-off before public launch. Not urgent for MVP dev — easy to forget until it's late.</div>
+                <div class="wl-title">Nothing verified in a real app<span class="wl-tag critical">Critical</span></div>
+                <div class="wl-desc">Bigger near-term risk than the legal review — confidence in "the app works" is currently unearned across most of what's shipped this week.</div>
               </div>
             </li>
             <li>
-              <div class="stripe warn"></div>
+              <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Mobile app still 0 files<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Backend skeleton landed today, which narrows this — but the user-facing product still doesn't exist yet.</div>
+                <div class="wl-title">Legal review not done<span class="wl-tag critical">Critical</span></div>
+                <div class="wl-desc">Compliance stance (D-009) needs an India securities/fintech lawyer's sign-off before public launch. Getting more urgent as the MVP nears feature-complete.</div>
               </div>
             </li>
             <li>
@@ -489,8 +505,8 @@
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Only 2 test fixtures<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">All findings closed against these two profiles — wider real usage may surface new ones.</div>
+                <div class="wl-title">Only 2 test fixtures, both pre-app<span class="wl-tag warn">Watch</span></div>
+                <div class="wl-desc">All 11 findings closed against two synthetic profiles from Phase 1 — the now-much-larger app surface hasn't stress-tested compliance at all.</div>
               </div>
             </li>
           </ul>
@@ -504,22 +520,22 @@
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">BQ-004 — deepen-selection rule</div>
-                <div class="wl-desc">Waiting on a design decision, not urgent, thinking-home only.</div>
+                <div class="wl-title">BQ-004 — general-case deepen selection</div>
+                <div class="wl-desc">Narrowed by D-071 — the deterministic UI-signal case now ships (BQ-034). What's left (free-typed questions) is genuinely hard and not urgent; safe fallback already covers it.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Decision 2 — per-item management</div>
-                <div class="wl-desc">Needs a real Phase 1 app section to react to before it's designed well.</div>
+                <div class="wl-title">Variable-income budgeting — not queued</div>
+                <div class="wl-desc">Waiting on the owner's decision before any BQ item is scoped.</div>
               </div>
             </li>
             <li>
               <div class="stripe good"></div>
               <div>
-                <div class="wl-title">BQ-011 shipped — skeleton no longer blocks anything</div>
-                <div class="wl-desc">BQ-009/BQ-010 now have a real codebase to build against.</div>
+                <div class="wl-title">Decision 2 — RESOLVED (D-059)</div>
+                <div class="wl-desc">Per-item management depth is no longer a blocker. Removed from this list this refresh.</div>
               </div>
             </li>
           </ul>
@@ -533,29 +549,36 @@
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">1. BQ-009 — Income + Goal schema</div>
-                <div class="wl-desc">Ready to build, skeleton now exists.</div>
+                <div class="wl-title">1. A real device/simulator pass</div>
+                <div class="wl-desc">Highest-value next step — the only thing that converts "compiles" into "works."</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">2. BQ-010 — live budget computation</div>
-                <div class="wl-desc">Ready, depends on BQ-009.</div>
+                <div class="wl-title">2. Decide variable-income budgeting</div>
+                <div class="wl-desc">See Pending Approval Queue / Needs your input.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">3. Decision 2 design</div>
-                <div class="wl-desc">Once a real section exists to react to.</div>
+                <div class="wl-title">3. Data privacy policy</div>
+                <div class="wl-desc">Needs a dedicated owner session, not a side effect of a build task.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">4. Put legal review on the calendar</div>
-                <div class="wl-desc">Not blocking now — will be blocking eventually.</div>
+                <div class="wl-title">4. UX principles section</div>
+                <div class="wl-desc">Unblocked since 04 Aug (Decisions 2 &amp; 3 both resolved), not started.</div>
+              </div>
+            </li>
+            <li>
+              <div class="stripe accent"></div>
+              <div>
+                <div class="wl-title">5. Legal review scheduling</div>
+                <div class="wl-desc">Not blocking yet — but the gap to "closer than it looks" is shrinking.</div>
               </div>
             </li>
           </ul>
@@ -567,8 +590,8 @@
 
   <div class="pulse">
     <div class="pulse-title">Compliance pulse — the thing this app can't afford to get wrong</div>
-    <div class="pulse-item"><div class="num">10 / 10</div><div class="lbl">testing findings resolved</div></div>
-    <div class="pulse-item"><div class="num">5 / 5</div><div class="lbl">owner escalations (BRIEFs) resolved</div></div>
+    <div class="pulse-item"><div class="num">11 / 11</div><div class="lbl">testing findings resolved</div></div>
+    <div class="pulse-item"><div class="num">16 / 15</div><div class="lbl">owner escalations raised / resolved</div></div>
     <div class="pulse-item"><div class="num">v0.8</div><div class="lbl">current system prompt</div></div>
     <div class="pulse-item"><div class="num">5 / 5</div><div class="lbl">last verification run, clean</div></div>
   </div>
