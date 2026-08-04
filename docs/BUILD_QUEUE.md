@@ -20,12 +20,12 @@ mechanism resolved: user-triggered "Compare paths" affordance for v1, no auto-de
 `docs/decisions/D-067-comparison-detection-user-triggered.md`).
 **Loan-vs-invest and ESOP-timing are both fully done end to end (D-068, D-069, see DONE below).** One
 sub-case remains before this item is fully closed:
-- **Tax-saving modeling — deeper gap, not just tax-slab staleness.** Requires knowing the user's tax
-  regime (old vs new — the new regime, now default, disallows most 80C deductions entirely, so getting
-  this wrong isn't imprecise, it's *wrong* for a real subset of users) and can't reliably compute "unused
-  80C room" without an ELSS-vs-regular-fund distinction the schema doesn't carry (D-009 forbids naming
-  products, so no `is_80c_eligible` flag exists). No field anywhere captures tax regime. Needs its own
-  design pass before a brief like BRIEF-014/015 can be written for it.
+- **Tax-saving modeling — READY TO CONFIRM, narrowed in scope.** Reframed rather than solved: never a
+  rupee tax-savings figure (needs a maintained slab table — not attempted), stops at **unused 80C room**
+  instead. Tax regime asked as a one-off in-tool question (not stored), same shape as `loan_vs_invest`'s
+  prepay-amount input — new regime gets an honest "not relevant for you" answer and stops there, old
+  regime gets the room figure. Full write-up: `docs/BRIEF-016_tax_saving_80c_room.md`. One yes/no unblocks
+  `backend/app/services/tax_saving_room.py`.
 
 ---
 
