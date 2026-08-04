@@ -9,6 +9,8 @@ Rules for this file:
   the `CLAUDE.md` hard-stop list), **STOP and escalate to the owner**. Do not decide it here.
 - One item per session. Move it to DONE with a date when complete.
 - This file is build-task-tracking only (single home as of D-033 — see `docs/DECISION_LOG.md`).
+- Before picking up an item, check `docs/KNOWN_LIMITATIONS.md` — a disclosed gap from a shipped feature
+  may already flag exactly the edge case the new item is about to hit.
 
 ---
 
