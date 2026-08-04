@@ -1502,6 +1502,20 @@ giving every user the guided entry point fresh starters specifically need (BRIEF
 trigger fires; reinforces P1/D-012 rather than contradicting a principle. Reversibility: High.
 Date: 03-Aug-2026.
 
+### D-061 — Founding UX framework, cluster 2 of 3 resolved: middle ground — game elements may react to app behavior, never to real financial data
+Full entry: `docs/decisions/D-061-real-data-gamification-middle-ground.md`. Tier 3 — trigger 5 continues
+from D-060 (same unresolved gamification scope, still unapplied to `PROJECT_SPEC.md` §4), and this decision
+**Interprets: P6** (extends "the user sees their real world" from its original masking/aliasing scope into
+gamification design — treated at Tier 3 since P6 is compliance/privacy-flavored, per §4.1). Middle ground
+adopted: cosmetic, behavior-reactive game elements (mascot celebrating a completed teaching moment, generic
+streak/session flourishes) are permitted; any XP/badge/level/mascot-mood/fictional skin derived from or
+reactive to the user's actual financial data (loan balance, net worth, a specific holding) is forbidden —
+real financial data always shown straight, never scored or fictionalized. New operative test established:
+does the game element react to app behavior (OK) or real financial data (not OK)? Guards against implying
+judgment on the user's choices (P2-adjacent) and against degrading the user's real view of their own money
+(why P6 exists). Cluster 2 of 3; cluster 1 (engagement mechanics) resolved D-060; cluster 3 (previously
+identified as blocked outright by D-058/§5) remains to close out. Reversibility: High. Date: 04-Aug-2026.
+
 ### D-060 — Founding UX framework, cluster 1 of 3 resolved: engagement mechanics (streaks, variable reward, Hook Loop) adopted in full
 Full entry: `docs/decisions/D-060-engagement-mechanics-full-adoption.md`. Tier 3 — two triggers fired:
 trigger 3 (contradicts P4's "start strict, relax deliberately" — this decision adopts the permissive form
