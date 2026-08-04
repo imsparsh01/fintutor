@@ -41,8 +41,11 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
   const askAboutThis = () => {
     // Alias only, never display_name — /chat sends this question text to the LLM
     // verbatim (D-010: the app must never construct a message carrying a real name).
+    // deepenAlias (D-071): this screen knows the holding with certainty (no inference),
+    // so the backend can set `deepen` deterministically instead of leaving it absent.
     parentNavigation?.navigate('Chat', {
       prefillQuestion: `Can you help me understand ${holding.alias} better?`,
+      deepenAlias: holding.alias,
     });
   };
 

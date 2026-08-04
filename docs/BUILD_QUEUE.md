@@ -22,18 +22,17 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-### BQ-004 — Backend `deepen` selection logic
-**Traces to:** D-028 (explicitly deferred), re-scoped by D-049 (BRIEF-006)
-**Blocked because:** no real conversation/question-intake interface exists yet — `app/` now has a
-navigation+auth shell (BQ-014) but no chat/question surface at all — to design the selection rule
-against, and nothing currently needs it — Phase 1 testing already
-simulates `deepen` via D-028's hand-written fixture stub. D-049 also found that the two paths
-buildable today either don't actually close the compliance gap (a narrow classifier model call) or
-do little useful work in practice (text/alias matching, absent real UI signal).
-**Unblocks when:** `app/` has a real conversation interface producing an actual user question the
-backend can read (BQ-023/BQ-024 would produce exactly that) — AND a decision exists specifying the
-selection rule itself (D-049 deferred the rule, it did not settle it; BRIEF-006's regulatory question
-is still open for whenever this resumes).
+### BQ-004 — Backend `deepen` selection logic for the general Chat-tab case
+**Traces to:** D-028 (explicitly deferred), re-scoped by D-049 (BRIEF-006), narrowed by D-071 — the
+UI-signal sub-case D-071 covers is BQ-034, not this item; this item is what's left over.
+**Blocked because:** for a freely-typed question with no holding context (the general Chat tab), there
+is still no deterministic signal for which holding (if any) to deepen. BRIEF-006's Path A (a narrow
+classifier model call) still carries its open regulatory question — does a smaller model's judgment
+satisfy "auditable in code," or only relocate the same compliance question — and D-071 does not touch
+that question at all.
+**Unblocks when:** a decision resolves BRIEF-006's Path A question, or a different deterministic signal
+for the general-question case is found. Not urgent — D-028's "deepen nothing" fallback is the current
+safe default and stays in effect for every entry point BQ-034 doesn't cover.
 
 ---
 
@@ -55,6 +54,27 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-034 — Wire `deepen` for the "Ask about this" entry point only — done 04-Aug-2026
+Traces to D-071 (BRIEF-006 narrowed and confirmed). Backend: `/chat`'s `ChatRequest` gained an optional
+`deepen_alias` field; `assemble_baseline(db, user_id, deepen_alias)` sets `deepen = {alias, reason: "the
+user asked directly about this holding"}` only when the alias resolves to one of the calling user's own
+holdings — an unrecognized or stale value degrades silently to D-028's existing "deepen nothing" default
+rather than being trusted. No model call anywhere in the selection path. Frontend: `HoldingDetailScreen`'s
+"Ask about this" button now passes `deepenAlias: holding.alias` alongside its existing `prefillQuestion`
+through the `Chat` tab's nav params; `ChatScreen` forwards both to `ChatThread`'s imperative `send(text,
+deepenAlias)` (extended from `send(text)`), which passes it through to `askQuestion`. **Scope discipline
+verified, not just asserted:** the plain `Send` button in `ChatThread` still calls `sendText(input)` with
+no second argument, and `OnboardingScreen`'s chip starters still call `send(chip.message)` — neither path
+can accidentally acquire a `deepenAlias`, so every `/chat` entry point besides "Ask about this" is
+unchanged. Verified: backend — `python -m py_compile` clean, `/chat` route registers with the new field;
+`assemble_baseline`'s deepen logic unit-tested against a mocked DB session across three cases (no alias
+given → absent, alias matches a holding → set correctly, alias doesn't match any holding → degrades to
+absent, not trusted) — all passed, script discarded after (matches this repo's established pattern, no
+persistent test files exist yet). Frontend — `npx tsc --noEmit` clean, `npx expo export --platform
+android` bundled cleanly (933 modules, no errors). Not verified end-to-end against a live device/backend,
+same standing limitation as every other frontend/backend item this session. BQ-004 (the general Chat-tab
+case) remains BLOCKED — untouched by this item.
 
 ### BQ-033 — Mascot mood reacting to a completed teaching moment — done 04-Aug-2026
 Traces to BQ-032 (D-061/P7). `ChatThread` (shared by `ChatScreen`/BQ-024 and `OnboardingScreen`/BQ-025, so

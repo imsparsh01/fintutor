@@ -8,7 +8,8 @@ export type AuthStackParamList = {
 export type MainTabsParamList = {
   Consolidated: undefined;
   // BQ-022: navigated to from a holding's detail screen with a pre-filled question.
-  Chat: { prefillQuestion?: string } | undefined;
+  // deepenAlias (D-071): set only alongside prefillQuestion by that same entry point.
+  Chat: { prefillQuestion?: string; deepenAlias?: string } | undefined;
   Investments: undefined;
   Loans: undefined;
   Insurance: undefined;

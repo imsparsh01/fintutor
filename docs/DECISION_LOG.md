@@ -1661,3 +1661,15 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   Self-reported-tax-bracket alternative tracked in `docs/KNOWN_LIMITATIONS.md`, not chosen for v1. Full
   write-up: `docs/decisions/D-070-tax-saving-80c-room-confirmed.md`.
 - **Date:** 04-Aug-2026
+
+### D-071 — BRIEF-006 narrowed and confirmed: deepen selection wired for the "Ask about this" entry point only
+- **Tier:** 3, owner-confirmed. **Interprets D-049** (narrows its blocker to what's actually now true).
+  Ships BRIEF-006's Path B UI-signal variant, scoped to exactly one entry point: `HoldingDetailScreen`'s
+  existing "Ask about this" flow (BQ-022) threads its already-known holding alias through to `/chat`, and
+  the backend sets `deepen` deterministically — no model judgment anywhere in the selection path, the
+  property BRIEF-006 named as what would make Path B actually deliver D-028's promise. Every other `/chat`
+  entry point (general Chat tab, onboarding) is unchanged — `deepen` stays absent there, D-028's existing
+  fallback still governs. Path A's classifier question and the general free-text case remain exactly as
+  open as D-049 left them — not decided by this entry. Full write-up:
+  `docs/decisions/D-071-deepen-ui-signal-confirmed.md`.
+- **Date:** 04-Aug-2026

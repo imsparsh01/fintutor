@@ -77,6 +77,10 @@ class GoalCreate(BaseModel):
 
 class ChatRequest(BaseModel):
     question: str
+    # D-071: set only by HoldingDetailScreen's "Ask about this" flow, which knows its
+    # holding's alias with certainty. assemble_baseline ignores anything that doesn't
+    # resolve to one of this user's own holdings.
+    deepen_alias: str | None = None
 
 
 @app.get("/health")
@@ -258,7 +262,7 @@ def post_streak_open(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
 
 @app.post("/chat")
 def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_db)) -> dict:
-    baseline = assemble_baseline(db, user_id)
+    baseline = assemble_baseline(db, user_id, body.deepen_alias)
     try:
         answer = ask_teaching_engine(baseline, body.question)
     except TeachingEngineNotConfigured as exc:

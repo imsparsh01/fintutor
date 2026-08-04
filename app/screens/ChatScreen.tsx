@@ -14,14 +14,15 @@ export function ChatScreen({ route, navigation }: Props) {
 
   // BQ-022: a holding's detail screen can deep-link here with a pre-filled question
   // (alias only, never a real name — see HoldingDetailScreen). Sent once, then the
-  // param is cleared so navigating back to this tab later doesn't resend it.
+  // params are cleared so navigating back to this tab later doesn't resend it.
+  // deepenAlias (D-071) rides along the same param, set only by that one entry point.
   useEffect(() => {
     const prefill = route.params?.prefillQuestion;
     if (prefill) {
-      threadRef.current?.send(prefill);
-      navigation.setParams({ prefillQuestion: undefined });
+      threadRef.current?.send(prefill, route.params?.deepenAlias);
+      navigation.setParams({ prefillQuestion: undefined, deepenAlias: undefined });
     }
-  }, [route.params?.prefillQuestion, navigation]);
+  }, [route.params?.prefillQuestion, route.params?.deepenAlias, navigation]);
 
   if (!userId) {
     return (

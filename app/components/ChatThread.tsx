@@ -21,7 +21,10 @@ interface Message {
 }
 
 export interface ChatThreadHandle {
-  send: (text: string) => void;
+  // deepenAlias: D-071 — set only when the caller (HoldingDetailScreen's "Ask about
+  // this") knows the triggering holding with certainty. Chip starters and the typed
+  // input never pass one, keeping the general case on D-028's "deepen nothing" default.
+  send: (text: string, deepenAlias?: string) => void;
 }
 
 // How long the mascot stays 'celebrating' after a completed exchange before
@@ -53,7 +56,7 @@ export const ChatThread = forwardRef<
     };
   }, []);
 
-  const sendText = async (raw: string) => {
+  const sendText = async (raw: string, deepenAlias?: string) => {
     const question = raw.trim();
     if (!question || sending) return;
 
@@ -65,7 +68,7 @@ export const ChatThread = forwardRef<
     onMessageSent?.();
 
     try {
-      const response = await askQuestion(userId, question);
+      const response = await askQuestion(userId, question, deepenAlias);
       setMessages((prev) => [...prev, { id: `${Date.now()}-a`, role: 'assistant', text: response }]);
       setMood('celebrating');
       if (celebrationTimer.current) clearTimeout(celebrationTimer.current);

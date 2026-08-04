@@ -23,9 +23,10 @@ def _load_system_prompt() -> str:
 def ask_teaching_engine(baseline: dict, question: str) -> str:
     """Calls the Anthropic API with the assembled baseline (app/services/baseline.py) and
     the user's question, per the exact message shape scripts/run_phase1_test.py already
-    established and validated across Phase 1 runs. D-028: `deepen` is omitted — this
-    endpoint has no selection rule (BQ-004, still blocked), so every path gets equal
-    shallow treatment per the system prompt's own documented default.
+    established and validated across Phase 1 runs. `deepen` is whatever
+    assemble_baseline decided (D-071: set only for the "Ask about this" UI-signal case;
+    absent everywhere else, where D-028's equal-shallow-treatment default still applies —
+    BQ-004's general free-text case remains unresolved).
 
     Raises TeachingEngineNotConfigured if ANTHROPIC_API_KEY isn't set — caller's job to
     turn that into a 503, same responsibility split as db/session.py's engine=None case.
