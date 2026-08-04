@@ -15,6 +15,7 @@ export function InvestmentsScreen() {
           <HoldingsList
             title="Investments"
             familyTypes={INVESTMENT_TYPES}
+            addLabel="+ Add investment"
             emptyHint="No investments tracked yet — they'll show up here once surfaced or added."
           />
         )}

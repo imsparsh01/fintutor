@@ -75,16 +75,43 @@ def delete_holding(db: Session, user_id: uuid.UUID, holding_id: uuid.UUID) -> bo
     return True
 
 
+def _humanize_product_type(product_type: str) -> str:
+    return " ".join(word.capitalize() for word in product_type.split("_"))
+
+
+def _generate_alias(db: Session, user_id: uuid.UUID, product_type: str) -> str:
+    """D-074: the next unused "{Humanized Product Type}-{n}" label scoped to this exact
+    product_type for this user — e.g. "Home Loan-1", "Home Loan-2". Existing (user_id, alias)
+    uniqueness + the caller's IntegrityError->409 handling is the safety net if this ever
+    collides (e.g. a race); this loop is not itself relied on for correctness under concurrency.
+    """
+    prefix = _humanize_product_type(product_type)
+    existing_aliases = {
+        h.alias
+        for h in db.query(Holding)
+        .filter(Holding.user_id == user_id, Holding.product_type == product_type)
+        .all()
+    }
+    n = 1
+    while f"{prefix}-{n}" in existing_aliases:
+        n += 1
+    return f"{prefix}-{n}"
+
+
 def create_holding(
     db: Session,
     user_id: uuid.UUID,
     product_type: str,
-    alias: str,
+    alias: str | None,
     display_name: str | None,
     characteristics: dict,
 ) -> dict:
     """Raises sqlalchemy.exc.IntegrityError on a duplicate (user_id, alias) — caller's job
-    to turn that into a 409, same responsibility split main.py already uses elsewhere."""
+    to turn that into a 409, same responsibility split main.py already uses elsewhere.
+    D-074: alias is optional — the manual add-holding UI never sends one, and gets one
+    generated here. Direct API callers may still supply their own, unchanged."""
+    if alias is None:
+        alias = _generate_alias(db, user_id, product_type)
     holding = Holding(
         user_id=user_id,
         product_type=product_type,

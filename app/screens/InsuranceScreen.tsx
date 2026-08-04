@@ -14,6 +14,7 @@ export function InsuranceScreen() {
           <HoldingsList
             title="Insurance"
             familyTypes={INSURANCE_TYPES}
+            addLabel="+ Add insurance"
             emptyHint="No insurance tracked yet — they'll show up here once surfaced or added."
           />
         )}

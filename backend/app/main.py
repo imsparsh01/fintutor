@@ -38,7 +38,9 @@ app = FastAPI(title="FinTutor API")
 
 class HoldingCreate(BaseModel):
     product_type: str
-    alias: str
+    # D-074: optional — when omitted, create_holding generates one. The manual add-holding
+    # UI never sends this field at all.
+    alias: str | None = None
     display_name: str | None = None
     characteristics: dict = {}
 

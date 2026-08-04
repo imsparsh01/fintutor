@@ -15,12 +15,32 @@ export interface HoldingUpdate {
   characteristics?: Record<string, unknown>;
 }
 
+// D-074: no alias field — the backend generates one. Used only by the manual add-holding
+// flow; direct API callers may still supply their own alias via a raw request.
+export interface HoldingCreate {
+  product_type: string;
+  display_name?: string | null;
+  characteristics?: Record<string, unknown>;
+}
+
 export async function fetchHoldings(userId: string): Promise<Holding[]> {
   const res = await fetch(`${BACKEND_URL}/holdings?user_id=${userId}`);
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }
   return (await res.json()) as Holding[];
+}
+
+export async function createHolding(userId: string, data: HoldingCreate): Promise<Holding> {
+  const res = await fetch(`${BACKEND_URL}/holdings?user_id=${userId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    throw new Error(`Backend responded ${res.status}`);
+  }
+  return (await res.json()) as Holding;
 }
 
 export async function updateHolding(

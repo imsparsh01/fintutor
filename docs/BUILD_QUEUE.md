@@ -22,28 +22,6 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-### CRITICAL — No way to add a new holding anywhere in the app
-**Traces to:** found during the 04-Aug-2026 comprehensive live-verification pass (real backend + real
-browser session, not a code-read guess) — confirmed both by reading `HoldingsList.tsx`/`InvestmentsScreen.tsx`/
-`LoansScreen.tsx`/`InsuranceScreen.tsx` (no add affordance exists) and by live UI: the empty-state copy
-itself says "they'll show up here once surfaced or added," but neither path exists. BQ-027/D-059 built
-full edit/delete/recategorize for holdings that already exist; nothing was ever built to create the
-first one. `/chat` has no tool-calling/function-call setup either, so the AI-surfaced creation path
-(D-012's primary path) doesn't exist. `POST /holdings` works correctly (verified live) — this is a
-frontend-only gap, not a backend one.
-**Why this is CRITICAL, not just another disclosed gap:** it's not a shipped tradeoff, it's a silent hole
-in decision coverage — D-059 (Decision 2) resolved *editing* depth but never addressed *creation*, and
-nobody caught that until this pass. A real new user following the product's own intended flow cannot get
-a single holding into their profile. This blocks the entire "living baseline" concept end to end.
-**Blocked because:** no decision exists on the shape — a plain manual-add form (which product types get
-one, whether it reuses `CHARACTERISTICS_SCHEMA` the same way `HoldingEditModal` does), how it sits against
-D-012's AI-primary/manual-secondary philosophy (a manual form isn't supposed to be the *primary* path, but
-right now it'd be the *only* path), and whether AI-surfaced creation is even in scope for this pass or a
-separate, later piece of work.
-**Unblocks when:** the owner decides the shape — likely wants its own brief, same pattern as BRIEF-017.
-
----
-
 ### MEDIUM — No discretionary-spending-category CRUD exists anywhere
 **Traces to:** the same 04-Aug-2026 verification pass. `compute_budget()` (BQ-010/D-038) reads and sums
 `DiscretionaryCategory` rows, and `BudgetingScreen.tsx` displays that total — but no backend route
@@ -69,6 +47,33 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-036 — Manual add-holding UI, auto-generated alias, family-scoped picker — done 04-Aug-2026
+Traces to BRIEF-018 → **D-074** (Path A confirmed). Closes the CRITICAL gap found in the 04-Aug-2026
+live-verification pass: there was no way to add a new holding anywhere in the app. Backend:
+`backend/app/services/holdings.py` gains `_generate_alias`/`_humanize_product_type`; `create_holding`'s
+`alias` parameter is now optional — when omitted, the next unused `"{Humanized Product Type}-{n}"` label
+is generated scoped to that exact `product_type` for the user (e.g. `"Home Loan-1"`, not the broader
+family). `main.py`'s `HoldingCreate.alias` is now `str | None`. Frontend: `app/lib/holdings.ts` gains
+`createHolding`; `HoldingEditModal.tsx` is extended (not duplicated) with a `holding: Holding | null`
+create mode — no alias field, no delete button, `POST` instead of `PATCH`, title "Add holding," and a new
+`familyTypes` prop that scopes the product-type picker to the current tab (edit mode keeps the existing
+unconstrained `ALL_PRODUCT_TYPES` picker, BQ-027/D-059 untouched); `HoldingsList.tsx` gains the actual
+"+ Add {family}" button (shown in both empty and populated states) that opens the modal and reloads on
+save. AI-surfaced creation (`/chat` creating a holding from conversation) remains separate, untouched,
+much larger work — D-012's primary path, not addressed here.
+
+**Verified live, not just type-checked** — same real local Postgres + real running backend + real
+Chromium/Playwright session as the original verification pass that found this gap, specifically to close
+the loop on the most critical finding: tapped "+ Add loan" on the empty Loans tab, confirmed the
+product-type picker showed only Home Loan/Personal Loan/Credit Card Debt (not the full taxonomy), filled
+in a display name and characteristics with **no alias field present anywhere in the form**, saved, and
+confirmed via a direct backend query that the holding was created with `alias: "Personal Loan-1"`,
+auto-generated exactly as designed. Separately confirmed editing an existing holding still shows the Alias
+field and the unconstrained product-type picker, unaffected by this change. Also: `npx tsc --noEmit`
+clean, `npx expo export --platform android` bundled cleanly (933 modules). Local Postgres, backend server,
+temporary web-testing dependency, and test credentials were all cleaned up afterward, same as the original
+pass.
 
 ### BQ-035 — Variable-income budgeting via declared floor + typical range (Path B2) — done 04-Aug-2026
 Traces to BRIEF-011 (escalated hard-stop) → BRIEF-017 (three paths modeled) → **D-073** (Path B2

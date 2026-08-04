@@ -1692,3 +1692,12 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   (defer entirely — in tension with D-054). Full write-up:
   `docs/decisions/D-073-variable-income-b2-confirmed.md`.
 - **Date:** 04-Aug-2026
+
+### D-074 — BRIEF-018 confirmed: manual add-holding UI, auto-generated alias, family-scoped picker
+- **Tier:** 2, owner-confirmed. Path A adopted: the create form never has an alias field —
+  `POST /holdings`'s `alias` becomes optional, and the backend generates the next unused
+  `"{Humanized Product Type}-{n}"` label when omitted. Product-type picker in the create flow is scoped to
+  the current family tab, unlike the existing unconstrained recategorize picker. `HoldingEditModal` is
+  extended (null `holding` = create mode), not duplicated. AI-surfaced creation remains separate, untouched
+  work. Full write-up: `docs/decisions/D-074-manual-add-holding-confirmed.md`.
+- **Date:** 04-Aug-2026

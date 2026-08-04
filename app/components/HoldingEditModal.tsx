@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
 import { useAuth } from '../lib/AuthContext';
-import { deleteHolding, updateHolding, type Holding } from '../lib/holdings';
+import { createHolding, deleteHolding, updateHolding, type Holding } from '../lib/holdings';
 import { ALL_PRODUCT_TYPES, humanizeProductType } from '../lib/taxonomy';
 
 // Characteristics are form-edited as strings, converted to their real type on save.
 // A field left blank is omitted from the payload rather than sent as an empty string.
+// D-074: holding is null in create mode — no existing values to read, so this returns {}
+// (BQ-028's progressive-capture behavior applies for free: nothing is required up front).
 function initialCharacteristicsState(
   productType: string,
-  holding: Holding
+  holding: Holding | null
 ): Record<string, string> {
-  if (productType !== holding.product_type) return {};
+  if (!holding || productType !== holding.product_type) return {};
   const fields = CHARACTERISTICS_SCHEMA[productType] ?? [];
   const state: Record<string, string> = {};
   for (const field of fields) {
@@ -24,21 +26,31 @@ function initialCharacteristicsState(
 // Edit/delete/recategorize UI (D-059, Path C) — full direct-manipulation authority over
 // a holding, including the per-type characteristics field blob (BQ-028), keyed off the
 // known D-013 field list per product_type (see lib/characteristicsSchema.ts).
+//
+// D-074: a null `holding` switches this to create mode — no alias field (the backend
+// generates one), no delete button, POST instead of PATCH. `familyTypes` scopes the
+// product-type picker to the tab the user tapped "+ Add" from; edit mode ignores it and
+// keeps the existing unconstrained ALL_PRODUCT_TYPES recategorize picker (BQ-027/D-059).
 export function HoldingEditModal({
   holding,
+  familyTypes,
   onClose,
   onChanged,
 }: {
-  holding: Holding;
+  holding: Holding | null;
+  familyTypes?: string[];
   onClose: () => void;
   onChanged: () => void;
 }) {
+  const isCreate = holding === null;
   const { userId } = useAuth();
-  const [alias, setAlias] = useState(holding.alias);
-  const [displayName, setDisplayName] = useState(holding.display_name ?? '');
-  const [productType, setProductType] = useState(holding.product_type);
+  const [alias, setAlias] = useState(holding?.alias ?? '');
+  const [displayName, setDisplayName] = useState(holding?.display_name ?? '');
+  const [productType, setProductType] = useState(
+    holding?.product_type ?? familyTypes?.[0] ?? ALL_PRODUCT_TYPES[0]
+  );
   const [characteristics, setCharacteristics] = useState(() =>
-    initialCharacteristicsState(holding.product_type, holding)
+    initialCharacteristicsState(productType, holding)
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +63,7 @@ export function HoldingEditModal({
   }, [productType]);
 
   const fields = CHARACTERISTICS_SCHEMA[productType] ?? [];
+  const pickerTypes = isCreate ? familyTypes ?? ALL_PRODUCT_TYPES : ALL_PRODUCT_TYPES;
 
   const save = async () => {
     if (!userId) return;
@@ -63,12 +76,20 @@ export function HoldingEditModal({
         if (raw === undefined || raw === '') continue;
         characteristicsPayload[field.key] = field.kind === 'number' ? Number(raw) : raw;
       }
-      await updateHolding(userId, holding.id, {
-        alias,
-        display_name: displayName || null,
-        product_type: productType,
-        characteristics: characteristicsPayload,
-      });
+      if (isCreate) {
+        await createHolding(userId, {
+          product_type: productType,
+          display_name: displayName || null,
+          characteristics: characteristicsPayload,
+        });
+      } else {
+        await updateHolding(userId, holding.id, {
+          alias,
+          display_name: displayName || null,
+          product_type: productType,
+          characteristics: characteristicsPayload,
+        });
+      }
       onChanged();
       onClose();
     } catch (err) {
@@ -79,6 +100,7 @@ export function HoldingEditModal({
   };
 
   const confirmDelete = () => {
+    if (!holding) return;
     Alert.alert('Delete holding?', `This removes "${displayName || alias}" permanently.`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: doDelete },
@@ -86,7 +108,7 @@ export function HoldingEditModal({
   };
 
   const doDelete = async () => {
-    if (!userId) return;
+    if (!userId || !holding) return;
     setSaving(true);
     setError(null);
     try {
@@ -102,7 +124,7 @@ export function HoldingEditModal({
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Edit holding</Text>
+        <Text style={styles.title}>{isCreate ? 'Add holding' : 'Edit holding'}</Text>
 
         <Text style={styles.label}>Display name</Text>
         <TextInput
@@ -112,12 +134,21 @@ export function HoldingEditModal({
           placeholder="e.g. HDFC Home Loan"
         />
 
-        <Text style={styles.label}>Alias</Text>
-        <TextInput style={styles.input} value={alias} onChangeText={setAlias} placeholder="e.g. Loan-1" />
+        {!isCreate && (
+          <>
+            <Text style={styles.label}>Alias</Text>
+            <TextInput
+              style={styles.input}
+              value={alias}
+              onChangeText={setAlias}
+              placeholder="e.g. Loan-1"
+            />
+          </>
+        )}
 
         <Text style={styles.label}>Product type</Text>
         <View style={styles.chipRow}>
-          {ALL_PRODUCT_TYPES.map((type) => (
+          {pickerTypes.map((type) => (
             <Pressable
               key={type}
               style={[styles.chip, type === productType && styles.chipSelected]}
@@ -174,12 +205,16 @@ export function HoldingEditModal({
         {error && <Text style={styles.errorText}>{error}</Text>}
 
         <Pressable style={[styles.button, styles.saveButton]} onPress={save} disabled={saving}>
-          <Text style={styles.saveButtonText}>{saving ? 'Saving…' : 'Save changes'}</Text>
+          <Text style={styles.saveButtonText}>
+            {saving ? 'Saving…' : isCreate ? 'Add holding' : 'Save changes'}
+          </Text>
         </Pressable>
 
-        <Pressable style={[styles.button, styles.deleteButton]} onPress={confirmDelete} disabled={saving}>
-          <Text style={styles.deleteButtonText}>Delete holding</Text>
-        </Pressable>
+        {!isCreate && (
+          <Pressable style={[styles.button, styles.deleteButton]} onPress={confirmDelete} disabled={saving}>
+            <Text style={styles.deleteButtonText}>Delete holding</Text>
+          </Pressable>
+        )}
 
         <Pressable style={styles.cancel} onPress={onClose}>
           <Text style={styles.cancelText}>Cancel</Text>

@@ -14,6 +14,7 @@ export function LoansScreen() {
           <HoldingsList
             title="Loans"
             familyTypes={LOAN_TYPES}
+            addLabel="+ Add loan"
             emptyHint="No loans tracked yet — they'll show up here once surfaced or added."
           />
         )}
