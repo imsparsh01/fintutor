@@ -1566,3 +1566,24 @@ plainly, not smoothed over: the skill's own frontmatter scopes it to web landing
 redesigns, explicitly excluding "dashboards... multi-step product UI" — which is what FinTutor's React
 Native `app/` is, so its concrete checklist is inspiration only there, literal only if a real web surface
 is ever built. Reversibility: High. Date: 04-Aug-2026.
+
+### D-064 — Invocation policy pinned for `design-taste-frontend`: explicit-ask only, scoped to FinTutor app UI work, never CEO_DASHBOARD/personal artifacts (Tier 1)
+- **Tier:** 1 — owner stated this directly in conversation as a usage rule, no ambiguity, no trigger fires
+  (no money/compliance/scope/reversibility issue) — same shape as D-057 (method clarification). One-line-
+  plus-context log per §2.3.
+- **Decision:** the vendored `design-taste-frontend` skill (D-063) is explicit-ask only — it must never
+  auto-trigger off generic keyword matches ("landing page," "redesign," "frontend," "UI"). It is only to be
+  consulted when the owner explicitly asks for it, and specifically when beginning UI/design work on the
+  FinTutor app itself (`app/`) — never for `docs/CEO_DASHBOARD.md`/`.html` or other personal/one-off web
+  artifacts, even though those are also technically web surfaces. Implemented by editing the vendored
+  file's frontmatter `description` field (the field that actually drives triggering) to state this gate
+  directly — the one disclosed deviation from D-063's verbatim-vendoring rule; the document body is
+  untouched. See `.claude/skills/design-taste-frontend/PROVENANCE.md`'s "Invocation policy" section.
+- **Why:** D-063's applicability caveat already said the skill's literal checklist doesn't fit `app/`
+  (React Native) and its concrete use-case (web landing pages) doesn't exist in this repo yet — but left
+  open exactly when/how it should ever fire. The owner closed that gap directly rather than leaving it to
+  inference: reserved for FinTutor app UI work specifically, never spent on smaller personal-use asks, and
+  never auto-triggered regardless of context.
+- **Reversibility:** High — a one-line frontmatter edit, reverted by re-copying the upstream description
+  from `PROVENANCE.md`'s source link if this policy ever changes.
+- **Date:** 04-Aug-2026

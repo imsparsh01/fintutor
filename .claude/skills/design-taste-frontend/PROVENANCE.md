@@ -6,12 +6,25 @@
 - **File vendored:** `skills/taste-skill/SKILL.md` (the repo's current default / v2 — the repo also
   ships a `taste-skill-v1` variant and 11 other specialized skills, e.g. `minimalist-skill`,
   `brutalist-skill`, `imagegen-frontend-mobile`; only this one default file was vendored).
-  Copied verbatim from `main` branch via `raw.githubusercontent.com`, no edits.
+  Copied verbatim from `main` branch via `raw.githubusercontent.com`. **One deviation from verbatim,
+  disclosed, not silent:** the frontmatter `description` field was rewritten (D-064) to gate triggering —
+  see "Invocation policy" below. The document body (everything after the frontmatter) is untouched.
 - **License:** MIT (repo copyright 2026, Leonxlnx).
 - **Vendored:** 04-Aug-2026, by request — reviewed for safety before adding (pure markdown
   instructions, no executable code; the repo's own scripts are unrelated README/asset-maintenance
   utilities, not part of this file).
 - **Traces to:** `docs/decisions/D-063-vendored-skill-policy-and-taste-skill.md`.
+
+## Invocation policy (D-064, owner-pinned) — read before invoking
+
+This skill is **explicit-ask only.** Do not auto-trigger it off keyword matches ("landing page",
+"redesign", "frontend", "UI") — the owner stated this directly: it should not fire on regular small asks
+like CEO_DASHBOARD.md/.html work (personal-use tooling, not FinTutor product UI), and should only come up
+when the owner explicitly asks for it, specifically when starting UI/design work on the FinTutor app
+itself. The frontmatter `description` was edited (the one disclosed deviation from verbatim vendoring,
+above) to encode this gate directly, since the description field is the actual trigger mechanism — leaving
+the original upstream description in place would have let it fire in exactly the contexts the owner ruled
+out.
 
 ## Applicability caveat — read before invoking
 

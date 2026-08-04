@@ -1,6 +1,6 @@
 ---
 name: design-taste-frontend
-description: Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check.
+description: GATED — do not auto-trigger. Vendored frontend design-taste philosophy (source: Leonxlnx/taste-skill; invocation policy: D-063, D-064). Consult ONLY when the owner explicitly asks to use this skill, and only when beginning UI/design work on the FinTutor app itself (app/) — never for CEO_DASHBOARD.md/.html or other personal/one-off web artifacts, and never from a generic mention of "landing page", "redesign", "frontend", or "UI". Read PROVENANCE.md's invocation policy and applicability caveat before using. (Original upstream description, kept for reference only, NOT a trigger condition: "Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check.")
 ---
 
 # tasteskill: Anti-Slop Frontend Skill
