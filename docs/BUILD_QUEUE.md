@@ -34,6 +34,33 @@ can (BQ-027). Backend `PATCH /holdings/{id}` already accepts a `characteristics`
 work: a dynamic form keyed off `product_type`'s known field list. Deliberately deferred, not dropped —
 owner chose to log and pick up later within MVP rather than build now. Unblocked, ready whenever picked.
 
+### BQ-029 — Engagement/streak state model + API (backend)
+**Traces to:** D-060, P7 (`PRODUCT_PRINCIPLES.md`). Daily app-open streak tracking per user
+(`current_streak`, `longest_streak`, `last_active_date`) — increments on a new calendar day's first open,
+resets on a missed day. Pure app-behavior tracking (opens), not derived from any financial data — stays
+inside P7's permitted half. Unblocked, no dependency.
+
+### BQ-030 — Variable reward trigger logic (backend)
+**Traces to:** D-060, P7. Server-authoritative logic deciding, on an app-open event, whether a small
+unpredictable reward fires (deliberately variable-ratio, not a fixed schedule — that unpredictability is
+the point per D-060). Scoped to app-open only for now — the richer trigger set D-060 anticipated
+(rewarding a completed teaching moment) needs the chat surface to exist first (BQ-023/BQ-024), so that
+extension is a natural follow-on, not part of this item. Depends on BQ-029 for the event to react to.
+
+### BQ-031 — Streak + reward UI (frontend)
+**Traces to:** D-060, D-061, P7. Visible streak counter and celebratory reward feedback (visual/haptic,
+per Category A principle #3 already judged a clean fit) shown on app open. Must stay on P7's permitted
+side: the celebration reacts to the open/streak event itself, never to a financial figure. Blocked on
+BQ-029 and BQ-030 for the backend state/logic to display.
+
+### BQ-032 — Mascot character (concept + component)
+**Traces to:** D-061, P7 — the vehicle for the "cosmetic, behavior-reactive game elements" D-061
+explicitly permits (celebrating a completed teaching moment, a streak continuing). **Not fully buildable
+yet:** the mascot's name, personality, and visual identity are a creative/brand decision nobody has made —
+this item is engineering plumbing (a component that can render *a* reaction), not the creative call
+itself. Flagged rather than assumed; the owner should weigh in on the character concept before this goes
+further than a placeholder. Unblocked for the plumbing; blocked on a creative decision for the real thing.
+
 ### BQ-022 — Holding-detail view, as a home for teaching content
 **Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
 done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is now specifically a
