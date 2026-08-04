@@ -14,13 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-015 — Holdings CRUD API (GET list, GET one, POST create)
-**Traces to:** D-013/D-055 taxonomy, D-010/D-011 aliasing, Holding model (BQ-012). No new decision —
-pure execution of already-decided architecture (SQLAlchemy model exists, FastAPI pattern established
-by `/budget`, `/surfacing-candidates`). The true foundational unblock: Investments/Loans/Insurance
-display, the holding-detail view, Consolidated aggregation, and the teaching endpoint's baseline
-assembly (D-001) all need this before they can use real data instead of nothing.
-
 ### BQ-016 — Income CRUD API (GET, POST/PUT)
 **Traces to:** D-038, Income model (BQ-009). `compute_budget()` already reads Income internally, but
 nothing lets a user's income actually get written via the app yet.
@@ -29,15 +22,22 @@ nothing lets a user's income actually get written via the app yet.
 **Traces to:** D-038, Goal/GoalFunding models (BQ-009/BQ-012). Needed for the Goals half of the
 Budgeting/Goals tab (BRIEF-013).
 
+### BQ-018 — Consolidated net-worth aggregation endpoint
+**Traces to:** BRIEF-013. Unblocked by BQ-015 (needs a holdings list to sum across the three
+families) — now ready.
+
+### BQ-019 — Wire Investments/Loans/Insurance screens to real Holdings API
+**Traces to:** BRIEF-013. Unblocked by BQ-015 — now ready. Replaces BQ-014's placeholder screens with
+real list views per section.
+
+### BQ-022 — Holding-detail view (read-only)
+**Traces to:** BRIEF-013 — explicitly NOT Decision 2 (per-item management/edit authority, still
+BLOCKED below); this is a display-only surface for teaching content to have a home. Unblocked by
+BQ-015 — now ready.
+
 ---
 
 ## BLOCKED — do not start
-
-### BQ-018 — Consolidated net-worth aggregation endpoint
-**Blocked on:** BQ-015 (needs a holdings list to sum across the three families).
-
-### BQ-019 — Wire Investments/Loans/Insurance screens to real Holdings API
-**Blocked on:** BQ-015. Replaces BQ-014's placeholder screens with real list views per section.
 
 ### BQ-020 — Budgeting/Goals tab (frontend, new tab)
 **Blocked on:** BQ-016 (Income write), BQ-017 (Goals). `GET /budget` already exists (BQ-010) but the
@@ -46,15 +46,11 @@ tab itself doesn't (BRIEF-013 found this gap by checking `MainTabs.tsx` directly
 ### BQ-021 — Consolidated screen wired to real aggregation
 **Blocked on:** BQ-018.
 
-### BQ-022 — Holding-detail view (read-only)
-**Traces to:** BRIEF-013 — explicitly NOT Decision 2 (per-item management/edit authority, still
-BLOCKED below); this is a display-only surface for teaching content to have a home.
-**Blocked on:** BQ-015.
-
 ### BQ-023 — Core teaching/chat backend endpoint
 **Traces to:** the actual product core — assembles the living baseline (D-001: holdings + income +
 goals) per user, calls the Anthropic API with system prompt v0.8, returns teaching content.
-**Blocked on:** BQ-015, BQ-016, BQ-017 (needs real data to assemble a baseline from).
+**Blocked on:** BQ-016, BQ-017 (needs real Income/Goals data to assemble a full baseline from —
+Holdings is unblocked as of BQ-015).
 
 ### BQ-024 — Chat/conversational UI screen (frontend)
 **Blocked on:** BQ-023.
@@ -106,6 +102,21 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-015 — Holdings CRUD API (GET list, GET one, POST create) — done 04-Aug-2026
+Traces to D-013/D-055 taxonomy, D-010/D-011 aliasing, Holding model (BQ-012). Added
+`backend/app/services/holdings.py` (`list_holdings`/`get_holding`/`create_holding`, returning plain
+dicts, same convention as `budget.py`/`surfacing.py`) and three routes in `main.py`: `GET /holdings`,
+`GET /holdings/{holding_id}` (404 if not found/not owned), `POST /holdings` (201, `HoldingCreate`
+Pydantic body — `product_type`/`alias`/`display_name`/`characteristics`; 409 on a duplicate
+`(user_id, alias)` via `IntegrityError`, matching the existing unique constraint from BQ-012).
+`product_type` stays an unconstrained string per D-044 — this layer doesn't validate against the
+taxonomy, deliberately, same reasoning as the Holding model itself. Verified: `python -m py_compile`
+clean, app imports and builds all routes correctly in a fresh venv, `/health` returns 200, `/holdings`
+correctly 500s without a configured database (no DATABASE_URL in this remote session — same limitation
+BQ-011 hit; full live-DB round-trip verification, like BQ-012/BQ-013 did, needs the owner's local
+Supabase credentials and is not claimed here). Unblocks BQ-018, BQ-019, BQ-022 (now moved to READY) and
+half of BQ-023's dependency.
 
 ### BQ-014 — Bootstrap Expo app skeleton (React Navigation, Supabase auth) — done 04-Aug-2026
 Traces to D-052. First code ever in `app/`. Expo + TypeScript project (`create-expo-app`,

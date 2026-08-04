@@ -2,16 +2,26 @@ import logging
 import uuid
 
 from fastapi import Depends, FastAPI, HTTPException
+from pydantic import BaseModel
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.session import engine, get_db
 from app.services.budget import compute_budget
+from app.services.holdings import create_holding, get_holding, list_holdings
 from app.services.surfacing import compute_surfacing_candidates
 
 logger = logging.getLogger("fintutor.health")
 
 app = FastAPI(title="FinTutor API")
+
+
+class HoldingCreate(BaseModel):
+    product_type: str
+    alias: str
+    display_name: str | None = None
+    characteristics: dict = {}
 
 
 @app.get("/health")
@@ -27,6 +37,37 @@ def get_budget(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
 @app.get("/surfacing-candidates")
 def get_surfacing_candidates(user_id: uuid.UUID, db: Session = Depends(get_db)) -> list[dict]:
     return compute_surfacing_candidates(db, user_id)
+
+
+@app.get("/holdings")
+def get_holdings(user_id: uuid.UUID, db: Session = Depends(get_db)) -> list[dict]:
+    return list_holdings(db, user_id)
+
+
+@app.get("/holdings/{holding_id}")
+def get_holding_by_id(
+    holding_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    holding = get_holding(db, user_id, holding_id)
+    if holding is None:
+        raise HTTPException(status_code=404, detail="Holding not found")
+    return holding
+
+
+@app.post("/holdings", status_code=201)
+def post_holding(
+    user_id: uuid.UUID, body: HoldingCreate, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return create_holding(
+            db, user_id, body.product_type, body.alias, body.display_name, body.characteristics
+        )
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail=f"A holding with alias '{body.alias}' already exists for this user",
+        )
 
 
 @app.get("/health/db")
