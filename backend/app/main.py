@@ -21,6 +21,7 @@ from app.services.holdings import (
     list_holdings,
     update_holding,
 )
+from app.services.esop_exercise_cost import compute_esop_exercise_cost
 from app.services.income import create_income, list_income, update_income
 from app.services.loan_vs_invest import compute_loan_vs_invest
 from app.services.rewards import evaluate_reward
@@ -188,6 +189,18 @@ def get_loan_vs_invest(
 ) -> dict:
     try:
         return compute_loan_vs_invest(db, user_id, holding_id, prepay_amount)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Holding not found")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.get("/esop-exercise-cost")
+def get_esop_exercise_cost(
+    user_id: uuid.UUID, holding_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return compute_esop_exercise_cost(db, user_id, holding_id)
     except LookupError:
         raise HTTPException(status_code=404, detail="Holding not found")
     except ValueError as exc:

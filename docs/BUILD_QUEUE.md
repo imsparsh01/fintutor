@@ -18,19 +18,14 @@ Rules for this file:
 **Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default) + **D-067** (detection
 mechanism resolved: user-triggered "Compare paths" affordance for v1, no auto-detection — see
 `docs/decisions/D-067-comparison-detection-user-triggered.md`).
-**Loan-vs-invest is fully done (D-068, see DONE below), end to end.** Two sub-cases remain before this
-item is fully closed:
+**Loan-vs-invest and ESOP-timing are both fully done end to end (D-068, D-069, see DONE below).** One
+sub-case remains before this item is fully closed:
 - **Tax-saving modeling — deeper gap, not just tax-slab staleness.** Requires knowing the user's tax
   regime (old vs new — the new regime, now default, disallows most 80C deductions entirely, so getting
   this wrong isn't imprecise, it's *wrong* for a real subset of users) and can't reliably compute "unused
   80C room" without an ELSS-vs-regular-fund distinction the schema doesn't carry (D-009 forbids naming
   products, so no `is_80c_eligible` flag exists). No field anywhere captures tax regime. Needs its own
-  design pass before a brief like BRIEF-014 can be written for it.
-- **ESOP-timing — READY TO CONFIRM.** Full formula (vesting, exercise cost, taxable spread), scope fork
-  resolved (options only, not RSU), written up as `docs/BRIEF-015_esop_exercise_cost_today.md`. One yes/no
-  unblocks `backend/app/services/esop_exercise_cost.py`. Scoped to "cost of exercising today" only —
-  "should you exercise" still requires predicting future valuation and stays off the table, same as
-  loan-vs-invest's projected-outcome case.
+  design pass before a brief like BRIEF-014/015 can be written for it.
 
 ---
 
@@ -69,6 +64,29 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-026 (ESOP-timing half) — cost-of-exercising-today UI + computation, end to end — done 04-Aug-2026
+Traces to D-067 (user-triggered detection) + D-069 (BRIEF-015, cost-of-exercising-today only, options-only
+scope). Backend: `backend/app/services/esop_exercise_cost.py` (`compute_esop_exercise_cost`) + `GET
+/esop-exercise-cost`. New logic not designed before this item — D-066 explicitly left vesting computation
+undesigned — cliff-gated linear vesting derived from `grant_date`/`vesting_cliff_months`/
+`vesting_period_months`, no fractional units. Exercise cost is deterministic (`vested_units × strike_price`).
+Taxable spread shown only when `current_fmv` is populated, framed as mechanism only (never a final tax
+figure, staying clear of the tax-regime gap blocking tax-saving modeling). **A real bug caught and fixed
+during testing, not shipped:** the initial implementation showed the "options underwater" message when
+nothing had vested yet (spread = 0 by coincidence, not because the options were actually underwater) —
+fixed by giving "nothing vested yet" its own message with priority over both the underwater and
+no-valuation cases. Frontend: `app/lib/esopExerciseCost.ts` + `app/components/EsopExerciseCostModal.tsx`
+(three cards: vested units, exercise cost, taxable spread — no input needed, computed entirely from the
+grant's own stored terms and today's date) and a "Cost of exercising today" button on
+`HoldingDetailScreen`, shown only for `esop` holdings with `grant_type: "options"` (RSUs don't get this
+affordance — D-069's scope). Verified: `python -m py_compile` clean, route registers, `/esop-exercise-cost`
+correctly 500s without a configured database; the formula unit-tested across six cases (mid-vesting,
+pre-cliff, fully vested, missing `current_fmv`, underwater, and the pre-cliff+no-`current_fmv` combination
+that surfaced the priority bug) plus four error-handling cases (wrong product type, RSU rejected, missing
+required fields, holding not found) — all passed after the fix. `npx tsc --noEmit` clean, `npx expo export
+--platform android` bundled cleanly (931 modules, no errors). Not verified end-to-end against a live
+device/backend. Tax-saving modeling is now BQ-026's one remaining open sub-case.
 
 ### BQ-026 (loan-vs-invest half) — Compare-paths UI + hurdle-rate computation, end to end — done 04-Aug-2026
 Traces to D-067 (user-triggered detection) + D-068 (hurdle-rate-only math, BRIEF-014). Backend:

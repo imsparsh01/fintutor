@@ -1634,3 +1634,15 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   tax-saving and ESOP-timing halves of BQ-026. Full write-up:
   `docs/decisions/D-068-loan-vs-invest-hurdle-rate-confirmed.md`.
 - **Date:** 04-Aug-2026
+
+### D-069 — BRIEF-015 confirmed: ESOP "cost of exercising today" built as proposed
+- **Tier:** 3, owner-confirmed. Scope: options only, not RSU. New vesting logic (cliff-gated linear,
+  D-066 left this undesigned): 0 before cliff, full past `vesting_period_months`, otherwise
+  `floor(total_units_granted × elapsed_months / vesting_period_months)`. Exercise cost = vested units ×
+  strike price (deterministic). Taxable spread shown only when `current_fmv` is populated, framed as
+  mechanism (adds to taxable income at slab rate) — never a final tax-rupee figure, staying one step short
+  of the tax-regime gap blocking tax-saving modeling. Underwater options and missing `current_fmv` both
+  get honest framing, not a raw/omitted number. D-068's rule extraction ("assumes the future, or only
+  today?") reconfirmed a second time. Full write-up:
+  `docs/decisions/D-069-esop-exercise-cost-confirmed.md`.
+- **Date:** 04-Aug-2026

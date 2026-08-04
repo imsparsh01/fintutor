@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { EsopExerciseCostModal } from '../components/EsopExerciseCostModal';
 import { HoldingEditModal } from '../components/HoldingEditModal';
 import { LoanVsInvestModal } from '../components/LoanVsInvestModal';
 import { colors, spacing } from '../design/tokens';
@@ -24,7 +25,12 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
   const { userId } = useAuth();
   const [editing, setEditing] = useState(false);
   const [comparing, setComparing] = useState(false);
+  const [checkingExerciseCost, setCheckingExerciseCost] = useState(false);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
+
+  // D-069/BRIEF-015's scope: ESOP options only, not RSU (no exercise decision for RSUs).
+  const isEsopOptions =
+    holding.product_type === 'esop' && holding.characteristics.grant_type === 'options';
 
   const fields = CHARACTERISTICS_SCHEMA[holding.product_type] ?? [];
   const filledFields = fields.filter((field) => {
@@ -69,6 +75,12 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
           </Pressable>
         )}
 
+        {isEsopOptions && userId && (
+          <Pressable style={styles.compareButton} onPress={() => setCheckingExerciseCost(true)}>
+            <Text style={styles.compareButtonText}>Cost of exercising today</Text>
+          </Pressable>
+        )}
+
         <Pressable style={styles.editButton} onPress={() => setEditing(true)}>
           <Text style={styles.editButtonText}>Edit</Text>
         </Pressable>
@@ -90,6 +102,14 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
           userId={userId}
           holdingId={holding.id}
           onClose={() => setComparing(false)}
+        />
+      )}
+
+      {checkingExerciseCost && userId && (
+        <EsopExerciseCostModal
+          userId={userId}
+          holdingId={holding.id}
+          onClose={() => setCheckingExerciseCost(false)}
         />
       )}
     </>
