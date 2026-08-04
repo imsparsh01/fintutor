@@ -182,11 +182,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       a new first-class sibling object to Holdings. Reference-vs-store test extracted: a number with a
       holding home is referenced live; a number without one (income, discretionary categories, goal targets)
       is stored directly. See D-038.
-- [ ] **Decision 2 — Per-item management depth (D-031).** What is the user's authority over a holding, per
-      field — view only? edit? delete? recategorize? correct AI-captured values? Scoped now, DESIGNED LATER:
-      its quality depends on Decision 3's data model existing AND ideally on Phase 1 producing one real
-      section to react to. Designing it in a vacuum now would produce a worse answer. Decision 3 dependency
-      now satisfied (D-038); the Phase-1-section dependency still stands.
+- [x] **Decision 2 — Per-item management depth RESOLVED (D-059, 04-Aug-2026).** Path C adopted: full
+      per-field edit, delete, and `product_type` recategorization via a standard UI — not view-only, not
+      routed exclusively through AI conversation. Chosen because the chat surface (BQ-023/BQ-024) is still
+      unbuilt, so a chat-dependent correction path would leave holdings functionally frozen in MVP. Owner
+      knowingly accepted the resulting tension with §2's "living baseline... not a CRUD save" framing —
+      capture (D-012) and post-capture management are treated as different concerns. See D-059.
 - [ ] **Corrected UX principles section in PRODUCT_PRINCIPLES.md (D-031).** The implied UX stance
       (persistent sections, AI-primary/manual-secondary, aliases never shown, no quizzes, progressive
       capture) is to be extracted and written as a UX section — but only AFTER Decisions 2 and 3 exist,
@@ -280,6 +281,14 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.1 (04-Aug-2026) — **Decision 2 resolved (D-059).** Per-item management depth: Path C adopted — full
+  per-field edit, delete, and `product_type` recategorization via a standard UI, not routed exclusively
+  through AI conversation. Chosen over view-only/delete-only alternatives because the chat surface
+  (BQ-023/BQ-024) is still unbuilt, so a chat-dependent correction path would leave holdings functionally
+  frozen in MVP. Owner explicitly weighed and accepted the resulting tension with §2's "living baseline...
+  not a CRUD save" framing, drawing a line between capture (D-012's concern) and post-capture management
+  (this decision's concern). §8 item checked off. Also unblocks the UX-principles-section dependency in
+  `PRODUCT_PRINCIPLES.md` (both Decision 2 and Decision 3 now resolved) — not acted on in this entry.
 - v3.0 (03-Aug-2026) — **ESOP added to the product-type taxonomy (D-055), resolving BRIEF-010's escalated
   fork.** ESOP confusion was independently named the startup/gig founding-sub-profile's (D-054) top pain
   point (BRIEF-010); owner chose to add it to MVP scope rather than park it, so that profile isn't
