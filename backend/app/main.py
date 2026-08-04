@@ -22,6 +22,7 @@ from app.services.holdings import (
     update_holding,
 )
 from app.services.income import create_income, list_income, update_income
+from app.services.loan_vs_invest import compute_loan_vs_invest
 from app.services.rewards import evaluate_reward
 from app.services.streaks import get_streak, record_app_open
 from app.services.surfacing import compute_surfacing_candidates
@@ -176,6 +177,21 @@ def put_income(
 @app.get("/consolidated")
 def get_consolidated(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     return compute_consolidated(db, user_id)
+
+
+@app.get("/loan-vs-invest")
+def get_loan_vs_invest(
+    user_id: uuid.UUID,
+    holding_id: uuid.UUID,
+    prepay_amount: float,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        return compute_loan_vs_invest(db, user_id, holding_id, prepay_amount)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Holding not found")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @app.get("/goals")

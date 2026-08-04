@@ -1622,3 +1622,15 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
 - **Still open:** BQ-026's second half — the actual comparison math (loan-vs-invest breakeven, tax-saving
   modeling) — is not resolved by this entry.
 - **Date:** 04-Aug-2026
+
+### D-068 — BRIEF-014 confirmed: loan-vs-invest hurdle-rate comparison built as proposed
+- **Tier:** 3, owner-confirmed. Hurdle-rate figure only (never a projected investment outcome, §3 rule 4);
+  both prepayment modes always shown (no silently-picked default); prepayment/foreclosure charges assumed
+  zero with a disclosed UI note (no new schema field). Built: `backend/app/services/loan_vs_invest.py`,
+  `GET /loan-vs-invest`. Verified against the system prompt's own worked example and four edge cases
+  (non-loan type, prepay ≥ balance, missing holding, EMI too small to cover interest). Rule extraction
+  confirmed as standing: for any comparison, only a hurdle/breakeven framing is available whenever the
+  figure would otherwise require assuming what the market does — applies directly to the still-open
+  tax-saving and ESOP-timing halves of BQ-026. Full write-up:
+  `docs/decisions/D-068-loan-vs-invest-hurdle-rate-confirmed.md`.
+- **Date:** 04-Aug-2026

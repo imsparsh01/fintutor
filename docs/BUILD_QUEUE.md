@@ -18,13 +18,12 @@ Rules for this file:
 **Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default) + **D-067** (detection
 mechanism resolved: user-triggered "Compare paths" affordance for v1, no auto-detection — see
 `docs/decisions/D-067-comparison-detection-user-triggered.md`).
-**Still blocking a READY move:** the comparison math itself isn't decided yet. Three sub-cases, each at a
-different readiness level:
-- **Loan-vs-invest — READY TO CONFIRM.** Full formula, both implementation forks resolved, written up as
-  `docs/BRIEF-014_loan_vs_invest_hurdle_rate.md`. One yes/no unblocks
-  `backend/app/services/loan_vs_invest.py` immediately — no further design work blocking it. Headline
-  finding: only a hurdle-rate figure is compliant (§3 rule 4, never predict markets) — a projected
-  investment outcome isn't available at all, not just one option among several.
+**Still blocking a READY move:** the comparison math itself isn't fully decided yet. Loan-vs-invest is
+done (D-068); the modal UI and two sub-cases remain:
+- **Loan-vs-invest computation — DONE (D-068).** `backend/app/services/loan_vs_invest.py` +
+  `GET /loan-vs-invest`. What's still missing before this specific path is user-visible: the actual
+  "Compare paths" UI affordance (D-067's user-triggered entry point) and a screen to call this endpoint
+  and render its result — that frontend piece hasn't been built yet.
 - **Tax-saving modeling — deeper gap, not just tax-slab staleness.** Requires knowing the user's tax
   regime (old vs new — the new regime, now default, disallows most 80C deductions entirely, so getting
   this wrong isn't imprecise, it's *wrong* for a real subset of users) and can't reliably compute "unused
