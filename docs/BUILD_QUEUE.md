@@ -28,10 +28,6 @@ done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is
 dedicated detail *screen* (not a modal) as a home for teaching content once the chat surface exists
 (BQ-023/BQ-024), which the edit modal doesn't provide. Unblocked by BQ-015 — still ready.
 
-### BQ-020 — Budgeting/Goals tab (frontend, new tab)
-**Traces to:** BRIEF-013. `GET /budget` already exists (BQ-010); `GET`/`POST /income` (BQ-016) and
-`GET`/`POST /goals` (BQ-017) now also exist — unblocked.
-
 ### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
 **Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default, not yet flagged
 otherwise). Unblocked by BQ-023/BQ-024. **Flag for whoever picks this up:** "breakeven"/"tax-saving
@@ -79,6 +75,24 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-020 — Budgeting/Goals tab (frontend, new tab) — done 04-Aug-2026
+Traces to BRIEF-013, unblocked by BQ-010/BQ-016/BQ-017. Added `app/lib/budget.ts`, `income.ts`, `goals.ts`
+(thin fetch wrappers, same convention as `holdings.ts`/`consolidated.ts`) and
+`app/screens/BudgetingScreen.tsx` — a new `Budgeting` tab in `MainTabs`. Shows the live `GET /budget`
+summary (income/outflows/discretionary/net), the income sources list with an inline "+ Add income source"
+form (appends to the user's first `Income` row via `PUT`, or creates one via `POST` if none exists yet —
+keeps it to one row per user in practice even though the backend allows more), and the goals list with
+each goal's live `progress` (BQ-017) against its `target_amount`, plus an inline "+ Add goal" form.
+Extracted `formatRupees` into `app/lib/format.ts` (was duplicated as a local helper in
+`ConsolidatedTotalsCard`; now shared, refactored that file to use it too).
+
+**Scoped out, not silently dropped:** no `funded_by` picker in the goal-creation form — a goal is created
+unfunded (empty `funded_by: []`) and can be linked to holdings later; matches the same first-pass scoping
+`characteristics`-editing got in BQ-027 (BQ-028 covers that follow-on). Target date is a plain
+`YYYY-MM-DD` text field, validated with a regex — no date-picker dependency added (would be a new library
+decision). Verified: `npx tsc --noEmit` clean, `npx expo export --platform android` bundled cleanly (925
+modules, no errors). Not verified end-to-end against a live device/backend.
 
 ### BQ-025 — Onboarding flow (D-058: chip-guided, no structured field, default landing screen, skippable) — done 04-Aug-2026
 Traces to D-058, unblocked by BQ-023/BQ-024. Extracted the message-thread UI out of `ChatScreen` into a

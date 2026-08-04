@@ -2,10 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { colors, spacing } from '../design/tokens';
 import { fetchConsolidated, type ConsolidatedTotals } from '../lib/consolidated';
-
-function formatRupees(amount: number): string {
-  return `₹${amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-}
+import { formatRupees } from '../lib/format';
 
 // D-065: three separate family totals, not one signed net-worth figure — see BQ-018's
 // write-up for why (FD/RD has no accrued-value field to make a subtraction meaningful).

@@ -1,4 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BudgetingScreen } from '../screens/BudgetingScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ConsolidatedScreen } from '../screens/ConsolidatedScreen';
 import { InsuranceScreen } from '../screens/InsuranceScreen';
@@ -26,6 +27,7 @@ export function MainTabs() {
       <Tab.Screen name="Investments" component={InvestmentsScreen} />
       <Tab.Screen name="Loans" component={LoansScreen} />
       <Tab.Screen name="Insurance" component={InsuranceScreen} />
+      <Tab.Screen name="Budgeting" component={BudgetingScreen} />
     </Tab.Navigator>
   );
 }

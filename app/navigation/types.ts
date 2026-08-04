@@ -9,4 +9,5 @@ export type MainTabsParamList = {
   Investments: undefined;
   Loans: undefined;
   Insurance: undefined;
+  Budgeting: undefined;
 };
