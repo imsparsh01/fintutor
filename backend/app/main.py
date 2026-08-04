@@ -20,6 +20,7 @@ from app.services.holdings import (
     update_holding,
 )
 from app.services.income import create_income, list_income, update_income
+from app.services.rewards import evaluate_reward
 from app.services.streaks import get_streak, record_app_open
 from app.services.surfacing import compute_surfacing_candidates
 
@@ -201,7 +202,11 @@ def get_streak_state(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
 
 @app.post("/streak/open")
 def post_streak_open(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
-    return record_app_open(db, user_id)
+    previous = get_streak(db, user_id)
+    is_new_day = previous["last_active_date"] != date.today().isoformat()
+    streak = record_app_open(db, user_id)
+    reward = evaluate_reward(is_new_day)
+    return {**streak, **reward}
 
 
 @app.get("/health/db")

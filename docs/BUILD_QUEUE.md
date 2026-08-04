@@ -22,19 +22,12 @@ can (BQ-027). Backend `PATCH /holdings/{id}` already accepts a `characteristics`
 work: a dynamic form keyed off `product_type`'s known field list. Deliberately deferred, not dropped —
 owner chose to log and pick up later within MVP rather than build now. Unblocked, ready whenever picked.
 
-### BQ-030 — Variable reward trigger logic (backend)
-**Traces to:** D-060, P7. Server-authoritative logic deciding, on an app-open event, whether a small
-unpredictable reward fires (deliberately variable-ratio, not a fixed schedule — that unpredictability is
-the point per D-060). Scoped to app-open only for now — the richer trigger set D-060 anticipated
-(rewarding a completed teaching moment) needs the chat surface to exist first (BQ-023/BQ-024), so that
-extension is a natural follow-on, not part of this item. Unblocked — BQ-029 now exists (`POST
-/streak/open` is the event to react to).
-
 ### BQ-031 — Streak + reward UI (frontend)
 **Traces to:** D-060, D-061, P7. Visible streak counter and celebratory reward feedback (visual/haptic,
 per Category A principle #3 already judged a clean fit) shown on app open. Must stay on P7's permitted
-side: the celebration reacts to the open/streak event itself, never to a financial figure. Blocked on
-BQ-029 and BQ-030 for the backend state/logic to display.
+side: the celebration reacts to the open/streak event itself, never to a financial figure. Unblocked —
+BQ-029 and BQ-030 both done: `POST /streak/open` now returns `current_streak`/`longest_streak` and
+`reward_fired`/`reward_type` in one response for the UI to react to.
 
 ### BQ-022 — Holding-detail view, as a home for teaching content
 **Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
@@ -109,6 +102,22 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-030 — Variable reward trigger logic (backend) — done 04-Aug-2026
+Traces to D-060, P7. Added `backend/app/services/rewards.py` (`evaluate_reward(is_new_day)`) — a
+variable-ratio probability roll (constant `_REWARD_PROBABILITY = 0.3`, documented as a plain tunable
+game-design number, not requiring a new decision to adjust — P7's app-behavior-only half). Only rolled on
+a genuinely new streak day (never on a same-day repeat open), so a client can't force extra rolls by
+refreshing — the gate is `POST /streak/open` comparing the pre-call `last_active_date` to today, computed
+in `main.py` before calling `record_app_open`, keeping `streaks.py` (BQ-029) untouched. `POST
+/streak/open` now returns `reward_fired`/`reward_type` alongside the streak fields in one response.
+Scoped to app-open only, per the item's own text — no reaction to a completed teaching moment yet (needs
+BQ-023/024 first). Reward type is a single generic `"celebration"` string, matching `Mascot.tsx`'s
+`'celebrating'` mood (BQ-032) — concrete reward assets/animation are BQ-031's job, not invented here.
+Verified: `python -m py_compile` clean, routes register, `/streak/open` correctly 500s without a
+configured database, and `evaluate_reward` unit-tested with `random.random` mocked across all three cases
+(same-day never fires regardless of RNG, below-threshold fires, above-threshold doesn't) — all passed.
+Unblocks BQ-031, moved to READY.
 
 ### BQ-029 — Engagement/streak state model + API (backend) — done 04-Aug-2026
 Traces to D-060, P7. Added `backend/app/models/streak_state.py` (`StreakState`: `current_streak`,
