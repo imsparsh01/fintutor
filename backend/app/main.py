@@ -1,5 +1,6 @@
 import logging
 import uuid
+from datetime import date
 
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
@@ -9,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import engine, get_db
 from app.services.budget import compute_budget
+from app.services.goals import create_goal, list_goals
 from app.services.holdings import (
     create_holding,
     delete_holding,
@@ -50,6 +52,18 @@ class IncomeCreate(BaseModel):
 
 class IncomeUpdate(BaseModel):
     sources: list[IncomeSource]
+
+
+class GoalFundingIn(BaseModel):
+    holding_id: uuid.UUID
+    earmarked_amount: float
+
+
+class GoalCreate(BaseModel):
+    target_amount: float
+    target_date: date
+    category: str
+    funded_by: list[GoalFundingIn] = []
 
 
 @app.get("/health")
@@ -147,6 +161,30 @@ def put_income(
     if updated is None:
         raise HTTPException(status_code=404, detail="Income not found")
     return updated
+
+
+@app.get("/goals")
+def get_goals(user_id: uuid.UUID, db: Session = Depends(get_db)) -> list[dict]:
+    return list_goals(db, user_id)
+
+
+@app.post("/goals", status_code=201)
+def post_goal(user_id: uuid.UUID, body: GoalCreate, db: Session = Depends(get_db)) -> dict:
+    try:
+        return create_goal(
+            db,
+            user_id,
+            body.target_amount,
+            body.target_date,
+            body.category,
+            [f.model_dump() for f in body.funded_by],
+        )
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="One or more funded_by.holding_id values don't exist",
+        )
 
 
 @app.get("/health/db")

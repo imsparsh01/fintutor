@@ -14,10 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-017 — Goals CRUD API (GET list, POST create)
-**Traces to:** D-038, Goal/GoalFunding models (BQ-009/BQ-012). Needed for the Goals half of the
-Budgeting/Goals tab (BRIEF-013).
-
 ### BQ-018 — Consolidated net-worth aggregation endpoint
 **Traces to:** BRIEF-013. Unblocked by BQ-015 (needs a holdings list to sum across the three
 families) — now ready.
@@ -55,22 +51,22 @@ done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is
 dedicated detail *screen* (not a modal) as a home for teaching content once the chat surface exists
 (BQ-023/BQ-024), which the edit modal doesn't provide. Unblocked by BQ-015 — still ready.
 
----
-
-## BLOCKED — do not start
-
 ### BQ-020 — Budgeting/Goals tab (frontend, new tab)
-**Blocked on:** BQ-016 (Income write), BQ-017 (Goals). `GET /budget` already exists (BQ-010) but the
-tab itself doesn't (BRIEF-013 found this gap by checking `MainTabs.tsx` directly).
-
-### BQ-021 — Consolidated screen wired to real aggregation
-**Blocked on:** BQ-018.
+**Traces to:** BRIEF-013. `GET /budget` already exists (BQ-010); `GET`/`POST /income` (BQ-016) and
+`GET`/`POST /goals` (BQ-017) now also exist — unblocked.
 
 ### BQ-023 — Core teaching/chat backend endpoint
 **Traces to:** the actual product core — assembles the living baseline (D-001: holdings + income +
 goals) per user, calls the Anthropic API with system prompt v0.8, returns teaching content.
-**Blocked on:** BQ-016, BQ-017 (needs real Income/Goals data to assemble a full baseline from —
-Holdings is unblocked as of BQ-015).
+**Unblocked** — BQ-015 (Holdings), BQ-016 (Income), BQ-017 (Goals) all done, so a full baseline can be
+assembled. The biggest, highest-stakes item in the queue; pick deliberately, not by default.
+
+---
+
+## BLOCKED — do not start
+
+### BQ-021 — Consolidated screen wired to real aggregation
+**Blocked on:** BQ-018.
 
 ### BQ-024 — Chat/conversational UI screen (frontend)
 **Blocked on:** BQ-023.
@@ -122,6 +118,21 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-017 — Goals CRUD API (GET list, POST create) — done 04-Aug-2026
+Traces to D-038, Goal/GoalFunding models (BQ-009/BQ-012). Added `backend/app/services/goals.py`
+(`list_goals`/`create_goal`) and two routes in `main.py`: `GET /goals`, `POST /goals` (201, `GoalCreate`
+Pydantic body — `target_amount`/`target_date`/`category`/`funded_by`, the last a list of
+`{holding_id, earmarked_amount}` creating `GoalFunding` child rows in the same call; 400 if a
+`holding_id` doesn't exist, via the FK constraint's `IntegrityError`). Per D-038's explicit text
+("progress is always computed live as the sum of earmarked holdings' current values — never
+duplicated"), each returned goal carries a `progress` field computed as the live sum of its
+`funded_by[].earmarked_amount` entries at read time — never stored on the `Goal` row itself; no new
+formula invented beyond what D-038 already specifies. No PUT/DELETE — outside the item's stated
+"GET list, POST create" scope. Verified: `python -m py_compile` clean, app imports and all routes
+register in a fresh venv, `/health` returns 200, `/goals` correctly 500s without a configured database
+(no `DATABASE_URL` in this remote session — same limitation prior BQ items hit). Unblocks BQ-020
+(Budgeting/Goals tab) and BQ-023 (core teaching engine) together with BQ-016 — both moved to READY.
 
 ### BQ-016 — Income CRUD API (GET, POST/PUT) — done 04-Aug-2026
 Traces to D-038, Income model (BQ-009). Added `backend/app/services/income.py` (`list_income`/
