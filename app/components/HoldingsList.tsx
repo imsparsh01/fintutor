@@ -1,11 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { HoldingEditModal } from './HoldingEditModal';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../lib/AuthContext';
 import { fetchHoldings, type Holding } from '../lib/holdings';
 import { humanizeProductType } from '../lib/taxonomy';
+import type { HoldingsStackParamList } from '../navigation/types';
 
-// List view (BQ-019) with tap-to-edit/delete/recategorize (BQ-027/D-059).
+// List view (BQ-019). Tapping a row navigates to the detail screen (BQ-022) — full
+// edit/delete/recategorize authority (BQ-027/D-059) lives there now, one tap deeper,
+// reached via its own "Edit" button rather than directly from this list.
 export function HoldingsList({
   title,
   familyTypes,
@@ -16,9 +20,9 @@ export function HoldingsList({
   emptyHint: string;
 }) {
   const { userId } = useAuth();
+  const navigation = useNavigation<NativeStackNavigationProp<HoldingsStackParamList>>();
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Holding | null>(null);
 
   const load = useCallback(() => {
     if (!userId) return;
@@ -28,9 +32,9 @@ export function HoldingsList({
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load holdings'));
   }, [userId, familyTypes]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  // Reloads whenever this list regains focus — covers returning from Detail after an
+  // edit/delete, without needing a callback threaded back through navigation params.
+  useFocusEffect(load);
 
   if (!userId) {
     return (
@@ -75,19 +79,12 @@ export function HoldingsList({
         data={holdings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Pressable style={styles.row} onPress={() => setSelected(item)}>
+          <Pressable style={styles.row} onPress={() => navigation.navigate('Detail', { holding: item })}>
             <Text style={styles.rowTitle}>{item.display_name ?? item.alias}</Text>
             <Text style={styles.rowSubtitle}>{humanizeProductType(item.product_type)}</Text>
           </Pressable>
         )}
       />
-      {selected && (
-        <HoldingEditModal
-          holding={selected}
-          onClose={() => setSelected(null)}
-          onChanged={load}
-        />
-      )}
     </View>
   );
 }

@@ -14,12 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-022 — Holding-detail view, as a home for teaching content
-**Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
-done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is now specifically a
-dedicated detail *screen* (not a modal) as a home for teaching content once the chat surface exists
-(BQ-023/BQ-024), which the edit modal doesn't provide. Unblocked by BQ-015 — still ready.
-
 ### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
 **Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default, not yet flagged
 otherwise). Unblocked by BQ-023/BQ-024. **Flag for whoever picks this up:** "breakeven"/"tax-saving
@@ -67,6 +61,34 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-022 — Holding-detail view, as a home for teaching content — done 04-Aug-2026
+Traces to BRIEF-013, unblocked by BQ-015. **Real navigation-shape call made while building, not escalated
+— reasoned through below, not a hard-stop:** BQ-027 had already claimed the row tap for the edit modal, so
+BQ-022's "reachable by tapping a holding" needed reconciling with that. Resolved by making each family tab
+(Investments/Loans/Insurance) its own small `createNativeStackNavigator` (`HoldingsStackParamList`: `List`
+→ `Detail`) — tapping a row now navigates to the new read-only `HoldingDetailScreen`, which has its own
+"Edit" button opening the same `HoldingEditModal` as before (full BQ-027/D-059 authority preserved, one
+tap deeper, not removed). `HoldingsList` no longer owns modal state; it reloads via `useFocusEffect` when
+regaining focus (covers returning from Detail after an edit/delete) instead of a callback threaded through
+params. `HoldingDetailScreen` shows the holding's filled-in characteristics (reusing BQ-028's
+`CHARACTERISTICS_SCHEMA` for labels) and an "Ask about this" button that cross-navigates to the `Chat` tab
+(`navigation.getParent()`) with a pre-filled question.
+
+**Compliance-adjacent catch made and fixed before it shipped:** the pre-filled question is built from the
+holding's **alias only, never `display_name`** — `/chat`'s `question` field is sent to the LLM verbatim
+(`teaching.py`), so an app-generated message containing a real product/institution name would have been a
+genuine D-010 violation (the architectural guarantee is that the LLM never sees real names) — not a
+user-typed exception §3 rule 2 already handles, but the app manufacturing the leak itself. Caught during
+design, not after; the comment is left in the code (`HoldingDetailScreen.tsx`) so a future edit doesn't
+casually swap in `display_name`. Added `{ prefillQuestion?: string }` to `MainTabsParamList`'s `Chat`
+entry; `ChatScreen` sends it once via `ChatThread`'s existing imperative `send()` (already built for
+BQ-025's chips) and clears the param so navigating back later doesn't resend it.
+
+Verified: `npx tsc --noEmit` clean, `npx expo export --platform android` bundled cleanly (927 modules, no
+errors). Not verified end-to-end against a live device/backend — the cross-tab navigation and focus-reload
+behavior in particular would benefit from the owner's own hands-on check when a real device/simulator is
+available.
 
 ### BQ-028 — Holdings characteristics (field-level) editing UI — done 04-Aug-2026
 Traces to D-059 (Decision 2, Path C), unblocked (BQ-027 already had the alias/display_name/product_type
