@@ -45,6 +45,20 @@ reason is now factually wrong. Purely a comment-accuracy issue — zero behavior
 **Revisit if:** whenever someone is next touching `consolidated.py` for another reason — no reason to spend
 a session on this alone.
 
+### LOW — Backend has no CORS middleware; browser-based testing needs a workaround
+**Traces to:** the 04-Aug-2026(j) live-verification pass (device/simulator session — see
+`docs/sessions/2026-08-04j.md`). `backend/app/main.py` configures no `CORSMiddleware`, so a browser calling
+the backend from a different origin (Expo's web dev server on `:19006` calling the backend on `:8000`) gets
+blocked by the browser's own CORS policy — every screen showed "Failed to fetch" until worked around.
+Doesn't affect the real product target: native iOS/Android `fetch()` isn't subject to CORS at all, so this
+was invisible to every prior BQ item's `npx expo export` verification. Worked around for this testing
+session only (never in shipped code) by launching the test Chromium with `--disable-web-security` — a
+browser flag, not a backend change.
+**Revisit if:** a web deployment target is ever decided for real (would need a real, scoped `allow_origins`
+list, not a wildcard) — that would be its own new decision, not implied by this note. Also relevant to any
+*future* browser-based verification pass — same workaround applies, documented here so it isn't
+re-discovered from scratch.
+
 ### LOW — Chat's network-error message is a raw fetch error, not a friendly one
 **Traces to:** the 04-Aug-2026 verification pass, confirmed live (a real request to a 503-returning
 backend showed "Backend responded 503" verbatim in the UI). `app/lib/chat.ts`'s `askQuestion` throws
