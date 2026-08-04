@@ -16,12 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### Mascot mood reacting to a completed teaching moment
-**Traces to:** BQ-032 (D-061/P7) — see `docs/KNOWN_LIMITATIONS.md`. Noted as blocked on BQ-023/024 when
-BQ-032 shipped; both are done now, so this is unblocked, just not yet picked up. Simplest correct version:
-`ChatThread` switches `Mascot`'s mood to `'celebrating'` briefly after any successful `/chat` response —
-reacting to the completed-exchange event itself, never to a financial figure (P7's boundary, same as
-BQ-031's streak-reaction wiring already holds). No new backend signal needed.
+(nothing queued right now)
 
 ---
 
@@ -60,6 +55,20 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-033 — Mascot mood reacting to a completed teaching moment — done 04-Aug-2026
+Traces to BQ-032 (D-061/P7). `ChatThread` (shared by `ChatScreen`/BQ-024 and `OnboardingScreen`/BQ-025, so
+both surfaces get the reaction for free) now owns mascot mood state: renders `<Mascot mood={mood} />` above
+the message list, starts `'neutral'`, flips to `'celebrating'` right after a successful `/chat` response
+completes, and reverts to `'neutral'` after 2.5s via a cleared-on-unmount timeout — a brief reaction to the
+completed-exchange event itself, never to the response's content or any financial figure (P7's boundary,
+same as BQ-031's streak wiring already holds). No new backend signal needed, matching the item's own scope
+note. `Mascot.tsx`'s comment updated — the "teaching moment wiring isn't built yet" note is no longer true.
+Verified: `npx tsc --noEmit` clean (after `npm install`, `node_modules` wasn't present in this session),
+`npx expo export --platform android` bundled cleanly (933 modules, no errors). An incidental
+`package-lock.json` diff from a different local npm version normalizing the file (dropping `libc` fields on
+optional deps) was discarded, not committed — unrelated to this change. Not verified end-to-end against a
+live device/backend, same standing limitation as every other frontend BQ item this session.
 
 ### BQ-026 — CLOSED, all three sub-cases done end to end — done 04-Aug-2026
 Traces to BRIEF-013 (comparison-view shape) + D-067 (user-triggered detection). All three sub-cases now

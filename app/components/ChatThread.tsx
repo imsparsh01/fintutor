@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState, type ReactNode } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { colors, spacing } from '../design/tokens';
 import { askQuestion } from '../lib/chat';
+import { Mascot, type MascotMood } from './Mascot';
 
 interface Message {
   id: string;
@@ -22,6 +23,10 @@ interface Message {
 export interface ChatThreadHandle {
   send: (text: string) => void;
 }
+
+// How long the mascot stays 'celebrating' after a completed exchange before
+// reverting to 'neutral' — a brief reaction, not a persistent state change.
+const CELEBRATION_DURATION_MS = 2500;
 
 // BQ-023's /chat endpoint, surfaced. Each question is an independent call — no
 // conversation memory sent to the model (D-022); the message list here is local
@@ -37,6 +42,16 @@ export const ChatThread = forwardRef<
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // D-061/P7: reacts to the completed-exchange event itself, never to the
+  // content of the response — same boundary BQ-031's streak wiring holds.
+  const [mood, setMood] = useState<MascotMood>('neutral');
+  const celebrationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
+    };
+  }, []);
 
   const sendText = async (raw: string) => {
     const question = raw.trim();
@@ -52,6 +67,9 @@ export const ChatThread = forwardRef<
     try {
       const response = await askQuestion(userId, question);
       setMessages((prev) => [...prev, { id: `${Date.now()}-a`, role: 'assistant', text: response }]);
+      setMood('celebrating');
+      if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
+      celebrationTimer.current = setTimeout(() => setMood('neutral'), CELEBRATION_DURATION_MS);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reach the teaching engine');
     } finally {
@@ -66,6 +84,7 @@ export const ChatThread = forwardRef<
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+      <Mascot mood={mood} />
       {messages.length === 0 ? (
         <View style={styles.centered}>{emptyState}</View>
       ) : (

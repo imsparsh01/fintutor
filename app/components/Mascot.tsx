@@ -19,9 +19,9 @@ const MOOD_MESSAGE: Record<MascotMood, string> = {
 // element. Reacts only to app behavior (streaks, session activity), never to
 // financial figures — that boundary is P7's, not a per-component choice.
 // Placeholder emoji visual until real character art exists. Mood wiring to
-// real trigger events (streak continuation — BQ-029/030/031; a completed
-// teaching moment — BQ-023/024) isn't built yet; this is the reusable
-// display piece those will call into, defaulting to 'neutral' until they do.
+// real trigger events: streak continuation (BQ-029/030/031, ConsolidatedScreen)
+// and a completed teaching moment (this item, ChatThread) both call in;
+// defaults to 'neutral' otherwise.
 export function Mascot({ mood = 'neutral' }: { mood?: MascotMood }) {
   return (
     <View style={styles.container}>
