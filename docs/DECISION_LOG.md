@@ -1501,3 +1501,16 @@ but with an explicit skip affordance so it's never a hard gate — removes onboa
 giving every user the guided entry point fresh starters specifically need (BRIEF-010). No hard-stop
 trigger fires; reinforces P1/D-012 rather than contradicting a principle. Reversibility: High.
 Date: 03-Aug-2026.
+
+### D-059 — Decision 2 resolved: Path C adopted — full per-field edit, delete, and recategorize authority over holdings
+Full entry: `docs/decisions/D-059-per-item-management-depth.md`. Tier 3 (trigger 2, user financial data
+handling), resolves `PROJECT_SPEC.md` §8's Decision 2, open since D-031. Users get full direct-manipulation
+authority over AI-captured holdings — edit any field, delete, recategorize `product_type` — via a standard
+UI, not routed exclusively through AI conversation. Chosen over view-only/delete-only alternatives because
+the chat surface (BQ-023/BQ-024) is still unbuilt, so a chat-dependent correction path would leave holdings
+functionally frozen in MVP. Owner explicitly weighed this against tension with §2's "living baseline, not a
+CRUD save" framing and D-012's anti-menu capture philosophy, and chose it anyway — recorded as a knowingly
+accepted tension (capture vs. post-capture management are different concerns), not silently resolved. A
+candidate rule extraction (route future Income/Goals edit-authority questions through the same test) was
+proposed but NOT adopted as a standing rule — future cases return as their own Tier-3 questions.
+Reversibility: Medium (cheap now, no real user data yet; closes once real usage exists). Date: 04-Aug-2026.
