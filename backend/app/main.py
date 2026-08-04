@@ -14,6 +14,10 @@ from app.services.baseline import assemble_baseline
 from app.services.budget import compute_budget
 from app.services.consolidated import compute_consolidated
 from app.services.deepen_classifier import classify_deepen
+from app.services.discretionary_categories import (
+    create_discretionary_category,
+    list_discretionary_categories,
+)
 from app.services.goals import create_goal, list_goals
 from app.services.holdings import (
     create_holding,
@@ -70,6 +74,11 @@ class IncomeCreate(BaseModel):
 
 class IncomeUpdate(BaseModel):
     sources: list[IncomeSource]
+
+
+class DiscretionaryCategoryCreate(BaseModel):
+    label: str
+    planned_amount: float
 
 
 class GoalFundingIn(BaseModel):
@@ -187,6 +196,20 @@ def put_income(
     if updated is None:
         raise HTTPException(status_code=404, detail="Income not found")
     return updated
+
+
+@app.get("/discretionary-categories")
+def get_discretionary_categories(
+    user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> list[dict]:
+    return list_discretionary_categories(db, user_id)
+
+
+@app.post("/discretionary-categories", status_code=201)
+def post_discretionary_category(
+    user_id: uuid.UUID, body: DiscretionaryCategoryCreate, db: Session = Depends(get_db)
+) -> dict:
+    return create_discretionary_category(db, user_id, body.label, body.planned_amount)
 
 
 @app.get("/consolidated")

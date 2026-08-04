@@ -4,6 +4,11 @@ import { TaxSavingRoomModal } from '../components/TaxSavingRoomModal';
 import { colors, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { fetchBudget, type BudgetSummary } from '../lib/budget';
+import {
+  createDiscretionaryCategory,
+  fetchDiscretionaryCategories,
+  type DiscretionaryCategory,
+} from '../lib/discretionaryCategories';
 import { formatRupees } from '../lib/format';
 import { createGoal, fetchGoals, type GoalRecord } from '../lib/goals';
 import { createIncome, fetchIncome, updateIncome, type IncomeRecord } from '../lib/income';
@@ -15,6 +20,7 @@ export function BudgetingScreen() {
   const { userId } = useAuth();
   const [budget, setBudget] = useState<BudgetSummary | null>(null);
   const [income, setIncome] = useState<IncomeRecord[]>([]);
+  const [discretionaryCategories, setDiscretionaryCategories] = useState<DiscretionaryCategory[]>([]);
   const [goals, setGoals] = useState<GoalRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [checkingTaxSaving, setCheckingTaxSaving] = useState(false);
@@ -22,10 +28,16 @@ export function BudgetingScreen() {
   const load = useCallback(() => {
     if (!userId) return;
     setError(null);
-    Promise.all([fetchBudget(userId), fetchIncome(userId), fetchGoals(userId)])
-      .then(([b, i, g]) => {
+    Promise.all([
+      fetchBudget(userId),
+      fetchIncome(userId),
+      fetchDiscretionaryCategories(userId),
+      fetchGoals(userId),
+    ])
+      .then(([b, i, d, g]) => {
         setBudget(b);
         setIncome(i);
+        setDiscretionaryCategories(d);
         setGoals(g);
       })
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load'));
@@ -109,6 +121,21 @@ export function BudgetingScreen() {
         existing={income[0] ?? null}
         onAdded={load}
       />
+
+      <Text style={styles.sectionTitle}>Discretionary spending</Text>
+      <View style={styles.card}>
+        {discretionaryCategories.length === 0 ? (
+          <Text style={styles.emptyText}>No discretionary categories yet.</Text>
+        ) : (
+          discretionaryCategories.map((cat) => (
+            <View key={cat.id} style={styles.row}>
+              <Text style={styles.rowLabel}>{cat.label}</Text>
+              <Text style={styles.rowValue}>{formatRupees(cat.planned_amount)}</Text>
+            </View>
+          ))
+        )}
+      </View>
+      <AddDiscretionaryCategoryForm userId={userId} onAdded={load} />
 
       <Text style={styles.sectionTitle}>Goals</Text>
       <View style={styles.card}>
@@ -216,6 +243,62 @@ function AddIncomeForm({
         keyboardType="numeric"
         value={amountHigh}
         onChangeText={setAmountHigh}
+      />
+      {error && <Text style={styles.errorText}>{error}</Text>}
+      <Pressable style={styles.saveButton} onPress={save} disabled={saving}>
+        <Text style={styles.saveButtonText}>{saving ? 'Saving…' : 'Save'}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function AddDiscretionaryCategoryForm({ userId, onAdded }: { userId: string; onAdded: () => void }) {
+  const [expanded, setExpanded] = useState(false);
+  const [label, setLabel] = useState('');
+  const [plannedAmount, setPlannedAmount] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const save = async () => {
+    const parsedAmount = Number(plannedAmount);
+    if (!label.trim() || !parsedAmount) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await createDiscretionaryCategory(userId, label.trim(), parsedAmount);
+      setLabel('');
+      setPlannedAmount('');
+      setExpanded(false);
+      onAdded();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!expanded) {
+    return (
+      <Pressable style={styles.addButton} onPress={() => setExpanded(true)}>
+        <Text style={styles.addButtonText}>+ Add discretionary category</Text>
+      </Pressable>
+    );
+  }
+
+  return (
+    <View style={styles.form}>
+      <TextInput
+        style={styles.input}
+        placeholder="Category (e.g. Eating out)"
+        value={label}
+        onChangeText={setLabel}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Planned monthly amount (₹)"
+        keyboardType="numeric"
+        value={plannedAmount}
+        onChangeText={setPlannedAmount}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
       <Pressable style={styles.saveButton} onPress={save} disabled={saving}>

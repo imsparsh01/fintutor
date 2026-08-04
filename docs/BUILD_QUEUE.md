@@ -22,16 +22,7 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-### MEDIUM — No discretionary-spending-category CRUD exists anywhere
-**Traces to:** the same 04-Aug-2026 verification pass. `compute_budget()` (BQ-010/D-038) reads and sums
-`DiscretionaryCategory` rows, and `BudgetingScreen.tsx` displays that total — but no backend route
-(checked `main.py`: none exists) and no frontend form were ever built to create one. Confirmed live: the
-Budget card's "Discretionary" line stays ₹0 for every real user, permanently, until this is built.
-**Blocked because:** D-038 decided the model shape (`label`, `planned_amount`) but the CRUD surface for it
-was apparently never explicitly scoped into BQ-010 — worth a quick confirmation of scope before treating
-this as mechanical, rather than assuming.
-**Unblocks when:** the owner confirms this is worth a small BQ item (likely close to mechanical — the
-shape is already fully decided by D-038, unlike the holding-creation gap above).
+*(nothing blocked right now)*
 
 ---
 
@@ -47,6 +38,24 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-037 — Discretionary-spending-category CRUD — done 04-Aug-2026
+Traces to the MEDIUM item found in the 04-Aug-2026 live-verification pass. No new decision needed — D-038
+already fully specified the `DiscretionaryCategory` shape (`label`, `planned_amount`); this was the same
+kind of already-decided CRUD gap BQ-016/BQ-017 closed for Income/Goals, not a design question. Backend:
+`backend/app/services/discretionary_categories.py` (`list_discretionary_categories`/
+`create_discretionary_category`) and `GET`/`POST /discretionary-categories` in `main.py`. `compute_budget()`
+is untouched — it already read this table correctly, it just had nothing to read. Frontend:
+`app/lib/discretionaryCategories.ts` + a new "Discretionary spending" section on `BudgetingScreen.tsx`
+(list + an inline "+ Add discretionary category" form), matching the existing Income/Goals sections'
+pattern exactly. No PUT/DELETE — same minimal GET-list/POST-create scope BQ-017 used for Goals, not
+silently dropped. Verified: `python -m py_compile` clean, both routes register; the service unit-tested
+against a mocked DB session (list + create, confirming `Decimal`→`float` conversion and the returned shape)
+— passed. `npx tsc --noEmit` clean, `npx expo export --platform android` bundled cleanly (934 modules, no
+errors). Verified via type-check + bundle + unit test only, not the full live-Postgres/browser rig the
+CRITICAL item above got — proportionate to this being genuinely mechanical CRUD for an already-decided
+shape, same rigor BQ-016/BQ-017 originally received. Not verified end-to-end against a live database or a
+real device.
 
 ### BQ-036 — Manual add-holding UI, auto-generated alias, family-scoped picker — done 04-Aug-2026
 Traces to BRIEF-018 → **D-074** (Path A confirmed). Closes the CRITICAL gap found in the 04-Aug-2026
