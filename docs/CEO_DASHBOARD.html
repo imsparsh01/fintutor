@@ -287,8 +287,8 @@
       <span class="tagline">Founder Status Dashboard</span>
     </div>
     <div class="meta">
-      <span class="synced">Last synced 04 Aug 2026 · through D-071</span>
-      <span class="phase-pill"><span class="dot"></span>Phase 2 far along — live-device verification is the gap</span>
+      <span class="synced">Last synced 04 Aug 2026 (end of day) · through D-074</span>
+      <span class="phase-pill"><span class="dot"></span>Build queue empty — 37/37 items DONE</span>
     </div>
   </div>
 
@@ -300,8 +300,8 @@
     </div>
     <div class="stat">
       <div class="label">Decisions logged</div>
-      <div class="value">69</div>
-      <div class="sub">16 owner escalations, 15 resolved</div>
+      <div class="value">72</div>
+      <div class="sub">18 BRIEFs raised, 18 resolved — 100%</div>
     </div>
     <div class="stat">
       <div class="label">Findings closed</div>
@@ -311,12 +311,12 @@
     <div class="stat">
       <div class="label">System prompt</div>
       <div class="value">v0.8</div>
-      <div class="sub">verified 5/5 clean, 02 Aug</div>
+      <div class="sub">unchanged, verified 5/5 clean</div>
     </div>
     <div class="stat">
       <div class="label">Code files</div>
-      <div class="value good">26 + 44</div>
-      <div class="sub">backend + app · was 11 + 0 on 03 Aug</div>
+      <div class="value good">28 + 45</div>
+      <div class="sub">backend + app · queue: 37/37 DONE</div>
     </div>
   </div>
 
@@ -347,15 +347,15 @@
             <li>
               <div class="node-col"><div class="node active">●</div><div class="line"></div></div>
               <div>
-                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">Far along</span></div>
-                <div class="desc">26 backend files, 44 app files. Nearly every MVP screen/endpoint is built: auth, onboarding, chat, holdings CRUD, budgeting/goals, consolidated view, streaks + mascot, all 3 comparison views. Open: general Chat-tab <code>deepen</code> case, variable-income budgeting decision, data privacy policy — and zero real-device verification yet.</div>
+                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">Queue empty, one real gap</span></div>
+                <div class="desc">37/37 tracked build items DONE — nothing mechanically buildable is left queued. Not done: AI-surfaced holding creation (D-012's primary path, still 0% built), a real native device pass, the data privacy policy.</div>
               </div>
             </li>
             <li>
               <div class="node-col"><div class="node todo">3</div><div class="line"></div></div>
               <div>
                 <div class="title-row"><span class="title">3 · Private structured testing</span><span class="status todo">Not started</span></div>
-                <div class="desc">Can't meaningfully start before Phase 2's live-verification gap closes.</div>
+                <div class="desc">Closer than ever — the empty queue is a real milestone — but AI-surfaced creation and a device pass are reasonable gates first.</div>
               </div>
             </li>
             <li>
@@ -377,7 +377,7 @@
         <div class="card-body">
           <div class="chart-wrap" id="chartWrap" style="position:relative;">
             <svg class="chart" viewBox="0 0 640 226" id="chartSvg">
-              <!-- gridlines (domain 0-75, headroom above 69) -->
+              <!-- gridlines (domain 0-75, headroom above 72) -->
               <line class="gridline" x1="40" y1="192"   x2="624" y2="192"/>
               <line class="gridline" x1="40" y1="156.8" x2="624" y2="156.8"/>
               <line class="gridline" x1="40" y1="121.6" x2="624" y2="121.6"/>
@@ -394,8 +394,8 @@
               <text class="gap-label" x="310" y="11" text-anchor="middle">build-home offline (laptop repair)</text>
 
               <!-- area + line -->
-              <path class="area-fill" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,30.1 L624,192 L40,192 Z"/>
-              <path class="line-path" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,30.1"/>
+              <path class="area-fill" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,23.0 L624,192 L40,192 Z"/>
+              <path class="line-path" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,23.0"/>
 
               <!-- points -->
               <circle class="pt" data-x="40"  data-y="175.6" data-d="22 Jul" data-v="7"  cx="40"  cy="175.6" r="3.5"/>
@@ -404,9 +404,9 @@
               <circle class="pt" data-x="460" data-y="121.6" data-d="1 Aug"  data-v="30" cx="460" cy="121.6" r="3.5"/>
               <circle class="pt" data-x="515" data-y="109.9" data-d="2 Aug"  data-v="35" cx="515" cy="109.9" r="3.5"/>
               <circle class="pt" data-x="570" data-y="62.9"  data-d="3 Aug"  data-v="55" cx="570" cy="62.9"  r="3.5"/>
-              <circle class="pt end" data-x="624" data-y="30.1" data-d="4 Aug · today" data-v="69" cx="624" cy="30.1" r="5"/>
+              <circle class="pt end" data-x="624" data-y="23.0" data-d="4 Aug · today" data-v="72" cx="624" cy="23.0" r="5"/>
 
-              <text class="end-label" x="586" y="24">69</text>
+              <text class="end-label" x="586" y="17">72</text>
 
               <text class="axis-label" x="40" y="210" text-anchor="middle">22 Jul</text>
               <text class="axis-label" x="100" y="210" text-anchor="middle">23 Jul</text>
@@ -433,12 +433,12 @@
           <table class="ledger">
             <thead><tr><th>ID</th><th>Tier</th><th>Date</th><th>What</th></tr></thead>
             <tbody>
-              <tr><td class="did">D-071</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>BRIEF-006 narrowed: <code>deepen</code> wired deterministically for the "Ask about this" entry point only; general Chat-tab case stays open.</td></tr>
+              <tr><td class="did">D-074</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">04 Aug</td><td>Manual add-holding UI confirmed — auto-generated alias, family-scoped picker. Closed same day (BQ-036).</td></tr>
+              <tr><td class="did">D-073</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Variable-income budgeting resolved — declared floor + typical range, budget math unchanged.</td></tr>
+              <tr><td class="did">D-072</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>BRIEF-006 fully resolved — narrow Haiku classifier for the general Chat-tab deepen case.</td></tr>
+              <tr><td class="did">D-071</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>BRIEF-006 narrowed — deepen wired deterministically for the "Ask about this" entry point.</td></tr>
               <tr><td class="did">D-070</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Tax-saving narrowed to "unused 80C room" — no rupee figure, avoids a maintained slab table.</td></tr>
-              <tr><td class="did">D-069</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>ESOP "cost of exercising today" confirmed — cliff-gated linear vesting, deterministic exercise cost.</td></tr>
-              <tr><td class="did">D-068</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Loan-vs-invest hurdle-rate comparison confirmed — both prepayment modes always shown.</td></tr>
-              <tr><td class="did">D-067</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Comparison-view detection: user-triggered for v1, auto-detection deferred to real usage evidence.</td></tr>
-              <tr><td class="did">D-066</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">04 Aug</td><td>ESOP characteristics schema resolved — single type, <code>grant_type</code> distinguishes options/RSU.</td></tr>
+              <tr><td class="did">D-069</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>ESOP "cost of exercising today" confirmed — cliff-gated linear vesting.</td></tr>
             </tbody>
           </table>
         </div>
@@ -455,22 +455,22 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Open the real app once<span class="wl-tag critical">Action</span></div>
-                <div class="wl-desc">Every frontend item since 03 Aug has only been verified by type-checking and bundle export — never actually run. The iOS Simulator panel tool has crash-looped every time it's been tried here. Until this happens, "it works" is unearned for the whole app.</div>
+                <div class="wl-title">AI-surfaced holding creation doesn't exist<span class="wl-tag critical">Gap</span></div>
+                <div class="wl-desc">D-012's primary path — the AI surfacing and creating a holding from conversation — has zero tool-calling setup. Named MVP scope in PROJECT_SPEC §4, not optional. The product's most differentiating mechanism is still 0% built.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Decide variable-income budgeting<span class="wl-tag warn">Decision</span></div>
-                <div class="wl-desc">BRIEF-011's escalated hard-stop (money-calculation logic) — nothing gets scoped for the startup/gig profile until this is decided.</div>
+                <div class="wl-title">Real native device pass<span class="wl-tag warn">Watch</span></div>
+                <div class="wl-desc">Downgraded from Critical — today's pass confirmed real Postgres + real backend + real browser all work correctly. Native rendering and real Supabase auth remain genuinely unconfirmed (this sandbox structurally can't reach either).</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
                 <div class="wl-title">Write the data privacy policy<span class="wl-tag warn">Decision</span></div>
-                <div class="wl-desc">D-010's open item — masking rules beyond product names, at-rest protection, retention/deletion. The schema now holds the real-shaped data this is supposed to govern.</div>
+                <div class="wl-desc">D-010's open item. The schema now holds real-shaped data across holdings, income, goals, and discretionary categories — this policy is supposed to govern all of it.</div>
               </div>
             </li>
           </ul>
@@ -484,29 +484,36 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Nothing verified in a real app<span class="wl-tag critical">Critical</span></div>
-                <div class="wl-desc">Bigger near-term risk than the legal review — confidence in "the app works" is currently unearned across most of what's shipped this week.</div>
+                <div class="wl-title">AI-surfaced creation: 0% built<span class="wl-tag critical">Critical</span></div>
+                <div class="wl-desc">New top risk — with the build queue empty, this is the largest gap between what's shipped and what the product's core pitch requires.</div>
               </div>
             </li>
             <li>
-              <div class="stripe critical"></div>
+              <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Legal review not done<span class="wl-tag critical">Critical</span></div>
-                <div class="wl-desc">Compliance stance (D-009) needs an India securities/fintech lawyer's sign-off before public launch. Getting more urgent as the MVP nears feature-complete.</div>
+                <div class="wl-title">Native device confirmation still pending<span class="wl-tag warn">Watch</span></div>
+                <div class="wl-desc">Substantially de-risked today, not fully closed — see "Needs your input."</div>
+              </div>
+            </li>
+            <li>
+              <div class="stripe warn"></div>
+              <div>
+                <div class="wl-title">Legal review not done<span class="wl-tag warn">Watch</span></div>
+                <div class="wl-desc">Getting more urgent as the MVP nears feature-complete.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
                 <div class="wl-title">Data privacy policy undesigned<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Retention + at-rest PII protection still need to be written before real user data exists.</div>
+                <div class="wl-desc">Unchanged risk — the schema keeps growing ahead of the policy meant to govern it.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
                 <div class="wl-title">Only 2 test fixtures, both pre-app<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">All 11 findings closed against two synthetic profiles from Phase 1 — the now-much-larger app surface hasn't stress-tested compliance at all.</div>
+                <div class="wl-desc">Unchanged this session — all 11 findings closed against two synthetic Phase-1 profiles.</div>
               </div>
             </li>
           </ul>
@@ -518,24 +525,10 @@
         <div class="card-body">
           <ul class="watchlist">
             <li>
-              <div class="stripe warn"></div>
-              <div>
-                <div class="wl-title">BQ-004 — general-case deepen selection</div>
-                <div class="wl-desc">Narrowed by D-071 — the deterministic UI-signal case now ships (BQ-034). What's left (free-typed questions) is genuinely hard and not urgent; safe fallback already covers it.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe warn"></div>
-              <div>
-                <div class="wl-title">Variable-income budgeting — not queued</div>
-                <div class="wl-desc">Waiting on the owner's decision before any BQ item is scoped.</div>
-              </div>
-            </li>
-            <li>
               <div class="stripe good"></div>
               <div>
-                <div class="wl-title">Decision 2 — RESOLVED (D-059)</div>
-                <div class="wl-desc">Per-item management depth is no longer a blocker. Removed from this list this refresh.</div>
+                <div class="wl-title">None — READY and BLOCKED both empty</div>
+                <div class="wl-desc">First time in this project's history. Everything outstanding now lives in "Needs your input," not the build queue.</div>
               </div>
             </li>
           </ul>
@@ -549,36 +542,36 @@
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">1. A real device/simulator pass</div>
-                <div class="wl-desc">Highest-value next step — the only thing that converts "compiles" into "works."</div>
+                <div class="wl-title">1. Talk through AI-surfaced holding creation</div>
+                <div class="wl-desc">The biggest real gap left — worth its own design pass.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">2. Decide variable-income budgeting</div>
-                <div class="wl-desc">See Pending Approval Queue / Needs your input.</div>
+                <div class="wl-title">2. Data privacy policy</div>
+                <div class="wl-desc">Needs a dedicated owner session.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">3. Data privacy policy</div>
-                <div class="wl-desc">Needs a dedicated owner session, not a side effect of a build task.</div>
+                <div class="wl-title">3. Legal review scheduling</div>
+                <div class="wl-desc">Still not blocking — still worth calendaring.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
                 <div class="wl-title">4. UX principles section</div>
-                <div class="wl-desc">Unblocked since 04 Aug (Decisions 2 &amp; 3 both resolved), not started.</div>
+                <div class="wl-desc">Unblocked since 04 Aug, not started.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">5. Legal review scheduling</div>
-                <div class="wl-desc">Not blocking yet — but the gap to "closer than it looks" is shrinking.</div>
+                <div class="wl-title">5. Two LOW housekeeping items</div>
+                <div class="wl-desc">Sitting in KNOWN_LIMITATIONS.md — pick up opportunistically.</div>
               </div>
             </li>
           </ul>
@@ -591,7 +584,7 @@
   <div class="pulse">
     <div class="pulse-title">Compliance pulse — the thing this app can't afford to get wrong</div>
     <div class="pulse-item"><div class="num">11 / 11</div><div class="lbl">testing findings resolved</div></div>
-    <div class="pulse-item"><div class="num">16 / 15</div><div class="lbl">owner escalations raised / resolved</div></div>
+    <div class="pulse-item"><div class="num">18 / 18</div><div class="lbl">owner escalations raised / resolved</div></div>
     <div class="pulse-item"><div class="num">v0.8</div><div class="lbl">current system prompt</div></div>
     <div class="pulse-item"><div class="num">5 / 5</div><div class="lbl">last verification run, clean</div></div>
   </div>
