@@ -32,12 +32,6 @@ dedicated detail *screen* (not a modal) as a home for teaching content once the 
 **Traces to:** BRIEF-013. `GET /budget` already exists (BQ-010); `GET`/`POST /income` (BQ-016) and
 `GET`/`POST /goals` (BQ-017) now also exist — unblocked.
 
-### BQ-025 — Onboarding flow (D-058: chip-guided, no structured field, default landing screen, skippable)
-**Traces to:** D-058. Unblocked — `POST /chat` (BQ-023) and the chat UI (BQ-024) both exist now, so the
-conversational surface D-058's onboarding flow needs is real. Will change `MainTabs`'s current Chat-tab
-placement (BQ-024's own note) once built, since D-058 wants it as the default post-registration landing
-screen, not a persistent tab — that change is this item's job, not BQ-024's.
-
 ### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
 **Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default, not yet flagged
 otherwise). Unblocked by BQ-023/BQ-024. **Flag for whoever picks this up:** "breakeven"/"tax-saving
@@ -85,6 +79,28 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-025 — Onboarding flow (D-058: chip-guided, no structured field, default landing screen, skippable) — done 04-Aug-2026
+Traces to D-058, unblocked by BQ-023/BQ-024. Extracted the message-thread UI out of `ChatScreen` into a
+shared `app/components/ChatThread.tsx` (message list, input, send logic — exposes an imperative `send()`
+via ref so a parent can trigger a message from outside the input, e.g. a chip tap) and slimmed
+`ChatScreen` down to a thin wrapper around it. Added `app/screens/OnboardingScreen.tsx`: four tappable
+chip starters (no structured field anywhere, per D-058), reusing `ChatThread` for the actual
+conversation — tapping a chip sends it as a real message through the same `/chat` endpoint BQ-023 built.
+"Skip for now" is always visible in the header; becomes "Done — go to app" once a message has been sent
+(chip or typed) — same action either way, just dismisses. Added `app/lib/onboarding.ts`
+(`hasSeenOnboarding`/`markOnboardingSeen`, `@react-native-async-storage/async-storage` — already an
+existing dependency via `lib/supabase.ts`, not a new one) to persist per-user "seen" state locally, since
+D-058 explicitly left exact resume-UI to build-time as a low-stakes detail. Wired into
+`RootNavigator.tsx`: a new `AuthenticatedApp` wrapper checks the flag once per session and renders
+`OnboardingScreen` (not a hard gate — dismissible any time) or `MainTabs`.
+
+**Design call, not a re-litigation of BQ-024's flagged note:** the persistent `Chat` tab (BQ-024) is kept,
+not removed or replaced — it serves as the "resume a skipped/finished conversation later" surface D-058
+asks for, so no separate resume UI was needed. BQ-024's DONE entry speculated this tab would "very likely"
+get replaced; in practice it turned out complementary instead, so this entry corrects that expectation
+rather than silently diverging from it. Verified: `npx tsc --noEmit` clean, `npx expo export --platform
+android` bundled cleanly (920 modules, no errors). Not verified end-to-end against a live device/backend.
 
 ### BQ-024 — Chat/conversational UI screen (frontend) — done 04-Aug-2026
 Traces to BRIEF-013, unblocked by BQ-023. Added `app/lib/chat.ts` (`askQuestion`) and
