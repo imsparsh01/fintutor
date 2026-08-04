@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import type { Session } from '@supabase/supabase-js';
 import { NotConfiguredScreen } from '../screens/NotConfiguredScreen';
+import { AuthProvider } from '../lib/AuthContext';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { AuthStack } from './AuthStack';
 import { MainTabs } from './MainTabs';
@@ -37,5 +38,15 @@ export function RootNavigator() {
     return null;
   }
 
-  return <NavigationContainer>{session ? <MainTabs /> : <AuthStack />}</NavigationContainer>;
+  return (
+    <NavigationContainer>
+      {session ? (
+        <AuthProvider userId={session.user.id}>
+          <MainTabs />
+        </AuthProvider>
+      ) : (
+        <AuthStack />
+      )}
+    </NavigationContainer>
+  );
 }

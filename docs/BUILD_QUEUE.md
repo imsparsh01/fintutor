@@ -26,10 +26,6 @@ Budgeting/Goals tab (BRIEF-013).
 **Traces to:** BRIEF-013. Unblocked by BQ-015 (needs a holdings list to sum across the three
 families) — now ready.
 
-### BQ-019 — Wire Investments/Loans/Insurance screens to real Holdings API
-**Traces to:** BRIEF-013. Unblocked by BQ-015 — now ready. Replaces BQ-014's placeholder screens with
-real list views per section.
-
 ### BQ-022 — Holding-detail view (read-only)
 **Traces to:** BRIEF-013 — explicitly NOT Decision 2 (per-item management/edit authority, still
 BLOCKED below); this is a display-only surface for teaching content to have a home. Unblocked by
@@ -102,6 +98,22 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-019 — Wire Investments/Loans/Insurance screens to real Holdings API — done 04-Aug-2026
+Traces to BRIEF-013. Unblocked by BQ-015. Replaced BQ-014's three placeholder screens with a shared
+`app/components/HoldingsList.tsx` read-only list view, reused by `InvestmentsScreen`/`LoansScreen`/
+`InsuranceScreen` with a per-family `product_type` filter list. Added `app/lib/holdings.ts`
+(`fetchHoldings`, calls `GET /holdings?user_id=`), `app/lib/taxonomy.ts` (the three family groupings —
+D-013's 8 original types + ESOP/D-055 — mirroring the string literals already used in
+`backend/app/services/budget.py`/`surfacing.py` — plus a `humanizeProductType` display helper), and
+`app/lib/AuthContext.tsx` (a minimal React context carrying the signed-in Supabase `user.id` down to
+the tab screens, since `MainTabs` had no way to reach it before; wired in from `RootNavigator`, which
+already owned the session). Loading/error/empty/signed-out states handled; no create/edit/delete —
+explicitly out of scope, that's Decision 2 (per-item management depth), still open. Verified: `tsc
+--noEmit` clean, `npx expo export --platform android` bundled cleanly (908 modules, no errors). Not
+verified against live data end-to-end (no `DATABASE_URL` in this remote session, same limitation
+BQ-011/BQ-015 hit) — the owner still needs to confirm on a real device/simulator with actual holdings
+in the DB.
 
 ### BQ-015 — Holdings CRUD API (GET list, GET one, POST create) — done 04-Aug-2026
 Traces to D-013/D-055 taxonomy, D-010/D-011 aliasing, Holding model (BQ-012). Added

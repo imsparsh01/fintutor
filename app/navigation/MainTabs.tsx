@@ -8,7 +8,8 @@ import type { MainTabsParamList } from './types';
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
 // D-031's persistent-section structure — three MVP holding families plus the
-// consolidated view. No per-item management yet (Decision 2, still open).
+// consolidated view. Each section lists real Holdings (BQ-019); no per-item
+// management yet (Decision 2, still open).
 export function MainTabs() {
   return (
     <Tab.Navigator>
