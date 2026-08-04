@@ -22,9 +22,7 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-### Variable-income budgeting (startup/gig profile) — not queued
-Traces to BRIEF-011's escalated hard-stop (money-calculation logic). Not added to READY or BLOCKED —
-waiting on the owner's decision before any BQ item is even scoped for it.
+*(nothing blocked right now)*
 
 ---
 
@@ -40,6 +38,23 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-035 — Variable-income budgeting via declared floor + typical range (Path B2) — done 04-Aug-2026
+Traces to BRIEF-011 (escalated hard-stop) → BRIEF-017 (three paths modeled) → **D-073** (Path B2
+confirmed). Backend: `IncomeSource` Pydantic model in `main.py` gains optional `amount_high` — no
+migration, `Income.sources` is already JSONB. `budget.py`'s `compute_budget()` is untouched: `amount`
+keeps meaning the floor/conservative figure, `amount_high` is never read by the math, confirmed by a
+unit test (a source with `amount=40000, amount_high=90000` produces `income_total=40000`, not an
+average). Frontend: `IncomeSource` interface in `lib/income.ts` matches; `BudgetingScreen.tsx`'s income
+list shows both figures per source (floor as the primary value, "typical ~₹X" as a muted second line
+when present), `AddIncomeForm` gains an optional second input ("Typical amount, if it varies"), and the
+Budget card shows a one-line caption when any income source has `amount_high` set, clarifying the budget
+uses the conservative figure, not the typical one. Verified: backend — `python -m py_compile` clean,
+`/income` route registers, the floor-only budget-math unit test passed. Frontend — `npx tsc --noEmit`
+clean, `npx expo export --platform android` bundled cleanly (933 modules, no errors). Not verified
+end-to-end against a live database or a real device — same standing limitation as every other item this
+session. Path A (rolling-window average) remains deferred per D-073, unparks on real evidence a
+declared floor+typical pair isn't enough.
 
 ### BQ-004 — Backend `deepen` selection logic for the general Chat-tab case — done 04-Aug-2026
 Traces to D-028 (deferred), D-049/BRIEF-006 (Path A/B/C modeled), D-071 (Path B shipped for the UI-signal

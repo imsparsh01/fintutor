@@ -52,8 +52,14 @@ class HoldingUpdate(BaseModel):
 
 class IncomeSource(BaseModel):
     label: str
+    # D-073: the floor/conservative figure — this is what compute_budget()'s math uses,
+    # unchanged. For a steady income this is just "the amount"; for variable income it's
+    # the number the user can count on.
     amount: float
     frequency: str = "monthly"
+    # D-073: optional, purely informational "typical" companion figure alongside the
+    # floor above. Never fed into budget math — shown, not computed with.
+    amount_high: float | None = None
 
 
 class IncomeCreate(BaseModel):

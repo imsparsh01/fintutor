@@ -2,8 +2,12 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:800
 
 export interface IncomeSource {
   label: string;
+  // D-073: the floor/conservative figure — what the budget's math is checked against.
   amount: number;
   frequency: string;
+  // D-073: optional, purely informational "typical" figure for variable income. Never
+  // fed into budget math — shown alongside `amount`, not computed with.
+  amount_high?: number | null;
 }
 
 export interface IncomeRecord {

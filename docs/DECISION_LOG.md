@@ -1682,3 +1682,13 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   degrades to D-028's existing safe default on any ambiguity, error, or missing config. First real use of
   D-002's Haiku half. Full write-up: `docs/decisions/D-072-deepen-classifier-confirmed.md`.
 - **Date:** 04-Aug-2026
+
+### D-073 — BRIEF-017 confirmed: variable-income budgeting via declared floor + typical range (Path B2)
+- **Tier:** 3, owner-confirmed. Resolves BRIEF-011's escalated hard-stop. `Income.sources` items gain an
+  optional `amount_high` (no migration — `sources` is already JSONB); `amount` keeps its existing meaning
+  and role in `compute_budget()`'s math unchanged (the floor the budget is checked against); `amount_high`
+  is purely informational, shown alongside the floor, never fed into the math. Chosen over Path A (rolling
+  window — real new scope + a cold-start gap, deferred on evidence per D-067's precedent) and Path C
+  (defer entirely — in tension with D-054). Full write-up:
+  `docs/decisions/D-073-variable-income-b2-confirmed.md`.
+- **Date:** 04-Aug-2026

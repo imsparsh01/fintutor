@@ -28,7 +28,10 @@ def _to_monthly(amount: float, frequency: str | None) -> float:
 def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
     """Live budget view per D-038/BQ-010 — nothing here is stored, only read and summed.
 
-    income_total: Income.sources, frequency-normalized to monthly.
+    income_total: Income.sources, frequency-normalized to monthly. Each source's `amount` is
+      the floor/conservative figure (D-073) — an optional `amount_high` may also be stored
+      per source as a purely informational "typical" companion figure, but it is never read
+      here; only `amount` feeds this calculation.
     recurring_outflows_total: EMI / SIP investment amount / insurance premium, read live
       off Holding.characteristics (D-013 fields) — the three items D-038 names explicitly.
     discretionary_total: DiscretionaryCategory.planned_amount, summed as-is.
