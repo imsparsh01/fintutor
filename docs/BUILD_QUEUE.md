@@ -18,24 +18,24 @@ Rules for this file:
 **Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default) + **D-067** (detection
 mechanism resolved: user-triggered "Compare paths" affordance for v1, no auto-detection — see
 `docs/decisions/D-067-comparison-detection-user-triggered.md`).
-**Still blocking a READY move:** the comparison math itself isn't decided yet. Working notes from the
-design conversation, for whoever picks this up next:
-- **Loan-vs-invest cannot show a projected investment outcome** — §3 rule 4 (never predict markets)
-  forbids assuming a specific return rate to project an ending value, even computed server-side rather
-  than said by the model; it's the same forbidden act, different location. The only compliant shape found
-  so far is a **breakeven/hurdle-rate figure** ("your investment would need to clear 9% a year to beat
-  prepaying") — computable purely from the loan's own contractual terms, no market assumption. This isn't
-  one option among several; it may be the only shape available for this comparison at all. Needs the
-  owner's confirmation before being treated as settled, not just this session's working conclusion.
-- **Tax-saving modeling** is computable in mechanism terms (80C reduces taxable income, saved at the
-  user's marginal rate — Income data already exists) but requires **hard-coding India's income tax
-  slabs**, which is new legal/tax-shape data (`CLAUDE.md` hard-stop 2) with a real staleness risk (slabs
-  change most budget years) — an open question on whether that maintenance burden is worth taking on now,
-  not yet decided. Must also stay product-generic per D-009 (never name ELSS/PPF/NPS by name).
-- **ESOP-timing** — BRIEF-013 already scoped this as "eventually." Working view from this session: it's
-  likely not buildable within the never-predict-markets constraint at all (depends on future private-
-  company valuation, a harder case than loan-vs-invest) — recommend leaving it deferred rather than
-  attempting it in the same pass, but not formally decided.
+**Still blocking a READY move:** the comparison math itself isn't decided yet. Three sub-cases, each at a
+different readiness level:
+- **Loan-vs-invest — READY TO CONFIRM.** Full formula, both implementation forks resolved, written up as
+  `docs/BRIEF-014_loan_vs_invest_hurdle_rate.md`. One yes/no unblocks
+  `backend/app/services/loan_vs_invest.py` immediately — no further design work blocking it. Headline
+  finding: only a hurdle-rate figure is compliant (§3 rule 4, never predict markets) — a projected
+  investment outcome isn't available at all, not just one option among several.
+- **Tax-saving modeling — deeper gap, not just tax-slab staleness.** Requires knowing the user's tax
+  regime (old vs new — the new regime, now default, disallows most 80C deductions entirely, so getting
+  this wrong isn't imprecise, it's *wrong* for a real subset of users) and can't reliably compute "unused
+  80C room" without an ELSS-vs-regular-fund distinction the schema doesn't carry (D-009 forbids naming
+  products, so no `is_80c_eligible` flag exists). No field anywhere captures tax regime. Needs its own
+  design pass before a brief like BRIEF-014 can be written for it.
+- **ESOP-timing** — BRIEF-013 scoped this as "eventually." A narrower version may be viable: exercising
+  today has a computable, non-predictive cost *today* (perquisite tax on the `current_fmv`−`strike_price`
+  spread, using D-066's fields) — distinct from "should you exercise," which still requires predicting
+  future valuation and stays off the table. Contingent on `current_fmv` actually being populated (nullable,
+  often unknown pre-valuation-event). Not written up yet — lower priority than the other two.
 
 ---
 
