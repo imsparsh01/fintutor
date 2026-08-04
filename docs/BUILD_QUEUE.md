@@ -22,13 +22,6 @@ can (BQ-027). Backend `PATCH /holdings/{id}` already accepts a `characteristics`
 work: a dynamic form keyed off `product_type`'s known field list. Deliberately deferred, not dropped —
 owner chose to log and pick up later within MVP rather than build now. Unblocked, ready whenever picked.
 
-### BQ-031 — Streak + reward UI (frontend)
-**Traces to:** D-060, D-061, P7. Visible streak counter and celebratory reward feedback (visual/haptic,
-per Category A principle #3 already judged a clean fit) shown on app open. Must stay on P7's permitted
-side: the celebration reacts to the open/streak event itself, never to a financial figure. Unblocked —
-BQ-029 and BQ-030 both done: `POST /streak/open` now returns `current_streak`/`longest_streak` and
-`reward_fired`/`reward_type` in one response for the UI to react to.
-
 ### BQ-022 — Holding-detail view, as a home for teaching content
 **Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
 done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is now specifically a
@@ -102,6 +95,22 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-031 — Streak + reward UI (frontend) — done 04-Aug-2026
+Traces to D-060, D-061, P7. Added `app/lib/streaks.ts` (`fetchStreak`, `recordAppOpen` — same
+fetch-wrapper convention as `lib/holdings.ts`) and `app/components/StreakBadge.tsx` (a text badge, "🔥
+N-day streak", reading only the streak count — no financial figure, per P7). Wired into
+`ConsolidatedScreen`: a mount-time `useEffect` calls `recordAppOpen(userId)` once (the app-open event,
+D-060/BQ-029/BQ-030), and `Mascot`'s mood switches to `'celebrating'` when the response's `reward_fired`
+is true, `'neutral'` otherwise — the mascot reacting to the app-open/reward event itself, never to a
+holding or balance (P7's boundary). A failed streak call is swallowed, not surfaced as an error — this is
+a nice-to-have layer, not core functionality, so it must not block or break the rest of the screen.
+**Haptic feedback scoped out, not silently dropped:** the item's text mentions "visual/haptic," but
+`expo-haptics` isn't an existing dependency — adding a new library is its own decision per `CLAUDE.md`'s
+hard-stop list, not bundled into this item; shipped the visual half only. Verified: `npx tsc --noEmit`
+clean, `npx expo export --platform android` bundled cleanly (913 modules, no errors). Not verified
+end-to-end against a live device/backend (no `DATABASE_URL` in this remote session, same limitation
+BQ-014/BQ-019 hit) — code-level and bundle verification only.
 
 ### BQ-030 — Variable reward trigger logic (backend) — done 04-Aug-2026
 Traces to D-060, P7. Added `backend/app/services/rewards.py` (`evaluate_reward(is_new_day)`) — a
