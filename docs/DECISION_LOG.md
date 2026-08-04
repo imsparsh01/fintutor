@@ -1587,3 +1587,10 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
 - **Reversibility:** High — a one-line frontmatter edit, reverted by re-copying the upstream description
   from `PROVENANCE.md`'s source link if this policy ever changes.
 - **Date:** 04-Aug-2026
+
+### D-065 — Consolidated net-worth aggregation shape: FD/RD value source, per-family totals not a net figure
+- **Tier:** 3 — hard trigger 1 (money calculations users rely on). BQ-018 had no already-decided formula
+  to execute against. FD/RD value = `principal_or_monthly_amount` as-is (no accrual formula invented);
+  endpoint returns separate `investments_total`/`loans_total`/`insurance_total`, not one net figure. Full
+  write-up: `docs/decisions/D-065-consolidated-aggregation-shape.md`.
+- **Date:** 04-Aug-2026

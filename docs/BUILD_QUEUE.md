@@ -14,10 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-018 — Consolidated net-worth aggregation endpoint
-**Traces to:** BRIEF-013. Unblocked by BQ-015 (needs a holdings list to sum across the three
-families) — now ready.
-
 ### BQ-028 — Holdings characteristics (field-level) editing UI
 **Traces to:** D-059 (Decision 2, Path C) — the full-authority decision already covers this; it's a UI
 gap, not an open decision. `characteristics` (interest_rate, expense_ratio, tenure, EMI amount, etc. —
@@ -61,12 +57,12 @@ goals) per user, calls the Anthropic API with system prompt v0.8, returns teachi
 **Unblocked** — BQ-015 (Holdings), BQ-016 (Income), BQ-017 (Goals) all done, so a full baseline can be
 assembled. The biggest, highest-stakes item in the queue; pick deliberately, not by default.
 
+### BQ-021 — Consolidated screen wired to real aggregation
+**Traces to:** BRIEF-013. Unblocked by BQ-018 — `GET /consolidated` now exists.
+
 ---
 
 ## BLOCKED — do not start
-
-### BQ-021 — Consolidated screen wired to real aggregation
-**Blocked on:** BQ-018.
 
 ### BQ-024 — Chat/conversational UI screen (frontend)
 **Blocked on:** BQ-023.
@@ -118,6 +114,21 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-018 — Consolidated net-worth aggregation endpoint — done 04-Aug-2026
+Traces to BRIEF-013 + **D-065** (escalated mid-build: no formula was already decided, unlike BQ-010/
+BQ-017 where D-038 spelled the math out). Owner resolved two questions: FD/RD holdings use
+`principal_or_monthly_amount` as-is (no accrual formula invented); the endpoint returns separate
+`investments_total`/`loans_total`/`insurance_total`, not one signed net-worth figure. Added
+`backend/app/services/consolidated.py` (`compute_consolidated`) and `GET /consolidated` in `main.py`.
+Per-type mapping: Equity/Debt MF + Stocks → `current_value`; FD/RD → `principal_or_monthly_amount`;
+PPF/EPF → `current_balance`; Home/Personal Loan + Credit Card Debt → `outstanding_balance`;
+Endowment/ULIP → `current_fund_value`; Term Insurance contributes 0 (no fund value); ESOP deliberately
+excluded (D-055 left its characteristics schema undesigned — no field to sum). Verified: `python -m
+py_compile` clean, route registers, `/consolidated` correctly 500s without a configured database (no
+`DATABASE_URL` in this remote session), and the aggregation formula itself unit-tested against a mocked
+DB session (8 holdings across all families, confirmed correct per-family sums, ESOP excluded, Term
+Insurance contributes 0). Unblocks BQ-021 (Consolidated screen), moved to READY.
 
 ### BQ-017 — Goals CRUD API (GET list, POST create) — done 04-Aug-2026
 Traces to D-038, Goal/GoalFunding models (BQ-009/BQ-012). Added `backend/app/services/goals.py`

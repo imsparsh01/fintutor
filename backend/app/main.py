@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import engine, get_db
 from app.services.budget import compute_budget
+from app.services.consolidated import compute_consolidated
 from app.services.goals import create_goal, list_goals
 from app.services.holdings import (
     create_holding,
@@ -161,6 +162,11 @@ def put_income(
     if updated is None:
         raise HTTPException(status_code=404, detail="Income not found")
     return updated
+
+
+@app.get("/consolidated")
+def get_consolidated(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return compute_consolidated(db, user_id)
 
 
 @app.get("/goals")
