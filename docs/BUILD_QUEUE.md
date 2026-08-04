@@ -32,18 +32,12 @@ dedicated detail *screen* (not a modal) as a home for teaching content once the 
 **Traces to:** BRIEF-013. `GET /budget` already exists (BQ-010); `GET`/`POST /income` (BQ-016) and
 `GET`/`POST /goals` (BQ-017) now also exist — unblocked.
 
-### BQ-023 — Core teaching/chat backend endpoint
-**Traces to:** the actual product core — assembles the living baseline (D-001: holdings + income +
-goals) per user, calls the Anthropic API with system prompt v0.8, returns teaching content.
-**Unblocked** — BQ-015 (Holdings), BQ-016 (Income), BQ-017 (Goals) all done, so a full baseline can be
-assembled. The biggest, highest-stakes item in the queue; pick deliberately, not by default.
+### BQ-024 — Chat/conversational UI screen (frontend)
+**Traces to:** BRIEF-013. Unblocked — `POST /chat` (BQ-023) now exists.
 
 ---
 
 ## BLOCKED — do not start
-
-### BQ-024 — Chat/conversational UI screen (frontend)
-**Blocked on:** BQ-023.
 
 ### BQ-025 — Onboarding flow (D-058: chip-guided, no structured field, default landing screen, skippable)
 **Traces to:** D-058.
@@ -92,6 +86,38 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-023 — Core teaching/chat backend endpoint — done 04-Aug-2026
+Traces to the product core (D-001, D-002, D-010, D-028, system prompt v0.8). Added
+`backend/app/services/baseline.py` (`assemble_baseline` — builds the exact JSON profile slice
+`SYSTEM_PROMPT_v0_8_runnable.md` §4 documents: `baseline` (income/outgoings via `compute_budget`),
+`goals` (D-038's `funded_by` list translated from `holding_id` to `alias`, `target_date` converted to
+`horizon_years`), `holdings` (alias + characteristics only — **`display_name` is never included**, D-010's
+guarantee held by construction, not just convention), `known_gaps` (reuses `compute_surfacing_candidates`,
+BQ-013). `deepen` is omitted — D-028's decided default (absent means deepen nothing); BQ-004's selection
+rule is still blocked and out of scope here. Added `backend/app/services/teaching.py`
+(`ask_teaching_engine` — loads the v0.8 prompt file, calls the Anthropic Messages API via the official
+SDK, model `claude-sonnet-5`/`max_tokens=4096` matching `scripts/run_phase1_test.py`'s established,
+Phase-1-validated call shape exactly) and `POST /chat` in `main.py` (503 if `ANTHROPIC_API_KEY` unset, 502
+— non-leaking detail — on an Anthropic API error). Added `anthropic==0.39.0` to `requirements.txt` —
+already-decided architecture (§6), not a new library decision.
+
+**One real gap surfaced and left open, not silently patched:** the system prompt's `baseline.dependents`
+and `baseline.emergency_fund_months` fields (present in `FIXTURE_user_01.json`) have no backing field
+anywhere in the current schema — omitted from the assembled JSON rather than guessed. Adding them would be
+a schema change (`CLAUDE.md` hard-stop), not this item's call.
+
+Verified: `python -m py_compile` clean, all routes register in a fresh venv, `/chat` correctly 500s
+without a configured database (assembling the baseline hits the DB first, same as every other DB-backed
+route). `assemble_baseline` unit-tested against a mocked session with a real holding/income/goal/gap
+combination — confirmed `display_name` never appears anywhere in the assembled JSON, funding correctly
+maps `holding_id` → `alias`. `ask_teaching_engine` unit-tested with the Anthropic client mocked — confirmed
+`TeachingEngineNotConfigured` raises cleanly when the key is unset, and with a fake key confirmed the exact
+message shape sent (system prompt attached, baseline JSON + question in the user message, correct
+model/max_tokens). **No live API call made** — this sandbox blocks authenticated calls to
+`api.anthropic.com` on purpose (same restriction `scripts/run_phase1_test.py`'s own docstring names), so a
+real end-to-end teaching response is not claimed; the owner would need to verify that against a live
+`DATABASE_URL` + `ANTHROPIC_API_KEY` locally. Unblocks BQ-024 (chat UI), moved to READY.
 
 ### BQ-021 — Consolidated screen wired to real aggregation — done 04-Aug-2026
 Traces to BRIEF-013, unblocked by BQ-018. Added `app/lib/consolidated.ts` (`fetchConsolidated`) and

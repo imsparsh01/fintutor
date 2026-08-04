@@ -2,6 +2,7 @@ import logging
 import uuid
 from datetime import date
 
+import anthropic
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import text
@@ -9,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.session import engine, get_db
+from app.services.baseline import assemble_baseline
 from app.services.budget import compute_budget
 from app.services.consolidated import compute_consolidated
 from app.services.goals import create_goal, list_goals
@@ -23,6 +25,7 @@ from app.services.income import create_income, list_income, update_income
 from app.services.rewards import evaluate_reward
 from app.services.streaks import get_streak, record_app_open
 from app.services.surfacing import compute_surfacing_candidates
+from app.services.teaching import TeachingEngineNotConfigured, ask_teaching_engine
 
 logger = logging.getLogger("fintutor.health")
 
@@ -67,6 +70,10 @@ class GoalCreate(BaseModel):
     target_date: date
     category: str
     funded_by: list[GoalFundingIn] = []
+
+
+class ChatRequest(BaseModel):
+    question: str
 
 
 @app.get("/health")
@@ -207,6 +214,24 @@ def post_streak_open(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     streak = record_app_open(db, user_id)
     reward = evaluate_reward(is_new_day)
     return {**streak, **reward}
+
+
+@app.post("/chat")
+def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_db)) -> dict:
+    baseline = assemble_baseline(db, user_id)
+    try:
+        answer = ask_teaching_engine(baseline, body.question)
+    except TeachingEngineNotConfigured as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+    except anthropic.APIError as exc:
+        # Never echo the raw exception back to the caller — same posture as
+        # /health/db's DB-error handling (it can embed request/response detail).
+        logger.exception("Teaching engine call failed")
+        raise HTTPException(
+            status_code=502,
+            detail=f"Teaching engine call failed: {type(exc).__name__} (see server logs for detail)",
+        ) from exc
+    return {"response": answer}
 
 
 @app.get("/health/db")
