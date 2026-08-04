@@ -1606,3 +1606,19 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   time (D-038's reference-vs-store test); computing it is not designed here. Full write-up:
   `docs/decisions/D-066-esop-characteristics-schema.md`.
 - **Date:** 04-Aug-2026
+
+### D-067 — BQ-026 detection mechanism resolved: user-triggered for v1, auto-detection deferred to real usage evidence
+- **Tier:** owner-decided directly in conversation — no hard trigger fires. Of four candidate detection
+  paths for the comparison-view modal (keyword matching, a Haiku classifier, the teaching model
+  self-signaling, user-triggered), **user-triggered (Path D)** is adopted for v1. Keyword matching ruled
+  out on direct precedent (D-049 found the same shape "does little useful work" for `deepen`); model
+  self-signaling ruled out (failure mode risks corrupting the visible answer, worse than not triggering).
+  The Haiku-classifier path is deferred, not rejected — architecturally the strongest long-term option, but
+  to be built from real usage evidence off the user-triggered path, not guessed patterns now, matching this
+  project's own evidence-before-generalizing discipline (D-006, BQ-002/BQ-003). Compliance note: the modal
+  doesn't carry the "never pick a winner" guarantee itself — the chat engine's text answer already must
+  satisfy that independently — so detection reliability here is a product risk, not a compliance one. Full
+  write-up: `docs/decisions/D-067-comparison-detection-user-triggered.md`.
+- **Still open:** BQ-026's second half — the actual comparison math (loan-vs-invest breakeven, tax-saving
+  modeling) — is not resolved by this entry.
+- **Date:** 04-Aug-2026

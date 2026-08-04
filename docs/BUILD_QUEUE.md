@@ -12,13 +12,30 @@ Rules for this file:
 
 ---
 
-## READY — pick one of these
+## NOT YET READY — one half decided, one half still open
 
 ### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
-**Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default, not yet flagged
-otherwise). Unblocked by BQ-023/BQ-024. **Flag for whoever picks this up:** "breakeven"/"tax-saving
-instrument modeling" is very likely its own money-calculation decision (`CLAUDE.md` hard-stop 1), same
-shape as D-065 — check for an already-decided formula before assuming this is mechanical execution.
+**Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default) + **D-067** (detection
+mechanism resolved: user-triggered "Compare paths" affordance for v1, no auto-detection — see
+`docs/decisions/D-067-comparison-detection-user-triggered.md`).
+**Still blocking a READY move:** the comparison math itself isn't decided yet. Working notes from the
+design conversation, for whoever picks this up next:
+- **Loan-vs-invest cannot show a projected investment outcome** — §3 rule 4 (never predict markets)
+  forbids assuming a specific return rate to project an ending value, even computed server-side rather
+  than said by the model; it's the same forbidden act, different location. The only compliant shape found
+  so far is a **breakeven/hurdle-rate figure** ("your investment would need to clear 9% a year to beat
+  prepaying") — computable purely from the loan's own contractual terms, no market assumption. This isn't
+  one option among several; it may be the only shape available for this comparison at all. Needs the
+  owner's confirmation before being treated as settled, not just this session's working conclusion.
+- **Tax-saving modeling** is computable in mechanism terms (80C reduces taxable income, saved at the
+  user's marginal rate — Income data already exists) but requires **hard-coding India's income tax
+  slabs**, which is new legal/tax-shape data (`CLAUDE.md` hard-stop 2) with a real staleness risk (slabs
+  change most budget years) — an open question on whether that maintenance burden is worth taking on now,
+  not yet decided. Must also stay product-generic per D-009 (never name ELSS/PPF/NPS by name).
+- **ESOP-timing** — BRIEF-013 already scoped this as "eventually." Working view from this session: it's
+  likely not buildable within the never-predict-markets constraint at all (depends on future private-
+  company valuation, a harder case than loan-vs-invest) — recommend leaving it deferred rather than
+  attempting it in the same pass, but not formally decided.
 
 ---
 
