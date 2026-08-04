@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { TaxSavingRoomModal } from '../components/TaxSavingRoomModal';
 import { colors, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { fetchBudget, type BudgetSummary } from '../lib/budget';
@@ -16,6 +17,7 @@ export function BudgetingScreen() {
   const [income, setIncome] = useState<IncomeRecord[]>([]);
   const [goals, setGoals] = useState<GoalRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [checkingTaxSaving, setCheckingTaxSaving] = useState(false);
 
   const load = useCallback(() => {
     if (!userId) return;
@@ -66,6 +68,9 @@ export function BudgetingScreen() {
         <BudgetRow label="Discretionary" value={budget.discretionary_total} />
         <BudgetRow label="Net" value={budget.net} bold />
       </View>
+      <Pressable style={styles.taxSavingButton} onPress={() => setCheckingTaxSaving(true)}>
+        <Text style={styles.taxSavingButtonText}>Check my 80C room</Text>
+      </Pressable>
 
       <Text style={styles.sectionTitle}>Income</Text>
       <View style={styles.card}>
@@ -109,6 +114,10 @@ export function BudgetingScreen() {
         )}
       </View>
       <AddGoalForm userId={userId} onAdded={load} />
+
+      {checkingTaxSaving && (
+        <TaxSavingRoomModal userId={userId} onClose={() => setCheckingTaxSaving(false)} />
+      )}
     </ScrollView>
   );
 }
@@ -260,6 +269,15 @@ const styles = StyleSheet.create({
   body: { color: colors.textSecondary, textAlign: 'center' },
   errorText: { color: colors.danger, marginTop: spacing.xs },
   sectionTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginTop: spacing.xl, marginBottom: spacing.sm },
+  taxSavingButton: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.success,
+    borderRadius: 8,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  taxSavingButtonText: { color: colors.success, fontWeight: '600' },
   card: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.borderLight,

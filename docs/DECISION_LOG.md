@@ -1646,3 +1646,18 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   today?") reconfirmed a second time. Full write-up:
   `docs/decisions/D-069-esop-exercise-cost-confirmed.md`.
 - **Date:** 04-Aug-2026
+
+### D-070 — BRIEF-016 confirmed: tax-saving narrowed to "unused 80C room," built as proposed
+- **Tier:** 3, owner-confirmed. Preceded by a real question, not a rubber stamp: checked
+  `BRIEF-012_mvp_fit_prioritization.md` and confirmed tax-saving modeling is committed MVP scope (must-have
+  for all three founding profiles, D-054), so deferring it wasn't a casual default — and the concrete
+  downsides of the narrowed version were named explicitly (doesn't deliver literal multi-path modeling,
+  ELSS blind spot, regime-question risk, implicit-nudge framing, weaker close than the other two, ₹1.5L cap
+  staleness) before confirming anyway. No rupee tax-savings figure — stops at unused 80C room, avoiding a
+  maintained slab table. Regime asked as a one-off in-tool question, never stored. Formula: known
+  contributions from PPF/EPF `annual_contribution` + Term/Endowment `premium` (annualized); room =
+  `max(0, 150000 − known)`. ELSS ambiguity disclosed in copy, not solved. D-068's rule extraction
+  ("computable today, or route around it") reconfirmed a third time, now adopted as the standing test.
+  Self-reported-tax-bracket alternative tracked in `docs/KNOWN_LIMITATIONS.md`, not chosen for v1. Full
+  write-up: `docs/decisions/D-070-tax-saving-80c-room-confirmed.md`.
+- **Date:** 04-Aug-2026

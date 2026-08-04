@@ -14,20 +14,14 @@ Rules for this file:
 
 ---
 
-## NOT YET READY — one half decided, one half still open
+## READY — pick one of these
 
-### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
-**Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default) + **D-067** (detection
-mechanism resolved: user-triggered "Compare paths" affordance for v1, no auto-detection — see
-`docs/decisions/D-067-comparison-detection-user-triggered.md`).
-**Loan-vs-invest and ESOP-timing are both fully done end to end (D-068, D-069, see DONE below).** One
-sub-case remains before this item is fully closed:
-- **Tax-saving modeling — READY TO CONFIRM, narrowed in scope.** Reframed rather than solved: never a
-  rupee tax-savings figure (needs a maintained slab table — not attempted), stops at **unused 80C room**
-  instead. Tax regime asked as a one-off in-tool question (not stored), same shape as `loan_vs_invest`'s
-  prepay-amount input — new regime gets an honest "not relevant for you" answer and stops there, old
-  regime gets the room figure. Full write-up: `docs/BRIEF-016_tax_saving_80c_room.md`. One yes/no unblocks
-  `backend/app/services/tax_saving_room.py`.
+### Mascot mood reacting to a completed teaching moment
+**Traces to:** BQ-032 (D-061/P7) — see `docs/KNOWN_LIMITATIONS.md`. Noted as blocked on BQ-023/024 when
+BQ-032 shipped; both are done now, so this is unblocked, just not yet picked up. Simplest correct version:
+`ChatThread` switches `Mascot`'s mood to `'celebrating'` briefly after any successful `/chat` response —
+reacting to the completed-exchange event itself, never to a financial figure (P7's boundary, same as
+BQ-031's streak-reaction wiring already holds). No new backend signal needed.
 
 ---
 
@@ -66,6 +60,32 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-026 — CLOSED, all three sub-cases done end to end — done 04-Aug-2026
+Traces to BRIEF-013 (comparison-view shape) + D-067 (user-triggered detection). All three sub-cases now
+shipped: loan-vs-invest (D-068), ESOP-timing (D-069), and tax-saving (D-070, this entry) — see each
+sub-entry below for full build detail. This closes BQ-026 entirely; nothing about the comparison-view item
+remains open.
+
+### BQ-026 (tax-saving half) — 80C room UI + computation, end to end — done 04-Aug-2026
+Traces to D-067 (user-triggered detection) + D-070 (BRIEF-016, unused-80C-room only, never a rupee
+tax-savings figure). Backend: `backend/app/services/tax_saving_room.py` (`compute_tax_saving_room`) + `GET
+/tax-saving-room`. Tax regime is a required query param, never stored — new regime returns
+`{applicable: false}` with an honest "not relevant for you" note and no number; old regime sums
+`ppf_epf`'s `annual_contribution` + `term_insurance`/`endowment_ulip`'s `premium` (annualized via
+`budget.py`'s existing `_to_monthly` helper, reused rather than re-implemented) and returns
+`max(0, 150000 − known_contributions)`. Equity mutual funds are never counted (ELSS ambiguity, disclosed
+via the response's `note` field, not solved). Frontend: `app/lib/taxSavingRoom.ts` +
+`app/components/TaxSavingRoomModal.tsx` — a regime-choice screen first, then the result (or the
+new-regime "not relevant" message) — and a "Check my 80C room" button on `BudgetingScreen`, not tied to
+any single holding (unlike the other two comparisons — this one relates to income/existing 80C holdings
+generally, per BRIEF-016's own placement proposal). Verified: `python -m py_compile` clean, route
+registers, `/tax-saving-room` correctly 500s without a configured database; the formula unit-tested across
+five cases (new regime → not applicable, old regime with no contributions → full room, old regime with
+PPF+insurance contributions → correctly reduced room *and* confirmed an equity-fund holding is correctly
+ignored, contributions exceeding the cap → room floors at 0 not negative, invalid regime value rejected)
+— all passed. `npx tsc --noEmit` clean, `npx expo export --platform android` bundled cleanly (933 modules,
+no errors). Not verified end-to-end against a live device/backend.
 
 ### BQ-026 (ESOP-timing half) — cost-of-exercising-today UI + computation, end to end — done 04-Aug-2026
 Traces to D-067 (user-triggered detection) + D-069 (BRIEF-015, cost-of-exercising-today only, options-only

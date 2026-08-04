@@ -11,17 +11,6 @@ here stale.
 
 ---
 
-## Ready to build now — not blocked, just not yet picked up
-
-### Mascot mood reacting to a completed teaching moment
-**Traces to:** BQ-032 (D-061/P7). The mascot component supports a `'celebrating'`/`'encouraging'` mood;
-BQ-031 wired the streak-continuation half of this. The other half — reacting to a completed teaching
-moment in Chat — was noted as blocked on BQ-023/024 at the time BQ-032 shipped. **Both are now done.** This
-dependency is cleared; it just hasn't been picked up as its own item yet. Genuinely ready, not waiting on
-anything.
-
----
-
 ## Disclosed limitations on shipped features
 
 ### No prepayment/foreclosure charge modeled (loan-vs-invest)
@@ -38,10 +27,11 @@ cumulative-since-grant, not net of exercises already done — disclosed via
 exercised.
 **Revisit if:** real usage surfaces users for whom this makes the figure wrong, not just imprecise.
 
-### ELSS vs. regular equity fund not distinguishable (tax-saving, once built)
-**Traces to:** BRIEF-016 (once confirmed/built). No `is_80c_eligible` flag exists — deliberately, since
-D-009 forbids product-identifying data. `unused_80c_room` will overstate itself for anyone holding an ELSS
-fund we can't identify as such — plausibly common in this feature's own target segment.
+### ELSS vs. regular equity fund not distinguishable (tax-saving)
+**Traces to:** BRIEF-016/D-070, `backend/app/services/tax_saving_room.py`. No `is_80c_eligible` flag
+exists — deliberately, since D-009 forbids product-identifying data. `unused_80c_room` will overstate
+itself for anyone holding an ELSS fund we can't identify as such — plausibly common in this feature's own
+target segment.
 **Revisit if:** usage shows this is a frequent, meaningfully-wrong case, or a non-product-naming way to
 self-flag "this is a tax-saving fund" is found.
 
