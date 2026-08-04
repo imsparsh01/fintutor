@@ -26,6 +26,14 @@ Budgeting/Goals tab (BRIEF-013).
 **Traces to:** BRIEF-013. Unblocked by BQ-015 (needs a holdings list to sum across the three
 families) — now ready.
 
+### BQ-028 — Holdings characteristics (field-level) editing UI
+**Traces to:** D-059 (Decision 2, Path C) — the full-authority decision already covers this; it's a UI
+gap, not an open decision. `characteristics` (interest_rate, expense_ratio, tenure, EMI amount, etc. —
+the D-013 per-type fields) can't be edited from the app yet; only `alias`/`display_name`/`product_type`
+can (BQ-027). Backend `PATCH /holdings/{id}` already accepts a `characteristics` dict — this is UI-only
+work: a dynamic form keyed off `product_type`'s known field list. Deliberately deferred, not dropped —
+owner chose to log and pick up later within MVP rather than build now. Unblocked, ready whenever picked.
+
 ### BQ-022 — Holding-detail view, as a home for teaching content
 **Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
 done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is now specifically a
