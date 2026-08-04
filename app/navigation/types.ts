@@ -4,8 +4,9 @@ export type AuthStackParamList = {
 };
 
 export type MainTabsParamList = {
+  Consolidated: undefined;
+  Chat: undefined;
   Investments: undefined;
   Loans: undefined;
   Insurance: undefined;
-  Consolidated: undefined;
 };

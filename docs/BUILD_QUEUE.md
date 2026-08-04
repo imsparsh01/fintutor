@@ -32,22 +32,21 @@ dedicated detail *screen* (not a modal) as a home for teaching content once the 
 **Traces to:** BRIEF-013. `GET /budget` already exists (BQ-010); `GET`/`POST /income` (BQ-016) and
 `GET`/`POST /goals` (BQ-017) now also exist — unblocked.
 
-### BQ-024 — Chat/conversational UI screen (frontend)
-**Traces to:** BRIEF-013. Unblocked — `POST /chat` (BQ-023) now exists.
+### BQ-025 — Onboarding flow (D-058: chip-guided, no structured field, default landing screen, skippable)
+**Traces to:** D-058. Unblocked — `POST /chat` (BQ-023) and the chat UI (BQ-024) both exist now, so the
+conversational surface D-058's onboarding flow needs is real. Will change `MainTabs`'s current Chat-tab
+placement (BQ-024's own note) once built, since D-058 wants it as the default post-registration landing
+screen, not a persistent tab — that change is this item's job, not BQ-024's.
+
+### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
+**Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default, not yet flagged
+otherwise). Unblocked by BQ-023/BQ-024. **Flag for whoever picks this up:** "breakeven"/"tax-saving
+instrument modeling" is very likely its own money-calculation decision (`CLAUDE.md` hard-stop 1), same
+shape as D-065 — check for an already-decided formula before assuming this is mechanical execution.
 
 ---
 
 ## BLOCKED — do not start
-
-### BQ-025 — Onboarding flow (D-058: chip-guided, no structured field, default landing screen, skippable)
-**Traces to:** D-058.
-**Blocked on:** BQ-023, BQ-024 — onboarding IS a conversation, so the conversational surface has to
-exist first.
-
-### BQ-026 — Comparison-view modal + decision-shaped path computation (loan-vs-invest breakeven, tax-saving instrument modeling)
-**Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default, not yet flagged
-otherwise).
-**Blocked on:** BQ-023, BQ-024.
 
 ### BQ-004 — Backend `deepen` selection logic
 **Traces to:** D-028 (explicitly deferred), re-scoped by D-049 (BRIEF-006)
@@ -86,6 +85,20 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-024 — Chat/conversational UI screen (frontend) — done 04-Aug-2026
+Traces to BRIEF-013, unblocked by BQ-023. Added `app/lib/chat.ts` (`askQuestion`) and
+`app/screens/ChatScreen.tsx` (message-bubble list + text input, local-only message history — D-022: the
+model never receives prior turns, only the current question; the UI list is display state, not
+conversation memory). Wired in as a new `Chat` tab in `MainTabs`/`navigation/types.ts` — **navigation
+placement was a judgment call, not a decided spec item:** BRIEF-013 named the conversational surface as
+the central missing piece without specifying where it lives, so a persistent tab was chosen as the
+lowest-risk, easily-revised placement, consistent with D-031's always-accessible sections. Flagged
+explicitly for BQ-025 (D-058's onboarding flow), which will very likely replace this placement with the
+default-landing-screen shape D-058 actually decided — that's BQ-025's job, not redone here. Verified:
+`npx tsc --noEmit` clean, `npx expo export --platform android` bundled cleanly (917 modules, no errors).
+Not verified end-to-end (no `DATABASE_URL`/live `ANTHROPIC_API_KEY` in this remote session). Unblocks
+BQ-025 and BQ-026, both moved to READY.
 
 ### BQ-023 — Core teaching/chat backend endpoint — done 04-Aug-2026
 Traces to the product core (D-001, D-002, D-010, D-028, system prompt v0.8). Added
