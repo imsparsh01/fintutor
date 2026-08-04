@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ConsolidatedTotalsCard } from '../components/ConsolidatedTotalsCard';
 import { Mascot, type MascotMood } from '../components/Mascot';
 import { StreakBadge } from '../components/StreakBadge';
 import { useAuth } from '../lib/AuthContext';
@@ -38,7 +39,7 @@ export function ConsolidatedScreen() {
       <Mascot mood={mascotMood} />
       <StreakBadge currentStreak={streak?.current_streak ?? 0} />
       <Text style={styles.title}>Consolidated view</Text>
-      <Text style={styles.body}>Whole-picture placeholder — net worth/portfolio will live here.</Text>
+      <ConsolidatedTotalsCard userId={userId} />
 
       <View style={styles.statusBox}>
         <Text style={styles.statusLabel}>Backend health</Text>

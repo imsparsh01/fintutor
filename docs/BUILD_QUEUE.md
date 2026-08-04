@@ -38,9 +38,6 @@ goals) per user, calls the Anthropic API with system prompt v0.8, returns teachi
 **Unblocked** — BQ-015 (Holdings), BQ-016 (Income), BQ-017 (Goals) all done, so a full baseline can be
 assembled. The biggest, highest-stakes item in the queue; pick deliberately, not by default.
 
-### BQ-021 — Consolidated screen wired to real aggregation
-**Traces to:** BRIEF-013. Unblocked by BQ-018 — `GET /consolidated` now exists.
-
 ---
 
 ## BLOCKED — do not start
@@ -95,6 +92,15 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-021 — Consolidated screen wired to real aggregation — done 04-Aug-2026
+Traces to BRIEF-013, unblocked by BQ-018. Added `app/lib/consolidated.ts` (`fetchConsolidated`) and
+`app/components/ConsolidatedTotalsCard.tsx` — three rows (Investments / Loans / Insurance cash-value),
+`₹`-formatted via `toLocaleString('en-IN')`, matching D-065's per-family-totals shape (no signed net-worth
+figure). Loading/error/signed-out states follow `HoldingsList.tsx`'s existing convention. Replaces
+`ConsolidatedScreen`'s placeholder body text. Verified: `npx tsc --noEmit` clean, `npx expo export
+--platform android` bundled cleanly (915 modules, no errors). Not verified end-to-end against a live
+device/backend (no `DATABASE_URL` in this remote session).
 
 ### BQ-031 — Streak + reward UI (frontend) — done 04-Aug-2026
 Traces to D-060, D-061, P7. Added `app/lib/streaks.ts` (`fetchStreak`, `recordAppOpen` — same
