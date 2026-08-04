@@ -26,11 +26,11 @@ item is fully closed:
   80C room" without an ELSS-vs-regular-fund distinction the schema doesn't carry (D-009 forbids naming
   products, so no `is_80c_eligible` flag exists). No field anywhere captures tax regime. Needs its own
   design pass before a brief like BRIEF-014 can be written for it.
-- **ESOP-timing** — BRIEF-013 scoped this as "eventually." A narrower version may be viable: exercising
-  today has a computable, non-predictive cost *today* (perquisite tax on the `current_fmv`−`strike_price`
-  spread, using D-066's fields) — distinct from "should you exercise," which still requires predicting
-  future valuation and stays off the table. Contingent on `current_fmv` actually being populated (nullable,
-  often unknown pre-valuation-event). Not written up yet — lower priority than the other two.
+- **ESOP-timing — READY TO CONFIRM.** Full formula (vesting, exercise cost, taxable spread), scope fork
+  resolved (options only, not RSU), written up as `docs/BRIEF-015_esop_exercise_cost_today.md`. One yes/no
+  unblocks `backend/app/services/esop_exercise_cost.py`. Scoped to "cost of exercising today" only —
+  "should you exercise" still requires predicting future valuation and stays off the table, same as
+  loan-vs-invest's projected-outcome case.
 
 ---
 
