@@ -26,10 +26,11 @@ Budgeting/Goals tab (BRIEF-013).
 **Traces to:** BRIEF-013. Unblocked by BQ-015 (needs a holdings list to sum across the three
 families) — now ready.
 
-### BQ-022 — Holding-detail view (read-only)
-**Traces to:** BRIEF-013 — explicitly NOT Decision 2 (per-item management/edit authority, still
-BLOCKED below); this is a display-only surface for teaching content to have a home. Unblocked by
-BQ-015 — now ready.
+### BQ-022 — Holding-detail view, as a home for teaching content
+**Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
+done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is now specifically a
+dedicated detail *screen* (not a modal) as a home for teaching content once the chat surface exists
+(BQ-023/BQ-024), which the edit modal doesn't provide. Unblocked by BQ-015 — still ready.
 
 ---
 
@@ -98,6 +99,24 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-027 — Holdings edit/delete/recategorize (API + UI) — done 04-Aug-2026
+Traces to D-059 (Decision 2, Path C). Backend: `update_holding`/`delete_holding` added to
+`backend/app/services/holdings.py` (partial-update semantics — only non-None fields change; 409 on
+alias collision via the existing `(user_id, alias)` unique constraint, same pattern as `create_holding`);
+`PATCH /holdings/{holding_id}` and `DELETE /holdings/{holding_id}` (204) added to `main.py`. Frontend:
+`app/lib/holdings.ts` gained `updateHolding`/`deleteHolding`; new `app/components/HoldingEditModal.tsx`
+(display_name/alias text fields, product_type recategorize via a chip picker over
+`taxonomy.ts`'s `ALL_PRODUCT_TYPES` — UI-constrained to the known taxonomy though the backend itself
+stays unconstrained per D-044 — plus a destructive delete button behind an `Alert.alert` confirm).
+`HoldingsList.tsx` rows are now tappable, opening the modal and reloading the list on save/delete.
+**Scoped out of this pass, not silently dropped:** editing `characteristics` (the per-type field blob —
+expense_ratio, interest_rate, tenure, etc.) isn't in the UI yet; the backend PATCH already accepts it, so
+this is a pure UI follow-on, not a further Decision-2-shaped question. Verified: `tsc --noEmit` clean,
+`python -m py_compile` clean on the backend, `python -c "from app.main import app"` confirmed all five
+`/holdings*` routes register (GET list, POST, GET one, PATCH, DELETE), `npx expo export --platform
+android` bundled cleanly (909 modules, no errors). Not verified against live data (no `DATABASE_URL` in
+this remote session, same limitation prior BQ items hit).
 
 ### BQ-019 — Wire Investments/Loans/Insurance screens to real Holdings API — done 04-Aug-2026
 Traces to BRIEF-013. Unblocked by BQ-015. Replaced BQ-014's three placeholder screens with a shared

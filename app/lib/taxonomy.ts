@@ -14,6 +14,10 @@ export const LOAN_TYPES = ['home_loan', 'personal_loan', 'credit_card_debt'];
 
 export const INSURANCE_TYPES = ['term_insurance', 'endowment_ulip'];
 
+// Flat list for the recategorize picker (D-059) — unconstrained on the backend (D-044), but
+// the UI offers the known taxonomy rather than free text to avoid silent typos/new types.
+export const ALL_PRODUCT_TYPES = [...INVESTMENT_TYPES, ...LOAN_TYPES, ...INSURANCE_TYPES];
+
 export function humanizeProductType(productType: string): string {
   return productType
     .split('_')

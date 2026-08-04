@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { HoldingEditModal } from './HoldingEditModal';
 import { useAuth } from '../lib/AuthContext';
 import { fetchHoldings, type Holding } from '../lib/holdings';
 import { humanizeProductType } from '../lib/taxonomy';
 
-// Read-only list view (BQ-019). No edit/delete/recategorize actions here — that's
-// Decision 2 (per-item management depth), still an open thinking-home question.
+// List view (BQ-019) with tap-to-edit/delete/recategorize (BQ-027/D-059).
 export function HoldingsList({
   title,
   familyTypes,
@@ -18,6 +18,7 @@ export function HoldingsList({
   const { userId } = useAuth();
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Holding | null>(null);
 
   const load = useCallback(() => {
     if (!userId) return;
@@ -74,12 +75,19 @@ export function HoldingsList({
         data={holdings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.row}>
+          <Pressable style={styles.row} onPress={() => setSelected(item)}>
             <Text style={styles.rowTitle}>{item.display_name ?? item.alias}</Text>
             <Text style={styles.rowSubtitle}>{humanizeProductType(item.product_type)}</Text>
-          </View>
+          </Pressable>
         )}
       />
+      {selected && (
+        <HoldingEditModal
+          holding={selected}
+          onClose={() => setSelected(null)}
+          onChanged={load}
+        />
+      )}
     </View>
   );
 }

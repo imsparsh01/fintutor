@@ -9,7 +9,13 @@ from sqlalchemy.orm import Session
 
 from app.db.session import engine, get_db
 from app.services.budget import compute_budget
-from app.services.holdings import create_holding, get_holding, list_holdings
+from app.services.holdings import (
+    create_holding,
+    delete_holding,
+    get_holding,
+    list_holdings,
+    update_holding,
+)
 from app.services.surfacing import compute_surfacing_candidates
 
 logger = logging.getLogger("fintutor.health")
@@ -22,6 +28,13 @@ class HoldingCreate(BaseModel):
     alias: str
     display_name: str | None = None
     characteristics: dict = {}
+
+
+class HoldingUpdate(BaseModel):
+    product_type: str | None = None
+    alias: str | None = None
+    display_name: str | None = None
+    characteristics: dict | None = None
 
 
 @app.get("/health")
@@ -68,6 +81,37 @@ def post_holding(
             status_code=409,
             detail=f"A holding with alias '{body.alias}' already exists for this user",
         )
+
+
+@app.patch("/holdings/{holding_id}")
+def patch_holding(
+    holding_id: uuid.UUID, user_id: uuid.UUID, body: HoldingUpdate, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        updated = update_holding(
+            db,
+            user_id,
+            holding_id,
+            body.product_type,
+            body.alias,
+            body.display_name,
+            body.characteristics,
+        )
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail=f"A holding with alias '{body.alias}' already exists for this user",
+        )
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Holding not found")
+    return updated
+
+
+@app.delete("/holdings/{holding_id}", status_code=204)
+def remove_holding(holding_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)) -> None:
+    if not delete_holding(db, user_id, holding_id):
+        raise HTTPException(status_code=404, detail="Holding not found")
 
 
 @app.get("/health/db")
