@@ -1554,3 +1554,15 @@ the most repeated, most precisely pre-specified, costliest-to-silently-skip proc
 rules. Deliberately not extended to any decision-content skill (lens drafting, tier classification) this
 session — that's closer to the judgment line the repo protects and waits on the pilot proving out first.
 Reversibility: High. Date: 04-Aug-2026.
+
+### D-063 — Vendored-skill category added to skill management (D-062 extension); first instance: `design-taste-frontend` ("taste-skill")
+Full entry: `docs/decisions/D-063-vendored-skill-policy-and-taste-skill.md`. Tier 2 (no trigger fires;
+Sequencing/PM, same category as D-062). Project skills are now either self-authored (D-062's original
+scope) or **vendored** — third-party published skills, pulled in deliberately, reviewed for embedded code
+before adding, and told apart via a required `PROVENANCE.md` sibling naming source/license/date and,
+crucially, actual fit to this project. First instance: `.claude/skills/design-taste-frontend/`, vendored
+verbatim from `github.com/Leonxlnx/taste-skill` (MIT) by owner request. Applicability caveat recorded
+plainly, not smoothed over: the skill's own frontmatter scopes it to web landing pages/portfolios/
+redesigns, explicitly excluding "dashboards... multi-step product UI" — which is what FinTutor's React
+Native `app/` is, so its concrete checklist is inspiration only there, literal only if a real web surface
+is ever built. Reversibility: High. Date: 04-Aug-2026.
