@@ -3,19 +3,27 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HoldingEditModal } from '../components/HoldingEditModal';
+import { LoanVsInvestModal } from '../components/LoanVsInvestModal';
 import { colors, spacing } from '../design/tokens';
+import { useAuth } from '../lib/AuthContext';
 import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
 import { humanizeProductType } from '../lib/taxonomy';
 import type { HoldingsStackParamList, MainTabsParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<HoldingsStackParamList, 'Detail'>;
 
+// D-067's scope for the loan-vs-invest comparison: Home Loan / Personal Loan only,
+// matching backend/app/services/loan_vs_invest.py's own restriction.
+const LOAN_VS_INVEST_TYPES = new Set(['home_loan', 'personal_loan']);
+
 // BQ-022: read-only home for teaching content about one specific holding, reached by
 // tapping a row in HoldingsList. Full edit/delete/recategorize authority (BQ-027/D-059)
 // is one tap deeper via the Edit button, not this screen's own job.
 export function HoldingDetailScreen({ route, navigation }: Props) {
   const { holding } = route.params;
+  const { userId } = useAuth();
   const [editing, setEditing] = useState(false);
+  const [comparing, setComparing] = useState(false);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
 
   const fields = CHARACTERISTICS_SCHEMA[holding.product_type] ?? [];
@@ -55,6 +63,12 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
           <Text style={styles.askButtonText}>Ask about this</Text>
         </Pressable>
 
+        {LOAN_VS_INVEST_TYPES.has(holding.product_type) && userId && (
+          <Pressable style={styles.compareButton} onPress={() => setComparing(true)}>
+            <Text style={styles.compareButtonText}>Compare: prepay vs. invest</Text>
+          </Pressable>
+        )}
+
         <Pressable style={styles.editButton} onPress={() => setEditing(true)}>
           <Text style={styles.editButtonText}>Edit</Text>
         </Pressable>
@@ -68,6 +82,14 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
             setEditing(false);
             navigation.goBack();
           }}
+        />
+      )}
+
+      {comparing && userId && (
+        <LoanVsInvestModal
+          userId={userId}
+          holdingId={holding.id}
+          onClose={() => setComparing(false)}
         />
       )}
     </>
@@ -102,6 +124,15 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
   },
   askButtonText: { color: '#fff', fontWeight: '600' },
+  compareButton: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.success,
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  compareButtonText: { color: colors.success, fontWeight: '600' },
   editButton: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,

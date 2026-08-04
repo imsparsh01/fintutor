@@ -18,12 +18,8 @@ Rules for this file:
 **Traces to:** BRIEF-013's proposed comparison-view shape (accepted by default) + **D-067** (detection
 mechanism resolved: user-triggered "Compare paths" affordance for v1, no auto-detection — see
 `docs/decisions/D-067-comparison-detection-user-triggered.md`).
-**Still blocking a READY move:** the comparison math itself isn't fully decided yet. Loan-vs-invest is
-done (D-068); the modal UI and two sub-cases remain:
-- **Loan-vs-invest computation — DONE (D-068).** `backend/app/services/loan_vs_invest.py` +
-  `GET /loan-vs-invest`. What's still missing before this specific path is user-visible: the actual
-  "Compare paths" UI affordance (D-067's user-triggered entry point) and a screen to call this endpoint
-  and render its result — that frontend piece hasn't been built yet.
+**Loan-vs-invest is fully done (D-068, see DONE below), end to end.** Two sub-cases remain before this
+item is fully closed:
 - **Tax-saving modeling — deeper gap, not just tax-slab staleness.** Requires knowing the user's tax
   regime (old vs new — the new regime, now default, disallows most 80C deductions entirely, so getting
   this wrong isn't imprecise, it's *wrong* for a real subset of users) and can't reliably compute "unused
@@ -73,6 +69,21 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-026 (loan-vs-invest half) — Compare-paths UI + hurdle-rate computation, end to end — done 04-Aug-2026
+Traces to D-067 (user-triggered detection) + D-068 (hurdle-rate-only math, BRIEF-014). Backend:
+`backend/app/services/loan_vs_invest.py` + `GET /loan-vs-invest` (see D-068 for full verification detail).
+Frontend, built same session once D-068 confirmed: `app/lib/loanVsInvest.ts` (fetch wrapper) and
+`app/components/LoanVsInvestModal.tsx` — a prepay-amount input, a "number to watch" hurdle-rate card, and
+both prepayment-mode results shown in **input order, not by which saves more** (BRIEF-013's no-ranking-
+in-layout requirement — "if you keep the same EMI" then "if you keep the same tenure," a natural
+description order, not a favorability order), plus the prepayment-charge caveat. Entry point: a "Compare:
+prepay vs. invest" button on `HoldingDetailScreen`, shown only for `home_loan`/`personal_loan` holdings
+(matching the backend's own scope), sitting alongside the existing "Ask about this" and "Edit" buttons —
+this is D-067's user-triggered affordance, not an auto-detected one. Verified: `npx tsc --noEmit` clean,
+`npx expo export --platform android` bundled cleanly (929 modules, no errors). Not verified end-to-end
+against a live device/backend. Tax-saving modeling and ESOP-timing remain open under BQ-026 (see NOT YET
+READY above).
 
 ### D-066 — ESOP characteristics field schema (design pass) — done 04-Aug-2026
 Not a BQ item — the queue previously listed this as unqueued design work ("needs its own design pass...
