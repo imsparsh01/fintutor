@@ -1541,3 +1541,16 @@ accepted tension (capture vs. post-capture management are different concerns), n
 candidate rule extraction (route future Income/Goals edit-authority questions through the same test) was
 proposed but NOT adopted as a standing rule — future cases return as their own Tier-3 questions.
 Reversibility: Medium (cheap now, no real user data yet; closes once real usage exists). Date: 04-Aug-2026.
+
+### D-062 — Claude Code Skills adopted for bounded, mechanical procedure execution — piloted with one skill: `session-close`
+Full entry: `docs/decisions/D-062-claude-code-skills-adopted.md`. Tier 2 (no trigger fires; Sequencing/PM,
+same category as D-007/D-014/D-047/D-050). A skill may only execute a procedure already fully decided and
+written down elsewhere in this repo — never a product-judgment, compliance, or scope call — and stays inside
+the same file-permission lanes `CLAUDE.md` already sets (never writes a deliberate-only file, never authors
+new judgment into this log). Skills live at `.claude/skills/<name>/SKILL.md`, checked into the repo. Piloted
+with exactly one skill this session, `session-close`, mechanizing `CLAUDE.md`'s "End of every session"
+checklist (session log, spec/log-change flag, commit, push, D-056's fast-forward-merge to `main`) — chosen as
+the most repeated, most precisely pre-specified, costliest-to-silently-skip procedure already in the repo's
+rules. Deliberately not extended to any decision-content skill (lens drafting, tier classification) this
+session — that's closer to the judgment line the repo protects and waits on the pilot proving out first.
+Reversibility: High. Date: 04-Aug-2026.
