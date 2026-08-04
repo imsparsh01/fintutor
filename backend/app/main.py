@@ -13,6 +13,7 @@ from app.db.session import engine, get_db
 from app.services.baseline import assemble_baseline
 from app.services.budget import compute_budget
 from app.services.consolidated import compute_consolidated
+from app.services.deepen_classifier import classify_deepen
 from app.services.goals import create_goal, list_goals
 from app.services.holdings import (
     create_holding,
@@ -263,6 +264,11 @@ def post_streak_open(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
 @app.post("/chat")
 def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_db)) -> dict:
     baseline = assemble_baseline(db, user_id, body.deepen_alias)
+    # D-072: only when D-071's deterministic UI-signal path didn't already set deepen.
+    if "deepen" not in baseline:
+        classified = classify_deepen(body.question, baseline["holdings"])
+        if classified is not None:
+            baseline["deepen"] = classified
     try:
         answer = ask_teaching_engine(baseline, body.question)
     except TeachingEngineNotConfigured as exc:

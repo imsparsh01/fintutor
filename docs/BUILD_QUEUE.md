@@ -22,20 +22,6 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-### BQ-004 — Backend `deepen` selection logic for the general Chat-tab case
-**Traces to:** D-028 (explicitly deferred), re-scoped by D-049 (BRIEF-006), narrowed by D-071 — the
-UI-signal sub-case D-071 covers is BQ-034, not this item; this item is what's left over.
-**Blocked because:** for a freely-typed question with no holding context (the general Chat tab), there
-is still no deterministic signal for which holding (if any) to deepen. BRIEF-006's Path A (a narrow
-classifier model call) still carries its open regulatory question — does a smaller model's judgment
-satisfy "auditable in code," or only relocate the same compliance question — and D-071 does not touch
-that question at all.
-**Unblocks when:** a decision resolves BRIEF-006's Path A question, or a different deterministic signal
-for the general-question case is found. Not urgent — D-028's "deepen nothing" fallback is the current
-safe default and stays in effect for every entry point BQ-034 doesn't cover.
-
----
-
 ### Variable-income budgeting (startup/gig profile) — not queued
 Traces to BRIEF-011's escalated hard-stop (money-calculation logic). Not added to READY or BLOCKED —
 waiting on the owner's decision before any BQ item is even scoped for it.
@@ -54,6 +40,25 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-004 — Backend `deepen` selection logic for the general Chat-tab case — done 04-Aug-2026
+Traces to D-028 (deferred), D-049/BRIEF-006 (Path A/B/C modeled), D-071 (Path B shipped for the UI-signal
+case), **D-072** (Path A confirmed and shipped for everything else — this entry). Added
+`backend/app/services/deepen_classifier.py` (`classify_deepen`) — a narrow, non-teaching Haiku call
+(`claude-haiku-4-5-20251001`, first real use of D-002's Haiku half) that reads the question plus the
+user's holdings (alias + product_type only, `display_name` never sent — reuses the exact list
+`assemble_baseline` already builds, so D-010 holds by construction) and returns a single confident alias
+or nothing. Wired into `POST /chat` in `main.py`: runs only when D-071's deterministic UI-signal path
+didn't already set `deepen`; on a match, sets `deepen` with a fixed backend-authored reason (never a
+model-invented one, per the system prompt's own rule); any ambiguity, a reply that isn't a recognized
+alias, an API error, or a missing key all degrade cleanly to D-028's existing safe "deepen nothing"
+default — never worse than today's behavior, only sometimes less deep than an ideal classification would
+be. This closes BQ-004 and BRIEF-006 entirely; every `/chat` entry point now has a decided mechanism.
+Verified: `python -m py_compile` clean, `/chat` route registers; `classify_deepen` unit-tested against a
+mocked Anthropic client across six cases (no key configured, empty holdings list, confident match,
+explicit "NONE" reply, hallucinated/unrecognized alias, and a raised `anthropic.APIError`) — all degraded
+or resolved correctly, script discarded after (no persistent test files exist in this repo yet). Not
+verified end-to-end against a live database or live Anthropic API — this sandbox has neither.
 
 ### BQ-034 — Wire `deepen` for the "Ask about this" entry point only — done 04-Aug-2026
 Traces to D-071 (BRIEF-006 narrowed and confirmed). Backend: `/chat`'s `ChatRequest` gained an optional

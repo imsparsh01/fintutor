@@ -1673,3 +1673,12 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   open as D-049 left them — not decided by this entry. Full write-up:
   `docs/decisions/D-071-deepen-ui-signal-confirmed.md`.
 - **Date:** 04-Aug-2026
+
+### D-072 — BRIEF-006 fully resolved: Path A (narrow Haiku classifier) confirmed for the general Chat-tab deepen case
+- **Tier:** 3, owner-confirmed. Closes BRIEF-006 entirely — the last piece D-049/D-071 left open. A narrow,
+  non-teaching Haiku call reads the question + holdings (alias/product_type only, never `display_name`) and
+  returns a single holding alias or none; the backend sets `deepen` with a fixed, backend-authored reason
+  only on a confident single match, runs only when D-071's UI-signal case didn't already set `deepen`, and
+  degrades to D-028's existing safe default on any ambiguity, error, or missing config. First real use of
+  D-002's Haiku half. Full write-up: `docs/decisions/D-072-deepen-classifier-confirmed.md`.
+- **Date:** 04-Aug-2026
