@@ -199,7 +199,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       (persistent sections, AI-primary/manual-secondary, aliases never shown, no quizzes, progressive
       capture) is to be extracted and written as a UX section — but only AFTER Decisions 2 and 3 exist,
       because it extracts from them. Aesthetic layer (visual style, density, motion, hierarchy) deliberately
-      left for when real screen decisions force it.
+      left for when real screen decisions force it. **Note (added 04-Aug-2026):** when this aesthetic layer
+      is actually designed, `.claude/skills/design-taste-frontend/` (D-063/D-064) is available as
+      design-philosophy inspiration for `app/`'s real UI work — explicit-ask only, not auto-triggered; see
+      its `PROVENANCE.md` for the applicability caveat and invocation policy before using it.
 - [ ] Write the data privacy policy (D-010): what's masked before reaching the LLM (product names, and
       likely PII like full name/PAN/phone), vs. what's encrypted/protected at rest in Postgres. Needs a
       decision on retention and account-deletion behavior too.
@@ -288,6 +291,11 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.3 (04-Aug-2026) — **§8 note only — no scope change.** Pointer added to the UX-principles §8 item
+  flagging `.claude/skills/design-taste-frontend/` (D-062/D-063/D-064: Claude Code Skills adopted this
+  session, self-authored and vendored categories, this one a vendored frontend design-taste skill,
+  explicit-ask only) as available inspiration for when the aesthetic layer is actually designed. Not a
+  product decision — proposed and owner-confirmed before applying, per §8's own edit rule.
 - v3.2 (04-Aug-2026) — **Gamification/engagement layer added to MVP scope (D-060, D-061).** New §4 item
   9: Duolingo-style engagement mechanics (streaks, variable reward, Hook Loop) adopted in full (D-060) — a
   real scope increase (trigger 5), explicitly recorded as running counter to P4's start-strict default
