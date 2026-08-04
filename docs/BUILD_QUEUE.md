@@ -53,14 +53,6 @@ per Category A principle #3 already judged a clean fit) shown on app open. Must 
 side: the celebration reacts to the open/streak event itself, never to a financial figure. Blocked on
 BQ-029 and BQ-030 for the backend state/logic to display.
 
-### BQ-032 — Mascot character (concept + component)
-**Traces to:** D-061, P7 — the vehicle for the "cosmetic, behavior-reactive game elements" D-061
-explicitly permits (celebrating a completed teaching moment, a streak continuing). **Not fully buildable
-yet:** the mascot's name, personality, and visual identity are a creative/brand decision nobody has made —
-this item is engineering plumbing (a component that can render *a* reaction), not the creative call
-itself. Flagged rather than assumed; the owner should weigh in on the character concept before this goes
-further than a placeholder. Unblocked for the plumbing; blocked on a creative decision for the real thing.
-
 ### BQ-022 — Holding-detail view, as a home for teaching content
 **Traces to:** BRIEF-013. Narrower now than originally scoped: per-item edit/delete/recategorize is
 done (BQ-027, D-059) via a tap-to-edit modal on the list itself — this item is now specifically a
@@ -134,6 +126,20 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-032 — Mascot character (concept + component) — done 04-Aug-2026
+Traces to D-061, P7. Creative concept resolved owner-directly (no `DECISION_LOG` trigger fires — reversible,
+no compliance/scope/principle impact, filling in an already-decided vehicle rather than adding new scope):
+**Ankur**, a sprout/plant character — calm, patient, encouraging tone, matching the "teach, don't hype"
+register. Explicitly not an owl, to avoid a direct visual clash with Duolingo's mascot on top of already
+borrowing its engagement-mechanics playbook (D-060). Added `app/components/Mascot.tsx` — a reusable
+component taking a `mood: 'neutral' | 'celebrating' | 'encouraging'` prop, placeholder emoji visual (no
+real character art yet, no new asset/library dependency), using the new `app/design/tokens.ts` for color/
+spacing. Given a real home on `ConsolidatedScreen` in `neutral` mood. **Not yet wired to real trigger
+events** — mood changes on streak continuation need BQ-029/030/031 (not built); mood changes on a
+completed teaching moment need BQ-023/024 (blocked) — this ships the reusable display piece those will
+call into later, not live reactions yet. Verified: `tsc --noEmit` clean, `npx expo export --platform
+android` bundled cleanly (911 modules, no errors).
 
 ### BQ-027 — Holdings edit/delete/recategorize (API + UI) — done 04-Aug-2026
 Traces to D-059 (Decision 2, Path C). Backend: `update_holding`/`delete_holding` added to

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Mascot } from '../components/Mascot';
 import { pingBackendHealth } from '../lib/backend';
 import { supabase } from '../lib/supabase';
 
@@ -14,6 +15,7 @@ export function ConsolidatedScreen() {
 
   return (
     <View style={styles.container}>
+      <Mascot mood="neutral" />
       <Text style={styles.title}>Consolidated view</Text>
       <Text style={styles.body}>Whole-picture placeholder — net worth/portfolio will live here.</Text>
 
