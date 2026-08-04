@@ -1594,3 +1594,15 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   endpoint returns separate `investments_total`/`loans_total`/`insurance_total`, not one net figure. Full
   write-up: `docs/decisions/D-065-consolidated-aggregation-shape.md`.
 - **Date:** 04-Aug-2026
+
+### D-066 — ESOP characteristics field schema resolved: single type, `grant_type`-distinguished
+- **Tier:** 2, REVIEW-FLAGGED — no hard trigger fires; applies D-013's already-decided split-vs-merge test
+  to a case `PROJECT_SPEC.md` §6 already anticipated (D-055 deferred the field list, not the test). Stays a
+  single ESOP type per D-055's scope (splitting into two types would itself be a further scope increase,
+  not attempted here); `grant_type` (`options`/`rsu`) carries the internal distinction, same resolution
+  D-013 used for FD/RD. Eight fields: `grant_type`, `grant_date`, `total_units_granted`,
+  `vesting_cliff_months`, `vesting_period_months`, `strike_price`, `current_fmv` (nullable),
+  `exercise_window_months`. No stored `vested_units` — derivable from the other fields at teaching-moment
+  time (D-038's reference-vs-store test); computing it is not designed here. Full write-up:
+  `docs/decisions/D-066-esop-characteristics-schema.md`.
+- **Date:** 04-Aug-2026

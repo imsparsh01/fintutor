@@ -1,7 +1,6 @@
-// D-013's per-type characteristic fields, transcribed for form rendering. `esop` is
-// deliberately absent — D-055 added it to the taxonomy but left its characteristics
-// schema undesigned; that's its own design pass (a split-vs-merge test, same method as
-// D-013's original), not guessed here.
+// D-013's per-type characteristic fields, transcribed for form rendering.
+// `esop`'s fields come from D-066 (applying D-013's split-vs-merge test to D-055's
+// taxonomy addition) — single type, `grant_type` distinguishes options from RSUs.
 export interface FieldSpec {
   key: string;
   label: string;
@@ -78,5 +77,15 @@ export const CHARACTERISTICS_SCHEMA: Record<string, FieldSpec[]> = {
     { key: 'current_fund_value', label: 'Current fund value (₹, ULIP only)', kind: 'number' },
     { key: 'maturity_value_estimate', label: 'Maturity value estimate (₹)', kind: 'number' },
     { key: 'start_date', label: `Start date${DATE_HINT}`, kind: 'date' },
+  ],
+  esop: [
+    { key: 'grant_type', label: 'Grant type', kind: 'enum', options: ['options', 'rsu'] },
+    { key: 'grant_date', label: `Grant date${DATE_HINT}`, kind: 'date' },
+    { key: 'total_units_granted', label: 'Total units granted', kind: 'number' },
+    { key: 'vesting_cliff_months', label: 'Vesting cliff (months)', kind: 'number' },
+    { key: 'vesting_period_months', label: 'Total vesting period (months)', kind: 'number' },
+    { key: 'strike_price', label: 'Strike price (₹ per unit, 0 for RSU)', kind: 'number' },
+    { key: 'current_fmv', label: 'Current FMV (₹ per unit, if known)', kind: 'number' },
+    { key: 'exercise_window_months', label: 'Post-termination exercise window (months)', kind: 'number' },
   ],
 };

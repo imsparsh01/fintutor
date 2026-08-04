@@ -132,11 +132,7 @@ export function HoldingEditModal({
 
         <Text style={styles.label}>Characteristics</Text>
         {fields.length === 0 ? (
-          <Text style={styles.noFieldsText}>
-            {productType === 'esop'
-              ? "ESOP's field list isn't designed yet (D-055) — nothing to edit here for now."
-              : 'No known fields for this product type.'}
-          </Text>
+          <Text style={styles.noFieldsText}>No known fields for this product type.</Text>
         ) : (
           fields.map((field) => (
             <View key={field.key}>

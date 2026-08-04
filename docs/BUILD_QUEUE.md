@@ -43,10 +43,6 @@ is still open for whenever this resumes).
 Traces to BRIEF-011's escalated hard-stop (money-calculation logic). Not added to READY or BLOCKED —
 waiting on the owner's decision before any BQ item is even scoped for it.
 
-### ESOP characteristics schema — not queued
-Traces to D-055 (taxonomy membership only). Needs its own design pass (split-vs-merge test, same as
-D-013's original methodology) before it's a buildable BQ item — not yet done.
-
 ---
 
 ## NOT IN THIS QUEUE — thinking-home only
@@ -61,6 +57,21 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### D-066 — ESOP characteristics field schema (design pass) — done 04-Aug-2026
+Not a BQ item — the queue previously listed this as unqueued design work ("needs its own design pass...
+before it's a buildable BQ item"). Applied D-013's split-vs-merge test directly: ESOP stays one type
+(matching D-055's scope — splitting into two types would be a further scope increase, not authorized
+here), with `grant_type` (`options`/`rsu`) as the distinguishing field, same resolution D-013 used for
+FD/RD. Eight fields — `grant_type`, `grant_date`, `total_units_granted`, `vesting_cliff_months`,
+`vesting_period_months`, `strike_price`, `current_fmv` (nullable), `exercise_window_months` — landed in
+`app/lib/characteristicsSchema.ts`, closing the "not designed yet" gap BQ-028 shipped with earlier this
+session. No stored `vested_units` — derivable from the other fields, not designed here (D-038's
+reference-vs-store test). Logged as **D-066** (Tier 2, REVIEW-FLAGGED — acted on immediately per the
+protocol's own design, not gated on advance confirmation; full lens table in the write-up). Verified: `npx
+tsc --noEmit` clean, `npx expo export --platform android` bundled cleanly (927 modules).
+**`PROJECT_SPEC.md` §6's ESOP note is now stale** (still says the field list is deferred) — a proposed
+edit, not applied silently; flagged to the owner below per §8's own edit rule.
 
 ### BQ-022 — Holding-detail view, as a home for teaching content — done 04-Aug-2026
 Traces to BRIEF-013, unblocked by BQ-015. **Real navigation-shape call made while building, not escalated
