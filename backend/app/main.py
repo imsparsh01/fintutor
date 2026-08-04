@@ -16,6 +16,7 @@ from app.services.holdings import (
     list_holdings,
     update_holding,
 )
+from app.services.income import create_income, list_income, update_income
 from app.services.surfacing import compute_surfacing_candidates
 
 logger = logging.getLogger("fintutor.health")
@@ -35,6 +36,20 @@ class HoldingUpdate(BaseModel):
     alias: str | None = None
     display_name: str | None = None
     characteristics: dict | None = None
+
+
+class IncomeSource(BaseModel):
+    label: str
+    amount: float
+    frequency: str = "monthly"
+
+
+class IncomeCreate(BaseModel):
+    sources: list[IncomeSource]
+
+
+class IncomeUpdate(BaseModel):
+    sources: list[IncomeSource]
 
 
 @app.get("/health")
@@ -112,6 +127,26 @@ def patch_holding(
 def remove_holding(holding_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)) -> None:
     if not delete_holding(db, user_id, holding_id):
         raise HTTPException(status_code=404, detail="Holding not found")
+
+
+@app.get("/income")
+def get_income(user_id: uuid.UUID, db: Session = Depends(get_db)) -> list[dict]:
+    return list_income(db, user_id)
+
+
+@app.post("/income", status_code=201)
+def post_income(user_id: uuid.UUID, body: IncomeCreate, db: Session = Depends(get_db)) -> dict:
+    return create_income(db, user_id, [s.model_dump() for s in body.sources])
+
+
+@app.put("/income/{income_id}")
+def put_income(
+    income_id: uuid.UUID, user_id: uuid.UUID, body: IncomeUpdate, db: Session = Depends(get_db)
+) -> dict:
+    updated = update_income(db, user_id, income_id, [s.model_dump() for s in body.sources])
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Income not found")
+    return updated
 
 
 @app.get("/health/db")

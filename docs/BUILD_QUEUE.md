@@ -14,10 +14,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-016 — Income CRUD API (GET, POST/PUT)
-**Traces to:** D-038, Income model (BQ-009). `compute_budget()` already reads Income internally, but
-nothing lets a user's income actually get written via the app yet.
-
 ### BQ-017 — Goals CRUD API (GET list, POST create)
 **Traces to:** D-038, Goal/GoalFunding models (BQ-009/BQ-012). Needed for the Goals half of the
 Budgeting/Goals tab (BRIEF-013).
@@ -126,6 +122,20 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-016 — Income CRUD API (GET, POST/PUT) — done 04-Aug-2026
+Traces to D-038, Income model (BQ-009). Added `backend/app/services/income.py` (`list_income`/
+`create_income`/`update_income`, same dict-returning convention as `holdings.py`/`budget.py`) and three
+routes in `main.py`: `GET /income`, `POST /income` (201, `IncomeCreate` Pydantic body — a list of
+`{label, amount, frequency}` sources, `frequency` defaulting to `"monthly"`), `PUT /income/{income_id}`
+(full replace of `sources`, matching PATCH-vs-PUT convention — Holdings' partial-update uses PATCH,
+this is a full-array replace so PUT, per the item's own "GET, POST/PUT" scope). A user can have more
+than one Income row, matching `compute_budget()`'s existing `db.query(Income).filter(...).all()` — this
+item doesn't change that shape, just makes it writable. No DELETE — out of the item's stated scope, not
+silently dropped. Verified: `python -m py_compile` clean, app imports and builds all routes correctly in
+a fresh venv, `/health` returns 200, `/income` correctly 500s without a configured database (no
+`DATABASE_URL` in this remote session — same limitation BQ-011/BQ-015 hit; full live-DB round-trip
+verification needs the owner's local Supabase credentials, not claimed here).
 
 ### BQ-032 — Mascot character (concept + component) — done 04-Aug-2026
 Traces to D-061, P7. Creative concept resolved owner-directly (no `DECISION_LOG` trigger fires — reversible,
