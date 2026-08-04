@@ -144,9 +144,11 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   when a moment calls for it. *(Note: D-013's original text says "8 distinct characteristic schemas" while
   enumerating 10 type names — a pre-existing inconsistency, not introduced or resolved here; left as-is
   rather than silently reconciled as a side effect of adding ESOP.)* **ESOP's characteristics field
-  schema is not yet designed** — D-055 settled taxonomy membership only; the field list (grant date,
-  vesting schedule, strike price, FMV, exercise mechanics, etc.) is deferred, same two-step pattern
-  D-011/D-013 used for the original types.
+  schema is resolved (D-066, 04-Aug-2026)** — a single type per D-055's scope, with a `grant_type`
+  (`options`/`rsu`) field distinguishing the two per D-013's split-vs-merge test, the same resolution
+  D-013 used for FD/RD. Fields: `grant_type`, `grant_date`, `total_units_granted`,
+  `vesting_cliff_months`, `vesting_period_months`, `strike_price`, `current_fmv` (nullable),
+  `exercise_window_months`. Landed in `app/lib/characteristicsSchema.ts`. See D-066.
 
 ## 7. Tech stack (DECIDED v0.2)
 - App:        React Native via Expo (cross-platform iOS+Android, JS/TS) ✅
@@ -291,6 +293,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.4 (04-Aug-2026) — **§6 note only — no scope change.** ESOP's characteristics field schema note
+  updated from "not yet designed" to resolved, reflecting D-066 (applies D-013's split-vs-merge test to
+  the field-list gap D-055 left open — single type, `grant_type` distinguishes options from RSUs). Not a
+  new product decision on top of D-055/D-066 — owner-confirmed before applying, per §8's own edit rule.
 - v3.3 (04-Aug-2026) — **§8 note only — no scope change.** Pointer added to the UX-principles §8 item
   flagging `.claude/skills/design-taste-frontend/` (D-062/D-063/D-064: Claude Code Skills adopted this
   session, self-authored and vendored categories, this one a vendored frontend design-taste skill,
