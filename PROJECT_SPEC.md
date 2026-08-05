@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v3.7, 05-Aug-2026)
+# FinTutor — Project Spec (v3.8, 05-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -298,6 +298,13 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.8 (05-Aug-2026) — **D-080: D-051's WHEN-stage surfacing verification satisfied, live.** The first
+  live Anthropic API test run executed directly from inside a Cowork/Claude Code session on this
+  project (network-access assumption corrected — this environment allows it, contrary to the standing
+  note in `scripts/run_phase1_test.py` and several `BUILD_QUEUE.md` entries). Q7 re-run n=5 against the
+  current prompt (v0.8): FINDING 8 does not reproduce, 0/5 — D-032's on-topic surfacing fix holds three
+  prompt regenerations later. Also caught and fixed a real, previously-undetected `anthropic`/`httpx`
+  dependency incompatibility (BQ-040) that would have crashed the backend's first live `/chat` call.
 - v3.7 (05-Aug-2026) — **§8 `savings_balance` item RESOLVED (D-079).** The 25-Jul-2026 open question (does
   idle cash need a formal 9th D-013 type?) is closed: it's schema-exempt, being an instance of D-031's
   already-deferred "Cash & bank" family rather than a gap inside D-013's three-MVP-family taxonomy. No new

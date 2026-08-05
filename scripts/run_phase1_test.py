@@ -2,10 +2,12 @@
 """
 Phase 1 test runner — calls the Anthropic API directly.
 
-Run this on YOUR machine (Terminal), not inside Cowork. Cowork's sandbox blocks any
-outbound request to api.anthropic.com that carries an API-key header, on purpose — so
-this script has to run somewhere without that restriction. Your own Terminal has no
-such block.
+Run this wherever ANTHROPIC_API_KEY is available and outbound HTTPS to api.anthropic.com
+is permitted. Network policy is configured per Claude Code/Cowork environment, not fixed
+across all of them — some block outbound calls carrying an API-key header, some (verified
+directly, D-080, 05-Aug-2026) allow-list api.anthropic.com and permit this script to run
+from inside the session itself. Check your own environment rather than assume either way;
+your own Terminal has no such restriction either way.
 
 No third-party dependencies — uses only the Python standard library, so any Python 3
 on your Mac can run it as-is.

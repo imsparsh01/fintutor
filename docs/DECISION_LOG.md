@@ -1743,3 +1743,14 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   new build work, no fixture change. Full write-up:
   `docs/decisions/D-079-savings-balance-not-a-9th-type.md`.
 - **Date:** 05-Aug-2026
+
+### D-080 — D-051's WHEN-stage verification satisfied (Phase-1 Run 7); network-access assumption and a live dependency bug corrected
+- **Tier:** 1. Ran Q7 (n=5, live) against the current prompt (v0.8) and `FIXTURE_user_01.json` —
+  FINDING 8 does not reproduce, 0/5, satisfying D-051's precondition for treating `known_gaps` surfacing as
+  verified rather than provisional. Also corrects two standing facts: this specific remote environment CAN
+  make live, authenticated Anthropic API calls (contrary to the assumption baked into
+  `scripts/run_phase1_test.py` and several prior `BUILD_QUEUE.md` entries — verified directly, not assumed),
+  and a real, previously-undetected `anthropic`/`httpx` version incompatibility in
+  `backend/requirements.txt` would have crashed the backend's first live `/chat` call — fixed by pinning
+  `httpx<0.28`. Full write-up: `docs/decisions/D-080-when-stage-surfacing-verified.md`.
+- **Date:** 05-Aug-2026

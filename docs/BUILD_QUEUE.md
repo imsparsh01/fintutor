@@ -33,13 +33,27 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 - FINDING 7 provenance — RESOLVED (D-029); execution was BQ-005 (see DONE).
 - `savings_balance` 9th-taxonomy-type question — RESOLVED (D-079): schema-exempt, an instance of D-031's
   deferred Cash & bank family, nothing to build.
+- AI-surfacing WHEN-stage verification — RESOLVED (D-080, Phase-1 Run 7): FINDING 8 does not reproduce
+  0/5 against v0.8, live. `known_gaps` surfacing (already wired into every `/chat` call) can be treated as
+  verified, not provisional.
 - Conversation memory (PARKED — D-022). Subagents (PARKED — D-014). Legal review of D-009. Data privacy
-  policy (D-010, unwritten). AI-surfacing WHEN-stage verification (D-051, needs a live-API Phase-1 test run
-  the owner must execute locally).
+  policy (D-010, unwritten).
 
 ---
 
 ## DONE
+
+### BQ-040 — Fix live-breaking `anthropic`/`httpx` version incompatibility — done 05-Aug-2026
+Traces to D-080, caught while running Phase-1 Run 7 live (the first session able to make real Anthropic API
+calls from inside Cowork itself — see D-080). `backend/requirements.txt` pinned `anthropic==0.39.0`, whose
+base HTTP client passes a `proxies` kwarg that `httpx>=0.28.0` removed; instantiating `anthropic.Anthropic`
+crashed immediately (`TypeError: Client.__init__() got an unexpected keyword argument 'proxies'`). Never
+caught before because `deepen_classifier`, `holding_capture_classifier`, and `teaching.py` were all only
+ever unit-tested against a mocked client — this means **the backend as pinned would have crashed on its
+first real `/chat`, `deepen`, or holding-capture call**, not a hypothetical. Fixed by adding `httpx<0.28` to
+`requirements.txt` alongside the existing `anthropic` pin — a dependency-version fix, not a new library.
+Verified: reproduced the crash in a fresh venv install before the fix, confirmed a real live Sonnet/Haiku
+call succeeds after pinning `httpx==0.27.2`; `python -m py_compile` and route registration still clean.
 
 ### BQ-039 — AI-surfaced holding capture: narrow Haiku extraction + confirm-card UI — done 05-Aug-2026
 Traces to D-078 (both forks confirmed live, session 2026-08-05a's follow-on discussion). This is D-012's

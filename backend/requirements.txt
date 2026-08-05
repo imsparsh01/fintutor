@@ -6,3 +6,8 @@ psycopg2-binary==2.9.9
 pydantic-settings==2.5.2
 python-dotenv==1.0.1
 anthropic==0.39.0
+# Pinned below anthropic==0.39.0's compatibility ceiling: its base client still passes a
+# `proxies` kwarg httpx removed in 0.28.0, which crashes on the first real API call. Never
+# caught before because every prior verification mocked the Anthropic client, never actually
+# instantiated it. Confirmed live 05-Aug-2026 (D-051 test round): httpx==0.27.2 is the fix.
+httpx<0.28
