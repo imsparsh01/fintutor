@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v2.1, 01-Aug-2026)
+# FinTutor — Project Spec (v3.5, 05-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -197,14 +197,18 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       unbuilt, so a chat-dependent correction path would leave holdings functionally frozen in MVP. Owner
       knowingly accepted the resulting tension with §2's "living baseline... not a CRUD save" framing —
       capture (D-012) and post-capture management are treated as different concerns. See D-059.
-- [ ] **Corrected UX principles section in PRODUCT_PRINCIPLES.md (D-031).** The implied UX stance
-      (persistent sections, AI-primary/manual-secondary, aliases never shown, no quizzes, progressive
-      capture) is to be extracted and written as a UX section — but only AFTER Decisions 2 and 3 exist,
-      because it extracts from them. Aesthetic layer (visual style, density, motion, hierarchy) deliberately
-      left for when real screen decisions force it. **Note (added 04-Aug-2026):** when this aesthetic layer
-      is actually designed, `.claude/skills/design-taste-frontend/` (D-063/D-064) is available as
-      design-philosophy inspiration for `app/`'s real UI work — explicit-ask only, not auto-triggered; see
-      its `PROVENANCE.md` for the applicability caveat and invocation policy before using it.
+- [x] **Corrected UX principles section in PRODUCT_PRINCIPLES.md (D-031) — RESOLVED (D-075/D-076/D-077,
+      05-Aug-2026).** The implied UX stance (persistent sections, AI-primary/manual-secondary, aliases
+      never shown, no quizzes, progressive capture) has been extracted, live and owner-confirmed one item
+      at a time (session 2026-08-05a): aliases never shown was already P6; AI-primary/manual-secondary and
+      progressive capture are P1's territory, patched (D-075); persistent, always-accessible sections is
+      new principle P8 (D-076); no comprehension gates/no lesson-tree is new principle P9 (D-077). All five
+      characteristics are now covered. Aesthetic layer (visual style, density, motion, hierarchy)
+      deliberately still left for when real screen decisions force it. **Note (added 04-Aug-2026):** when
+      this aesthetic layer is actually designed, `.claude/skills/design-taste-frontend/` (D-063/D-064) is
+      available as design-philosophy inspiration for `app/`'s real UI work — explicit-ask only, not
+      auto-triggered; see its `PROVENANCE.md` for the applicability caveat and invocation policy before
+      using it.
 - [ ] Write the data privacy policy (D-010): what's masked before reaching the LLM (product names, and
       likely PII like full name/PAN/phone), vs. what's encrypted/protected at rest in Postgres. Needs a
       decision on retention and account-deletion behavior too.
@@ -293,6 +297,15 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.5 (05-Aug-2026) — **§8 UX-principles item RESOLVED (D-075, D-076, D-077).** The corrected UX
+  principles section D-031 anticipated is now fully extracted in `PRODUCT_PRINCIPLES.md`: P1's provenance
+  note patched to reflect D-031's manual/browse secondary path (D-075); new P8, a holding family's section
+  is always reachable, never gated behind having data in it (D-076); new P9, no comprehension gates —
+  teaching content is never locked behind a quiz or prior lesson, with an explicit boundary against P7's
+  gamification toolkit being read as licensing a gate (D-077). Done live, one item at a time, owner-
+  confirmed before each write, per session 2026-08-05a. Not a new product decision — this closes an
+  already-decided backlog item; §8 checkbox applied on owner confirmation per this section's own edit
+  rule.
 - v3.4 (04-Aug-2026) — **§6 note only — no scope change.** ESOP's characteristics field schema note
   updated from "not yet designed" to resolved, reflecting D-066 (applies D-013's split-vs-merge test to
   the field-list gap D-055 left open — single type, `grant_type` distinguishes options from RSUs). Not a
