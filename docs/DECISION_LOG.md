@@ -1717,3 +1717,12 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   discussion; item 3 (no comprehension gates) remains open. Full write-up:
   `docs/decisions/D-076-p8-persistent-sections.md`.
 - **Date:** 05-Aug-2026
+
+### D-077 — P9 added: no comprehension gates — teaching content is never locked behind a quiz or a prior lesson
+- **Tier:** 1. Extracts a checkable principle from `PROJECT_SPEC.md` §2/§4's "learn on the go, no
+  curriculum" language. Names its relationship to P7 explicitly (P7 reacts to app usage only, never gates
+  content access) so a future gamified feature can't be waved through as engagement design. No
+  light-touch-check exception carved — owner confirmed the framing as-is. Item 3 of 3, closing the live
+  UX-principles-section discussion opened in session 2026-08-05a (D-075, D-076). Full write-up:
+  `docs/decisions/D-077-p9-no-comprehension-gates.md`.
+- **Date:** 05-Aug-2026

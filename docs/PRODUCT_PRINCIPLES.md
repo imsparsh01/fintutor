@@ -1,4 +1,4 @@
-# FinTutor — Product Principles (v1.4, 05-Aug-2026)
+# FinTutor — Product Principles (v1.5, 05-Aug-2026)
 
 > **What this is.** The substantive product point of view that non-technical decisions are checked
 > against. DECISION_PROTOCOL.md governs *how* a decision is made and *who* owns it; this file supplies
@@ -115,6 +115,31 @@ hidden, collapsed out of navigation, or otherwise made unreachable until data ex
   empty sections are shown, not hidden. This commits only to reachability; it does not pre-design what the
   empty state shows.
 
+### P9 — No comprehension gates: teaching content is never locked behind a quiz or a prior lesson.
+**Test:** Can the user reach any relevant teaching content the moment it's surfaced, or does something
+stand between them and it — a comprehension check, a passed quiz, a completed prior lesson, a "you must
+finish X to unlock Y" sequence? If something stands between them, that fails, regardless of how the gate
+is dressed up (a game mechanic, a "level," a locked card).
+
+- **Scope:** app-wide, everywhere a teaching moment or piece of content could be sequenced or gated.
+- **Traced to:** `PROJECT_SPEC.md` §2 ("Learn on the go. No curriculum/lesson tree. Teaching is triggered
+  by the user's real actions and data.") and §4 item 6 (teaching moments are AI-surfaced by real actions,
+  not button-tapped through a structured sequence) — founding-spec language never before promoted to a
+  checkable Product-lens test.
+- **What it forbids:** quizzes or comprehension checks gating access to content; a lesson-tree/curriculum
+  structure where later content unlocks only after earlier content is "completed"; any gamification
+  element (see P7) that conditions access to real teaching content on passing a check, rather than merely
+  reacting to app usage.
+- **Relationship to P7:** P7 permits the full behavioral-engagement toolkit (streaks, variable reward, the
+  Hook Loop) but only reacting to *app usage* — opening the app, completing a moment, a session count. P9
+  draws the adjacent line explicitly so P7's "full toolkit" permission is never read as licensing a
+  gate: a mechanic like "answer 3/3 correctly to unlock the next teaching moment" is a comprehension gate
+  on *content*, not an engagement reaction to *usage*, and P9 forbids it even though it could be dressed up
+  as a game mechanic P7 would otherwise appear to bless.
+- **Resolved scope note (item 3 of the 2026-08-05 UX-principles discussion):** no exception carved for a
+  "light-touch" check (e.g. confirming the user read a number before moving on) — the framing was
+  confirmed as-is, no such case is permitted.
+
 ---
 
 ## Deliberately unprincipled (for now)
@@ -125,12 +150,11 @@ dedicated founding UX/gamification-framework session — working through a 25-pr
 cluster by cluster, with real tension surfaced and real tradeoffs stated, rather than extracted from a
 prior decision's implied stance.
 
-**The broader UX/interaction-model principles D-031 anticipated are being extracted live (session
-2026-08-05a onward), one item at a time, owner-confirmed before writing.** Of the five characteristics
-named: aliases never shown is already P6; AI-primary/manual-secondary population and progressive capture
-are P1's territory (patched, D-075); persistent, always-accessible sections is now **P8** (D-076); no
-comprehension gates / no lesson-tree remains open (item 3 of the same live discussion, traces to
-`PROJECT_SPEC.md` §2/§4's "learn on the go" language).
+**The broader UX/interaction-model principles D-031 anticipated have now been fully extracted (session
+2026-08-05a, D-075/D-076/D-077).** Of the five characteristics named: aliases never shown is already P6;
+AI-primary/manual-secondary population and progressive capture are P1's territory (patched, D-075);
+persistent, always-accessible sections is **P8** (D-076); no comprehension gates / no lesson-tree is **P9**
+(D-077). All five are now covered — this backlog item is closed.
 
 The **aesthetic layer** (visual style, density, motion, colour, information hierarchy) remains genuinely
 unprincipled and will stay so until real screen decisions force it — inventing it now would violate the
@@ -139,6 +163,13 @@ extraction discipline this file is built on.
 ---
 
 ## Change log
+- v1.5 (05-Aug-2026) — **P9 added: no comprehension gates — teaching content is never locked behind a quiz
+  or a prior lesson** (D-077). Item 3 of 3, closing the live UX-principles-section discussion opened in
+  session 2026-08-05a. Traces to `PROJECT_SPEC.md` §2/§4's "learn on the go, no curriculum" language.
+  Explicitly names its relationship to P7: P7's engagement toolkit reacts to app usage only, never
+  gates access to content — P9 forbids dressing a comprehension gate up as a game mechanic. No
+  light-touch-check exception carved; owner confirmed the framing as-is. This closes the D-031-anticipated
+  UX-principles backlog item entirely — see the "Deliberately unprincipled" section below for the summary.
 - v1.4 (05-Aug-2026) — **P8 added: a holding family's section is always reachable, never gated behind
   having data in it** (D-076). Item 2 of the live UX-principles-section discussion opened in session
   2026-08-05a. Traces to D-031 (persistent, user-facing category sections). Resolves the flagged tension
