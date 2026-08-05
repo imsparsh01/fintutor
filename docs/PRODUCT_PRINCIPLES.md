@@ -1,4 +1,4 @@
-# FinTutor — Product Principles (v1.3, 05-Aug-2026)
+# FinTutor — Product Principles (v1.4, 05-Aug-2026)
 
 > **What this is.** The substantive product point of view that non-technical decisions are checked
 > against. DECISION_PROTOCOL.md governs *how* a decision is made and *who* owns it; this file supplies
@@ -98,6 +98,23 @@ wrapped in game fiction.
   decision via a game-shaped nudge and needs its own P2 (teach-never-advise) check when it's actually
   designed.
 
+### P8 — A holding family's section is always reachable — never gated behind having data in it.
+**Test:** For any holding family in the D-013 taxonomy, is its section reachable through the app's
+persistent navigation regardless of whether the user currently holds anything in it? If a section would be
+hidden, collapsed out of navigation, or otherwise made unreachable until data exists in it, that fails.
+
+- **Scope:** app-wide information architecture — which sections exist in persistent navigation and when.
+  Does NOT govern what an empty section's screen looks like or says — that is empty-state *design*, left
+  open until a real screen decision forces it (same extraction discipline as the aesthetic layer below).
+- **Traced to:** D-031 (the app is structured as persistent, user-facing category sections — Investments/
+  Loans/Insurance — not a menu-less, AI-surfacing-only surface).
+- **What it forbids:** hiding an empty family's tab/section from navigation; treating zero holdings as a
+  reason to suppress a section entirely; making a section's reachability conditional on having data in it.
+- **Resolved tension (item 2 of the 2026-08-05 UX-principles discussion):** "persistent" was checked
+  against whether it should apply differently to an empty section vs. a populated one. Resolved: no —
+  empty sections are shown, not hidden. This commits only to reachability; it does not pre-design what the
+  empty state shows.
+
 ---
 
 ## Deliberately unprincipled (for now)
@@ -108,13 +125,12 @@ dedicated founding UX/gamification-framework session — working through a 25-pr
 cluster by cluster, with real tension surfaced and real tradeoffs stated, rather than extracted from a
 prior decision's implied stance.
 
-**The broader UX/interaction-model principles D-031 anticipated remain unwritten — but no longer blocked.**
-As of D-031, the app's structure (persistent category sections, AI-primary/manual-secondary population,
-aliases never shown, no comprehension gates, progressive capture) implies a real UX stance that CAN be
-extracted. It was gated on Decision 3 (budgeting/goals data model) and Decision 2 (per-item management
-depth) both existing — both are now resolved (D-038, D-059) — so this is genuinely available to write
-whenever it's picked up as its own task, not invented ahead of its dependencies just because the gate
-happens to be open now.
+**The broader UX/interaction-model principles D-031 anticipated are being extracted live (session
+2026-08-05a onward), one item at a time, owner-confirmed before writing.** Of the five characteristics
+named: aliases never shown is already P6; AI-primary/manual-secondary population and progressive capture
+are P1's territory (patched, D-075); persistent, always-accessible sections is now **P8** (D-076); no
+comprehension gates / no lesson-tree remains open (item 3 of the same live discussion, traces to
+`PROJECT_SPEC.md` §2/§4's "learn on the go" language).
 
 The **aesthetic layer** (visual style, density, motion, colour, information hierarchy) remains genuinely
 unprincipled and will stay so until real screen decisions force it — inventing it now would violate the
@@ -123,6 +139,13 @@ extraction discipline this file is built on.
 ---
 
 ## Change log
+- v1.4 (05-Aug-2026) — **P8 added: a holding family's section is always reachable, never gated behind
+  having data in it** (D-076). Item 2 of the live UX-principles-section discussion opened in session
+  2026-08-05a. Traces to D-031 (persistent, user-facing category sections). Resolves the flagged tension
+  from the prior checkpoint: empty sections are shown, not hidden — the principle governs reachability
+  only, not empty-state screen design, which stays open per this file's extraction discipline. Item 3 (no
+  comprehension gates) remains open. "Deliberately unprincipled" section updated to reflect P8 and the
+  live-extraction status of the other D-031 characteristics.
 - v1.3 (05-Aug-2026) — **P1's "Traced to" note patched (D-075), no change to P1's test or scope.** Records
   that D-031 narrowed D-012 by permitting a manual/browse entry point into the same sections as a
   secondary path — P1 still governs which path is *primary*, not whether a fallback may exist. Item 1 of

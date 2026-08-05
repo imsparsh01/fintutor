@@ -1709,3 +1709,11 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   2026-08-05a); owner confirmed the exact wording. Items 2 (persistent sections) and 3 (no comprehension
   gates) remain open. Full write-up: `docs/decisions/D-075-p1-traced-to-patch.md`.
 - **Date:** 05-Aug-2026
+
+### D-076 — P8 added: a holding family's section is always reachable, never gated behind having data in it
+- **Tier:** 1. Extracts a checkable principle from D-031's persistent-sections decision. Empty sections are
+  shown, not hidden — resolving the flagged tension from session 2026-08-05a's checkpoint. Scoped to
+  reachability only, not empty-state screen design. Item 2 of 3 in the live UX-principles-section
+  discussion; item 3 (no comprehension gates) remains open. Full write-up:
+  `docs/decisions/D-076-p8-persistent-sections.md`.
+- **Date:** 05-Aug-2026
