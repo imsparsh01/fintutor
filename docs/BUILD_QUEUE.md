@@ -43,6 +43,29 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-041 — Live-verify the teaching engine and both Haiku classifiers against the real Anthropic API — done 05-Aug-2026
+Traces to D-080 (live API access confirmed working in this environment) + BQ-040 (the httpx fix that made
+a real call possible at all). Closes the "not verified end-to-end against a live Anthropic API" disclaimer
+carried by BQ-023 (`ask_teaching_engine`), BQ-004 (`classify_deepen`), and BQ-039 (`classify_holding_
+capture`) — every one of those was previously only unit-tested against a mocked client. No code changed;
+this is a verification pass, not a build item, logged here because it closes a standing disclaimer rather
+than because anything was built.
+
+Ran all three real functions directly (bypassing the DB layer, which still has no `DATABASE_URL` in this
+environment — that half of the standing disclaimer remains open):
+- `ask_teaching_engine`, live, against `FIXTURE_user_01.json` + "How does term insurance actually work?" —
+  clean Q2-shaped response (opens on the situation, teaches the mechanism, no advice drift, 258 words).
+- `classify_deepen`, live, against a specific vs. a general question — correctly resolved to `Loan-1` on
+  the specific one, correctly returned `None` on the general one.
+- `classify_holding_capture`, live, across four cases: a genuinely new personal loan (correctly extracted
+  `product_type`/`characteristics`), a general question (correctly `None`), a question referencing an
+  already-tracked holding (correctly `None`, not proposed as new), and a second holding of an
+  already-held `product_type` (correctly still proposed — D-078's explicit no-dedup scoping confirmed to
+  behave as documented, not just as written).
+
+No bugs found beyond the one BQ-040 already fixed. Real device/simulator testing and a live
+Postgres/`DATABASE_URL` round-trip remain the one standing gap this pass does not close.
+
 ### BQ-040 — Fix live-breaking `anthropic`/`httpx` version incompatibility — done 05-Aug-2026
 Traces to D-080, caught while running Phase-1 Run 7 live (the first session able to make real Anthropic API
 calls from inside Cowork itself — see D-080). `backend/requirements.txt` pinned `anthropic==0.39.0`, whose
