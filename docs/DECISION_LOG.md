@@ -1726,3 +1726,12 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   UX-principles-section discussion opened in session 2026-08-05a (D-075, D-076). Full write-up:
   `docs/decisions/D-077-p9-no-comprehension-gates.md`.
 - **Date:** 05-Aug-2026
+
+### D-078 — AI-surfaced holding-capture mechanism confirmed: narrow Haiku reconciliation call + explicit confirm UI
+- **Tier:** 3, owner-confirmed. Builds D-002's never-implemented "Haiku for reconciliation" half and
+  D-012's still-missing primary capture path. Fork 1 (extraction): a second narrow Haiku call, same shape
+  as D-072's `deepen_classifier` — not a new architectural pattern. Fork 2 (write gate): proposals never
+  auto-write; an explicit confirm card in the chat UI, Save routes through the existing D-074/BQ-036
+  create-holding path. Both forks Path A, both owner-confirmed. Full write-up:
+  `docs/decisions/D-078-holding-capture-mechanism.md`.
+- **Date:** 05-Aug-2026

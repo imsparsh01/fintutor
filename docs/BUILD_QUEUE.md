@@ -16,7 +16,15 @@ Rules for this file:
 
 ## READY — pick one of these
 
-(nothing queued right now)
+### BQ-039 — AI-surfaced holding capture: narrow Haiku extraction + confirm-card UI
+Traces to D-078 (both forks confirmed). Backend: `backend/app/services/holding_capture_classifier.py`
+(`classify_holding_capture`), same narrow-Haiku-call shape as `deepen_classifier.py` — reads the user's
+`/chat` message + their existing holdings (alias + product_type only), returns `{product_type,
+characteristics}` or `None`. `POST /chat`'s response gains an optional `holding_proposal` field. Frontend:
+a new confirm-card component wired into `ChatThread`, shown when `holding_proposal` is present, Save
+routes through the existing `createHolding` (D-074/BQ-036, alias auto-generated), Not-now just dismisses —
+nothing is written until Save is tapped (D-078 Fork 2). No dedup check against existing same-type
+holdings, no in-card field editing — both explicitly scoped out in D-078, not silently dropped.
 
 ---
 
@@ -29,11 +37,11 @@ Rules for this file:
 ## NOT IN THIS QUEUE — thinking-home only
 
 These are open items that are **not build tasks** (Claude Code should not mistake them for work):
-- Decision 3 — budgeting/goals data model (foundational; thinking-home, before build).
-- Decision 2 — per-item management depth (thinking-home, designed after Decision 3).
-- UX principles section in PRODUCT_PRINCIPLES.md (thinking-home, after Decisions 2 & 3).
+- Decision 3, Decision 2, and the UX principles section — all RESOLVED (D-038, D-059, D-075/D-076/D-077).
 - FINDING 7 provenance — RESOLVED (D-029); execution was BQ-005 (see DONE).
-- Conversation memory (PARKED — D-022). Subagents (PARKED — D-014). Legal review of D-009.
+- Conversation memory (PARKED — D-022). Subagents (PARKED — D-014). Legal review of D-009. Data privacy
+  policy (D-010, unwritten). AI-surfacing WHEN-stage verification (D-051, needs a live-API Phase-1 test run
+  the owner must execute locally). `savings_balance` 9th-taxonomy-type question (open since 25-Jul-2026).
 
 ---
 

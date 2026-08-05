@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v3.5, 05-Aug-2026)
+# FinTutor — Project Spec (v3.6, 05-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -234,25 +234,25 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       — no case falls back to model discretion. Stubbed by hand in fixtures for now. Supersedes D-015's
       selection clause only.
 - [x] Fix FINDING 5 — no-self-narration line added to §1 (D-028).
-- [ ] **Design the backend `deepen` selection logic (deferred by D-028, re-scoped 03-Aug-2026 by
-      D-049/BRIEF-006).** The hard question is relocated, not answered: the backend needs a rule for
-      which holding to deepen, without the model's contextual read of the question. Deliberately not
-      picked up now — no real conversation interface exists yet to design the rule against, and
-      nothing currently needs it (Phase 1 uses D-028's fixture stub). Blocked on `app/` gaining a real
-      question-intake flow, not just on this rule being decided.
+- [x] **Design the backend `deepen` selection logic — RESOLVED (D-071, D-072, both built 04-Aug-2026).**
+      D-071/BQ-034 wired the deterministic UI-signal case ("Ask about this" on a holding). D-072/BQ-004
+      shipped the general Chat-tab case: a narrow, non-teaching Haiku call (`deepen_classifier.py`) reads
+      the question + holdings and returns a confident alias or nothing, degrading cleanly to D-028's
+      existing "deepen nothing" default on any ambiguity. Every `/chat` entry point now has a decided
+      mechanism.
 - [x] **FINDING 7 RESOLVED (D-029).** Path C adopted: any figure not traceable to the profile is given as a
       range, never a point estimate, with a standing "typical, not yours" frame built into how ranges are
       introduced. Guarded against range-washing by binding to §2 rule 4's legibility standard. See
       TEACHING_SYSTEM_PROMPT.md §2 rule 5 / §5, and SYSTEM_PROMPT_v0_5_runnable.md (build-home regeneration
       pending — BQ-005).
-- [ ] **Second fixture, no dominant number** — highest-value untested thing remaining. Card-1 at 42% is the
-      loudest number in user_01 and FINDING 4 may be partly an artifact of it. Run Q1 against both fixtures.
-      **Small open sub-question, surfaced by Claude Code while scoping BQ-002 (25-Jul-2026, not yet
-      answered):** `FIXTURE_user_01.json` uses a `savings_balance` product type (Deposit-1: idle cash,
-      `current_balance` + `interest_rate` only) that is NOT one of D-013's 8 taxonomy types. Is idle cash
-      schema-exempt by design, or does it need a formal 9th D-013 type? Low-stakes but should be answered
-      before BQ-002 executes, so Claude Code isn't left guessing whether to reuse it as precedent or escalate
-      it as a scope trigger.
+- [x] **Second fixture, no dominant number — RESOLVED (BQ-002 built the fixture, BQ-003 ran Q1 against
+      both, see PHASE1_RUN4_RESULTS.md).** FINDING 4 does not reproduce in either fixture, including the
+      harder ambiguous-magnitude case user_02 was built to test.
+- [ ] **Still open, split out of the item above: is `savings_balance` (idle cash) schema-exempt by design,
+      or does it need a formal 9th D-013 type?** Surfaced 25-Jul-2026 while scoping BQ-002, never answered.
+      D-044 explicitly declined to resolve it as a side effect of building the Holdings model. Low-stakes
+      but genuinely undecided — `FIXTURE_user_01.json` still uses a product type that isn't in the official
+      taxonomy.
 - [x] **Q7 (memory claim) and Q8 (irrelevant-holding discipline) — RUN (BQ-001, 01-Aug-2026), see
       PHASE1_RUN3_RESULTS.md.** Q8 clean pass. Q7 passed its own checklist but produced FINDING 8
       (unprompted gap-surfacing with ranking language on a purely off-topic question) — **RESOLVED, D-032.**
@@ -297,6 +297,14 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.6 (05-Aug-2026) — **D-078: AI-surfaced holding-capture mechanism confirmed, queued as BQ-039.** Owner
+  confirmed both forks: extraction via a second narrow Haiku call (same shape as D-072's `deepen_classifier`,
+  not a new architectural pattern) and an explicit confirm-card UI gate before any write (never auto-create
+  from free text). Builds D-002's never-implemented "Haiku for reconciliation" half and D-012's still-missing
+  primary capture path. Also two §8 housekeeping fixes (no new decisions): the `deepen` selection-logic item
+  checked off as resolved (D-071/D-072, already built 04-Aug-2026 but never marked here), and the
+  second-fixture item checked off with its `savings_balance` sub-question split out as its own still-open
+  line (unchanged status, just no longer buried inside a resolved item).
 - v3.5 (05-Aug-2026) — **§8 UX-principles item RESOLVED (D-075, D-076, D-077).** The corrected UX
   principles section D-031 anticipated is now fully extracted in `PRODUCT_PRINCIPLES.md`: P1's provenance
   note patched to reflect D-031's manual/browse secondary path (D-075); new P8, a holding family's section
