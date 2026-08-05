@@ -1701,3 +1701,11 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   extended (null `holding` = create mode), not duplicated. AI-surfaced creation remains separate, untouched
   work. Full write-up: `docs/decisions/D-074-manual-add-holding-confirmed.md`.
 - **Date:** 04-Aug-2026
+
+### D-075 — P1's "Traced to" note patched to reflect D-031's narrowing of D-012
+- **Tier:** 1. P1's test/scope unchanged; its provenance note in `PRODUCT_PRINCIPLES.md` now records that
+  D-031 permits a manual/browse secondary path into the same sections — P1 governs which path is primary,
+  not whether a fallback may exist. Item 1 of 3 in the live UX-principles-section discussion (session
+  2026-08-05a); owner confirmed the exact wording. Items 2 (persistent sections) and 3 (no comprehension
+  gates) remain open. Full write-up: `docs/decisions/D-075-p1-traced-to-patch.md`.
+- **Date:** 05-Aug-2026

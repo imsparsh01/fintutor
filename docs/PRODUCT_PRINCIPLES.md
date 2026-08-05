@@ -1,4 +1,4 @@
-# FinTutor — Product Principles (v1.2, 04-Aug-2026)
+# FinTutor — Product Principles (v1.3, 05-Aug-2026)
 
 > **What this is.** The substantive product point of view that non-technical decisions are checked
 > against. DECISION_PROTOCOL.md governs *how* a decision is made and *who* owns it; this file supplies
@@ -29,7 +29,9 @@ asked to fill must justify why it could not be inferred, surfaced, or deferred.
 
 - **Scope:** app-wide. Onboarding, capture, portfolio, every input surface.
 - **Traced to:** D-012 (AI-surfaced, not menu-driven; "minimize explicit user input everywhere"). The
-  most-repeated commitment in the project and the source of the whole surfacing architecture.
+  most-repeated commitment in the project and the source of the whole surfacing architecture. Narrowed by
+  D-031: a manual/browse entry point into the same sections is permitted as the secondary path — this
+  principle governs which path is primary, not whether a fallback may exist.
 - **What it forbids:** "Add X" button menus the user has to seek out; forms that demand a full schema up
   front; asking for anything the profile or context already implies.
 
@@ -121,6 +123,11 @@ extraction discipline this file is built on.
 ---
 
 ## Change log
+- v1.3 (05-Aug-2026) — **P1's "Traced to" note patched (D-075), no change to P1's test or scope.** Records
+  that D-031 narrowed D-012 by permitting a manual/browse entry point into the same sections as a
+  secondary path — P1 still governs which path is *primary*, not whether a fallback may exist. Item 1 of
+  the live UX-principles-section discussion opened in session 2026-08-05a; items 2 (persistent,
+  always-accessible sections) and 3 (no comprehension gates) remain open.
 - v1.2 (04-Aug-2026) — **P7 added: engagement design may use the full behavioral toolkit, but only on
   behavior, never on real financial data.** First principle decided through live deliberation rather than
   extracted from a prior decision — from a dedicated founding UX/gamification-framework session working a
