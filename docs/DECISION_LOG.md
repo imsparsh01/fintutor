@@ -1735,3 +1735,11 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   create-holding path. Both forks Path A, both owner-confirmed. Full write-up:
   `docs/decisions/D-078-holding-capture-mechanism.md`.
 - **Date:** 05-Aug-2026
+
+### D-079 — `savings_balance` is not a missing 9th D-013 type — it's an instance of the already-deferred Cash & bank family
+- **Tier:** 2, owner-confirmed. Interprets D-031 (REVIEW-FLAGGED per D-020). The open 25-Jul-2026 question
+  is resolved: a savings-account balance is an instance of D-031's "Cash & bank" family, already DECIDED
+  DIRECTION deferred to post-Phase-1 — not a gap inside D-013's three-MVP-family taxonomy. No new type, no
+  new build work, no fixture change. Full write-up:
+  `docs/decisions/D-079-savings-balance-not-a-9th-type.md`.
+- **Date:** 05-Aug-2026

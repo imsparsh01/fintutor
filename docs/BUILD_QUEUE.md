@@ -31,9 +31,11 @@ Rules for this file:
 These are open items that are **not build tasks** (Claude Code should not mistake them for work):
 - Decision 3, Decision 2, and the UX principles section — all RESOLVED (D-038, D-059, D-075/D-076/D-077).
 - FINDING 7 provenance — RESOLVED (D-029); execution was BQ-005 (see DONE).
+- `savings_balance` 9th-taxonomy-type question — RESOLVED (D-079): schema-exempt, an instance of D-031's
+  deferred Cash & bank family, nothing to build.
 - Conversation memory (PARKED — D-022). Subagents (PARKED — D-014). Legal review of D-009. Data privacy
   policy (D-010, unwritten). AI-surfacing WHEN-stage verification (D-051, needs a live-API Phase-1 test run
-  the owner must execute locally). `savings_balance` 9th-taxonomy-type question (open since 25-Jul-2026).
+  the owner must execute locally).
 
 ---
 

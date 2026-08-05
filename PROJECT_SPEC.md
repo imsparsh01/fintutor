@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v3.6, 05-Aug-2026)
+# FinTutor — Project Spec (v3.7, 05-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -248,11 +248,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - [x] **Second fixture, no dominant number — RESOLVED (BQ-002 built the fixture, BQ-003 ran Q1 against
       both, see PHASE1_RUN4_RESULTS.md).** FINDING 4 does not reproduce in either fixture, including the
       harder ambiguous-magnitude case user_02 was built to test.
-- [ ] **Still open, split out of the item above: is `savings_balance` (idle cash) schema-exempt by design,
-      or does it need a formal 9th D-013 type?** Surfaced 25-Jul-2026 while scoping BQ-002, never answered.
-      D-044 explicitly declined to resolve it as a side effect of building the Holdings model. Low-stakes
-      but genuinely undecided — `FIXTURE_user_01.json` still uses a product type that isn't in the official
-      taxonomy.
+- [x] **`savings_balance` question RESOLVED (D-079, 05-Aug-2026) — schema-exempt, not a 9th type.** A
+      savings-account balance is an instance of D-031's "Cash & bank" family, already DECIDED DIRECTION
+      deferred to post-Phase-1 — not a gap inside D-013's three-MVP-family taxonomy.
+      `FIXTURE_user_01.json`'s use of it is a Phase-1 prompt-testing artifact only; no fixture or schema
+      change needed. Revisit D-013's split-vs-merge test on it properly when Cash & bank's post-Phase-1
+      build is actually picked up.
 - [x] **Q7 (memory claim) and Q8 (irrelevant-holding discipline) — RUN (BQ-001, 01-Aug-2026), see
       PHASE1_RUN3_RESULTS.md.** Q8 clean pass. Q7 passed its own checklist but produced FINDING 8
       (unprompted gap-surfacing with ranking language on a purely off-topic question) — **RESOLVED, D-032.**
@@ -297,6 +298,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - (v0.1) Sonnet for user-facing teaching, Haiku for the narrow reconciliation-diff step (cost + fit).
 
 ## 10. Change log
+- v3.7 (05-Aug-2026) — **§8 `savings_balance` item RESOLVED (D-079).** The 25-Jul-2026 open question (does
+  idle cash need a formal 9th D-013 type?) is closed: it's schema-exempt, being an instance of D-031's
+  already-deferred "Cash & bank" family rather than a gap inside D-013's three-MVP-family taxonomy. No new
+  type, no build work, no fixture change — owner-confirmed.
 - v3.6 (05-Aug-2026) — **D-078: AI-surfaced holding-capture mechanism confirmed, queued as BQ-039.** Owner
   confirmed both forks: extraction via a second narrow Haiku call (same shape as D-072's `deepen_classifier`,
   not a new architectural pattern) and an explicit confirm-card UI gate before any write (never auto-create
