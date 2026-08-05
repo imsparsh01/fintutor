@@ -16,15 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-039 — AI-surfaced holding capture: narrow Haiku extraction + confirm-card UI
-Traces to D-078 (both forks confirmed). Backend: `backend/app/services/holding_capture_classifier.py`
-(`classify_holding_capture`), same narrow-Haiku-call shape as `deepen_classifier.py` — reads the user's
-`/chat` message + their existing holdings (alias + product_type only), returns `{product_type,
-characteristics}` or `None`. `POST /chat`'s response gains an optional `holding_proposal` field. Frontend:
-a new confirm-card component wired into `ChatThread`, shown when `holding_proposal` is present, Save
-routes through the existing `createHolding` (D-074/BQ-036, alias auto-generated), Not-now just dismisses —
-nothing is written until Save is tapped (D-078 Fork 2). No dedup check against existing same-type
-holdings, no in-card field editing — both explicitly scoped out in D-078, not silently dropped.
+(nothing queued right now)
 
 ---
 
@@ -46,6 +38,47 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 ---
 
 ## DONE
+
+### BQ-039 — AI-surfaced holding capture: narrow Haiku extraction + confirm-card UI — done 05-Aug-2026
+Traces to D-078 (both forks confirmed live, session 2026-08-05a's follow-on discussion). This is D-012's
+first real primary-path build — everything shipped before this (BQ-036) was the manual/secondary path.
+
+Backend: `backend/app/services/holding_capture_classifier.py` (`classify_holding_capture`) — the first
+real use of D-002's "Haiku for reconciliation" half, same narrow-non-teaching-call shape as
+`deepen_classifier.py` (D-072). Reads the user's own `/chat` message plus their existing holdings
+(alias + product_type only, D-010) and asks Haiku one narrow question: does this describe a new,
+not-yet-tracked holding, and if so which D-013/D-066 `product_type` + which characteristic fields can be
+confidently extracted. The taxonomy/field list is hard-coded in this module (no shared schema file with
+`app/lib/characteristicsSchema.ts` exists — same mirror-by-comment convention `budget.py`/`surfacing.py`/
+`taxonomy.ts` already use independently). Degrades to `None` on every failure mode — no key, API error,
+non-JSON/non-NONE reply, unrecognized `product_type` — same discipline as D-072; a valid response with one
+hallucinated extra characteristic key has that key dropped rather than the whole proposal rejected.
+`POST /chat`'s response in `main.py` gains an optional `holding_proposal: {product_type, characteristics}
+| None` field, computed after the teaching call, independent of and unaffected by whether `deepen` fired
+this turn.
+
+Frontend: `app/lib/chat.ts`'s `askQuestion` now returns `{response, holdingProposal}` instead of a bare
+string (its one caller, `ChatThread`, updated in the same change — no other call sites existed). New
+`app/components/HoldingProposalCard.tsx` — a read-only preview (humanized product type + each extracted
+field via `CHARACTERISTICS_SCHEMA`'s labels) with Save/Not now. `ChatThread.tsx`'s `Message` type gains an
+optional `holdingProposal`/`proposalResolved` pair; the card renders under the assistant bubble it
+belongs to and disappears (without ever writing anything) the instant either button is tapped. Save calls
+the existing `createHolding` (D-074/BQ-036 — alias auto-generated, same as the manual-add flow); nothing
+is written to the database from the classifier alone (D-078 Fork 2). **Explicitly scoped out, not
+silently dropped (both named in D-078):** no dedup check against the user's existing same-`product_type`
+holdings — a user can legitimately hold two loans, and the confirm step already lets them decline a real
+duplicate; no in-card field editing — corrections happen via the existing edit UI (BQ-028) after saving.
+
+Verified: backend — `python -m py_compile` clean, `/chat` route registers with the new response shape;
+`classify_holding_capture` unit-tested against a mocked Anthropic client across 8 cases (no key configured,
+NONE reply, confident match, unrecognized `product_type`, a hallucinated extra characteristic key correctly
+dropped, malformed/non-JSON reply, a response whose only characteristics all get dropped correctly returns
+`None` rather than an empty dict, and a raised `anthropic.APIError`) — all degraded or resolved correctly,
+script discarded after (matches this repo's established pattern). Frontend — `npx tsc --noEmit` clean,
+`npx expo export --platform android` bundled cleanly (935 modules, no errors). An incidental
+`package-lock.json` diff from a different local npm version normalizing the file (same `libc`-field noise
+BQ-033 hit) was discarded, not committed. Not verified end-to-end against a live database/Anthropic
+API/real device — same standing limitation as every other BQ item this session; this sandbox has neither.
 
 ### BQ-038 — Two disclosed LOW findings from `KNOWN_LIMITATIONS.md` closed — done 04-Aug-2026
 Picked up independently (no owner decision needed — both were purely mechanical, already-disclosed fixes

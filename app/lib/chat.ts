@@ -10,11 +10,24 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:800
 // posture of not leaking exception detail to the caller (main.py's /chat handler).
 const GENERIC_ERROR = "Couldn't reach the teaching engine — try again in a moment.";
 
+// D-078: a proposal is a read-only extraction from the user's own message — never written to
+// the database by the backend. The caller must route Save through the existing createHolding
+// (D-074/BQ-036) on an explicit user tap; there is no auto-create path anywhere in this type.
+export interface HoldingProposal {
+  product_type: string;
+  characteristics: Record<string, unknown>;
+}
+
+export interface AskQuestionResult {
+  response: string;
+  holdingProposal: HoldingProposal | null;
+}
+
 export async function askQuestion(
   userId: string,
   question: string,
   deepenAlias?: string
-): Promise<string> {
+): Promise<AskQuestionResult> {
   let res: Response;
   try {
     res = await fetch(`${BACKEND_URL}/chat?user_id=${userId}`, {
@@ -28,6 +41,6 @@ export async function askQuestion(
   if (!res.ok) {
     throw new Error(GENERIC_ERROR);
   }
-  const data = (await res.json()) as { response: string };
-  return data.response;
+  const data = (await res.json()) as { response: string; holding_proposal: HoldingProposal | null };
+  return { response: data.response, holdingProposal: data.holding_proposal };
 }

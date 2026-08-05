@@ -11,13 +11,20 @@ import {
   View,
 } from 'react-native';
 import { colors, spacing } from '../design/tokens';
-import { askQuestion } from '../lib/chat';
+import { askQuestion, type HoldingProposal } from '../lib/chat';
+import { createHolding } from '../lib/holdings';
+import { HoldingProposalCard } from './HoldingProposalCard';
 import { Mascot, type MascotMood } from './Mascot';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  // D-078: present only on an assistant message the classifier attached a proposal to.
+  // `proposalResolved` flips true on Save or Not-now — the card never re-renders after that,
+  // same one-shot treatment either way (declining is not tracked differently from saving).
+  holdingProposal?: HoldingProposal;
+  proposalResolved?: boolean;
 }
 
 export interface ChatThreadHandle {
@@ -68,8 +75,16 @@ export const ChatThread = forwardRef<
     onMessageSent?.();
 
     try {
-      const response = await askQuestion(userId, question, deepenAlias);
-      setMessages((prev) => [...prev, { id: `${Date.now()}-a`, role: 'assistant', text: response }]);
+      const { response, holdingProposal } = await askQuestion(userId, question, deepenAlias);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `${Date.now()}-a`,
+          role: 'assistant',
+          text: response,
+          holdingProposal: holdingProposal ?? undefined,
+        },
+      ]);
       setMood('celebrating');
       if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
       celebrationTimer.current = setTimeout(() => setMood('neutral'), CELEBRATION_DURATION_MS);
@@ -78,6 +93,20 @@ export const ChatThread = forwardRef<
     } finally {
       setSending(false);
     }
+  };
+
+  const resolveProposal = (messageId: string) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, proposalResolved: true } : m))
+    );
+  };
+
+  const handleSaveProposal = async (messageId: string, proposal: HoldingProposal) => {
+    await createHolding(userId, {
+      product_type: proposal.product_type,
+      characteristics: proposal.characteristics,
+    });
+    resolveProposal(messageId);
   };
 
   useImperativeHandle(ref, () => ({ send: sendText }));
@@ -96,8 +125,17 @@ export const ChatThread = forwardRef<
           data={messages}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={[styles.bubble, item.role === 'user' ? styles.userBubble : styles.assistantBubble]}>
-              <Text style={styles.bubbleText}>{item.text}</Text>
+            <View>
+              <View style={[styles.bubble, item.role === 'user' ? styles.userBubble : styles.assistantBubble]}>
+                <Text style={styles.bubbleText}>{item.text}</Text>
+              </View>
+              {item.holdingProposal && !item.proposalResolved && (
+                <HoldingProposalCard
+                  proposal={item.holdingProposal}
+                  onSave={() => handleSaveProposal(item.id, item.holdingProposal!)}
+                  onDismiss={() => resolveProposal(item.id)}
+                />
+              )}
             </View>
           )}
         />

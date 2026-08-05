@@ -19,6 +19,7 @@ from app.services.discretionary_categories import (
     list_discretionary_categories,
 )
 from app.services.goals import create_goal, list_goals
+from app.services.holding_capture_classifier import classify_holding_capture
 from app.services.holdings import (
     create_holding,
     delete_holding,
@@ -312,7 +313,10 @@ def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_d
             status_code=502,
             detail=f"Teaching engine call failed: {type(exc).__name__} (see server logs for detail)",
         ) from exc
-    return {"response": answer}
+    # D-078: a proposal is never written here — Fork 2 requires an explicit user confirm via a
+    # separate POST /holdings call (existing create_holding path) before anything is saved.
+    holding_proposal = classify_holding_capture(body.question, baseline["holdings"])
+    return {"response": answer, "holding_proposal": holding_proposal}
 
 
 @app.get("/health/db")
