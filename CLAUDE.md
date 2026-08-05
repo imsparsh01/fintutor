@@ -37,15 +37,27 @@ mechanical.
 ## Before doing anything in a session
 
 1. Read `PROJECT_SPEC.md` (root) — this is the single source of truth. Pay attention
-   to Section 8 (open decisions) and the change log at the bottom.
+   to Section 8 (open decisions) and the change log at the bottom — as of **D-081**
+   the change log holds only the most recent ~10 entries; older ones live in
+   `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md`, grepped on demand, never read wholesale.
 2. Read `docs/DECISION_LOG.md` — skim recent entries so you don't re-litigate a
-   settled decision or contradict one.
+   settled decision or contradict one. As of **D-081** this file holds only a rolling
+   window of the most recent ~20 decisions (short index form: title, one teaser line,
+   a pointer, and a date); older ones live in `docs/DECISION_LOG_ARCHIVE.md`, same
+   condensed form. Every decision's full reasoning lives in `docs/decisions/D-0NN-
+   slug.md` regardless of which log it's indexed in. Grep by ID for a specific one —
+   do not read either log or the decisions folder wholesale.
    2b. Read `docs/BUILD_QUEUE.md` if the session is a build task — this is the task
    list. Pick ONE item from READY. Do not start anything in BLOCKED, and do not
-   invent a task from PROJECT_SPEC.md §8 that isn't in the queue.
-3. Read `docs/DECISION_PROTOCOL.md` if the task is anything other than pure
-   mechanical implementation — it defines what you're allowed to decide yourself
-   (Tier 1) vs. what must be escalated (Tier 2/3).
+   invent a task from PROJECT_SPEC.md §8 that isn't in the queue. As of **D-081**
+   completed items live in `docs/BUILD_QUEUE_ARCHIVE.md`, not in this file — you
+   don't need it to pick up new work, only to look up how something was built.
+3. Read `docs/DECISION_PROTOCOL_CHEATSHEET.md` if the task is anything other than
+   pure mechanical implementation — it defines what you're allowed to decide yourself
+   (Tier 1) vs. what must be escalated (Tier 2/3). As of **D-081** this is a
+   condensed extract of the full `docs/DECISION_PROTOCOL.md` covering every operative
+   routing rule; read the full protocol instead only when a case is genuinely
+   ambiguous or you need the reasoning behind a rule, not for routine routing.
 4. Confirm the ONE bounded task or ONE strategic question for this session with the
    owner before acting. Do not expand scope mid-session even if a related fix or
    related question seems obvious — flag it instead.
@@ -77,10 +89,20 @@ edits follow.
   existing entries. If you're unsure whether something is Tier 1, treat it as
   not-Tier-1 and ask instead. As of D-046: write the full entry as its own file in
   `docs/decisions/D-0NN-slug.md`, and append only a short index entry (title + one
-  line + link) here.
+  teaser line quoted from the entry, not paraphrased + a pointer + date) here.
+  **Rolling-window archiving (D-081), a session-close habit, not a one-time
+  cleanup:** once this file holds more than ~20 entries, move the OLDEST entries
+  (down to ~15) into `docs/DECISION_LOG_ARCHIVE.md` verbatim — pure relocation of
+  the already-condensed index lines, never a rewrite of their content.
+- `docs/BUILD_QUEUE.md` — same append-only discipline for the READY/BLOCKED
+  sections. **As of D-081, a completed item is moved to `docs/BUILD_QUEUE_ARCHIVE.md`
+  verbatim as soon as it's marked done**, rather than accumulating in this file — do
+  this as part of finishing the item, not as separate batch housekeeping later.
 - `PROJECT_SPEC.md` — you may propose an edit (e.g. checking off a Section 8 item
   that's now genuinely done) but do not silently rewrite it. State the proposed
-  change and why, get confirmation, then apply it.
+  change and why, get confirmation, then apply it. **Rolling-window archiving
+  (D-081):** once §10's change log holds more than ~10 entries, move the oldest into
+  `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim, same session-close habit.
 
 **Reference material — read, don't rewrite in the course of a task:**
 - `docs/prompts/*` (system prompts)
@@ -113,13 +135,18 @@ This list applies regardless of whether the session is framed as "building" or
 ## End of every session
 
 1. Write `docs/sessions/YYYY-MM-DD.md` — a few lines: what changed, what's next.
-2. If `PROJECT_SPEC.md` or `docs/DECISION_LOG.md` changed, say so explicitly to the
+2. **Archiving habit check (D-081).** If this session added entries to
+   `docs/DECISION_LOG.md`, `docs/BUILD_QUEUE.md`, or `PROJECT_SPEC.md`'s §10, confirm
+   each is still within its rolling-window size (~20 / DONE-items-should-be-zero /
+   ~10 respectively — see the File Permissions section above) and archive the oldest
+   down to size if not, before committing. Mechanical relocation, not a rewrite.
+3. If `PROJECT_SPEC.md` or `docs/DECISION_LOG.md` changed, say so explicitly to the
    owner so they know to skim the change.
-3. Commit with a clear message and push to the session's designated working branch
+4. Commit with a clear message and push to the session's designated working branch
    (D-034 — no separate confirmation needed for the push itself). Do not leave
    uncommitted or unpushed work at session end. If push fails (stale lock, auth,
    network), say so plainly rather than silently leaving it unpushed.
-4. **Sync to `main` (D-056).** If the designated branch is a clean fast-forward ahead
+5. **Sync to `main` (D-056).** If the designated branch is a clean fast-forward ahead
    of `main` (no divergence), merge it into `main` and push `main` too — this is what
    lets a parallel session pull `origin/main` and see this session's work immediately,
    rather than needing to know this session's specific branch name. If `main` has

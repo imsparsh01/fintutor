@@ -50,14 +50,28 @@ Keep it short — CLAUDE.md's own instruction is "a few lines: what changed, wha
 - what's still open / a natural next step,
 - anything unusual (a blocker hit, a step skipped and why).
 
-### 3. Call out spec/log changes explicitly
+### 3. Archiving habit check (D-081)
+
+If this session added entries to `docs/DECISION_LOG.md`, `docs/BUILD_QUEUE.md`, or `PROJECT_SPEC.md`'s
+§10, check each against its rolling-window size before committing:
+- `docs/DECISION_LOG.md` — more than ~20 entries? Move the oldest (down to ~15) into
+  `docs/DECISION_LOG_ARCHIVE.md`, verbatim, same condensed index format.
+- `docs/BUILD_QUEUE.md` — any item marked DONE still sitting in this file rather than
+  `docs/BUILD_QUEUE_ARCHIVE.md`? Move it now, verbatim — completed items shouldn't accumulate here at all.
+- `PROJECT_SPEC.md` §10 — more than ~10 change-log entries? Move the oldest into
+  `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md`, verbatim.
+
+This is pure relocation of already-written content — never rewrite, paraphrase, or drop anything in the
+process. If nothing exceeds its threshold, there's nothing to do here.
+
+### 4. Call out spec/log changes explicitly
 
 If `PROJECT_SPEC.md` or `docs/DECISION_LOG.md` changed this session, CLAUDE.md requires this to be said
 **explicitly to the user in the chat reply**, not left implicit in the session log file alone — the owner
 needs to know to skim it. Do this even if you already mentioned the change earlier in the conversation;
 the end-of-session summary is the reliable place the owner will look.
 
-### 4. Commit
+### 5. Commit
 
 Stage the session's changes and commit with a clear, descriptive message. Do not use `git commit --amend`
 (a stale lock or a failed hook is not a reason to rewrite prior history — see CLAUDE.md's git safety
@@ -65,7 +79,7 @@ protocol). Do not bypass hooks (no `--no-verify`) — if a hook blocks the commi
 it's flagging (e.g. this repo's pre-commit hook from D-047 requires a `docs/sessions/*.md` file staged
 alongside any `app/`/`backend/` change — step 2 above should already have satisfied it).
 
-### 5. Push to the working branch
+### 6. Push to the working branch
 
 ```bash
 git push -u origin <current-branch-name>
@@ -75,7 +89,7 @@ If it fails on a network error, retry up to 4 times with exponential backoff (2s
 CLAUDE.md's git operations guidance. If it fails for any other reason (auth, a rejected non-fast-forward
 push, a stale lock), say so plainly to the user rather than silently leaving work unpushed or forcing it.
 
-### 6. Sync to `main` (D-056) — only if it's a clean fast-forward
+### 7. Sync to `main` (D-056) — only if it's a clean fast-forward
 
 ```bash
 git fetch origin main
@@ -97,7 +111,7 @@ git merge-base --is-ancestor origin/main HEAD && echo "clean fast-forward" || ec
   your own initiative — D-056 carves this out as the one case that still needs the owner's decision. Tell
   the user plainly that `main` has diverged and ask how they want it resolved.
 
-### 7. Confirm to the user
+### 8. Confirm to the user
 
 Summarize: what was committed (and its message/hash), whether the push to the working branch succeeded,
 and whether it was merged to `main` — or, if `main` had diverged, that this is pending the owner's call.
