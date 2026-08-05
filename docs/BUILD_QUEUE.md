@@ -39,6 +39,18 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 
 ## DONE
 
+### BQ-038 — Two disclosed LOW findings from `KNOWN_LIMITATIONS.md` closed — done 04-Aug-2026
+Picked up independently (no owner decision needed — both were purely mechanical, already-disclosed fixes
+flagged "whenever someone's next touching those files anyway"). (1) `backend/app/services/consolidated.py`'s
+ESOP-exclusion comment was stale (blamed D-055's undesigned schema; D-066 resolved that same day) — updated
+to state the real reason (no decided net-worth valuation formula for a vested ESOP grant), zero behavior
+change. (2) `app/lib/chat.ts`'s `askQuestion` leaked raw HTTP/fetch errors ("Backend responded 503") straight
+to the Chat UI — now wraps both non-OK responses and network-level fetch failures in one on-brand message
+("Couldn't reach the teaching engine — try again in a moment."), matching the backend's own no-raw-exception
+posture. Both entries removed from `docs/KNOWN_LIMITATIONS.md` per that file's own resolution rule. Verified:
+`python -m py_compile` clean; `npx tsc --noEmit` clean; `npx expo export --platform android` bundled cleanly
+(934 modules, no errors).
+
 ### BQ-037 — Discretionary-spending-category CRUD — done 04-Aug-2026
 Traces to the MEDIUM item found in the 04-Aug-2026 live-verification pass. No new decision needed — D-038
 already fully specified the `DiscretionaryCategory` shape (`label`, `planned_amount`); this was the same

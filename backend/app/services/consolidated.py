@@ -19,8 +19,9 @@ def compute_consolidated(db: Session, user_id: uuid.UUID) -> dict:
     loans_total: outstanding_balance (Home/Personal Loan, Credit Card Debt).
     insurance_total: current_fund_value (Endowment/ULIP only — Term Insurance has no fund
       value and contributes nothing).
-    ESOP holdings are deliberately excluded — D-055 left the characteristics schema
-    undesigned, so there is no decided value field to sum.
+    ESOP holdings are deliberately excluded — the characteristics schema is resolved (D-066),
+    but there is still no decided formula for what an ESOP grant's "value" means for net worth
+    (vested units only? net of strike price?), so there is no field to sum yet.
     """
     investments_total = 0.0
     loans_total = 0.0
@@ -40,7 +41,7 @@ def compute_consolidated(db: Session, user_id: uuid.UUID) -> dict:
         elif product_type == "endowment_ulip":
             insurance_total += float(c.get("current_fund_value") or 0)
         # term_insurance: no fund value, contributes 0.
-        # esop: characteristics schema undesigned (D-055) — excluded, not guessed.
+        # esop: no decided net-worth valuation formula (see module docstring) — excluded, not guessed.
 
     return {
         "investments_total": round(investments_total, 2),

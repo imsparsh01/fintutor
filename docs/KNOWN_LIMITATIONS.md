@@ -35,16 +35,6 @@ target segment.
 **Revisit if:** usage shows this is a frequent, meaningfully-wrong case, or a non-product-naming way to
 self-flag "this is a tax-saving fund" is found.
 
-### LOW — `consolidated.py`'s ESOP-exclusion comment is stale
-**Traces to:** the 04-Aug-2026 verification pass. `backend/app/services/consolidated.py`'s docstring says
-ESOP holdings are excluded from net-worth totals "because D-055 left the characteristics schema
-undesigned" — but D-066 (same day, earlier in the session) resolved that schema. The exclusion *behavior*
-is probably still correct (there's no decided formula for what an ESOP grant's "value" means for net
-worth — vested units only? net of strike price? — a real question, not a missing field), but the stated
-reason is now factually wrong. Purely a comment-accuracy issue — zero behavior change needed.
-**Revisit if:** whenever someone is next touching `consolidated.py` for another reason — no reason to spend
-a session on this alone.
-
 ### LOW — Backend has no CORS middleware; browser-based testing needs a workaround
 **Traces to:** the 04-Aug-2026(j) live-verification pass (device/simulator session — see
 `docs/sessions/2026-08-04j.md`). `backend/app/main.py` configures no `CORSMiddleware`, so a browser calling
@@ -58,14 +48,6 @@ browser flag, not a backend change.
 list, not a wildcard) — that would be its own new decision, not implied by this note. Also relevant to any
 *future* browser-based verification pass — same workaround applies, documented here so it isn't
 re-discovered from scratch.
-
-### LOW — Chat's network-error message is a raw fetch error, not a friendly one
-**Traces to:** the 04-Aug-2026 verification pass, confirmed live (a real request to a 503-returning
-backend showed "Backend responded 503" verbatim in the UI). `app/lib/chat.ts`'s `askQuestion` throws
-`` `Backend responded ${res.status}` `` on any non-OK response, and `ChatThread.tsx` displays `err.message`
-directly. Pre-existing behavior, not introduced this session — just never seen rendered until this pass.
-**Revisit if:** picked up alongside other Chat-screen polish — low priority, cosmetic only, never a
-correctness issue.
 
 ---
 
