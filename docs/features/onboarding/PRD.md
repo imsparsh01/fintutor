@@ -91,11 +91,29 @@ are implementation details, not fixed by this section.
 - **`unclassified`'s one-turn-then-resolve-anyway rule** (above) is the same mechanic applied to routing
   itself — a user should never sit in classification limbo.
 
+## Built (BQ-042, 10-Aug-2026)
+
+The implementation-time details below were resolved as part of building this, per this PRD's own framing
+("for whoever picks up the build item to resolve, not further owner decisions") — not new owner decisions.
+Full detail in `docs/BUILD_QUEUE_ARCHIVE.md`'s BQ-042 entry.
+
+- **Stage copy is not fixed prose** — the teaching engine gets a `guidance` string per stage (via the new
+  `onboarding` baseline field) and writes its own reply from that, same as every other teaching turn. The
+  `fresh_starter`/`sequencing` guidance carries BRIEF-011's compliance note directly: present
+  buffer/protection/growth as "how these needs typically relate," never a fixed order or recommendation.
+- **Resuming a skipped conversation** resolves for free: `OnboardingState` is read fresh on every call, so
+  a returning user with an already-set `track`/`stage` just continues there. No separate resume UI or logic
+  needed.
+- **`/chat` request/response shape:** request gains `onboarding: bool` + `onboarding_track_hint: str |
+  None` (chip taps send a deterministic hint, mirroring D-071's `deepen_alias`; free text goes through a
+  narrow Haiku classifier, mirroring D-072). Response gains `onboarding_state: {track, stage}`.
+- **`turns_in_stage` resets to 0 on every stage transition**, including a track change (the
+  `unclassified` → real-track reroute). The forced-resolution turn's copy isn't scripted — the
+  `closing_instruction` field tells the model plainly what the reply must do, and it writes it in its own
+  voice, same pattern as every other instruction field in the system prompt.
+
 ## Not yet written (still genuinely open)
 
-- Exact copy per stage — especially the `fresh_starter` sequencing stage's compliance-sensitive wording
-- How this interacts with resuming a *skipped* conversation later (D-058 left this as a build-time detail,
-  never designed)
-- Backend and frontend implementation plan (the actual `/chat` request/response shape carrying `track` +
-  `stage`, and how `ChatThread`/`OnboardingScreen` read it)
-- Whether `turns_in_stage` resets on a track change, and exact copy for the forced-resolution turn
+- Not live-verified against a real Postgres DB or the live Anthropic API — built and logic-tested in a
+  cloud session with neither configured (see BQ-042's archive entry). Real end-to-end verification is an
+  owner local-session task, same as every prior DB-touching build item.

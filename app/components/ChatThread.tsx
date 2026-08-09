@@ -31,7 +31,9 @@ export interface ChatThreadHandle {
   // deepenAlias: D-071 — set only when the caller (HoldingDetailScreen's "Ask about
   // this") knows the triggering holding with certainty. Chip starters and the typed
   // input never pass one, keeping the general case on D-028's "deepen nothing" default.
-  send: (text: string, deepenAlias?: string) => void;
+  // onboardingTrackHint: BQ-042 — set only by OnboardingScreen's chip taps, which know
+  // their track with certainty; the typed input never passes one.
+  send: (text: string, deepenAlias?: string, onboardingTrackHint?: string) => void;
 }
 
 // How long the mascot stays 'celebrating' after a completed exchange before
@@ -46,8 +48,11 @@ const CELEBRATION_DURATION_MS = 2500;
 // imperative `send` (for chip-driven starters) via ref.
 export const ChatThread = forwardRef<
   ChatThreadHandle,
-  { userId: string; emptyState: ReactNode; onMessageSent?: () => void }
->(function ChatThread({ userId, emptyState, onMessageSent }, ref) {
+  // onboarding: BQ-042 — true only for OnboardingScreen's usage. Every other /chat entry
+  // point (ChatScreen, HoldingDetailScreen) leaves it unset, keeping the onboarding
+  // machinery entirely out of the general Chat tab, per the PRD's confirmed scope.
+  { userId: string; emptyState: ReactNode; onMessageSent?: () => void; onboarding?: boolean }
+>(function ChatThread({ userId, emptyState, onMessageSent, onboarding = false }, ref) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -63,7 +68,7 @@ export const ChatThread = forwardRef<
     };
   }, []);
 
-  const sendText = async (raw: string, deepenAlias?: string) => {
+  const sendText = async (raw: string, deepenAlias?: string, onboardingTrackHint?: string) => {
     const question = raw.trim();
     if (!question || sending) return;
 
@@ -75,7 +80,12 @@ export const ChatThread = forwardRef<
     onMessageSent?.();
 
     try {
-      const { response, holdingProposal } = await askQuestion(userId, question, deepenAlias);
+      const { response, holdingProposal } = await askQuestion(
+        userId,
+        question,
+        deepenAlias,
+        onboarding ? { trackHint: onboardingTrackHint } : undefined
+      );
       setMessages((prev) => [
         ...prev,
         {

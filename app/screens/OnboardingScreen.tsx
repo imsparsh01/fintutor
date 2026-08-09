@@ -8,11 +8,30 @@ import { colors, spacing } from '../design/tokens';
 // visible; once a chip or typed message has been sent, the same button becomes "Done —
 // go to app" (still just dismisses). Resuming later is the persistent Chat tab (BQ-024) —
 // no separate resume UI, per D-058's own "left to build-time, low-stakes" note.
+// `track`: BQ-042/D-084 — each chip names its onboarding track with certainty, passed as a
+// deterministic hint (app/lib/chat.ts's OnboardingRequest) so the backend only classifies
+// free-typed messages.
 const CHIP_STARTERS = [
-  { label: 'I just started earning', message: "I just started earning and I'm not sure where to begin." },
-  { label: 'I have a loan/EMI', message: 'I have a loan or EMI and want to understand it better.' },
-  { label: 'I already track my budget', message: 'I already track my budget and want to go deeper.' },
-  { label: 'Something else', message: "I'm not sure yet — help me figure out where to start." },
+  {
+    label: 'I just started earning',
+    message: "I just started earning and I'm not sure where to begin.",
+    track: 'fresh_starter',
+  },
+  {
+    label: 'I have a loan/EMI',
+    message: 'I have a loan or EMI and want to understand it better.',
+    track: 'reactive_dabbler',
+  },
+  {
+    label: 'I already track my budget',
+    message: 'I already track my budget and want to go deeper.',
+    track: 'habit_former',
+  },
+  {
+    label: 'Something else',
+    message: "I'm not sure yet — help me figure out where to start.",
+    track: 'unclassified',
+  },
 ];
 
 export function OnboardingScreen({ userId, onDone }: { userId: string; onDone: () => void }) {
@@ -31,6 +50,7 @@ export function OnboardingScreen({ userId, onDone }: { userId: string; onDone: (
       <ChatThread
         ref={threadRef}
         userId={userId}
+        onboarding
         onMessageSent={() => setEngaged(true)}
         emptyState={
           <View style={styles.emptyState}>
@@ -40,7 +60,7 @@ export function OnboardingScreen({ userId, onDone }: { userId: string; onDone: (
                 <Pressable
                   key={chip.label}
                   style={styles.chip}
-                  onPress={() => threadRef.current?.send(chip.message)}
+                  onPress={() => threadRef.current?.send(chip.message, undefined, chip.track)}
                 >
                   <Text style={styles.chipText}>{chip.label}</Text>
                 </Pressable>

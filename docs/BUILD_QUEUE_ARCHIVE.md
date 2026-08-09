@@ -14,6 +14,49 @@
 
 ## DONE
 
+### BQ-042 — Build the onboarding structured conversation flow — done 10-Aug-2026
+Per `docs/features/onboarding/PRD.md`, confirmed D-084. Backend: `OnboardingState` model + Alembic
+migration (`onboarding_states` — `id`, `user_id` loose-ref, `track`, `stage`, `turns_in_stage`, modeled on
+`StreakState`), registered in `app/models/__init__.py`. New `app/services/onboarding.py`: `start_or_resume`
+resolves an unset `track` on the first turn — deterministically from a chip-tap hint (mirrors D-071's
+`deepen_alias` UI-signal pattern) or, for free-typed messages, a narrow Haiku classifier (mirrors D-072's
+`classify_deepen`), always degrading to `unclassified` on any failure. `record_turn` (called after the
+teaching engine replies) advances the stage via a second Haiku classifier judging whether the stage's goal
+was met, with a hard turn-budget backstop (4 turns per stage; 1 for `unclassified`'s `intro`, per the PRD's
+"don't sit in classification limbo" rule) that force-completes the stage regardless of classifier output —
+verified directly against a real (non-mocked) SQLite-backed session: the 4-turn budget fires exactly on
+schedule and `unclassified.intro` resolves after one turn as specified.
+
+`/chat`: `ChatRequest` gains `onboarding: bool = False` and `onboarding_track_hint: str | None` — every
+non-onboarding caller (general Chat tab, HoldingDetailScreen) leaves both unset and is completely
+untouched, per the PRD's confirmed "onboarding only" scope. When `onboarding` is set, the baseline gets a
+new `onboarding` field (`{track, stage, guidance, closing_instruction?}`) — same instruction-field pattern
+as `deepen` — and the response carries back `onboarding_state: {track, stage}`. `docs/prompts/
+SYSTEM_PROMPT_v0_8_runnable.md` §4 documents the new field, explicit that it's a position marker never a
+transcript (D-083's own distinction preserved) and that `closing_instruction`'s presence means the reply
+must explicitly tell the user they can continue to the app now. The `fresh_starter` → `sequencing` stage's
+guidance text carries BRIEF-011's compliance note verbatim in spirit: present the buffer/protection/growth
+relationship as "how these needs typically relate," never a fixed order or recommendation.
+
+Frontend: `OnboardingScreen`'s four chips each now name their track (`fresh_starter` / `reactive_dabbler` /
+`habit_former` / `unclassified`, matching the PRD's own chip-to-track mapping exactly) and pass it through
+`ChatThread`'s extended `send(text, deepenAlias?, onboardingTrackHint?)` handle. `ChatThread` takes a new
+`onboarding` prop (true only for `OnboardingScreen`'s usage) and, when set, threads the hint through `app/
+lib/chat.ts`'s extended `askQuestion(..., onboarding?: { trackHint? })`. A returning user with an
+already-set `track`/`stage` just continues where they left off on their next call — resolves the PRD's
+"resuming a skipped conversation" open question for free, nothing extra built for it.
+
+**Verification, and its limit:** Python syntax/imports clean; `tsc --noEmit` clean across the whole app;
+the onboarding service's persistence and turn-budget logic exercised directly against a real SQLite session
+(not mocked) with both the deterministic-hint and free-text-classifier paths. **Not live-verified against a
+real Postgres DB or the live Anthropic API in this session** — this cloud environment still has no
+`DATABASE_URL`/`ANTHROPIC_API_KEY` (same standing gap BQ-023/BQ-004/BQ-039 carried before BQ-041 closed it
+against a live API; the DB half of that gap is still open here). An HTTP-level TestClient run hit an
+unrelated pre-existing SQLite-vs-Postgres `UUID` type incompatibility shared by every model in this schema
+(`StreakState` included) — not a bug introduced by this item, just this environment's known DB limitation.
+Real end-to-end verification (real DB, real API key, real device/browser) is the owner's local-session job,
+same pattern as every prior DB-touching build item here.
+
 ### BQ-041 — Live-verify the teaching engine and both Haiku classifiers against the real Anthropic API — done 05-Aug-2026
 Traces to D-080 (live API access confirmed working in this environment) + BQ-040 (the httpx fix that made
 a real call possible at all). Closes the "not verified end-to-end against a live Anthropic API" disclaimer

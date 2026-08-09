@@ -18,22 +18,41 @@ export interface HoldingProposal {
   characteristics: Record<string, unknown>;
 }
 
+// BQ-042/D-084: present only on a call OnboardingScreen's ChatThread makes. `trackHint` mirrors
+// D-071's deepenAlias pattern — a deterministic signal only the chip UI can supply with
+// certainty; the backend only consults it while a user's track is still unset (onboarding.py).
+export interface OnboardingRequest {
+  trackHint?: string;
+}
+
+export interface OnboardingState {
+  track: string | null;
+  stage: string | null;
+}
+
 export interface AskQuestionResult {
   response: string;
   holdingProposal: HoldingProposal | null;
+  onboardingState: OnboardingState | null;
 }
 
 export async function askQuestion(
   userId: string,
   question: string,
-  deepenAlias?: string
+  deepenAlias?: string,
+  onboarding?: OnboardingRequest
 ): Promise<AskQuestionResult> {
   let res: Response;
   try {
     res = await fetch(`${BACKEND_URL}/chat?user_id=${userId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, deepen_alias: deepenAlias ?? null }),
+      body: JSON.stringify({
+        question,
+        deepen_alias: deepenAlias ?? null,
+        onboarding: onboarding !== undefined,
+        onboarding_track_hint: onboarding?.trackHint ?? null,
+      }),
     });
   } catch {
     throw new Error(GENERIC_ERROR);
@@ -41,6 +60,14 @@ export async function askQuestion(
   if (!res.ok) {
     throw new Error(GENERIC_ERROR);
   }
-  const data = (await res.json()) as { response: string; holding_proposal: HoldingProposal | null };
-  return { response: data.response, holdingProposal: data.holding_proposal };
+  const data = (await res.json()) as {
+    response: string;
+    holding_proposal: HoldingProposal | null;
+    onboarding_state?: OnboardingState;
+  };
+  return {
+    response: data.response,
+    holdingProposal: data.holding_proposal,
+    onboardingState: data.onboarding_state ?? null,
+  };
 }

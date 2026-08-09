@@ -30,6 +30,11 @@ from app.services.holdings import (
 from app.services.esop_exercise_cost import compute_esop_exercise_cost
 from app.services.income import create_income, list_income, update_income
 from app.services.loan_vs_invest import compute_loan_vs_invest
+from app.services.onboarding import (
+    build_onboarding_instruction,
+    record_turn,
+    start_or_resume,
+)
 from app.services.rewards import evaluate_reward
 from app.services.streaks import get_streak, record_app_open
 from app.services.surfacing import compute_surfacing_candidates
@@ -100,6 +105,14 @@ class ChatRequest(BaseModel):
     # holding's alias with certainty. assemble_baseline ignores anything that doesn't
     # resolve to one of this user's own holdings.
     deepen_alias: str | None = None
+    # BQ-042/D-084: set only by OnboardingScreen's ChatThread — every other /chat caller
+    # (general Chat tab included) leaves this False and the onboarding machinery is
+    # untouched, per the PRD's confirmed "onboarding only" scope.
+    onboarding: bool = False
+    # BQ-042: deterministic chip-tap signal (same "trust an app-known UI signal" pattern
+    # as deepen_alias) — only used to resolve an unset track on this user's first turn;
+    # ignored once a track is already set, and ignored entirely for free-typed messages.
+    onboarding_track_hint: str | None = None
 
 
 @app.get("/health")
@@ -301,6 +314,10 @@ def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_d
         classified = classify_deepen(body.question, baseline["holdings"])
         if classified is not None:
             baseline["deepen"] = classified
+    onboarding_state = None
+    if body.onboarding:
+        onboarding_state = start_or_resume(db, user_id, body.onboarding_track_hint, body.question)
+        baseline["onboarding"] = build_onboarding_instruction(onboarding_state)
     try:
         answer = ask_teaching_engine(baseline, body.question)
     except TeachingEngineNotConfigured as exc:
@@ -316,7 +333,11 @@ def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_d
     # D-078: a proposal is never written here — Fork 2 requires an explicit user confirm via a
     # separate POST /holdings call (existing create_holding path) before anything is saved.
     holding_proposal = classify_holding_capture(body.question, baseline["holdings"])
-    return {"response": answer, "holding_proposal": holding_proposal}
+    result: dict = {"response": answer, "holding_proposal": holding_proposal}
+    if onboarding_state is not None:
+        updated = record_turn(db, onboarding_state, body.question, answer)
+        result["onboarding_state"] = {"track": updated["track"], "stage": updated["stage"]}
+    return result
 
 
 @app.get("/health/db")

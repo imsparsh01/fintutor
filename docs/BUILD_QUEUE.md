@@ -16,16 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-- **BQ-042 — Build the onboarding structured conversation flow.** Per
-  `docs/features/onboarding/PRD.md`, confirmed D-084. Backend: new `OnboardingState` model + Alembic
-  migration (`onboarding_states` table — `id`, `user_id` loose-ref, `track`, `stage`, `turns_in_stage`,
-  modeled on `StreakState`); stage-transition logic for the four tracks (`fresh_starter`,
-  `reactive_dabbler`, `habit_former`, `unclassified`), each ending in `complete`; `/chat` request/response
-  changes to carry `track`/`stage`; the 4-turn fail-safe budget forcing an explicit "continue to the app"
-  offer in the AI's own message. Frontend: wire `OnboardingScreen`/`ChatThread` to read/pass the new state.
-  **Watch:** the `fresh_starter` → `sequencing` stage's copy carries a live compliance note (BRIEF-011) —
-  fixed-order presentation risks reading as a recommendation; write it as "how these needs typically
-  relate," never "do X first."
+*(nothing ready right now)*
 
 ---
 
