@@ -18,6 +18,9 @@ downstream of two files that stay elsewhere and are NOT duplicated here:
 - **`wireframes/`** — one file per screen (or a tightly related group). No design-tool integration exists
   in this repo, so wireframes are structured text specs (purpose, key elements, states — loading/empty/
   error/populated), not images. See `wireframes/README.md`.
+- **`DESIGN_REFERENCES.md`** — external apps worth studying for UI/UX inspiration, one file, not a
+  per-screen breakdown. Reference material only, not a decision or a spec — see the file's own header for
+  how it differs from the two categories above.
 
 ## What this folder is NOT for
 
