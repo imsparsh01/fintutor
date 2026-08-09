@@ -187,3 +187,15 @@
   it and make archiving a standing session-close habit. Measured ~58K mandatory-read tokens per session
   down to ~9–10K. Full write-up: `docs/decisions/D-081-governance-file-token-optimization.md`.
 - **Date:** 05-Aug-2026
+
+### D-082 — Onboarding reopened for a structured conversation flow (not structured fields); new per-feature subfolder convention adopted, piloted on onboarding
+- Owner-decided directly in conversation, narrowing D-058: "the objection is to conversation flow shape,
+  not to structured fields" — D-058's no-form-field rule holds, but onboarding's single reused general-
+  teaching-engine turn is replaced by a structured, model-driven multi-stage flow, scoped to onboarding
+  only for now. Fail-safe requirement: a user must never reach a turn with no way forward. New convention:
+  `docs/features/<slug>/` holds a feature's PRD/design docs + its own `decisions/`, piloted here, without
+  forking `BUILD_QUEUE.md`'s single global queue. **Leaves one question open, not resolved by this entry:**
+  a structured flow needs some cross-turn state, and conversation memory is standing-PARKED under D-022
+  pending the still-unwritten D-010 privacy policy — the PRD opens on this fork before any design proceeds.
+  Full write-up: `docs/decisions/D-082-onboarding-structured-flow-scope.md`.
+- **Date:** 05-Aug-2026

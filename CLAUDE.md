@@ -115,6 +115,13 @@ constraint is against incidental rewrites, not against ever touching them.
 **Fully yours to build in:**
 - `app/`, `backend/`, `docs/sessions/`, new entries in `docs/decisions/`
 
+**Per-feature subfolders (D-082):** `docs/features/<slug>/` is an alternative home for a feature big
+enough to need its own PRD/design docs — same append-only discipline as `docs/decisions/` applies to its
+`decisions/` subfolder, and `docs/DECISION_LOG.md` still indexes every entry regardless of which location
+holds the full write-up. Does not fork `docs/BUILD_QUEUE.md` — that stays the single global queue. Most
+features should still just use a flat `docs/BRIEF-0NN-*.md`; reach for a subfolder only when a feature
+genuinely outgrows one file. See `docs/features/README.md`.
+
 ## Hard stops — always escalate to the owner, never decide yourself
 
 Per `docs/DECISION_PROTOCOL.md`, any of the following means STOP and ask, don't act:
