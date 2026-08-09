@@ -18,8 +18,10 @@
 > to a single clause each. This section only, single-operator repo — no concurrent-writer conflict to
 > design around.
 
-**Last synced:** 04-Aug-2026 (end of day), against DECISION_LOG.md through D-074, BUILD_QUEUE.md (37/37
-items DONE, READY and BLOCKED both empty for the first time), PROJECT_SPEC.md v3.4 (unchanged today).
+**Last synced:** 05-Aug-2026, against `DECISION_LOG.md` + `DECISION_LOG_ARCHIVE.md` through D-082,
+`BUILD_QUEUE.md` (READY/BLOCKED both still empty, `BUILD_QUEUE_ARCHIVE.md` at 44 DONE items, unchanged
+today — no build-queue item was worked this session), `PROJECT_SPEC.md` (unchanged today, still §10 within
+its rolling window).
 
 ---
 
@@ -27,51 +29,67 @@ items DONE, READY and BLOCKED both empty for the first time), PROJECT_SPEC.md v3
 
 - **Mission:** Mobile app that teaches personal finance from first principles, applied to the user's own
   money — never advises.
-- **Kickoff:** 22-Jul-2026 → **Day 14** as of 04-Aug-2026.
-- **Current phase:** Phase 1 (teaching engine) VALIDATED. Phase 2 (app/backend build) build queue is
-  **empty for the first time** — nothing mechanically buildable remains — but Phase 2 is not "done": D-012's
-  primary path (AI-surfaced holding creation) is still entirely unbuilt. See Key risks.
-- **Decisions logged:** 72 dated entries, D-001–D-074 (D-021/D-022 still lack their own dedicated entries —
-  same pre-existing gap noted in the last refresh, not touched again).
-- **Owner-level escalations (BRIEFs):** 18 raised, **18 resolved (100%) — a first.** BRIEF-011's last open
-  item (variable-income budgeting) closed via BRIEF-017/D-073 today; BRIEF-018 (manual add-holding UI) was
-  raised and resolved same day.
-- **Findings from live testing:** 11 raised across 6 test runs, 11 resolved (100%) — unchanged today, no
-  new Phase 1 runs this session.
-- **System prompt version:** v0.8, unchanged — last verified 5/5 clean (BQ-008, 02-Aug-2026).
-- **Backend code:** 28 Python files (was 26 this morning).
-- **Mobile app (`app/`):** 45 TypeScript/TSX files (was 44 this morning).
-- **Build queue:** READY empty, BLOCKED empty, **37 of 37 tracked items DONE.**
+- **Kickoff:** 22-Jul-2026 → **Day 15** as of 05-Aug-2026.
+- **Current phase:** Phase 1 (teaching engine) VALIDATED, plus one more live-verification run since last
+  sync (Run 7, D-080). Phase 2 (app/backend build): the build queue has been empty since 04-Aug, and
+  **the gap that was Phase 2's #1 risk last sync — AI-surfaced holding creation — is now built** (D-078).
+  Two real gaps remain: a true native device/simulator pass, and the data privacy policy. See Key risks.
+- **Decisions logged:** **80** dated entries (D-001–D-082; D-021/D-022 still lack dedicated entries — same
+  pre-existing gap, not touched again), up from 72 last sync — **8 new decisions** since 04-Aug.
+- **Owner-level escalations (BRIEFs):** 18 raised, 18 resolved (100%) — unchanged; no new BRIEF this
+  session. (D-082, today's biggest decision, was owner-decided directly in conversation, not a formal
+  BRIEF escalation.)
+- **Findings from live testing:** 11 raised across 6 test runs, 11 resolved (100%) — unchanged in count,
+  but **a 7th live-verification run happened since (D-080, 05-Aug)**, reconfirming FINDING 8 does not
+  reproduce (0/5) against the live API and current prompt — moving `known_gaps` surfacing from provisional
+  to verified.
+- **System prompt version:** v0.8, unchanged — last full-suite verified 5/5 clean (BQ-008, 02-Aug-2026);
+  Run 7 (05-Aug) added a targeted, clean reverification on top of that.
+- **Backend code:** 29 Python files.
+- **Mobile app (`app/`):** 46 TypeScript/TSX files.
+- **Build queue:** READY empty, BLOCKED empty, 44 items in `BUILD_QUEUE_ARCHIVE.md` — unchanged since
+  04-Aug (no build-queue item worked this session; this session's real work was two Tier-3 decisions plus
+  external-facing docs, not mechanical build).
 
 ## Pending Approval Queue
 
-**Empty — every raised brief is resolved.** First time this section has had nothing in it since D-050
-introduced it.
+**Empty — every raised brief is resolved.** Unchanged since 04-Aug. (D-082 is a live, *undocumented-as-
+BRIEF* open decision — see "Needs the owner's input right now," not this queue, since it was never raised
+as a formal BRIEF escalation.)
 
 ## Needs the owner's input right now
 
-1. **AI-surfaced holding creation doesn't exist yet.** Today closed the *manual* fallback gap
-   (BQ-036/D-074), but D-012's *primary* path — the AI surfacing a holding organically in conversation and
-   creating it on confirmation — has no `/chat` tool-calling/function-call setup at all. This is named
-   MVP scope in `PROJECT_SPEC.md` §4 item 6, not a nice-to-have. Worth a real look before this reads as
-   "done" — it's the product's most differentiating mechanism and it's still 0% built.
-2. **A real native device/simulator pass.** Today's live-verification pass closed most of the
-   "nothing's been tested for real" risk — real Postgres, a real running backend, a real Chromium browser
-   driving the actual app — but this sandbox has no Docker, no working iOS Simulator, and no Android SDK,
-   so native rendering and the real Supabase auth round-trip (blocked by this sandbox's own network
-   policy, confirmed via its proxy status log) remain genuinely unconfirmed. Downgraded from CRITICAL to
-   WATCH this refresh — real progress was made, just not full closure.
-3. **Data privacy policy (D-010)** — still undesigned, still needs a dedicated owner session.
-4. **Legal review of D-009** — still not scheduled.
+1. **D-082's open fork — how onboarding gets its cross-turn state.** Today's live-testing pass on the real
+   onboarding chat found it reusing the general teaching engine wholesale (a ~300+ word answer to the first
+   message) — traced to D-058's original "no structure at all" choice, now reopened on the *flow* axis only
+   (D-058's "no structured field" still holds). Designing the actual fix stalled immediately on a real
+   blocker: a structured flow needs *some* memory of what stage a user is in, and conversation memory is
+   **already formally parked under D-022**, gated on the still-unwritten D-010 privacy policy. Two paths
+   are laid out and ready in `docs/features/onboarding/PRD.md` — a narrow stage-indicator that may not
+   count as "real" memory, or writing D-010 first rather than arguing around it. Nothing proceeds on the
+   onboarding redesign until this is picked.
+2. **Data privacy policy (D-010)** — still undesigned, and as of today it's not just a standing gap, it's
+   an **active blocker on a feature the owner just asked to build.** This raises its own priority
+   independent of anything else on this list.
+3. **A real native device/simulator pass.** Substantially de-risked across the last two sessions — real
+   Postgres, a real running backend, a real Supabase login, and a real browser all confirmed working
+   end-to-end on **web**. What's still genuinely unconfirmed: native rendering on an actual iOS/Android
+   simulator and the native auth flow. (Tooling for this is now available in-session if the owner wants it
+   picked up.)
+4. **Legal review of D-009** — still not scheduled, growing more urgent as build surface grows.
+5. **`docs/marketing/BRAND_PRD.md`'s three open fields** — waitlist incentive (no pricing/monetization
+   decision exists yet), visual identity (current UI is an acknowledged placeholder, real blank canvas for
+   a designer), and whether to feature "Powered by Claude/Anthropic" prominently. Lower stakes than 1–4,
+   not blocking any build work, but needs the owner's or a designer's input to move the landing page forward.
 
 ## Phase roadmap (phase-gated, no calendar dates committed)
 
 | # | Phase | Status | Notes |
 |---|---|---|---|
 | 0 | Governance & Spec | DONE | 22–23 Jul. Stack, compliance stance, decision protocol. |
-| 1 | Teaching Engine Validation | DONE | 23 Jul – 03 Aug. 6 test runs, prompt v0.3 → v0.8, 11/11 findings closed. |
-| 2 | App & Backend Build | **IN PROGRESS — build queue empty, one real gap remains** | 28 backend + 45 app files. Every tracked BQ item is DONE (37/37) — nothing mechanically buildable is left queued. What's *not* done: AI-surfaced holding creation (D-012's primary path), real native device confirmation, the data privacy policy. |
-| 3 | Private structured testing (real users) | NOT STARTED | Closer than it's ever been — the empty build queue is a real milestone — but AI-surfaced creation and a real device pass are reasonable gates before this starts. |
+| 1 | Teaching Engine Validation | DONE | 23 Jul – 05 Aug. 7 live test runs now (Run 7 added 05-Aug), prompt v0.3 → v0.8, all 11 findings closed and reconfirmed live. |
+| 2 | App & Backend Build | **IN PROGRESS — two real gaps remain, down from three** | 29 backend + 46 app files. AI-surfaced holding creation (D-012's primary path) is now **built** (D-078) — closes what was the top risk last sync. Real backend + Supabase auth confirmed live end-to-end on web (2026-08-05d). What's *not* done: a true native device/simulator pass, and the data privacy policy — the latter now also blocking the onboarding redesign directly. |
+| 3 | Private structured testing (real users) | NOT STARTED | Closer than ever — the two biggest build gaps from last sync (AI-surfaced creation, live-data confirmation) are both closed — but a native device pass and the privacy policy are still reasonable gates before this starts. |
 | 4 | Legal review + public launch | NOT STARTED | Blocked on India securities/fintech lawyer review of D-009. |
 
 ## Activity timeline — cumulative decisions logged, by date
@@ -79,69 +97,80 @@ introduced it.
 | Date | New decisions | Cumulative | Note |
 |---|---|---|---|
 | 22-Jul-2026 | 7 | 7 | Spec created, stack locked. |
-| 23-Jul-2026 | 19 | 26 | Densest single day until today: compliance stance, aliasing, taxonomy, teaching method, the whole decision protocol, Phase 1 Run 1, BRIEF-001. |
+| 23-Jul-2026 | 19 | 26 | Compliance stance, aliasing, taxonomy, teaching method, the whole decision protocol, Phase 1 Run 1, BRIEF-001. |
 | 24-Jul-2026 | 0 | 26 | — |
 | 25-Jul-2026 | 3 | 29 | Phase 1 Run 2, MVP scope expansion, product principles. |
 | 26–31 Jul-2026 | 0 | 29 | Build-home laptop out of service (Apple repair) — work paused. |
 | 01-Aug-2026 | 1 | 30 | FINDING 8 resolved. |
 | 02-Aug-2026 | 5 | 35 | Single-home merge, autonomy grant, 3 BRIEF/finding resolutions. |
 | 03-Aug-2026 | 20 | 55 | Dashboard tooling, backend build begins and lands, founding segment fully resolved, onboarding shape, comparison-view detection. |
-| 04-Aug-2026 | **17** | **72** | **New densest day of the project.** Comparison-view math shipped (closes BQ-026), mascot wired to chat, deepen fully resolved (D-071/D-072), variable-income budgeting resolved (D-073), a first-ever comprehensive live-verification pass, and same-day fixes for both findings it surfaced (D-074 + BQ-037). |
+| 04-Aug-2026 | 17 | 72 | Comparison-view math shipped, mascot wired to chat, deepen fully resolved, variable-income budgeting resolved, first comprehensive live-verification pass. |
+| 05-Aug-2026 | **8** | **80** | UX principles closed out (P8/P9), AI-surfaced holding capture **built** (D-078), savings-balance question resolved, Phase-1 Run 7 live-reverifies FINDING 8 stays closed, governance restructuring cuts mandatory-reading tokens ~80% (D-081), **onboarding reopened for a structured flow (D-082)** — today's biggest open thread. |
 
 ## Blockers
 
-**None.** `docs/BUILD_QUEUE.md`'s READY and BLOCKED sections are both empty — the first time in this
-project's history. Everything genuinely outstanding now lives in "Needs the owner's input," above, because
-it needs a decision or a resource this session doesn't have, not because it's queued and stuck.
+**None in the formal build-queue sense** — `docs/BUILD_QUEUE.md`'s READY and BLOCKED sections are both
+still empty. D-082's open fork functions as a *soft* blocker on `docs/features/onboarding/PRD.md`
+specifically (it was never queued as a build item to begin with, since the design isn't finished) — see
+"Needs the owner's input right now," not this section.
 
 ## Key risks
 
-1. **AI-surfaced holding creation is still entirely unbuilt.** Promoted to the top risk this refresh —
-   with the build queue empty, this is now the single largest gap between what's shipped and what the
-   product's own core pitch (D-012) requires. Not urgent in the sense of blocking anything queued; urgent
-   in the sense that it's easy to lose track of once the queue *looks* done.
-2. **Real native device/simulator confirmation still pending**, though substantially de-risked today —
-   real Postgres, a real backend, and a real browser all confirmed the app's logic and API layer work
-   correctly end to end. What's left unconfirmed is native rendering itself and the real Supabase auth
-   round-trip (structurally blocked in this sandbox, not a sign of a real problem).
-3. **Legal review of the compliance stance (D-009)** by an India securities/fintech lawyer still hasn't
+1. **Onboarding's real UX doesn't match the product's core promise yet — new top risk, replacing last
+   sync's.** First-ever live test of the real onboarding chat produced a wall-of-text answer instead of a
+   guided first moment. The fix is scoped (D-082) but stalled on a real architectural dependency (see
+   below) — not a code problem, a decision problem.
+2. **Data privacy policy undesigned — same open item, meaningfully higher stakes today.** It was already a
+   standing gap; as of today it directly blocks a feature the owner asked to build, not just a
+   theoretical future one.
+3. **Real native device/simulator confirmation still pending**, though substantially de-risked across the
+   last two sessions — real Postgres, a real backend, real Supabase auth, and a real browser all now
+   confirmed working correctly end-to-end on web.
+4. **Legal review of the compliance stance (D-009)** by an India securities/fintech lawyer still hasn't
    happened. Getting more urgent as the MVP nears feature-complete.
-4. **Data privacy policy undesigned** (D-010 open item) — the schema now holds real-shaped data across
-   holdings, income, goals, and discretionary categories; this policy is supposed to govern all of it.
-5. **Compliance surface tested against only 2 fixtures**, both pre-dating the app. Unchanged risk, not
-   worsened or improved this session.
+5. **Compliance surface tested against only 2 fixtures**, both pre-dating the app. Unchanged risk — Run 7
+   re-ran an existing fixture, didn't add a new one.
+
+**Resolved since last sync (04-Aug), worth naming explicitly:**
+- ~~AI-surfaced holding creation unbuilt~~ — **built** (D-078): a narrow Haiku reconciliation call plus an
+  explicit confirm-card UI in chat. Was the #1 critical risk last sync.
+- ~~Nothing verified against real infrastructure~~ — **closed on web**: real Postgres, a real running
+  backend, and a real authenticated Supabase session all confirmed end-to-end (2026-08-05d).
 
 ## What's next
 
-1. **Talk through AI-surfaced holding creation** — the biggest real gap left, and worth its own design
-   pass given how much conversation-design and tool-calling work it implies.
-2. **Data privacy policy** (D-010) — needs a dedicated owner session.
+1. **Owner decides D-082's open fork** — stage-indicator vs. resolving D-010 first. Directly unblocks
+   `docs/features/onboarding/PRD.md`'s next section (the actual stage/path design).
+2. **Data privacy policy (D-010)** — now doing double duty; needs a dedicated owner session more than ever.
 3. **Legal review scheduling** — still not blocking, still worth getting on the calendar.
-4. **UX principles section** in `PRODUCT_PRINCIPLES.md` — unblocked since 04-Aug, not started.
-5. **Two LOW housekeeping items** sitting in `KNOWN_LIMITATIONS.md` (a stale comment in
-   `consolidated.py`, Chat's raw error message) — pick up whenever next touching those files.
+4. **A real native device/simulator pass**, if the owner wants it picked up — tooling for this is now
+   available in-session.
+5. **`BRAND_PRD.md`'s three open items** — waitlist incentive, visual identity commissioning, AI-vendor
+   disclosure stance — whenever the owner is ready to move on the landing page.
 
 ## Recent decisions (last 6)
 
 | ID | Tier | Date | What |
 |---|---|---|---|
-| D-074 | 2, owner-confirmed | 04-Aug | Manual add-holding UI confirmed: auto-generated alias, family-scoped product-type picker. Closed same day (BQ-036). |
-| D-073 | 3, owner-confirmed | 04-Aug | Variable-income budgeting resolved: declared floor + typical range, budget math unchanged. |
-| D-072 | 3, owner-confirmed | 04-Aug | BRIEF-006 fully resolved: narrow Haiku classifier for the general Chat-tab deepen case. |
-| D-071 | 3, owner-confirmed | 04-Aug | BRIEF-006 narrowed: deepen wired deterministically for the "Ask about this" entry point. |
-| D-070 | 3, owner-confirmed | 04-Aug | Tax-saving narrowed to "unused 80C room" — no rupee figure, avoids a maintained slab table. |
-| D-069 | 3, owner-confirmed | 04-Aug | ESOP "cost of exercising today" confirmed — cliff-gated linear vesting. |
+| D-082 | 3, owner-decided in conversation | 05-Aug | Onboarding reopened for a structured *conversation flow* (not fields) — narrows D-058, scoped to onboarding only; new `docs/features/<slug>/` convention adopted. |
+| D-081 | Owner-authorized in conversation | 05-Aug | Governance-file restructuring: rolling-window archives + protocol cheat sheet — cut mandatory-reading tokens ~80%. |
+| D-080 | 1 | 05-Aug | Phase-1 Run 7 live-reverifies FINDING 8 stays closed (0/5) — `known_gaps` surfacing moves from provisional to verified; also fixed a real `httpx`/`anthropic` version pin bug. |
+| D-079 | 2, owner-confirmed | 05-Aug | `savings_balance` clarified as an instance of the already-deferred Cash & bank family, not a missing 9th taxonomy type. |
+| D-078 | 3, owner-confirmed | 05-Aug | AI-surfaced holding-capture mechanism confirmed and **built** — narrow Haiku reconciliation call + explicit confirm UI in chat. |
+| D-077 | 1 | 05-Aug | P9 added to `PRODUCT_PRINCIPLES.md` — teaching content is never gated behind a quiz or prior lesson. |
 
 ## Compliance pulse
 
-- Findings raised across 6 test runs: **11**
-- Findings resolved: **11 / 11 (100%)**
+- Findings raised across 6 original test runs: **11**
+- Findings resolved: **11 / 11 (100%)** — reconfirmed live via a 7th run today (D-080)
 - Owner-level escalations (BRIEFs): **18 raised, 18 resolved (100%)**
-- Current prompt: **v0.8**, last verified clean **5/5** (BQ-008, 02-Aug-2026)
+- Current prompt: **v0.8**, last full-suite verified clean **5/5** (BQ-008, 02-Aug-2026); targeted Run 7
+  (05-Aug) also clean
 
 ---
 
-**This refresh is complete**, not partial — every section re-derived fresh from `DECISION_LOG.md`,
-`BUILD_QUEUE.md`, and a fresh file-count pass over `app/` and `backend/`. The one deliberate carry-forward:
-D-021/D-022's missing dedicated entries, unresolved from the last refresh — a `DECISION_LOG.md` editing
-question, out of scope for a dashboard refresh.
+**This refresh is complete**, not partial — every section re-derived fresh from `DECISION_LOG.md` +
+`DECISION_LOG_ARCHIVE.md`, `BUILD_QUEUE.md` + `BUILD_QUEUE_ARCHIVE.md`, and a fresh file-count pass over
+`app/` and `backend/`. The one deliberate carry-forward: D-021/D-022's missing dedicated entries,
+unresolved since the last refresh — a `DECISION_LOG.md`-editing question, out of scope for a dashboard
+refresh.

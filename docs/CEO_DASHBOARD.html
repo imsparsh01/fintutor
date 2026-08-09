@@ -245,6 +245,7 @@
     font-family: var(--font-mono); font-size: .66rem; font-weight: 700;
     padding: 2px 7px; border-radius: 4px; white-space: nowrap;
   }
+  .tier-chip.t1 { background: var(--good-soft); color: var(--good); }
   .tier-chip.t2 { background: var(--accent-soft); color: var(--accent); }
   .tier-chip.t3 { background: var(--warn-soft); color: var(--warn); }
   .did { font-family: var(--font-mono); color: var(--ink-faint); font-size: .78rem; white-space: nowrap; }
@@ -265,6 +266,20 @@
     grid-column: 1 / -1; padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 2px;
     display: flex; align-items: center; gap: 8px;
   }
+
+  /* ---------- Resolved-since-last-sync banner ---------- */
+  .resolved-banner {
+    margin-bottom: 22px;
+    background: var(--good-soft); border: 1px solid color-mix(in srgb, var(--good) 35%, transparent);
+    border-radius: 12px; padding: 14px 18px;
+  }
+  .resolved-banner .rb-title {
+    font-family: var(--font-display); font-size: .9rem; font-weight: 600; color: var(--good);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 7px;
+  }
+  .resolved-banner ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .resolved-banner li { font-size: .82rem; color: var(--ink-soft); }
+  .resolved-banner li b { color: var(--ink); font-weight: 600; }
 
   @media (max-width: 900px) {
     .grid { grid-template-columns: 1fr; }
@@ -287,36 +302,44 @@
       <span class="tagline">Founder Status Dashboard</span>
     </div>
     <div class="meta">
-      <span class="synced">Last synced 04 Aug 2026 (end of day) · through D-074</span>
-      <span class="phase-pill"><span class="dot"></span>Build queue empty — 37/37 items DONE</span>
+      <span class="synced">Last synced 05 Aug 2026 · through D-082</span>
+      <span class="phase-pill"><span class="dot"></span>Build queue empty — 2 real gaps remain (down from 3)</span>
     </div>
+  </div>
+
+  <div class="resolved-banner">
+    <div class="rb-title">✓ Resolved since last sync (04 Aug)</div>
+    <ul>
+      <li><b>AI-surfaced holding creation is built</b> (D-078) — was the #1 critical risk last sync; narrow Haiku reconciliation call + explicit confirm-card UI in chat.</li>
+      <li><b>Real infrastructure confirmed end-to-end on web</b> (2026-08-05d) — live Postgres, a live backend, and a genuine authenticated Supabase session all verified working together for the first time.</li>
+    </ul>
   </div>
 
   <div class="stats">
     <div class="stat">
       <div class="label">Day</div>
-      <div class="value accent">14</div>
+      <div class="value accent">15</div>
       <div class="sub">since kickoff, 22 Jul</div>
     </div>
     <div class="stat">
       <div class="label">Decisions logged</div>
-      <div class="value">72</div>
-      <div class="sub">18 BRIEFs raised, 18 resolved — 100%</div>
+      <div class="value">80</div>
+      <div class="sub">+8 since 04 Aug · 18 BRIEFs, 100% resolved</div>
     </div>
     <div class="stat">
       <div class="label">Findings closed</div>
       <div class="value good">11 / 11</div>
-      <div class="sub">100% of testing findings resolved</div>
+      <div class="sub">reconfirmed live · 7th run added today</div>
     </div>
     <div class="stat">
       <div class="label">System prompt</div>
       <div class="value">v0.8</div>
-      <div class="sub">unchanged, verified 5/5 clean</div>
+      <div class="sub">unchanged, verified 5/5 + Run 7 clean</div>
     </div>
     <div class="stat">
       <div class="label">Code files</div>
-      <div class="value good">28 + 45</div>
-      <div class="sub">backend + app · queue: 37/37 DONE</div>
+      <div class="value good">29 + 46</div>
+      <div class="sub">backend + app · 44 build items archived DONE</div>
     </div>
   </div>
 
@@ -341,21 +364,21 @@
               <div class="node-col"><div class="node done">✓</div><div class="line"></div></div>
               <div>
                 <div class="title-row"><span class="title">1 · Teaching engine validation</span><span class="status done">Done</span></div>
-                <div class="desc">6 live test runs, prompt v0.3 → v0.8, all 11 findings closed. 23 Jul – 03 Aug.</div>
+                <div class="desc">7 live test runs now (Run 7 added 05 Aug), prompt v0.3 → v0.8, all 11 findings closed and reconfirmed live. 23 Jul – 05 Aug.</div>
               </div>
             </li>
             <li>
               <div class="node-col"><div class="node active">●</div><div class="line"></div></div>
               <div>
-                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">Queue empty, one real gap</span></div>
-                <div class="desc">37/37 tracked build items DONE — nothing mechanically buildable is left queued. Not done: AI-surfaced holding creation (D-012's primary path, still 0% built), a real native device pass, the data privacy policy.</div>
+                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">2 real gaps remain</span></div>
+                <div class="desc">29 backend + 46 app files. AI-surfaced holding creation (D-012's primary path) is now <b>built</b> (D-078) — closes last sync's top risk. Real backend + Supabase auth confirmed live end-to-end on web. Not done: a true native device/simulator pass, and the data privacy policy — the latter now also blocking the onboarding redesign directly.</div>
               </div>
             </li>
             <li>
               <div class="node-col"><div class="node todo">3</div><div class="line"></div></div>
               <div>
                 <div class="title-row"><span class="title">3 · Private structured testing</span><span class="status todo">Not started</span></div>
-                <div class="desc">Closer than ever — the empty queue is a real milestone — but AI-surfaced creation and a device pass are reasonable gates first.</div>
+                <div class="desc">Closer than ever — the two biggest build gaps from last sync are both closed — but a native device pass and the privacy policy are still reasonable gates first.</div>
               </div>
             </li>
             <li>
@@ -377,44 +400,46 @@
         <div class="card-body">
           <div class="chart-wrap" id="chartWrap" style="position:relative;">
             <svg class="chart" viewBox="0 0 640 226" id="chartSvg">
-              <!-- gridlines (domain 0-75, headroom above 72) -->
+              <!-- gridlines (domain 0-90, headroom above 80) -->
               <line class="gridline" x1="40" y1="192"   x2="624" y2="192"/>
-              <line class="gridline" x1="40" y1="156.8" x2="624" y2="156.8"/>
-              <line class="gridline" x1="40" y1="121.6" x2="624" y2="121.6"/>
-              <line class="gridline" x1="40" y1="86.4"  x2="624" y2="86.4"/>
-              <line class="gridline" x1="40" y1="51.2"  x2="624" y2="51.2"/>
+              <line class="gridline" x1="40" y1="152.9" x2="624" y2="152.9"/>
+              <line class="gridline" x1="40" y1="113.8" x2="624" y2="113.8"/>
+              <line class="gridline" x1="40" y1="74.7"  x2="624" y2="74.7"/>
+              <line class="gridline" x1="40" y1="35.6"  x2="624" y2="35.6"/>
               <text class="axis-label" x="34" y="195"   text-anchor="end">0</text>
-              <text class="axis-label" x="34" y="159.8" text-anchor="end">15</text>
-              <text class="axis-label" x="34" y="124.6" text-anchor="end">30</text>
-              <text class="axis-label" x="34" y="89.4"  text-anchor="end">45</text>
-              <text class="axis-label" x="34" y="54.2"  text-anchor="end">60</text>
+              <text class="axis-label" x="34" y="155.9" text-anchor="end">20</text>
+              <text class="axis-label" x="34" y="116.8" text-anchor="end">40</text>
+              <text class="axis-label" x="34" y="77.7"  text-anchor="end">60</text>
+              <text class="axis-label" x="34" y="38.6"  text-anchor="end">80</text>
 
               <!-- repair-gap band -->
-              <rect class="gap-band" x="160" y="16" width="300" height="176"/>
-              <text class="gap-label" x="310" y="11" text-anchor="middle">build-home offline (laptop repair)</text>
+              <rect class="gap-band" x="140" y="16" width="260" height="176"/>
+              <text class="gap-label" x="270" y="11" text-anchor="middle">build-home offline (laptop repair)</text>
 
               <!-- area + line -->
-              <path class="area-fill" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,23.0 L624,192 L40,192 Z"/>
-              <path class="line-path" d="M40,175.6 L100,131.0 L160,124.0 L460,121.6 L515,109.9 L570,62.9 L624,23.0"/>
+              <path class="area-fill" d="M40,178.3 L90,141.2 L140,135.3 L400,133.3 L449,123.6 L498,84.4 L557,51.2 L624,35.6 L624,192 L40,192 Z"/>
+              <path class="line-path" d="M40,178.3 L90,141.2 L140,135.3 L400,133.3 L449,123.6 L498,84.4 L557,51.2 L624,35.6"/>
 
               <!-- points -->
-              <circle class="pt" data-x="40"  data-y="175.6" data-d="22 Jul" data-v="7"  cx="40"  cy="175.6" r="3.5"/>
-              <circle class="pt" data-x="100" data-y="131.0" data-d="23 Jul" data-v="26" cx="100" cy="131.0" r="3.5"/>
-              <circle class="pt" data-x="160" data-y="124.0" data-d="25 Jul" data-v="29" cx="160" cy="124.0" r="3.5"/>
-              <circle class="pt" data-x="460" data-y="121.6" data-d="1 Aug"  data-v="30" cx="460" cy="121.6" r="3.5"/>
-              <circle class="pt" data-x="515" data-y="109.9" data-d="2 Aug"  data-v="35" cx="515" cy="109.9" r="3.5"/>
-              <circle class="pt" data-x="570" data-y="62.9"  data-d="3 Aug"  data-v="55" cx="570" cy="62.9"  r="3.5"/>
-              <circle class="pt end" data-x="624" data-y="23.0" data-d="4 Aug · today" data-v="72" cx="624" cy="23.0" r="5"/>
+              <circle class="pt" data-x="40"  data-y="178.3" data-d="22 Jul" data-v="7"  cx="40"  cy="178.3" r="3.5"/>
+              <circle class="pt" data-x="90"  data-y="141.2" data-d="23 Jul" data-v="26" cx="90"  cy="141.2" r="3.5"/>
+              <circle class="pt" data-x="140" data-y="135.3" data-d="25 Jul" data-v="29" cx="140" cy="135.3" r="3.5"/>
+              <circle class="pt" data-x="400" data-y="133.3" data-d="1 Aug"  data-v="30" cx="400" cy="133.3" r="3.5"/>
+              <circle class="pt" data-x="449" data-y="123.6" data-d="2 Aug"  data-v="35" cx="449" cy="123.6" r="3.5"/>
+              <circle class="pt" data-x="498" data-y="84.4"  data-d="3 Aug"  data-v="55" cx="498" cy="84.4"  r="3.5"/>
+              <circle class="pt" data-x="557" data-y="51.2"  data-d="4 Aug"  data-v="72" cx="557" cy="51.2"  r="3.5"/>
+              <circle class="pt end" data-x="624" data-y="35.6" data-d="5 Aug · today" data-v="80" cx="624" cy="35.6" r="5"/>
 
-              <text class="end-label" x="586" y="17">72</text>
+              <text class="end-label" x="586" y="29">80</text>
 
-              <text class="axis-label" x="40" y="210" text-anchor="middle">22 Jul</text>
-              <text class="axis-label" x="100" y="210" text-anchor="middle">23 Jul</text>
-              <text class="axis-label" x="160" y="210" text-anchor="middle">25 Jul</text>
-              <text class="axis-label" x="460" y="210" text-anchor="middle">1 Aug</text>
-              <text class="axis-label" x="515" y="210" text-anchor="middle">2 Aug</text>
-              <text class="axis-label" x="570" y="210" text-anchor="middle">3 Aug</text>
-              <text class="axis-label" x="624" y="210" text-anchor="end">4 Aug</text>
+              <text class="axis-label" x="40"  y="210" text-anchor="middle">22 Jul</text>
+              <text class="axis-label" x="90"  y="210" text-anchor="middle">23 Jul</text>
+              <text class="axis-label" x="140" y="210" text-anchor="middle">25 Jul</text>
+              <text class="axis-label" x="400" y="210" text-anchor="middle">1 Aug</text>
+              <text class="axis-label" x="449" y="210" text-anchor="middle">2 Aug</text>
+              <text class="axis-label" x="498" y="210" text-anchor="middle">3 Aug</text>
+              <text class="axis-label" x="557" y="210" text-anchor="middle">4 Aug</text>
+              <text class="axis-label" x="624" y="210" text-anchor="end">5 Aug</text>
 
               <line class="crosshair" id="crosshair" x1="0" y1="16" x2="0" y2="192"/>
               <circle class="hover-dot" id="hoverDot" r="5.5"/>
@@ -433,12 +458,12 @@
           <table class="ledger">
             <thead><tr><th>ID</th><th>Tier</th><th>Date</th><th>What</th></tr></thead>
             <tbody>
-              <tr><td class="did">D-074</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">04 Aug</td><td>Manual add-holding UI confirmed — auto-generated alias, family-scoped picker. Closed same day (BQ-036).</td></tr>
-              <tr><td class="did">D-073</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Variable-income budgeting resolved — declared floor + typical range, budget math unchanged.</td></tr>
-              <tr><td class="did">D-072</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>BRIEF-006 fully resolved — narrow Haiku classifier for the general Chat-tab deepen case.</td></tr>
-              <tr><td class="did">D-071</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>BRIEF-006 narrowed — deepen wired deterministically for the "Ask about this" entry point.</td></tr>
-              <tr><td class="did">D-070</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>Tax-saving narrowed to "unused 80C room" — no rupee figure, avoids a maintained slab table.</td></tr>
-              <tr><td class="did">D-069</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">04 Aug</td><td>ESOP "cost of exercising today" confirmed — cliff-gated linear vesting.</td></tr>
+              <tr><td class="did">D-082</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">05 Aug</td><td>Onboarding reopened for a structured <i>conversation flow</i> (not fields) — narrows D-058, scoped to onboarding only; new <code>docs/features/&lt;slug&gt;</code> convention adopted.</td></tr>
+              <tr><td class="did">D-081</td><td><span class="tier-chip t3">Owner-authorized</span></td><td class="ddate">05 Aug</td><td>Governance-file restructuring: rolling-window archives + protocol cheat sheet — cut mandatory-reading tokens ~80%.</td></tr>
+              <tr><td class="did">D-080</td><td><span class="tier-chip t1">Tier 1</span></td><td class="ddate">05 Aug</td><td>Phase-1 Run 7 live-reverifies FINDING 8 stays closed (0/5) — <code>known_gaps</code> surfacing moves from provisional to verified.</td></tr>
+              <tr><td class="did">D-079</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">05 Aug</td><td><code>savings_balance</code> clarified as an instance of the already-deferred Cash &amp; bank family, not a missing 9th taxonomy type.</td></tr>
+              <tr><td class="did">D-078</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">05 Aug</td><td>AI-surfaced holding-capture mechanism confirmed and <b>built</b> — narrow Haiku reconciliation call + explicit confirm UI in chat.</td></tr>
+              <tr><td class="did">D-077</td><td><span class="tier-chip t1">Tier 1</span></td><td class="ddate">05 Aug</td><td>P9 added to PRODUCT_PRINCIPLES.md — teaching content is never gated behind a quiz or prior lesson.</td></tr>
             </tbody>
           </table>
         </div>
@@ -455,22 +480,36 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">AI-surfaced holding creation doesn't exist<span class="wl-tag critical">Gap</span></div>
-                <div class="wl-desc">D-012's primary path — the AI surfacing and creating a holding from conversation — has zero tool-calling setup. Named MVP scope in PROJECT_SPEC §4, not optional. The product's most differentiating mechanism is still 0% built.</div>
+                <div class="wl-title">Onboarding fix stalled on a real fork<span class="wl-tag critical">Decide</span></div>
+                <div class="wl-desc">A structured onboarding flow needs cross-turn state; conversation memory is already parked under D-022, gated on the unwritten D-010 privacy policy. Two paths are laid out in <code>docs/features/onboarding/PRD.md</code> — a narrow stage-indicator, or writing D-010 first. Nothing proceeds until this is picked.</div>
+              </div>
+            </li>
+            <li>
+              <div class="stripe critical"></div>
+              <div>
+                <div class="wl-title">Data privacy policy (D-010) — now an active blocker<span class="wl-tag critical">Decision</span></div>
+                <div class="wl-desc">Was a standing gap; as of today it directly blocks a feature just requested, not just a future one. Priority raised accordingly.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Real native device pass<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Downgraded from Critical — today's pass confirmed real Postgres + real backend + real browser all work correctly. Native rendering and real Supabase auth remain genuinely unconfirmed (this sandbox structurally can't reach either).</div>
+                <div class="wl-title">Real native device/simulator pass<span class="wl-tag warn">Watch</span></div>
+                <div class="wl-desc">Real Postgres, real backend, real Supabase auth, and a real browser all confirmed working end-to-end on web across the last two sessions. Native iOS/Android rendering and the native auth flow remain genuinely unconfirmed. Tooling for this is now available if the owner wants it picked up.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Write the data privacy policy<span class="wl-tag warn">Decision</span></div>
-                <div class="wl-desc">D-010's open item. The schema now holds real-shaped data across holdings, income, goals, and discretionary categories — this policy is supposed to govern all of it.</div>
+                <div class="wl-title">Legal review of D-009<span class="wl-tag warn">Watch</span></div>
+                <div class="wl-desc">Still not scheduled — growing more urgent as build surface grows.</div>
+              </div>
+            </li>
+            <li>
+              <div class="stripe accent"></div>
+              <div>
+                <div class="wl-title">BRAND_PRD.md's 3 open fields<span class="wl-tag accent" style="color:var(--accent)">Lower stakes</span></div>
+                <div class="wl-desc">Waitlist incentive (no pricing decision exists yet), visual identity (real blank canvas today), AI-vendor disclosure stance. Not blocking build work — needed to move the landing page forward.</div>
               </div>
             </li>
           </ul>
@@ -484,15 +523,22 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">AI-surfaced creation: 0% built<span class="wl-tag critical">Critical</span></div>
-                <div class="wl-desc">New top risk — with the build queue empty, this is the largest gap between what's shipped and what the product's core pitch requires.</div>
+                <div class="wl-title">Onboarding UX doesn't match the core promise yet<span class="wl-tag critical">New top risk</span></div>
+                <div class="wl-desc">First live test produced a wall-of-text answer instead of a guided first moment. Fix is scoped (D-082) but stalled on the privacy-policy dependency above — a decision problem, not a code problem.</div>
+              </div>
+            </li>
+            <li>
+              <div class="stripe critical"></div>
+              <div>
+                <div class="wl-title">Data privacy policy undesigned<span class="wl-tag critical">Higher stakes today</span></div>
+                <div class="wl-desc">Same open item as every prior sync, but now directly blocks a requested feature rather than sitting as a theoretical gap.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
                 <div class="wl-title">Native device confirmation still pending<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Substantially de-risked today, not fully closed — see "Needs your input."</div>
+                <div class="wl-desc">Substantially de-risked — everything except native rendering itself is now confirmed working on web.</div>
               </div>
             </li>
             <li>
@@ -505,15 +551,8 @@
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Data privacy policy undesigned<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Unchanged risk — the schema keeps growing ahead of the policy meant to govern it.</div>
-              </div>
-            </li>
-            <li>
-              <div class="stripe warn"></div>
-              <div>
                 <div class="wl-title">Only 2 test fixtures, both pre-app<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Unchanged this session — all 11 findings closed against two synthetic Phase-1 profiles.</div>
+                <div class="wl-desc">Unchanged — Run 7 re-verified an existing fixture, didn't add a new one.</div>
               </div>
             </li>
           </ul>
@@ -527,8 +566,8 @@
             <li>
               <div class="stripe good"></div>
               <div>
-                <div class="wl-title">None — READY and BLOCKED both empty</div>
-                <div class="wl-desc">First time in this project's history. Everything outstanding now lives in "Needs your input," not the build queue.</div>
+                <div class="wl-title">None in the formal build-queue sense</div>
+                <div class="wl-desc">READY and BLOCKED both still empty. D-082's open fork is a soft blocker on the onboarding PRD specifically — see "Needs your input," not the build queue.</div>
               </div>
             </li>
           </ul>
@@ -542,15 +581,15 @@
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">1. Talk through AI-surfaced holding creation</div>
-                <div class="wl-desc">The biggest real gap left — worth its own design pass.</div>
+                <div class="wl-title">1. Decide D-082's open fork</div>
+                <div class="wl-desc">Stage-indicator vs. resolving D-010 first — directly unblocks the onboarding PRD's next section.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
                 <div class="wl-title">2. Data privacy policy</div>
-                <div class="wl-desc">Needs a dedicated owner session.</div>
+                <div class="wl-desc">Doing double duty now — needs a dedicated owner session more than ever.</div>
               </div>
             </li>
             <li>
@@ -563,15 +602,15 @@
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">4. UX principles section</div>
-                <div class="wl-desc">Unblocked since 04 Aug, not started.</div>
+                <div class="wl-title">4. A real native device/simulator pass</div>
+                <div class="wl-desc">Tooling now available in-session if the owner wants it picked up.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">5. Two LOW housekeeping items</div>
-                <div class="wl-desc">Sitting in KNOWN_LIMITATIONS.md — pick up opportunistically.</div>
+                <div class="wl-title">5. BRAND_PRD.md's open items</div>
+                <div class="wl-desc">Waitlist incentive, visual identity commissioning, AI-vendor disclosure — whenever ready to move on the landing page.</div>
               </div>
             </li>
           </ul>
@@ -586,7 +625,7 @@
     <div class="pulse-item"><div class="num">11 / 11</div><div class="lbl">testing findings resolved</div></div>
     <div class="pulse-item"><div class="num">18 / 18</div><div class="lbl">owner escalations raised / resolved</div></div>
     <div class="pulse-item"><div class="num">v0.8</div><div class="lbl">current system prompt</div></div>
-    <div class="pulse-item"><div class="num">5 / 5</div><div class="lbl">last verification run, clean</div></div>
+    <div class="pulse-item"><div class="num">7</div><div class="lbl">live verification runs, 0 open findings</div></div>
   </div>
 
 </div>
