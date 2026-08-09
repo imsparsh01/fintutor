@@ -199,3 +199,13 @@
   pending the still-unwritten D-010 privacy policy — the PRD opens on this fork before any design proceeds.
   Full write-up: `docs/decisions/D-082-onboarding-structured-flow-scope.md`.
 - **Date:** 05-Aug-2026
+
+### D-083 — D-082's open fork resolved: a narrow stage-indicator, not conversation memory
+- Owner-decided directly in conversation. Path A adopted: onboarding tracks progress via a small structured
+  `onboarding_stage`-shaped indicator, not a stored transcript or dialogue history — never sent to the
+  model as conversation memory. Does not reopen D-022 (full conversation memory stays parked pending
+  D-010); a stage pointer is structurally the same category as the already-persisted `hasSeenOnboarding`
+  state, not a new class of data. Doesn't decide the stage taxonomy or fail-safe mechanics — that's the
+  PRD's next section — and doesn't queue a build item yet. Full write-up:
+  `docs/features/onboarding/decisions/D-083-stage-indicator-resolved.md`.
+- **Date:** 05-Aug-2026
