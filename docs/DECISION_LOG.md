@@ -209,3 +209,12 @@
   PRD's next section — and doesn't queue a build item yet. Full write-up:
   `docs/features/onboarding/decisions/D-083-stage-indicator-resolved.md`.
 - **Date:** 05-Aug-2026
+
+### D-084 — Onboarding structured-flow PRD confirmed as proposed, build item queued
+- Owner-confirmed, no changes requested. Confirms `docs/features/onboarding/PRD.md`'s draft stage/path map
+  (four tracks, each ending in `complete`), the `onboarding_states` persisted-state shape (modeled on the
+  existing `StreakState` pattern), and the 4-turn fail-safe budget as build-ready. The BRIEF-011 compliance
+  note on the `fresh_starter` → `sequencing` stage's fixed-order risk stays attached, not cleared by this
+  confirmation. Build item added to `docs/BUILD_QUEUE.md` READY. Full write-up:
+  `docs/features/onboarding/decisions/D-084-prd-confirmed.md`.
+- **Date:** 10-Aug-2026

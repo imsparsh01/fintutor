@@ -1,9 +1,10 @@
-# Onboarding — structured conversation flow PRD (draft — stage map needs review before this is build-ready)
+# Onboarding — structured conversation flow PRD (CONFIRMED — build-ready, D-084)
 
-> Piloting the `docs/features/<slug>/` convention (D-082). Open Question #1 is now **resolved (D-083)** —
-> this draft proceeds past it to an actual stage/path map. That map, the persisted-state shape, and the
-> fail-safe mechanics below are still a **draft awaiting owner review**, not yet a `BUILD_QUEUE.md` item —
-> this project's standing practice is design-then-confirm-then-queue, not design-then-build silently.
+> Piloting the `docs/features/<slug>/` convention (D-082). Open Question #1 resolved (D-083); the stage/path
+> map, persisted-state shape, and fail-safe mechanics below are **confirmed as proposed (D-084)**, no
+> changes requested. Build item is in `docs/BUILD_QUEUE.md` READY. Implementation-time details are still
+> open — see "Not yet written" at the bottom — but those are for whoever picks up the build item to resolve,
+> not further owner decisions.
 
 ## Confirmed scope (D-082)
 
