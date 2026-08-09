@@ -21,8 +21,12 @@ export interface HoldingProposal {
 // BQ-042/D-084: present only on a call OnboardingScreen's ChatThread makes. `trackHint` mirrors
 // D-071's deepenAlias pattern — a deterministic signal only the chip UI can supply with
 // certainty; the backend only consults it while a user's track is still unset (onboarding.py).
+// `lastAiMessage` (D-085): the one narrow exception to D-022 — the AI's own last message in
+// this conversation, read from ChatThread's own local display state and forwarded so a
+// short/referential reply can be understood in context. Never stored server-side.
 export interface OnboardingRequest {
   trackHint?: string;
+  lastAiMessage?: string;
 }
 
 export interface OnboardingState {
@@ -52,6 +56,7 @@ export async function askQuestion(
         deepen_alias: deepenAlias ?? null,
         onboarding: onboarding !== undefined,
         onboarding_track_hint: onboarding?.trackHint ?? null,
+        onboarding_last_ai_message: onboarding?.lastAiMessage ?? null,
       }),
     });
   } catch {

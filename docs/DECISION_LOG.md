@@ -218,3 +218,14 @@
   confirmation. Build item added to `docs/BUILD_QUEUE.md` READY. Full write-up:
   `docs/features/onboarding/decisions/D-084-prd-confirmed.md`.
 - **Date:** 10-Aug-2026
+
+### D-085 — Limited memory for the onboarding exchange: exactly one prior AI message, never persisted
+- Owner-decided directly in conversation, triggered by a live-verification finding: a short/referential
+  reply ("no, that's the only one") broke the model's next turn because D-022 sends zero prior-turn
+  content, ever. Narrowly forwards the AI's own single immediately-preceding message, onboarding calls
+  only, never persisted server-side (the frontend already holds it as local display state — this changes
+  only "never sent back," for onboarding). Does not reopen D-022's general case: no new stored data means
+  nothing for the still-unwritten D-010 policy to need to cover; full dialogue recall/history stays exactly
+  as parked. Full write-up:
+  `docs/features/onboarding/decisions/D-085-limited-onboarding-exchange-memory.md`.
+- **Date:** 10-Aug-2026

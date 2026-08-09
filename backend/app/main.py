@@ -113,6 +113,10 @@ class ChatRequest(BaseModel):
     # as deepen_alias) — only used to resolve an unset track on this user's first turn;
     # ignored once a track is already set, and ignored entirely for free-typed messages.
     onboarding_track_hint: str | None = None
+    # D-085: the one narrow exception to D-022 — the AI's own last message in this
+    # onboarding conversation, forwarded from the frontend's local display state, never
+    # persisted server-side. Ignored (and never sent by the client) outside onboarding.
+    onboarding_last_ai_message: str | None = None
 
 
 @app.get("/health")
@@ -317,7 +321,9 @@ def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_d
     onboarding_state = None
     if body.onboarding:
         onboarding_state = start_or_resume(db, user_id, body.onboarding_track_hint, body.question)
-        baseline["onboarding"] = build_onboarding_instruction(onboarding_state)
+        baseline["onboarding"] = build_onboarding_instruction(
+            onboarding_state, body.onboarding_last_ai_message
+        )
     try:
         answer = ask_teaching_engine(baseline, body.question)
     except TeachingEngineNotConfigured as exc:

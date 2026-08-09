@@ -72,6 +72,13 @@ export const ChatThread = forwardRef<
     const question = raw.trim();
     if (!question || sending) return;
 
+    // D-085: read before this turn's user message is added below, so this is the AI's own
+    // last reply — the one narrow exception to D-022, computed from state this component
+    // already holds for display, never persisted, never sent outside onboarding.
+    const lastAiMessage = onboarding
+      ? [...messages].reverse().find((m) => m.role === 'assistant')?.text
+      : undefined;
+
     setError(null);
     setInput('');
     const userMessage: Message = { id: `${Date.now()}-u`, role: 'user', text: question };
@@ -84,7 +91,7 @@ export const ChatThread = forwardRef<
         userId,
         question,
         deepenAlias,
-        onboarding ? { trackHint: onboardingTrackHint } : undefined
+        onboarding ? { trackHint: onboardingTrackHint, lastAiMessage } : undefined
       );
       setMessages((prev) => [
         ...prev,

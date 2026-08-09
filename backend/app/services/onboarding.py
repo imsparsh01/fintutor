@@ -186,15 +186,23 @@ def is_forced_resolution_turn(state: OnboardingState) -> bool:
     return state.turns_in_stage + 1 >= _stage_budget(state.track, state.stage)
 
 
-def build_onboarding_instruction(state: OnboardingState) -> dict:
+def build_onboarding_instruction(state: OnboardingState, last_ai_message: str | None = None) -> dict:
     """The `onboarding` field added to the teaching engine's baseline — same instruction-field
     pattern as `deepen` (main.py's ChatRequest / baseline.py §4). Tells the model where the user is
     in the fixed onboarding structure and what this stage is trying to accomplish; never sent as
-    conversation history (D-083 — this is structural state, not dialogue recall)."""
+    conversation history (D-083 — this is structural state, not dialogue recall).
+
+    `last_ai_message` (D-085): the one narrow exception — the AI's own immediately preceding
+    message in this conversation, forwarded per-request from the frontend's local display state,
+    never persisted here or anywhere server-side. Without it, a short/referential reply ("no,
+    that's the only one") arrives with nothing to anchor it, since every other prior-turn detail
+    genuinely stays unsent (live-verified failure mode, not a hypothetical)."""
     guidance = _STAGE_GUIDANCE.get(
         (state.track, state.stage), "Help the user find their footing in the app."
     )
     instruction: dict = {"track": state.track, "stage": state.stage, "guidance": guidance}
+    if last_ai_message:
+        instruction["last_ai_message"] = last_ai_message
     if is_forced_resolution_turn(state):
         instruction["closing_instruction"] = _CLOSING_INSTRUCTION
     return instruction

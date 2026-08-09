@@ -112,8 +112,18 @@ Full detail in `docs/BUILD_QUEUE_ARCHIVE.md`'s BQ-042 entry.
   `closing_instruction` field tells the model plainly what the reply must do, and it writes it in its own
   voice, same pattern as every other instruction field in the system prompt.
 
+## Live-verified (10-Aug-2026, local Mac session)
+
+Real Supabase Postgres + real Anthropic API, driven through the actual browser UI. Deterministic chip
+routing, the content-aware stage-advance classifier (correctly stayed in `intro` until real loan details
+arrived, then correctly advanced to `mechanism`), and the independent holding-capture classifier all
+confirmed working. One real break found and fixed — see [D-085](decisions/D-085-limited-onboarding-exchange-memory.md):
+a short, referential reply ("no, that's the only one") lost all context, since D-022 sent zero prior-turn
+content even within a single onboarding conversation. Fixed by forwarding exactly the AI's own last message
+— never persisted, never sent outside onboarding — not by reopening D-022's general case.
+
 ## Not yet written (still genuinely open)
 
-- Not live-verified against a real Postgres DB or the live Anthropic API — built and logic-tested in a
-  cloud session with neither configured (see BQ-042's archive entry). Real end-to-end verification is an
-  owner local-session task, same as every prior DB-touching build item.
+- The D-085 fix has not yet been re-verified live after implementation (in progress this session).
+- `reflect`/`gapscan`/`sequencing` stages and the `unclassified` re-classification path are confirmed by
+  code review and partial live testing, not exhaustively live-tested turn-by-turn.
