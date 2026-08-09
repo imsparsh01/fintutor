@@ -178,10 +178,13 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       split-vs-merge test (teaching mechanism or tax behavior differs?). Selection-based resolution note:
       with AI-surfacing (D-012) the "list" is often surfaced by the AI rather than a static dropdown, but the
       resolution stays selection-by-record-ID either way.
-- [ ] Design AI-surfacing trigger logic + micro-capture flow (D-012) — how the system decides a moment is
-      right to surface an unrecorded product type, and how structured fields get captured progressively once
-      the user shows interest. Also needs: a re-thought AI-driven onboarding mechanism (no longer assumed to
-      be a form), and a minimal-but-real manual fallback UI. All four undesigned as of this entry.
+- [x] **AI-surfacing trigger logic + micro-capture flow (D-012) RESOLVED (09-Aug-2026) — all four
+      consequences closed, across prior decisions, never a single new one.** WHICH (candidate selection):
+      D-051/BQ-013, a mechanical pairing table, no model judgment. WHEN (moment selection): D-051 gated
+      this on re-verifying D-032's on-topic constraint in the new-product-type scenario; D-080 ran that
+      verification live (Phase-1 Run 7, FINDING 8, 0/5) and closed it. Micro-capture flow: D-078/BQ-039, a
+      narrow Haiku extraction + explicit confirm card, never auto-written. Onboarding re-think:
+      D-082/D-083/D-084/BQ-042. Manual fallback UI: BQ-036 (shipped earlier, before this item was revisited).
       **Trigger scope narrowed (25-Jul-2026):** proactive/unprompted "cold" surfacing (Trigger B) is OUT of
       MVP; only in-surface/in-conversation surfacing (Trigger A) is MVP. Confirmed with owner.
 - [x] **Decision 3 — Budgeting/Goals data model RESOLVED (D-038, 03-Aug-2026).** Goals hold explicit thin
@@ -301,6 +304,11 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v3.9 (09-Aug-2026) — **§8 AI-surfacing trigger-logic item RESOLVED — housekeeping, no new decision.** All
+  four of D-012's original undesigned consequences are closed across prior decisions, recognized as a set
+  for the first time: WHICH (D-051/BQ-013), WHEN (D-080), micro-capture (D-078/BQ-039), onboarding re-think
+  (D-082/D-083/D-084/BQ-042, built this session), manual fallback UI (BQ-036, already shipped). Owner-
+  confirmed before checking off, per §8's own edit rule.
 - v3.8 (05-Aug-2026) — **D-080: D-051's WHEN-stage surfacing verification satisfied, live.** The first
   live Anthropic API test run executed directly from inside a Cowork/Claude Code session on this
   project (network-access assumption corrected — this environment allows it, contrary to the standing
