@@ -522,3 +522,77 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   write-up: `docs/decisions/D-070-tax-saving-80c-room-confirmed.md`.
 - **Date:** 04-Aug-2026
 
+### D-071 — BRIEF-006 narrowed and confirmed: deepen selection wired for the "Ask about this" entry point only
+- **Tier:** 3, owner-confirmed. **Interprets D-049** (narrows its blocker to what's actually now true).
+  Ships BRIEF-006's Path B UI-signal variant, scoped to exactly one entry point: `HoldingDetailScreen`'s
+  existing "Ask about this" flow (BQ-022) threads its already-known holding alias through to `/chat`, and
+  the backend sets `deepen` deterministically — no model judgment anywhere in the selection path, the
+  property BRIEF-006 named as what would make Path B actually deliver D-028's promise. Every other `/chat`
+  entry point (general Chat tab, onboarding) is unchanged — `deepen` stays absent there, D-028's existing
+  fallback still governs. Path A's classifier question and the general free-text case remain exactly as
+  open as D-049 left them — not decided by this entry. Full write-up:
+  `docs/decisions/D-071-deepen-ui-signal-confirmed.md`.
+- **Date:** 04-Aug-2026
+
+### D-072 — BRIEF-006 fully resolved: Path A (narrow Haiku classifier) confirmed for the general Chat-tab deepen case
+- **Tier:** 3, owner-confirmed. Closes BRIEF-006 entirely — the last piece D-049/D-071 left open. A narrow,
+  non-teaching Haiku call reads the question + holdings (alias/product_type only, never `display_name`) and
+  returns a single holding alias or none; the backend sets `deepen` with a fixed, backend-authored reason
+  only on a confident single match, runs only when D-071's UI-signal case didn't already set `deepen`, and
+  degrades to D-028's existing safe default on any ambiguity, error, or missing config. First real use of
+  D-002's Haiku half. Full write-up: `docs/decisions/D-072-deepen-classifier-confirmed.md`.
+- **Date:** 04-Aug-2026
+
+### D-073 — BRIEF-017 confirmed: variable-income budgeting via declared floor + typical range (Path B2)
+- **Tier:** 3, owner-confirmed. Resolves BRIEF-011's escalated hard-stop. `Income.sources` items gain an
+  optional `amount_high` (no migration — `sources` is already JSONB); `amount` keeps its existing meaning
+  and role in `compute_budget()`'s math unchanged (the floor the budget is checked against); `amount_high`
+  is purely informational, shown alongside the floor, never fed into the math. Chosen over Path A (rolling
+  window — real new scope + a cold-start gap, deferred on evidence per D-067's precedent) and Path C
+  (defer entirely — in tension with D-054). Full write-up:
+  `docs/decisions/D-073-variable-income-b2-confirmed.md`.
+- **Date:** 04-Aug-2026
+
+### D-074 — BRIEF-018 confirmed: manual add-holding UI, auto-generated alias, family-scoped picker
+- **Tier:** 2, owner-confirmed. Path A adopted: the create form never has an alias field —
+  `POST /holdings`'s `alias` becomes optional, and the backend generates the next unused
+  `"{Humanized Product Type}-{n}"` label when omitted. Product-type picker in the create flow is scoped to
+  the current family tab, unlike the existing unconstrained recategorize picker. `HoldingEditModal` is
+  extended (null `holding` = create mode), not duplicated. AI-surfaced creation remains separate, untouched
+  work. Full write-up: `docs/decisions/D-074-manual-add-holding-confirmed.md`.
+- **Date:** 04-Aug-2026
+
+### D-075 — P1's "Traced to" note patched to reflect D-031's narrowing of D-012
+- **Tier:** 1. P1's test/scope unchanged; its provenance note in `PRODUCT_PRINCIPLES.md` now records that
+  D-031 permits a manual/browse secondary path into the same sections — P1 governs which path is primary,
+  not whether a fallback may exist. Item 1 of 3 in the live UX-principles-section discussion (session
+  2026-08-05a); owner confirmed the exact wording. Items 2 (persistent sections) and 3 (no comprehension
+  gates) remain open. Full write-up: `docs/decisions/D-075-p1-traced-to-patch.md`.
+- **Date:** 05-Aug-2026
+
+### D-076 — P8 added: a holding family's section is always reachable, never gated behind having data in it
+- **Tier:** 1. Extracts a checkable principle from D-031's persistent-sections decision. Empty sections are
+  shown, not hidden — resolving the flagged tension from session 2026-08-05a's checkpoint. Scoped to
+  reachability only, not empty-state screen design. Item 2 of 3 in the live UX-principles-section
+  discussion; item 3 (no comprehension gates) remains open. Full write-up:
+  `docs/decisions/D-076-p8-persistent-sections.md`.
+- **Date:** 05-Aug-2026
+
+### D-077 — P9 added: no comprehension gates — teaching content is never locked behind a quiz or a prior lesson
+- **Tier:** 1. Extracts a checkable principle from `PROJECT_SPEC.md` §2/§4's "learn on the go, no
+  curriculum" language. Names its relationship to P7 explicitly (P7 reacts to app usage only, never gates
+  content access) so a future gamified feature can't be waved through as engagement design. No
+  light-touch-check exception carved — owner confirmed the framing as-is. Item 3 of 3, closing the live
+  UX-principles-section discussion opened in session 2026-08-05a (D-075, D-076). Full write-up:
+  `docs/decisions/D-077-p9-no-comprehension-gates.md`.
+- **Date:** 05-Aug-2026
+
+### D-078 — AI-surfaced holding-capture mechanism confirmed: narrow Haiku reconciliation call + explicit confirm UI
+- **Tier:** 3, owner-confirmed. Builds D-002's never-implemented "Haiku for reconciliation" half and
+  D-012's still-missing primary capture path. Fork 1 (extraction): a second narrow Haiku call, same shape
+  as D-072's `deepen_classifier` — not a new architectural pattern. Fork 2 (write gate): proposals never
+  auto-write; an explicit confirm card in the chat UI, Save routes through the existing D-074/BQ-036
+  create-holding path. Both forks Path A, both owner-confirmed. Full write-up:
+  `docs/decisions/D-078-holding-capture-mechanism.md`.
+- **Date:** 05-Aug-2026
+

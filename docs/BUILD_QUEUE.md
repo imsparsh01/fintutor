@@ -16,40 +16,48 @@ Rules for this file:
 
 ## READY — pick one of these
 
-> **BQ-043..BQ-048 are a single authorised fleet (D-093), not six independent sessions.** D-093 unparks
-> D-014's execution subagents for exactly this body of work. The usual "one item per session" rule is
-> suspended for this set by that decision, and by nothing else — the next fleet needs its own call.
-> **Binding on every item below:** no backend or schema change (verified unnecessary — every drawn data
-> shape already has a service); no new dependency (`react-native-reanimated`, `expo-font`,
-> `@expo-google-fonts/*` are all hard stops); no new screen beyond a reskin of what exists. An agent that
-> concludes it needs any of these must STOP and report, not act.
-
-- **BQ-043 — Rewrite `app/design/tokens.ts` to the D-086 warm-ledger token set.** Colour/radius/type
-  tokens per D-086. `success` is **renamed to `tutor`** and recoloured to `#1D5C46` — never left in place
-  under its old name. Adds `fontFamily` tokens (platform system serif/sans/mono per D-088) — the app has
-  zero `fontFamily` declarations today, so this is the first. Foundation for BQ-044..BQ-046; they cannot
-  start until it lands. (D-086, D-088)
-- **BQ-044 — Migrate all remaining hardcoded colours in `app/screens` + `app/components` onto tokens.**
-  ~52 hex literals across 21 files; 12 files already import `tokens.ts`, 9 do not. Mechanical substitution
-  against BQ-043's map. (D-086)
-- **BQ-045 — Apply P10 to every surface rendering a real figure.** Strip valence styling: no green/red by
-  direction, no coloured progress fill, no threshold-triggered emphasis. Ledger rows in mono on hairline
-  rules. Covers `ConsolidatedTotalsCard`, `HoldingsList`, `HoldingDetailScreen`, `BudgetingScreen`, and
-  the three decision modals. (D-087/P10)
-- **BQ-046 — Apply P11: tutor voice in serif, interface and values in sans/mono.** Chat/teaching copy in
-  the serif token; labels, chrome, buttons and every real value in sans/mono. System faces only. (D-088/P11)
-- **BQ-047 — Empty-state content for the three family sections.** Categories and mechanisms, never
-  products; declinable walk-through offer; visibly-secondary manual add. (D-089)
-- **BQ-048 — Full-screen teaching walkthrough container.** Fork `1f`. The four-part P9 guard is a build
-  requirement, not guidance: skip live on *every* step, nothing unlocks at the end, no comprehension check
-  anywhere, steps freely navigable. Presentation container only — teaching content comes from the existing
-  backend unchanged. (D-090, REVIEW-FLAGGED)
+*(nothing ready right now — BQ-043..BQ-048 shipped 10-Aug-2026, see the archive. Everything left from
+that fleet is BLOCKED on an owner decision below, not on build work.)*
 
 ---
 
 ## BLOCKED — do not start
 
-*(nothing blocked right now)*
+> **BQ-049..BQ-054 all came out of the three-reviewer audit of the D-086..D-092 reskin (session
+> 2026-08-10b).** None is an engineering question — each needs an owner decision first, and several are
+> Tier 3. Do not resolve any of them by picking the reasonable-looking option.
+
+- **BQ-049 — The empty-section CTA promises a walkthrough it does not deliver.** All three family screens
+  render "Walk me through it, with my numbers" / "Takes about two minutes. Commits you to nothing." wired
+  to a single `/chat` prefill — one message, not a walkthrough. `components/TeachingWalkthrough.tsx`
+  (BQ-048) is the artifact that caption describes and sits built but unwired. **D-089 and D-090 were
+  decided the same day and the parallel build split severed them.** Owner picks: wire the CTA to
+  `TeachingWalkthrough` (D-090's chosen fork), or keep the prefill and delete the false caption.
+- **BQ-050 — Walkthrough step content has no decided source.** Blocks BQ-049's first option. D-089 promises
+  "your own numbers" on a surface that is by definition empty, so either static per-family copy ships (and
+  "with my numbers" is wrong) or steps come from the backend (a new response shape — off limits without a
+  decision).
+- **BQ-051 — `ConsolidatedTotalsCard` cannot distinguish zero from absent.** `consolidated.py` collapses
+  "no holdings", "holdings with `current_value` unfilled", and "ESOP-only, deliberately excluded" into the
+  same `0.0`. **Do NOT take the shortcut `total === 0 ? '—'`: a fully repaid loan is a real, meaningful
+  zero and that would hide it.** Options: card also fetches `/holdings` to count per-family rows
+  (presentation-layer, allowed, extra request, still cannot separate case 1 from case 2); accept `₹0` and
+  log it; or a backend change (needs its own decision — off limits under D-093).
+- **BQ-052 — D-091's requirement list contradicts its own approved example (Tier 3).** D-091 requires every
+  "what we won't say" block to state what the app will do instead; the approved ESOP wording contains no
+  such offer. A build agent hit this contradiction and wrote its own sentence, which was reverted for being
+  factually false (it claimed a tax computation the service does not perform). The inconsistency is in the
+  decision document, not the code. Owner: narrow the requirement, or give the ESOP block an accurate offer
+  half. Compliance-category — Tier 3, no Tier-2 resolution available.
+- **BQ-053 — Goal progress bar: keep the bar or show the fraction only?** `BudgetingScreen`'s monochrome
+  ink fill on a `lineSoft` track honours P10's letter (no colour, no valence). But a filled bar's *form*
+  still asserts "how far along you are", which is the one opinion the register avoids elsewhere. The
+  mockup's own answer was the fraction in neutral ink, no bar. Owner's call — flagged by the design review
+  as borderline, deliberately not treated as a violation.
+- **BQ-054 — Insurance empty-state copy is inconsistent with its two siblings.** Two lines against
+  Investments' and Loans' five (it was lifted from D-089's *illustrative* example, never written as
+  finished screen copy), and the noun switches mid-screen: "+ Add a policy manually" in the empty state vs
+  "+ Add insurance" in the populated list. Copy decision, not an engineering one.
 
 ---
 

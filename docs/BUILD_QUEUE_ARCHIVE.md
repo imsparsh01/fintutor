@@ -12,6 +12,49 @@
 
 ---
 
+## BQ-043..BQ-048 — Mockups v1 reskin fleet (D-086..D-093) — DONE 10-Aug-2026
+
+Shipped as ONE authorised fleet under D-093 (which unparked D-014's execution subagents by satisfying its
+condition, not overriding it), not six independent sessions. 5 Sonnet build agents on disjoint file sets,
+3 Opus reviewers (engineering / design / compliance), 1 Sonnet coherence pass. Commits `fafe7ce`,
+`f099a35`, `8a6f2b0` on `design/mockups-v1-reskin`.
+
+- **BQ-043 — `app/design/tokens.ts` rewritten to the D-086 warm-ledger set.** DONE. `success: '#116611'`
+  **renamed** to `tutor` (#1D5C46), not merely recoloured — a token called `success` carries exactly the
+  valence P10 strips out. First `fontFamily` tokens in the app (platform system serif/sans/mono per D-088);
+  `figure` scale (hero 32 / subHero 22) added in the coherence pass.
+- **BQ-044 — Hardcoded colours migrated onto tokens.** DONE. Zero hex literals remain in `app/screens`,
+  `app/components`, `app/navigation`. `HoldingEditModal` had had no token usage at all.
+- **BQ-045 — P10 applied.** DONE, and it held across a five-way parallel build with zero lapses — no
+  valence colour, no trend glyph, no threshold emphasis, verified by an independent Opus audit of every
+  surface rendering a real figure.
+- **BQ-046 — P11 applied.** DONE on platform system faces. Newsreader/IBM Plex were NOT adopted: they need
+  `expo-font` + `@expo-google-fonts/*`, a hard-stop dependency decision that remains the owner's. P11 is
+  satisfied by the distinction, not by any particular typeface.
+- **BQ-047 — Empty-state content for the three family sections.** DONE (D-089). Mechanisms and categories
+  only, never products. Follow-ups BQ-049 (the CTA's false caption) and BQ-054 (Insurance copy length and
+  noun) are BLOCKED in the live queue.
+- **BQ-048 — Full-screen teaching walkthrough container.** DONE as specified — container only; wiring was
+  explicitly out of scope and is now BQ-049/BQ-050. The four-part P9 guard is enforced through API *shape*,
+  not convention: there is no `onComplete` prop at all, so reaching the last step is behaviourally
+  identical to abandoning on the first, and a negative-space comment records which props were deliberately
+  omitted so a future editor cannot add a gate without noticing.
+
+Also in this fleet, from the reviewers' findings: `components/TeachingBlock.tsx` extracted (the "what we
+won't say" block had been drawn two different ways by two agents from the same decision record);
+`components/HoldingsList.tsx` deleted as orphaned; `ConsolidatedTotalsCard` moved to `useFocusEffect`
+(totals had gone stale after every add/edit/delete); the "+ Add" affordance and a retry restored to the
+three error branches; `FlatList` virtualisation restored. Compliance fixes: one genuine advice-line breach
+in agent-written copy (unprompted prioritisation, D-025/D-028), an agent-authored ESOP sentence reverted
+for claiming a tax computation the service does not perform, a real bank/product name removed from a
+placeholder (pre-existing on `main`), and two wrong mechanism claims about Indian home loans and credit
+cards corrected.
+
+**Not visually verified** — Expo web needs `react-native-web` + `react-dom`, which D-093 forbids adding.
+Static verification only: `tsc` exit 0, greps for hex/clay/`package.json` drift.
+
+---
+
 ## DONE
 
 ### BQ-042 — Build the onboarding structured conversation flow — done 10-Aug-2026
