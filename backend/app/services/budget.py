@@ -10,6 +10,7 @@ _EMI_TYPES = {"home_loan", "personal_loan"}
 _SIP_CAPABLE_TYPES = {"equity_mutual_fund", "debt_mutual_fund"}
 # D-013 product_type slugs whose recurring outflow is an insurance premium.
 _PREMIUM_TYPES = {"term_insurance", "endowment_ulip"}
+_RECURRING_FREQUENCIES = {"monthly", "month", "quarterly", "quarter", "annual", "annually", "yearly", "year", "weekly", "week"}
 
 
 def _to_monthly(amount: float, frequency: str | None) -> float:
@@ -58,7 +59,7 @@ def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
 
         # Option C: a recurring amount without an explicit cadence is not silently treated
         # as monthly. It remains visible in the holding, but does not enter this monthly view.
-        if amount is None or frequency is None:
+        if amount is None or frequency is None or str(frequency).strip().lower() not in _RECURRING_FREQUENCIES:
             continue
         monthly_amount = _to_monthly(float(amount), str(frequency))
         recurring_outflows_total += monthly_amount

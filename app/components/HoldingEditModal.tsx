@@ -7,6 +7,7 @@ import { ALL_PRODUCT_TYPES, humanizeProductType } from '../lib/taxonomy';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
 import { scheduleHoldingReminder } from '../lib/reminders';
+import { cancelHoldingReminder } from '../lib/reminders';
 
 // Characteristics are form-edited as strings, converted to their real type on save.
 // A field left blank is omitted from the payload rather than sent as an empty string.
@@ -135,6 +136,7 @@ export function HoldingEditModal({
     setError(null);
     try {
       await deleteHolding(userId, holding.id);
+      await cancelHoldingReminder(holding.id);
       onChanged();
       onClose();
     } catch (err) {

@@ -128,4 +128,10 @@ def create_holding(
     db.add(holding)
     db.commit()
     db.refresh(holding)
-    return _to_dict(holding)
+    result = _to_dict(holding)
+    result["reconciliation"] = {
+        "status": "updated",
+        "product_type": holding.product_type,
+        "changed_fields": list((characteristics or {}).keys()),
+    }
+    return result

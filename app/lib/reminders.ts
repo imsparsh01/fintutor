@@ -1,7 +1,11 @@
 import * as Notifications from 'expo-notifications';
 import type { Holding } from './holdings';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const REMINDER_KEY = 'fintutor:reminder:';
 
 export async function scheduleHoldingReminder(holding: Holding): Promise<boolean> {
+  await cancelHoldingReminder(holding.id);
   const date = nextReminderDate(holding);
   if (!date) return false;
   const permission = await Notifications.getPermissionsAsync();
@@ -9,11 +13,19 @@ export async function scheduleHoldingReminder(holding: Holding): Promise<boolean
     const requested = await Notifications.requestPermissionsAsync();
     if (!requested.granted) return false;
   }
-  await Notifications.scheduleNotificationAsync({
+  const identifier = await Notifications.scheduleNotificationAsync({
     content: { title: 'FinTutor reminder', body: reminderBody(holding.product_type) },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
   });
+  await AsyncStorage.setItem(`${REMINDER_KEY}${holding.id}`, identifier);
   return true;
+}
+
+export async function cancelHoldingReminder(holdingId: string): Promise<void> {
+  const key = `${REMINDER_KEY}${holdingId}`;
+  const identifier = await AsyncStorage.getItem(key);
+  if (identifier) await Notifications.cancelScheduledNotificationAsync(identifier);
+  await AsyncStorage.removeItem(key);
 }
 
 function nextReminderDate(holding: Holding): Date | null {
