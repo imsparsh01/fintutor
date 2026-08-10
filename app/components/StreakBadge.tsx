@@ -2,8 +2,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, font, radius, spacing } from '../design/tokens';
 
 // D-060/D-061/P7: reacts only to the app-open/streak event, never to a financial figure.
-// Clay (colors.behaviour / behaviourSoft) is reserved for this component and Mascot —
-// the engagement layer — and must never migrate onto a ledger row or a real number.
+// Clay (colors.behaviour / behaviourSoft) is reserved for this engagement component —
+// must never migrate onto a ledger row or a real number.
 export function StreakBadge({ currentStreak }: { currentStreak: number }) {
   const active = currentStreak > 0;
   const label = active ? `${currentStreak}-day streak` : 'Open the app tomorrow to start a streak';

@@ -16,14 +16,50 @@ Rules for this file:
 
 ## READY — pick one of these
 
-*(nothing ready right now — BQ-049/050/051 were resolved by the MacBook sessions (D-096/D-097,
-10-Aug-2026) and are archived. Only BQ-052 remains, and it is BLOCKED on a Tier 3 owner decision.)*
+### BQ-054 — Financial Health Score (0-100 score + 4 sub-scores)
+**Decision:** D-105 (display format: single 0-100); D-106 (formula confirmed)
+**Scope:** Build the Health Score screen. Formula confirmed (D-106): 4 sub-scores averaged.
+- Investment rate: (monthly SIP ÷ monthly income) × 10, capped at 100
+- Insurance safety net: 0 (none) / 50 (only health) / 75 (health + term) / 100 (+ riders)
+- Emergency buffer: (emergency_fund_months × 8.33), capped at 100
+- Tax utilisation: (80C_annual ÷ 150000) × 100
+- Overall = simple average of the four; label bands: 0-39 "Getting started" / 40-59 "Building up" / 60-79 "On track" / 80-100 "Strong"
+Display as single 0-100 score + 4 sub-score rows. Wire from PortfolioScreen's "coming soon" card.
+
+### BQ-056 — Scenario modelling ("What if…" — batch 1)
+**Decision:** D-106 (batch 1 scenarios + S-01 user-set target; S-04 parked)
+**Scope:** Build 4 scenario cards + user-set target (S-01):
+- S-05: Emergency runway — "If you lost income today, how long could you sustain expenses?"
+- S-03: SIP increase — "What does ₹2000 more/month do to your corpus in 10 years?"
+- S-06: Debt cost — "How much is your outstanding debt costing you per year?"
+- S-07: Inaction tax — "What's the opportunity cost of cash sitting in a savings account?"
+- S-01: User-set corpus target (user enters the number; app shows SIP needed)
+S-04 (Rent vs buy) is parked — schema change required. C-16/C-23 are batch 2.
+
+### BQ-059 — Goals screen restructure (illustrated goal cards, insurance entry, emergency CTA)
+**Decision:** D-106 (Goals tab confirmed in 5-tab nav; placeholder GoalsScreen already live)
+**Scope:** Replace GoalsScreen placeholder with full illustrated layout:
+- 4 goal-type cards (Higher education, Secure retirement, Dream house, Perfect wedding)
+- Insurance entry card with coverage summary
+- Emergency readiness CTA
+Illustration style: decide during build — simple icon (SF Symbol / vector) is acceptable as
+placeholder; no external asset library needed.
+
+### BQ-061 — Portfolio overlap indicator (Option A — category concentration)
+**Decision:** D-106 (Option A confirmed: educational category concentration indicator)
+**Scope:** Add a card to PortfolioScreen showing how many equity MFs are in the same broad
+category. No external API, no ISINs, no scheme names. Copy explains what overlap means and
+why it matters (mechanism fact, P2-safe). Wire to existing holdings data (product_type filter).
 
 ---
 
 ## BLOCKED — do not start
 
-*(nothing blocked — BQ-052 resolved by D-103, 11-Aug-2026)*
+### BQ-058 — Portfolio screen restructure (donut chart, sub-scores, trend section)
+**Blocked on:** BQ-054 (must be built and live first — donut needs health sub-scores).
+
+### BQ-060 — Home screen restructure (8-section scrollable layout)
+**Blocked on:** BQ-054 (Health Score card must be built first).
 
 ---
 

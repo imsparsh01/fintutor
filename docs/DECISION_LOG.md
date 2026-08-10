@@ -199,6 +199,18 @@
   `docs/decisions/D-094-full-mockup-match-rebuild-authorised.md`.
 - **Date:** 10-Aug-2026
 
+### D-106 — Feature expansion sub-decisions round 2: 5-tab nav, Health Score formula, scenario priority, portfolio overlap approach
+- **Tier:** Mixed. Nav = 5 tabs (Home · Portfolio · Goals · Tools · Chat) — existing Invest/Loans/Insure/Budget tabs become stack screens accessible from Portfolio tab. Health Score formula approved: 4 sub-scores averaged (Investment rate, Insurance, Emergency buffer, Tax utilisation) with coverage-breadth framing. Scenario batch 1 = S-05/03/06/07; S-01 uses user-set corpus target; S-04 parked (schema change). Portfolio overlap = Category concentration indicator (no scheme data, no external API). Full write-up: `docs/decisions/D-106-feature-expansion-sub-decisions-round2.md`.
+- **Date:** 11-Aug-2026
+
+### D-105 — Feature expansion sub-decisions round 1: Arya persona, calculator batch 1, tax approval, Health Score display
+- **Tier:** Mixed (3 for persona/P2 ruling; 1 for calculator priority; hard stop resolved for C-16/C-23). Persona = "Arya" (replaces Ankur). Calculator batch 1: SIP goal planner, Home loan EMI, Inflation impact, Step-up SIP, CAGR backward (C-04/10/17/22/24). C-16 income tax + C-23 HRA both approved as mechanism comparisons with D-091 "what we won't say" framing. Health Score display = single 0-100 (NW-style); "scoring formula still TBD in next decision." Full write-up: `docs/decisions/D-105-feature-expansion-sub-decisions-round1.md`.
+- **Date:** 11-Aug-2026
+
+### D-104 — Competitive feature expansion: scope confirmed from Richify + Novelty Wealth analysis
+- **Tier:** 3, owner-decided directly in conversation. Eight MVP feature areas confirmed (Financial Health Score, named persona, scenarios, 21 new calculators, portfolio overlap, Portfolio screen restructure, Goals screen restructure, Home restructure). Account Aggregator explicitly post-MVP. Mascot/Ankur removal confirmed → BQ-053 READY. "Nothing builds until each area's blocking sub-decision is logged — see BUILD_QUEUE BLOCKED." Full write-up: `docs/decisions/D-104-competitive-scope-confirmed.md`.
+- **Date:** 11-Aug-2026
+
 ### D-103 — ESOP "what we won't say" block: offer half added (resolves BQ-052)
 - **Tier:** 3, owner-decided directly in conversation. Adds the missing offer half to the ESOP
   exercise-cost modal's block: "What this screen does give you: the cash cost and the spread — the

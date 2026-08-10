@@ -1,8 +1,14 @@
-<!-- Generated: 2026-08-11 | Files scanned: 48 frontend files | Token estimate: ~700 -->
+<!-- Generated: 2026-08-11 | Files scanned: 54 frontend files | Token estimate: ~750 -->
 
 # FinTutor — Frontend Codemap
 
 ## Entry: `app/App.tsx` → `app/navigation/RootNavigator.tsx`
+
+## Navigation: `app/navigation/MainTabs.tsx`
+
+D-106: 5 visible tabs (Home · Portfolio · Goals · Tools · Chat). Former family tabs are hidden
+screens (tabBarButton: () => null) — navigable from PortfolioScreen without showing in tab bar.
+CalculatorScreen is also a hidden tab, entered from ToolsScreen via `{ type: CalculatorType; label }`.
 
 ## Screen inventory
 
@@ -13,13 +19,17 @@ NotConfiguredScreen     screens/ (38)              Supabase env vars absent
 LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
 OnboardingScreen        screens/ (127)             Chip-guided 4-track conversation (D-082/D-084)
-ConsolidatedScreen      screens/ (233)             "Home" — net totals + streak + reward surface
-InvestmentsScreen       screens/ (338)             Holdings list (equity/debt/fd/ppf/stocks)
-LoansScreen             screens/ (290)             Holdings list (home_loan/personal_loan/credit_card)
-InsuranceScreen         screens/ (296)             Holdings list (term_insurance/endowment_ulip)
-BudgetingScreen         screens/ (659)             Income + provenance + goals + discretionary + tax room
-ChatScreen              screens/ (47)              Thin wrapper — renders ChatThread for the Chat tab
-HoldingDetailScreen     screens/ (357)             Single holding — edit + ESOP/LoanVsInvest/LoanVsInvest
+ConsolidatedScreen      screens/ (233)             "Home" tab — net totals + streak + reward surface
+PortfolioScreen         screens/ (97)              Portfolio tab — family nav rows + BQ-054/058/061 stubs
+GoalsScreen             screens/ (43)              Goals tab — placeholder; BQ-059 fills in
+ToolsScreen             screens/ (80)              Tools tab — calculator list grid (5 items, batch 1)
+CalculatorScreen        screens/ (420)             Hidden tab — 5 calculators: C-04/C-10/C-17/C-22/C-24
+InvestmentsScreen       screens/ (338)             Hidden tab — holdings list (equity/debt/fd/ppf/stocks)
+LoansScreen             screens/ (290)             Hidden tab — holdings list (home_loan/personal_loan/cc)
+InsuranceScreen         screens/ (296)             Hidden tab — holdings list (term_insurance/endowment_ulip)
+BudgetingScreen         screens/ (659)             Hidden tab — income + goals + discretionary + tax room
+ChatScreen              screens/ (47)              Chat tab — thin wrapper rendering ChatThread
+HoldingDetailScreen     screens/ (357)             Single holding — edit + ESOP/LoanVsInvest modals
 ```
 
 ## Component inventory
@@ -27,8 +37,9 @@ HoldingDetailScreen     screens/ (357)             Single holding — edit + ESO
 ```
 Component                   File (lines)       Purpose
 ──────────────────────────────────────────────────────────────────────────────
-ChatThread                  components/ (453)  Core chat UI — message list, input, proposal card rendering,
-                                               reconciliation status card (D-099), onboarding flag forwarding
+ChatThread                  components/ (~470) Core chat UI — Arya header (BQ-055), message list, input,
+                                               proposal card rendering, reconciliation status (D-099).
+                                               AryaHeader rendered when !onboarding (D-105).
 HoldingProposalCard         components/ (138)  Confirm/reject holding capture proposal (D-078 Fork 2)
 HoldingEditModal            components/ (326)  Add/edit holding — schema-driven form via characteristicsSchema
 ConsolidatedTotalsCard      components/ (94)   Home totals — uses metadata flags not numeric zero (D-097)
@@ -40,7 +51,7 @@ LoanVsInvestModal           components/ (335)  Prepayment vs invest calculator (
 EsopExerciseCostModal       components/ (166)  ESOP exercise cost today (D-066)
 TaxSavingRoomModal          components/ (260)  80C/NPS headroom calculator (D-016)
 StreakBadge                 components/ (32)   Streak counter — behaviour color only (P7)
-Mascot                      components/ (43)   Engagement mascot — behaviour color only (P7)
+[Mascot deleted — BQ-053]
 ```
 
 ## lib/ — API and state
@@ -88,6 +99,18 @@ Loans:       home_loan | personal_loan | credit_card_debt
 Insurance:   term_insurance | endowment_ulip
 ```
 
+## Calculator types (D-105/D-106, BQ-057)
+
+```
+CalculatorType (navigation/types.ts):
+  'sip_goal'       C-04 — SIP Goal Planner (target → monthly SIP)
+  'emi'            C-10 — Home Loan EMI
+  'inflation'      C-17 — Inflation Impact
+  'stepup_sip'     C-22 — Step-up SIP Corpus
+  'cagr_backward'  C-24 — CAGR Calculator
+```
+All 5 are pure frontend math. Batch 2 (C-16 income tax, C-23 HRA) approved but not yet built.
+
 ## Key patterns
 
 - All screens call backend lib functions (not fetch directly).
@@ -95,4 +118,6 @@ Insurance:   term_insurance | endowment_ulip
   requires adding an entry there.
 - `TeachingWalkthrough` is reused by all three family screens; steps come from `walkthroughSteps.ts`.
 - `ChatThread` handles both the general Chat tab and the onboarding conversation — distinguished by the
-  `isOnboarding` prop which sets `onboarding: true` in the POST /chat body.
+  `onboarding` prop which controls Arya header visibility and sets `onboarding: true` in the POST /chat body.
+- `CalculatorScreen` receives `{ type: CalculatorType; label: string }` as route params and renders the
+  appropriate calculator. ToolsScreen is the only entry point (hidden tab pattern).

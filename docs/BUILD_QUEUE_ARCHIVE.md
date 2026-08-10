@@ -12,6 +12,30 @@
 
 ---
 
+## BQ-057 — Calculator suite: batch 1 (C-04, C-10, C-17, C-22, C-24) — DONE 11-Aug-2026
+
+Decisions D-105/D-106. Built 5 calculator screens (SIP Goal Planner, Home Loan EMI, Inflation
+Impact, Step-up SIP, CAGR Backward) in `app/screens/CalculatorScreen.tsx`. All pure frontend math,
+no backend calls; outputs in `font.mono` / `colors.ink` (P10). Created `app/screens/ToolsScreen.tsx`
+as the Tools tab entry point (calculator list grid). Updated `app/navigation/MainTabs.tsx` to the
+confirmed 5-tab structure: Home · Portfolio · Goals · Tools · Chat. CalculatorScreen is a hidden tab
+(navigated to from ToolsScreen via `{ type, label }` params).
+
+## BQ-055 — Named tutor persona "Arya" — Chat screen header — DONE 11-Aug-2026
+
+Decision D-105. Added `AryaHeader` component to `app/components/ChatThread.tsx`: circle avatar
+(40px, `colors.tutor` fill) with "A" monogram in `colors.canvas`, "Arya" label, "Your financial
+tutor" subtitle. Rendered above messages when `!onboarding` (onboarding flow has its own context
+framing). BQ-060 (Home screen) will add the full persona card in Section 4 later.
+
+## BQ-053 — Delete Mascot (Ankur/sapling) from ChatThread — DONE 11-Aug-2026
+
+Decision D-104. Deleted `app/components/Mascot.tsx` (43 lines). In `app/components/ChatThread.tsx`:
+removed Mascot import, MascotMood type, CELEBRATION_DURATION_MS constant, mood state, celebrationTimer
+ref, cleanup useEffect, mood-setting in sendText, and `<Mascot mood={mood} />` render. Removed
+`useRef` and `useEffect` from React imports (no longer used). Updated `StreakBadge.tsx` comment to
+remove "and Mascot" reference.
+
 ## BQ-052 — ESOP "what we won't say" offer half (D-103) — DONE 11-Aug-2026
 
 Owner chose Option A in conversation (D-103). Single copy edit in `app/components/EsopExerciseCostModal.tsx`:

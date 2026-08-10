@@ -1,19 +1,101 @@
-# BRIEF-019 — Richify-inspired feature expansion: Health Score, Persona, Scenarios, Calculators, Home restructure
+# BRIEF-019 — Competitive feature expansion: Health Score, Persona, Scenarios, Calculators, Home restructure
 
-**Status:** OPEN — pending Novelty Wealth review (owner instruction: finalise scope after both apps reviewed)
+**Status:** OPEN — both Richify and Novelty Wealth reviewed; pending owner decisions on all items in summary table
 **Date logged:** 11-Aug-2026
-**Source:** Competitive analysis of Richify (richify.ai) + owner's live app screenshots
+**Last updated:** 11-Aug-2026 (Novelty Wealth analysis added)
+**Source:** Competitive analysis of Richify (richify.ai, live screenshots) + Novelty Wealth (noveltywealth.in, web research)
 **Scope tag:** Tier 3 decisions across all five areas — nothing builds until each area has an owner-confirmed decision
 
 ---
 
 ## What triggered this brief
 
-Owner reviewed Richify's live app (screenshots attached in session) and identified five capabilities
-worth adopting for FinTutor: a Financial Health Score, a named tutor persona (replacing the current
-Mascot/Ankur/sapling), scenario modelling, a broader calculator suite (top 20 for India), and a
-restructured Home screen modelled on Richify's layout. Owner instruction: log everything now, finalise
-after reviewing Novelty Wealth, then queue builds.
+Owner reviewed Richify's live app (screenshots) and Novelty Wealth (web research, 11-Aug-2026),
+and identified capabilities worth adopting for FinTutor: a Financial Health Score, a named tutor
+persona (replacing the current Mascot/Ankur/sapling), scenario modelling, a broader calculator suite,
+and a restructured Home screen. Owner instruction: log everything from both apps, then queue builds.
+
+---
+
+## Novelty Wealth — what they do and what it means for FinTutor
+
+**App:** [noveltywealth.in](https://www.noveltywealth.in/) — India's SEBI-RIA licensed AI wealth
+advisory platform. Founded 2024, Bengaluru. $1.4M seed (IndiaQuotient). 15K+ families. Free +
+NW Pro at ₹199/month. Data via India's Account Aggregator framework (automatic, consent-based).
+
+**Critical difference from FinTutor:** Novelty Wealth is a licensed investment adviser. Their core
+product is giving specific advice — rebalancing, mistake detection, "your personal financial second
+opinion." This is the opposite of FinTutor's P2 principle. The more "advanced" things Novelty Wealth
+does (rebalancing guidance, concentration alerts, performance optimization) are precisely what FinTutor
+is designed not to do. The teach-not-advise principle is FinTutor's product position vs both
+Richify and Novelty Wealth — it's a differentiator, not a limitation.
+
+### What Novelty Wealth does — feature-by-feature
+
+| Feature | NW does it | Richify does it | FinTutor can/should adopt? |
+|---|---|---|---|
+| Portfolio tracking (MF, stocks, EPF, FD, NPS, insurance, real estate) | ✅ | ✅ | FinTutor already tracks these families |
+| Family wealth view | ✅ | ✅ | Already in ConsolidatedScreen |
+| Named AI persona (NovaAI) | ✅ | ✅ (7 personas) | Yes — Feature area 2 |
+| Financial health check-up / score | ✅ (Wealth Check-Up) | ✅ (Ada's health score) | Needs P2 ruling — Feature area 1 |
+| Scenario planning ("what if") | ✅ | ✅ | Yes — Feature area 3 |
+| Calculator suite | ✅ (9 types) | ✅ | Yes — Feature area 4 |
+| Account Aggregator data import | ✅ (core feature) | ❌ | Hard stop — new major dependency |
+| Investment advice / rebalancing | ✅ (SEBI-licensed) | Partly | No — violates P2 |
+| Portfolio overlap detection | ✅ | ❌ | Possible, but needs scheme-level data (schema change → hard stop if pursued) |
+| Hidden commission detection | ✅ | ❌ | No — requires knowing product type and commission rate (advisory territory) |
+| Mistake detection / course correction | ✅ | ❌ | No — advisory, fails P2 |
+| Tax optimisation advice | ✅ | ❌ | No — advisory framing; C-16 (tax calc) already flagged as hard stop needing approval |
+| Live stock tickers (red/green) | ❌ | ✅ | No — P10 violation |
+| Audio brief / TTS | ❌ | ✅ (Felix) | No — new TTS dependency |
+| News feed | ❌ | ✅ | No — new external data dependency |
+
+### New calculators from Novelty Wealth (to add to Feature area 4)
+
+Novelty Wealth ships these that aren't in FinTutor's current C-04–C-20 list:
+
+| # | Calculator | What it computes | New data needed? |
+|---|---|---|---|
+| C-21 | XIRR (actual return) | Annualised return on irregular cash flows (SIPs + withdrawals) | Uses existing SIP holdings + would need transaction-level dates |
+| C-22 | Step-up SIP | Corpus if SIP increases by X% per year | None (user inputs step-up rate + horizon) |
+| C-23 | HRA exemption | House Rent Allowance tax-exempt component (metro/non-metro) | Uses income; India-specific; owner: is this tax-shaped? → Tier 3 |
+| C-24 | CAGR calculator | What annualised return did an investment deliver? | None (user inputs start/end value + years) |
+
+**Note on C-21 (XIRR):** Requires transaction-level dates (when each SIP invested) — FinTutor's
+current holdings model stores amount and frequency, not individual transaction dates. A simplified
+version can be built using assumed monthly dates; exact XIRR requires transaction history.
+
+**Note on C-23 (HRA):** Computing a specific rupee tax exemption is tax-adjacent. Same hard stop
+question as C-16 — requires explicit owner approval before building.
+
+**Portfolio overlap** — Novelty Wealth does this (mutual fund overlap). Requires knowing which
+specific MF scheme (by name/ISIN) the user holds. FinTutor's holdings store fund family
+(mutual_fund), not scheme identity. Adding scheme-level data = schema change = hard stop if
+pursued. Flag only, do not build.
+
+### What Novelty Wealth's "Wealth Check-Up" looks like vs Richify's Health Score
+
+Both provide an overarching financial health summary, but the framing differs:
+- **Richify (Ada):** Single score across savings/debt/protection/investing. Gamified — user
+  tracks improvement over time. CTA to "find the quickest way to lift it" (advisory tone creep).
+- **Novelty Wealth:** "Full AI-powered wealth review" — strengths/gaps assessment, risk
+  evaluation, tax insights, liquidity health, rebalancing suggestions. Described as "your personal
+  financial second opinion." Explicitly advisory.
+
+FinTutor's version — if built — needs to be a descriptive coverage map ("here are the areas your
+holdings touch and the areas they don't") rather than either a score or an advisory review. This is
+the P2-safe version of what both competitors do.
+
+### What we do NOT adopt from Novelty Wealth
+
+| NW feature | Why not adopted |
+|---|---|
+| Rebalancing suggestions / alerts | Advisory — fails P2 does-not-says test |
+| Mistake detection and course correction | Advisory — directly tells user what they did wrong |
+| Tax optimisation advice | Advisory framing; tax calculations need hard stop approval (C-16, C-23) |
+| Portfolio overlap with scheme-level data | Schema change (new ISIN/scheme field) — hard stop |
+| Hidden commission detection | Requires knowing product commission structure — advisory territory |
+| Account Aggregator integration | New major service dependency — hard stop, see Feature area 6 |
 
 ---
 
@@ -167,13 +249,26 @@ produced it. All outputs render in `font.mono` / `colors.ink`, no valence colour
 users rely on. Per CLAUDE.md's hard-stop list, this requires explicit owner approval before building —
 flag it here, do not proceed without it.
 
+### 4 additional calculators from Novelty Wealth research (C-21 to C-24)
+
+See the Novelty Wealth analysis section above for full description. Appended to the list here for
+tracking — these four bring the total proposed new calculators to 21:
+
+| # | Calculator | What it computes | New data needed? |
+|---|---|---|---|
+| C-21 | XIRR (actual return) | Annualised return on SIP cash flows (simplified: assumes monthly dates) | Approximation only; exact XIRR needs transaction dates |
+| C-22 | Step-up SIP | Corpus when SIP increases by X% annually | None (free-form inputs) |
+| C-23 | HRA exemption | Tax-exempt HRA component (metro/non-metro) | Uses income — owner approval needed (Tier 3, same as C-16) |
+| C-24 | CAGR backward | Annualised return between start/end value | None (free-form inputs) |
+
 ### Open owner decisions required
-1. **Priority order** — which 5 to build first? The list above has 17; a single session can realistically
-   ship 3–5 depending on complexity.
-2. **C-16 tax calculator** — explicit owner approval needed (hard stop category).
-3. **UI home** — do calculators get their own tab ("Tools"?), live as Home-screen cards, or sit inside
+1. **Priority order** — which 5 to build first? The combined list has 21 proposed new calculators;
+   a single session can realistically ship 3–5 depending on complexity.
+2. **C-16 income tax calculator** — explicit owner approval needed (hard stop category).
+3. **C-23 HRA exemption calculator** — explicit owner approval needed (same hard stop category as C-16; computes a rupee tax figure).
+4. **UI home** — do calculators get their own tab ("Tools"?), live as Home-screen cards, or sit inside
    each family screen? Richify surfaces results on the Home screen with freshness timestamps.
-4. **Input model** — calculators that use existing holdings (C-06, C-07, C-08, etc.) vs. ones that take
+5. **Input model** — calculators that use existing holdings (C-06, C-07, C-08, etc.) vs. ones that take
    free-form user inputs (C-04, C-05, C-10). The former are richer but depend on data completeness.
 
 ---
@@ -203,21 +298,50 @@ Home screen — proposed section order
 ─────────────────────────────────────────────────────────
 ```
 
-**What we explicitly do NOT adopt from Richify's Home (and why):**
+**What we explicitly do NOT adopt from Richify's or Novelty Wealth's Home (and why):**
 
-| Richify feature | Why not adopted |
-|---|---|
-| Live stock tickers with red/green % change | P10 (valence styling on financial figures) + live market data feed = new external dependency + regulatory risk |
-| "+$253K" in green on calculator result | P10 — a positive figure in green encodes a verdict. Output renders in ink only. |
-| 90-second audio brief (TTS narrated by Felix) | New TTS service dependency — requires a hard-stop decision |
-| Macro news feed (CNBC/external sources) | New external news API — new dependency, not a teaching surface |
-| Investor mentor personas (Buffett/Wood framing) | Directly advisory — fails P2 does-not-says test |
+| Feature | Source | Why not adopted |
+|---|---|---|
+| Live stock tickers with red/green % change | Richify | P10 + live market data feed = new external dependency + regulatory risk |
+| "+$253K" in green on calculator result | Richify | P10 — a positive figure in green encodes a verdict. Ink only. |
+| 90-second audio brief (TTS narrated by Felix) | Richify | New TTS service dependency — requires a hard-stop decision |
+| Macro news feed (CNBC/external sources) | Richify | New external news API — not a teaching surface |
+| Investor mentor personas (Buffett/Wood framing) | Richify | Directly advisory — fails P2 does-not-says test |
+| Rebalancing suggestions on Home | Novelty Wealth | Advisory — fails P2 |
+| Mistake/performance alerts | Novelty Wealth | Advisory — fails P2 |
+| Account Aggregator auto-import CTA | Novelty Wealth | New major service dependency — see Feature area 6 |
 
 ### Open owner decisions required
 1. **Tab bar** — adding more features may require a new tab ("Tools" for calculators + scenarios) or
    a restructured nav. Current 6 tabs are already at the practical limit. Owner decides nav shape.
 2. **Health Score dependency** — section 3 only exists if Feature Area 1 is approved and built first.
 3. **Persona dependency** — section 4 only exists if Feature Area 2 is approved and built first.
+
+---
+
+## Feature area 6 — Account Aggregator integration (HARD STOP — log only, do not build)
+
+### What Novelty Wealth does
+
+Novelty Wealth's core UX differentiator: users connect bank accounts, brokerages (Zerodha, Groww,
+HDFC, ICICI Direct), and EPF automatically via India's Account Aggregator (AA) framework — a
+consent-based, RBI/SEBI-regulated data-sharing system. No manual entry. Holdings appear immediately
+after connection. This is what makes their product feel "more advanced."
+
+### Why this is a hard stop for now
+
+Integrating an AA provider (Finvu, Setu, OneMoney, Perfios) would:
+1. Add a new regulated third-party service dependency — not already decided → hard stop per CLAUDE.md
+2. Require schema changes to hold AA-sourced data (source: manual vs. AA, token management, refresh cycles)
+3. Change the onboarding flow substantially
+4. Introduce compliance obligations (consent management, data retention, DPDP Act alignment)
+
+This is a future-phase initiative, not an MVP build. Log here for owner awareness.
+
+### Decision required (Tier 2 escalation — new dependency + compliance shape)
+- Does the owner want to explore AA integration as a post-MVP initiative? If yes, it needs its own
+  brief, a SEBI/AA compliance check, and a dependency decision logged before any design begins.
+- For now: no action, no queuing.
 
 ---
 
@@ -238,24 +362,28 @@ mechanism-fact card (D-100's existing pattern), with the persona name/visual to 
 
 ## Summary of decisions needed before any build starts
 
-| Area | Decision | Tier |
-|---|---|---|
-| Health Score | Scoring methodology and dimensions | 3 |
-| Health Score | P2/P10 framing of a numeric score | 3 |
-| Persona | Name and visual style | 3 |
-| Persona | Mascot removal: now (standalone) vs with persona? | 1 |
-| Scenarios | Which scenarios to build and in what order | 2 |
-| Scenarios | Retirement corpus target formula | 3 |
-| Scenarios | Rent vs buy data requirements (schema) | hard stop |
-| Calculators | Priority order of 17 new calculators | 1 |
-| Calculators | C-16 income tax calculator explicit approval | hard stop |
-| Home | Navigation structure with new sections | 3 |
-| Home | New "Tools" tab vs Home-card surfaces | 3 |
+All items require an owner decision before anything enters BUILD_QUEUE.
 
----
+| Area | Decision | Tier | Note |
+|---|---|---|---|
+| Health Score | Scoring methodology and dimensions | 3 | Novelty Wealth does this as "Wealth Review" (advisory); FinTutor needs a P2-safe framing first |
+| Health Score | P2/P10 framing — score vs coverage map | 3 | Both competitors' versions lean advisory; needs explicit owner position |
+| Health Score | Where it lives (screen / Home card) | 3 | |
+| Persona | Name and visual style | 3 | Novelty Wealth = "NovaAI"; Richify = 7 named characters |
+| Persona | Mascot removal: now (standalone) vs with persona? | 1 | Fastest win — can ship independently |
+| Persona | Voice scope: Chat only vs Home-screen CTA too? | 3 | |
+| Scenarios | Which 7 candidates to build and priority order | 2 | |
+| Scenarios | Retirement corpus target formula | 3 | Money-logic |
+| Scenarios | Rent vs buy data requirements (schema change) | hard stop | New input fields needed |
+| Scenarios | Home card vs dedicated screen | 3 | |
+| Calculators | Priority order (21 proposed, pick first 5) | 1 | |
+| Calculators | C-16 income tax — explicit approval | hard stop | Tax-shaped computation |
+| Calculators | C-23 HRA exemption — explicit approval | hard stop | Tax-shaped computation |
+| Home | Tab bar / nav structure with new sections | 3 | 6 tabs already at practical limit |
+| Account Aggregator | Explore as post-MVP initiative? | 2 | If yes → own brief + compliance check needed |
 
-## Next step
+### What could ship without waiting for any of the above
 
-Owner to review Novelty Wealth app, then return to this brief to confirm decisions above.
-Nothing enters BUILD_QUEUE until each decision has an answer. The mascot removal is the one
-item that could ship immediately without any of the above — owner can confirm that independently.
+**Mascot removal only:** Delete `Mascot.tsx` (Ankur/sapling) from `ConsolidatedScreen.tsx`, replace
+reward moment with D-100's plain mechanism-fact card. Tier-1 delete, fully reversible. Owner
+can confirm this one item independently and it goes straight into BUILD_QUEUE.

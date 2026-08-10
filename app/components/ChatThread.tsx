@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ReactNode } from 'react';
+import { forwardRef, useImperativeHandle, useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -14,7 +14,6 @@ import { colors, font, radius, spacing } from '../design/tokens';
 import { askQuestion, type HoldingProposal } from '../lib/chat';
 import { createHolding } from '../lib/holdings';
 import { HoldingProposalCard } from './HoldingProposalCard';
-import { Mascot, type MascotMood } from './Mascot';
 import { scheduleHoldingReminder } from '../lib/reminders';
 
 interface Message {
@@ -89,10 +88,6 @@ export interface ChatThreadHandle {
   send: (text: string, deepenAlias?: string, onboardingTrackHint?: string) => void;
 }
 
-// How long the mascot stays 'celebrating' after a completed exchange before
-// reverting to 'neutral' — a brief reaction, not a persistent state change.
-const CELEBRATION_DURATION_MS = 2500;
-
 // BQ-023's /chat endpoint, surfaced. Each question is an independent call — no
 // conversation memory sent to the model (D-022); the message list here is local
 // display state only, so the user can see the thread while the app is open.
@@ -110,16 +105,6 @@ export const ChatThread = forwardRef<
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // D-061/P7: reacts to the completed-exchange event itself, never to the
-  // content of the response — same boundary BQ-031's streak wiring holds.
-  const [mood, setMood] = useState<MascotMood>('neutral');
-  const celebrationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
-    };
-  }, []);
 
   const sendText = async (raw: string, deepenAlias?: string, onboardingTrackHint?: string) => {
     const question = raw.trim();
@@ -155,9 +140,6 @@ export const ChatThread = forwardRef<
           holdingProposal: holdingProposal ?? undefined,
         },
       ]);
-      setMood('celebrating');
-      if (celebrationTimer.current) clearTimeout(celebrationTimer.current);
-      celebrationTimer.current = setTimeout(() => setMood('neutral'), CELEBRATION_DURATION_MS);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reach the teaching engine');
     } finally {
@@ -189,7 +171,9 @@ export const ChatThread = forwardRef<
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <Mascot mood={mood} />
+      {/* BQ-055 (D-105): Arya persona header — shown in the Chat tab, hidden on onboarding
+          (which has its own context framing). Avatar is a monogram "A" in colors.tutor. */}
+      {!onboarding && <AryaHeader />}
       {messages.length === 0 ? (
         <View style={styles.centered}>{emptyState}</View>
       ) : (
@@ -254,6 +238,22 @@ export const ChatThread = forwardRef<
     </KeyboardAvoidingView>
   );
 });
+
+// BQ-055 (D-105): Arya header — monogram avatar + name + subtitle. Shown at top of the Chat
+// tab (not during onboarding). Visual = circle filled colors.tutor, "A" in colors.canvas.
+function AryaHeader() {
+  return (
+    <View style={styles.aryaHeader}>
+      <View style={styles.aryaAvatar}>
+        <Text style={styles.aryaMonogram}>A</Text>
+      </View>
+      <View>
+        <Text style={styles.aryaName}>Arya</Text>
+        <Text style={styles.aryaSubtitle}>Your financial tutor</Text>
+      </View>
+    </View>
+  );
+}
 
 // Static — the disclaimer's wording is fixed regardless of which band figure triggered it
 // (D-029's guard is about the range's own tightness, decided server-side; the client's job is
@@ -450,4 +450,25 @@ const styles = StyleSheet.create({
   },
   sendButton: { marginLeft: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   sendButtonText: { color: colors.tutor, fontFamily: font.uiSemibold },
+  aryaHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
+    backgroundColor: colors.canvas,
+  },
+  aryaAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.tutor,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aryaMonogram: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.canvas },
+  aryaName: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.ink },
+  aryaSubtitle: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary },
 });

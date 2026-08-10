@@ -5,11 +5,21 @@ export type AuthStackParamList = {
   Register: undefined;
 };
 
+// D-106: 5-tab nav (Home · Portfolio · Goals · Tools · Chat).
+// Family screens (Investments/Loans/Insurance/Budgeting) stay in the navigator as hidden
+// screens (tabBarButton: () => null) so existing navigation.navigate calls keep working.
+export type CalculatorType = 'sip_goal' | 'emi' | 'inflation' | 'stepup_sip' | 'cagr_backward';
+
 export type MainTabsParamList = {
   Consolidated: undefined;
+  Portfolio: undefined;
+  Goals: undefined;
+  Tools: undefined;
   // BQ-022: navigated to from a holding's detail screen with a pre-filled question.
   // deepenAlias (D-071): set only alongside prefillQuestion by that same entry point.
   Chat: { prefillQuestion?: string; deepenAlias?: string } | undefined;
+  // Hidden (tabBarButton: null) — D-106: family screens remain navigable from Portfolio/Home.
+  Calculator: { type: CalculatorType; label: string };
   Investments: undefined;
   Loans: undefined;
   Insurance: undefined;
