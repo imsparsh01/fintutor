@@ -18,9 +18,19 @@ downstream of two files that stay elsewhere and are NOT duplicated here:
 - **`wireframes/`** — one file per screen (or a tightly related group). No design-tool integration exists
   in this repo, so wireframes are structured text specs (purpose, key elements, states — loading/empty/
   error/populated), not images. See `wireframes/README.md`.
+- **`mockups/`** — FinTutor's own UX at higher fidelity than `wireframes/`: the aesthetic layer, drawn.
+  Where a wireframe specifies *structure* (what's on the screen, which states exist), a mockup specifies
+  *how it looks and reads* — palette, type, density, hierarchy, real copy. `MOCKUPS_v1.html` is
+  self-contained and opens offline; `MOCKUPS_v1_NOTES.md` is its reasoning and the decisions it forced.
+  Adopted 10-Aug-2026 via D-086 through D-092 — read those before treating anything in the file as
+  settled, since the mockups deliberately drew several forks and not all were taken (D-090 chose `1f` over
+  the notes' recommended `1e`; D-092 dropped a block the mockups drew).
 - **`DESIGN_REFERENCES.md`** — external apps worth studying for UI/UX inspiration, one file, not a
   per-screen breakdown. Reference material only, not a decision or a spec — see the file's own header for
-  how it differs from the two categories above.
+  how it differs from the categories above.
+
+The three UX categories in one line: **wireframes = structure · mockups = aesthetic layer ·
+DESIGN_REFERENCES = other people's UX.**
 
 ## What this folder is NOT for
 

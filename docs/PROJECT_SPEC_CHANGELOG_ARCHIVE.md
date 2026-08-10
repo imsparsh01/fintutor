@@ -10,6 +10,13 @@
 
 ---
 
+- v3.0 (03-Aug-2026) — **ESOP added to the product-type taxonomy (D-055), resolving BRIEF-010's escalated
+  fork.** ESOP confusion was independently named the startup/gig founding-sub-profile's (D-054) top pain
+  point (BRIEF-010); owner chose to add it to MVP scope rather than park it, so that profile isn't
+  launched with structurally thinner day-one value. Taxonomy membership only — the characteristics field
+  schema (vesting, strike price, exercise mechanics, etc.) is deferred as its own design task, same
+  two-step pattern D-011/D-013 used originally.
+
 - v2.9 (03-Aug-2026) — **§3 Target user narrowed for MVP (D-053, D-054).** MVP design and Phase-3 testing
   now target a founding segment — early-career, single-income, low-complexity earners — chosen because an
   independently-run product-fit lens and a business/GTM lens converged on it (BRIEF-008). D-054 kept the

@@ -140,6 +140,42 @@ is dressed up (a game mechanic, a "level," a locked card).
   "light-touch" check (e.g. confirming the user read a number before moving on) — the framing was
   confirmed as-is, no such case is permitted.
 
+### P10 — A real financial figure is never styled by valence.
+**Test:** Does this styling choice tell the user something is *true*, or something is *good*? The first is
+presentation and is permitted; the second is a verdict delivered by typography and is forbidden.
+
+- **Scope:** app-wide, every surface that renders a number from the living baseline — holding values,
+  balances, rates, EMI amounts, goal progress, budget lines.
+- **Traced to:** D-087, from the v1 mockups' "real numbers wear no costume" (`docs/ux/mockups/`). Extends
+  P2's "does, not says" test into the visual channel, which wording-level rules cannot reach.
+- **What it forbids:** green/red by direction or performance; arrows or trend glyphs implying good/bad;
+  coloured or gradient progress fills; conditional emphasis (bold/size/colour) triggered by a threshold;
+  "on track"/"behind" styling; celebratory treatment attached to a figure rather than to an action.
+- **Relationship to P7:** P7 blocks the mascot reacting to net worth; P10 blocks the net worth itself
+  being coloured. P7 covers game surfaces, P10 covers the quieter case — ordinary, non-game styling that
+  still encodes a judgement. Together they close the surface.
+- **Relationship to P6:** P10 constrains decoration, never legibility. Stripping valence must not strip
+  information — the user still gets their real numbers, in full.
+- **Worked example:** a goal at 27% is drawn in neutral ink. It is not failing; it is at 27%. Colouring it
+  would be the app forming an opinion about the user's pace toward a target only the user set.
+
+### P11 — The tutor's voice has its own typeface.
+**Test:** Can the user tell, without reading a word of it, which text on this screen is FinTutor
+*explaining* something versus the app *labelling or reporting*? If the two are typographically
+indistinguishable, that fails.
+
+- **Scope:** app-wide, every surface carrying both generated teaching copy and interface text.
+- **Traced to:** D-088, from the v1 mockups. Serves D-009/D-025's teaching-vs-advice boundary by making it
+  continuously visible; the alternative — a disclaimer on every explanation — is worse to read and, by
+  repetition, less credible.
+- **Implementation scope:** satisfied by the *distinction*, not by any particular typeface. Platform system
+  faces (serif / sans / mono) are a complete implementation. The specific faces the mockups draw
+  (Newsreader, IBM Plex) require `expo-font` + `@expo-google-fonts/*` — a dependency decision, separately
+  escalated, deliberately not bundled into this principle.
+- **What it forbids:** setting teaching copy in the interface face; setting a real value in the tutor
+  serif; using the serif decoratively on non-teaching text (a heading, a button) — which dissolves the
+  very signal the principle carries.
+
 ---
 
 ## Deliberately unprincipled (for now)
@@ -156,13 +192,30 @@ AI-primary/manual-secondary population and progressive capture are P1's territor
 persistent, always-accessible sections is **P8** (D-076); no comprehension gates / no lesson-tree is **P9**
 (D-077). All five are now covered — this backlog item is closed.
 
-The **aesthetic layer** (visual style, density, motion, colour, information hierarchy) remains genuinely
-unprincipled and will stay so until real screen decisions force it — inventing it now would violate the
-extraction discipline this file is built on.
+**The aesthetic layer is no longer unprincipled, as of 10-Aug-2026 (D-086..D-092).** It stayed open on an
+explicit condition — "until real screen decisions force it" — and the v1 mockups
+(`docs/ux/mockups/MOCKUPS_v1.html`) were that forcing function: a full screen inventory across seven flows
+made the palette, type, density and hierarchy questions unavoidable rather than hypothetical. Two
+principles were extracted (**P10** valence, **P11** typeface); the rest of the register landed as decisions
+rather than principles, because a colour value resolves no future fork on its own. The extraction
+discipline held — nothing here was invented ahead of a screen that needed it.
+
+What remains genuinely unprincipled: **motion and density.** The reskin uses React Native's built-in
+`Animated`/`LayoutAnimation` only, and no decision yet says what motion *means* in this product — whether
+it may respond to a real figure (P7/P10's question, transposed into time) is unanswered and will stay so
+until a real screen forces it.
 
 ---
 
 ## Change log
+- v1.6 (10-Aug-2026) — **P10 and P11 added; the aesthetic layer is no longer unprincipled** (D-087, D-088,
+  in the D-086..D-092 mockup-adoption set). **P10** — a real financial figure is never styled by valence;
+  extends P2's does-not-says test into the visual channel and closes, together with P7, the gap where
+  ordinary non-game styling encodes a judgement. **P11** — the tutor's voice has its own typeface; makes
+  D-009/D-025's boundary visible without a per-bubble disclaimer, scoped to platform system faces so the
+  principle is not blocked on a font-dependency decision. Both extracted from
+  `docs/ux/mockups/MOCKUPS_v1.html`, the forcing function the "deliberately unprincipled" section had been
+  waiting for since v1.1. Motion and density remain unprincipled — see that section.
 - v1.5 (05-Aug-2026) — **P9 added: no comprehension gates — teaching content is never locked behind a quiz
   or a prior lesson** (D-077). Item 3 of 3, closing the live UX-principles-section discussion opened in
   session 2026-08-05a. Traces to `PROJECT_SPEC.md` §2/§4's "learn on the go, no curriculum" language.

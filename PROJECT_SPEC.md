@@ -304,6 +304,20 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.0 (10-Aug-2026) — **The aesthetic layer is decided (D-086 through D-092); execution subagents
+  unparked (D-093).** §8's UX-principles item carried a standing note that visual style, density, motion
+  and hierarchy were "deliberately still left for when real screen decisions force it." The v1 mockups
+  (`docs/ux/mockups/`, moved into the repo this session) were that forcing function. Adopted: the
+  warm-ledger register + token set, with `success: '#116611'` renamed to `tutor` rather than recoloured
+  (D-086); **P10** — real figures never styled by valence (D-087); **P11** — the tutor's voice has its own
+  typeface, scoped to platform system faces (D-088); empty sections as teaching surfaces, resolving what
+  P8 left open (D-089); teaching moments as a full-screen walkthrough with a binding four-part P9 guard
+  (D-090, REVIEW-FLAGGED); the "what we won't say" block adopted as drawn (D-091, Tier 3); the
+  refusal-before-result meta-statement dropped (D-092, Tier 3). D-093 unparks D-014's execution subagents
+  — condition satisfied, not overridden — scoped to this reskin only, with backend changes, new
+  dependencies, and new screens explicitly out of bounds for every agent. **No MVP scope change:** this is
+  a presentation-layer pass over screens that already exist. The mockups' undrawn/unbuilt surfaces
+  (notification tray, standalone reminders screen, Income screen as drawn) are NOT authorised by it.
 - v3.9 (09-Aug-2026) — **§8 AI-surfacing trigger-logic item RESOLVED — housekeeping, no new decision.** All
   four of D-012's original undesigned consequences are closed across prior decisions, recognized as a set
   for the first time: WHICH (D-051/BQ-013), WHEN (D-080), micro-capture (D-078/BQ-039), onboarding re-think
@@ -362,9 +376,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   not a CRUD save" framing, drawing a line between capture (D-012's concern) and post-capture management
   (this decision's concern). §8 item checked off. Also unblocks the UX-principles-section dependency in
   `PRODUCT_PRINCIPLES.md` (both Decision 2 and Decision 3 now resolved) — not acted on in this entry.
-- v3.0 (03-Aug-2026) — **ESOP added to the product-type taxonomy (D-055), resolving BRIEF-010's escalated
-  fork.** ESOP confusion was independently named the startup/gig founding-sub-profile's (D-054) top pain
-  point (BRIEF-010); owner chose to add it to MVP scope rather than park it, so that profile isn't
-  launched with structurally thinner day-one value. Taxonomy membership only — the characteristics field
-  schema (vesting, strike price, exercise mechanics, etc.) is deferred as its own design task, same
-  two-step pattern D-011/D-013 used originally.
