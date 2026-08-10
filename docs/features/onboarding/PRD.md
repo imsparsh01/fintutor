@@ -122,8 +122,20 @@ a short, referential reply ("no, that's the only one") lost all context, since D
 content even within a single onboarding conversation. Fixed by forwarding exactly the AI's own last message
 — never persisted, never sent outside onboarding — not by reopening D-022's general case.
 
+## Fully live-verified (10-Aug-2026, same session, follow-up pass)
+
+The D-085 fix was re-verified live against the exact failure transcript — see the section above. All four
+tracks then tested end-to-end (real Supabase, real Anthropic), not just `reactive_dabbler`:
+`fresh_starter`'s `sequencing` stage delivered real computed numbers while explicitly declining to
+prescribe an order; `habit_former`'s `gapscan` correctly named a missing category generically; genuinely
+ambiguous free text (not a chip tap) correctly resolved to `unclassified` via the live Haiku classifier
+rather than being forced into a track, and the turn-budget `closing_instruction` fail-safe fired correctly.
+Nothing outstanding on live verification.
+
 ## Not yet written (still genuinely open)
 
-- The D-085 fix has not yet been re-verified live after implementation (in progress this session).
-- `reflect`/`gapscan`/`sequencing` stages and the `unclassified` re-classification path are confirmed by
-  code review and partial live testing, not exhaustively live-tested turn-by-turn.
+- Exact per-stage copy is model-generated from the `guidance` strings, not fixed prose — worth a review
+  pass if the owner wants tighter control over wording, not a defect.
+- The "resume a skipped conversation" interaction resolves mechanically (state persists, `OnboardingScreen`
+  just isn't re-shown after "Done"/`markOnboardingSeen`) but hasn't been tested via the real skip → resume
+  UI flow specifically.
