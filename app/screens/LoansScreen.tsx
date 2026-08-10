@@ -15,6 +15,8 @@ import { fetchHoldings, type Holding } from '../lib/holdings';
 import { humanizeProductType, LOAN_TYPES } from '../lib/taxonomy';
 import type { HoldingsStackParamList, MainTabsParamList } from '../navigation/types';
 import { HoldingDetailScreen } from './HoldingDetailScreen';
+import { TeachingWalkthrough } from '../components/TeachingWalkthrough';
+import { LOAN_WALKTHROUGH } from '../lib/walkthroughSteps';
 
 const Stack = createNativeStackNavigator<HoldingsStackParamList>();
 
@@ -52,6 +54,7 @@ function LoansList({ navigation }: ListProps) {
   const [totals, setTotals] = useState<ConsolidatedTotals | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
 
   const load = useCallback(() => {
@@ -68,9 +71,7 @@ function LoansList({ navigation }: ListProps) {
   useFocusEffect(load);
 
   const startWalkthrough = () => {
-    parentNavigation?.navigate('Chat', {
-      prefillQuestion: 'Can you walk me through loans, using my own numbers?',
-    });
+    setShowWalkthrough(true);
   };
 
   const startAlreadyHave = () => {
@@ -140,8 +141,8 @@ function LoansList({ navigation }: ListProps) {
         </TeachingBlock>
 
         <Text style={styles.walkthroughPrompt}>
-          Want to walk through how each one works, using your own numbers? It takes about two minutes
-          and commits you to nothing.
+          Want a short map of how each one works? You can apply it to your own numbers in Chat when
+          you are ready.
         </Text>
 
         <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
@@ -157,6 +158,7 @@ function LoansList({ navigation }: ListProps) {
         </Pressable>
 
         {modal}
+        <TeachingWalkthrough visible={showWalkthrough} steps={LOAN_WALKTHROUGH} onDismiss={() => setShowWalkthrough(false)} />
       </ScrollView>
     );
   }

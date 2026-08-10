@@ -78,6 +78,10 @@
   `docs/features/onboarding/decisions/D-084-prd-confirmed.md`.
 - **Date:** 10-Aug-2026
 
+### D-096 — Empty sections use a static walkthrough followed by an optional Chat handoff
+- **Tier:** 3, owner-decided directly in conversation. Empty family sections use static mechanism steps in the existing full-screen walkthrough; the final step points to Chat for applying the mechanism to the user's own numbers. Full write-up: `docs/decisions/D-096-empty-section-walkthrough-option-d.md`.
+- **Date:** 10-Aug-2026
+
 ### D-085 — Limited memory for the onboarding exchange: exactly one prior AI message, never persisted
 - Owner-decided directly in conversation, triggered by a live-verification finding: a short/referential
   reply ("no, that's the only one") broke the model's next turn because D-022 sends zero prior-turn
