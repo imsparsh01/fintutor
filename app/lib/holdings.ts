@@ -6,6 +6,11 @@ export interface Holding {
   alias: string;
   display_name: string | null;
   characteristics: Record<string, unknown>;
+  reconciliation?: {
+    status: 'new' | 'updated' | 'contradiction';
+    product_type: string;
+    changed_fields: string[];
+  };
 }
 
 export interface HoldingUpdate {

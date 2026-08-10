@@ -29,6 +29,11 @@ interface Message {
   // Investments" confirmation + WHY NO VERDICT HERE follow-up (mockup Flow 03.3). "Not now"
   // still resolves the message (D-078 — the card never returns) but shows nothing further.
   proposalSaved?: boolean;
+  reconciliation?: {
+    status: 'new' | 'updated' | 'contradiction';
+    product_type: string;
+    changed_fields: string[];
+  };
 }
 
 // Flow 03.1 (D-029): a figure the tutor states is either the user's own (from the profile) or
@@ -166,11 +171,13 @@ export const ChatThread = forwardRef<
   };
 
   const handleSaveProposal = async (messageId: string, proposal: HoldingProposal) => {
-    await createHolding(userId, {
+    const savedHolding = await createHolding(userId, {
       product_type: proposal.product_type,
       characteristics: proposal.characteristics,
     });
-    resolveProposal(messageId, true);
+    setMessages((prev) => prev.map((m) => (m.id === messageId
+      ? { ...m, proposalResolved: true, proposalSaved: true, reconciliation: savedHolding.reconciliation }
+      : m)));
   };
 
   useImperativeHandle(ref, () => ({ send: sendText }));
@@ -216,7 +223,7 @@ export const ChatThread = forwardRef<
                   resolves the message (D-078) but stays silent past that, same as today. */}
               {item.holdingProposal && item.proposalResolved && item.proposalSaved && (
                 <>
-                  <SavedConfirmation />
+                  <SavedConfirmation status={item.reconciliation?.status ?? 'new'} />
                   <WhyNoVerdictBlock onSuggestion={(text) => sendText(text)} />
                 </>
               )}
@@ -263,17 +270,22 @@ function RangeBlock() {
 // Flow 03.3's "Added to Investments" moment — fires once, on the same message that carried the
 // now-saved proposal. Deliberately generic ("Saved." not a restated figure) since this component
 // has no access to which specific field a given product type surfaces.
-function SavedConfirmation() {
+function SavedConfirmation({ status }: { status: 'new' | 'updated' | 'contradiction' }) {
+  const title = status === 'updated' ? 'Updated in your baseline'
+    : status === 'contradiction' ? 'This differs from what’s recorded'
+    : 'Added to your baseline';
   return (
     <View style={styles.savedBanner}>
       <View style={styles.savedHeader}>
         <View style={styles.savedDot}>
           <Text style={styles.savedCheck}>✓</Text>
         </View>
-        <Text style={styles.savedTitle}>Added to Investments</Text>
+        <Text style={styles.savedTitle}>{title}</Text>
       </View>
       <Text style={styles.savedBody}>
-        Saved. Edit or recategorise it from Investments anytime.
+        {status === 'new' ? 'Saved. Edit or recategorise it from Investments anytime.'
+          : status === 'updated' ? 'The recorded details now reflect this information.'
+          : 'Review the recorded holding before deciding which detail to keep.'}
       </Text>
     </View>
   );

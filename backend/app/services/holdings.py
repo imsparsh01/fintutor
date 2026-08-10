@@ -58,7 +58,13 @@ def update_holding(
         holding.characteristics = characteristics
     db.commit()
     db.refresh(holding)
-    return _to_dict(holding)
+    result = _to_dict(holding)
+    result["reconciliation"] = {
+        "status": "new",
+        "product_type": product_type,
+        "changed_fields": list((characteristics or {}).keys()),
+    }
+    return result
 
 
 def delete_holding(db: Session, user_id: uuid.UUID, holding_id: uuid.UUID) -> bool:

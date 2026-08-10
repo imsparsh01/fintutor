@@ -90,6 +90,10 @@
 - **Tier:** 3, owner-approved directly in conversation. EMI and SIP cadence fields are explicit; budget provenance and monthly normalization require a captured frequency, with EPF deferred. Full write-up: `docs/decisions/D-098-recurring-cadence-before-budget-provenance.md`.
 - **Date:** 10-Aug-2026
 
+### D-099 — In-chat reconciliation status after explicit holding confirmation
+- **Tier:** 3, owner-approved directly in conversation. Confirmed holding writes return structured reconciliation metadata and Chat renders a compact new/updated/contradiction status; no history surface is added. Full write-up: `docs/decisions/D-099-in-chat-reconciliation-status.md`.
+- **Date:** 10-Aug-2026
+
 ### D-085 — Limited memory for the onboarding exchange: exactly one prior AI message, never persisted
 - Owner-decided directly in conversation, triggered by a live-verification finding: a short/referential
   reply ("no, that's the only one") broke the model's next turn because D-022 sends zero prior-turn
