@@ -94,8 +94,9 @@ export function EsopExerciseCostModal({
             </Text>
 
             <TeachingBlock heading="The input only you have">
-              A view on whether the company's value holds. Nothing here estimates that, and no
-              part of this figure should be read as expecting it to.
+              A view on whether the company's value holds. Nothing here estimates that. What this
+              screen does give you: the cash cost and the spread — the two numbers that bound your
+              decision regardless of the valuation call.
             </TeachingBlock>
 
             {result.exercise_window_note && (

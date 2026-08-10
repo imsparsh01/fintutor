@@ -12,6 +12,29 @@
 
 ---
 
+## BQ-052 — ESOP "what we won't say" offer half (D-103) — DONE 11-Aug-2026
+
+Owner chose Option A in conversation (D-103). Single copy edit in `app/components/EsopExerciseCostModal.tsx`:
+the `TeachingBlock` body gains a second sentence — "What this screen does give you: the cash cost and the
+spread — the two numbers that bound your decision regardless of the valuation call." — completing D-091's
+three-part requirement. No code or data change; the two named figures (exercise_cost, spread) are already
+computed and rendered by the existing modal.
+
+## BQ-049 + BQ-050 — Empty-section walkthrough wired (D-096, Option D) — DONE 10-Aug-2026
+
+Owner decision D-096: static full-screen mechanism walkthrough followed by optional Chat handoff.
+Added static per-family walkthrough steps for Investments, Loans, and Insurance in `app/lib/walkthroughSteps.ts`;
+wired each family screen's empty-state CTA to the existing P9-guarded `TeachingWalkthrough` component.
+Revised empty-state copy so it no longer promises personal numbers; the walkthrough's final step directs to Chat.
+BQ-050 (step-content source) resolved by D-096's static-steps decision — no backend shape needed.
+
+## BQ-051 — ConsolidatedTotalsCard zero-vs-absent resolved (D-097) — DONE 10-Aug-2026
+
+Owner decision D-097: backend `/consolidated` now returns explicit per-family valuation metadata
+(holding_count, valued_count, excluded_count, status). `ConsolidatedTotalsCard` reads these flags directly
+rather than inferring meaning from a numeric zero — empty, unvalued, excluded, and valued states all
+render distinct copy without the shortcut `total === 0 ? '—'` that would hide a real zero.
+
 ## BQ-053 — Goal progress bar: kept — DONE 10-Aug-2026
 
 Owner decision: keep the monochrome fill bar. No code change — the existing 4px ink fill on a `lineSoft`

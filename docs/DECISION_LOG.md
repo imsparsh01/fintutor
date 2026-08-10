@@ -199,6 +199,13 @@
   `docs/decisions/D-094-full-mockup-match-rebuild-authorised.md`.
 - **Date:** 10-Aug-2026
 
+### D-103 — ESOP "what we won't say" block: offer half added (resolves BQ-052)
+- **Tier:** 3, owner-decided directly in conversation. Adds the missing offer half to the ESOP
+  exercise-cost modal's block: "What this screen does give you: the cash cost and the spread — the
+  two numbers that bound your decision regardless of the valuation call." Full write-up:
+  `docs/decisions/D-103-esop-wont-say-offer-half.md`.
+- **Date:** 11-Aug-2026
+
 ### D-102 — Token-lean codemaps added; session-start protocol updated to use them
 - **Tier:** 1. Generates `docs/CODEMAPS/{architecture,backend,frontend,data}.md` covering all 48
   source files in ~2K tokens total; `CLAUDE.md` step 2c now reads `architecture.md` always plus the
