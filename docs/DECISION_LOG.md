@@ -86,6 +86,10 @@
 - **Tier:** 3, owner-approved directly in conversation. `/consolidated` now returns per-family holding, valued, excluded, and status metadata so the client never infers financial meaning from numeric zero. Full write-up: `docs/decisions/D-097-consolidated-valuation-metadata.md`.
 - **Date:** 10-Aug-2026
 
+### D-098 — Recurring cadence is explicit before budget provenance is shown
+- **Tier:** 3, owner-approved directly in conversation. EMI and SIP cadence fields are explicit; budget provenance and monthly normalization require a captured frequency, with EPF deferred. Full write-up: `docs/decisions/D-098-recurring-cadence-before-budget-provenance.md`.
+- **Date:** 10-Aug-2026
+
 ### D-085 — Limited memory for the onboarding exchange: exactly one prior AI message, never persisted
 - Owner-decided directly in conversation, triggered by a live-verification finding: a short/referential
   reply ("no, that's the only one") broke the model's next turn because D-022 sends zero prior-turn

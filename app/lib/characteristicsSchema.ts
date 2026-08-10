@@ -15,6 +15,7 @@ const FUND_FIELDS: FieldSpec[] = [
   { key: 'lock_in_period', label: 'Lock-in period', kind: 'text' },
   { key: 'investment_mode', label: 'Investment mode', kind: 'enum', options: ['SIP', 'lumpsum'] },
   { key: 'invested_amount', label: 'Invested amount (₹)', kind: 'number' },
+  { key: 'sip_frequency', label: 'SIP frequency', kind: 'text' },
   { key: 'current_value', label: 'Current value (₹)', kind: 'number' },
   { key: 'start_date', label: `Start date${DATE_HINT}`, kind: 'date' },
   { key: 'risk_bucket', label: 'Risk bucket', kind: 'text' },
@@ -25,6 +26,7 @@ const LOAN_FIELDS: FieldSpec[] = [
   { key: 'interest_rate', label: 'Interest rate (%)', kind: 'number' },
   { key: 'tenure_months', label: 'Tenure (months)', kind: 'number' },
   { key: 'emi_amount', label: 'EMI amount (₹)', kind: 'number' },
+  { key: 'emi_frequency', label: 'EMI frequency', kind: 'text' },
   { key: 'start_date', label: `Start date${DATE_HINT}`, kind: 'date' },
   { key: 'outstanding_balance', label: 'Outstanding balance (₹)', kind: 'number' },
 ];

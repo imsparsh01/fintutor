@@ -3,6 +3,13 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:800
 export interface BudgetSummary {
   income_total: number;
   recurring_outflows_total: number;
+  recurring_outflows: {
+    product_type: string;
+    source_field: string;
+    amount: number;
+    frequency: string;
+    monthly_amount: number;
+  }[];
   discretionary_total: number;
   net: number;
   discretionary_categories: { label: string; planned_amount: number }[];

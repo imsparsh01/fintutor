@@ -43,16 +43,32 @@ def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
     )
 
     recurring_outflows_total = 0.0
+    recurring_outflows: list[dict] = []
     for holding in db.query(Holding).filter(Holding.user_id == user_id).all():
         c = holding.characteristics or {}
+        amount = None
+        frequency = None
+        source_field = None
         if holding.product_type in _EMI_TYPES:
-            recurring_outflows_total += float(c.get("emi_amount") or 0)
+            amount, frequency, source_field = c.get("emi_amount"), c.get("emi_frequency"), "emi_amount"
         elif holding.product_type in _SIP_CAPABLE_TYPES and c.get("investment_mode") == "SIP":
-            recurring_outflows_total += float(c.get("invested_amount") or 0)
+            amount, frequency, source_field = c.get("invested_amount"), c.get("sip_frequency"), "invested_amount"
         elif holding.product_type in _PREMIUM_TYPES:
-            recurring_outflows_total += _to_monthly(
-                c.get("premium") or 0, c.get("premium_frequency")
-            )
+            amount, frequency, source_field = c.get("premium"), c.get("premium_frequency"), "premium"
+
+        # Option C: a recurring amount without an explicit cadence is not silently treated
+        # as monthly. It remains visible in the holding, but does not enter this monthly view.
+        if amount is None or frequency is None:
+            continue
+        monthly_amount = _to_monthly(float(amount), str(frequency))
+        recurring_outflows_total += monthly_amount
+        recurring_outflows.append({
+            "product_type": holding.product_type,
+            "source_field": source_field,
+            "amount": round(float(amount), 2),
+            "frequency": str(frequency),
+            "monthly_amount": round(monthly_amount, 2),
+        })
 
     discretionary_categories = (
         db.query(DiscretionaryCategory).filter(DiscretionaryCategory.user_id == user_id).all()
@@ -62,6 +78,7 @@ def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
     return {
         "income_total": round(income_total, 2),
         "recurring_outflows_total": round(recurring_outflows_total, 2),
+        "recurring_outflows": recurring_outflows,
         "discretionary_total": round(discretionary_total, 2),
         "net": round(income_total - recurring_outflows_total - discretionary_total, 2),
         "discretionary_categories": [

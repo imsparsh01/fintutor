@@ -13,6 +13,7 @@ import {
 import { formatRupees } from '../lib/format';
 import { createGoal, fetchGoals, type GoalRecord } from '../lib/goals';
 import { createIncome, fetchIncome, updateIncome, type IncomeRecord, type IncomeSource } from '../lib/income';
+import { humanizeProductType } from '../lib/taxonomy';
 
 // D-038: budget is a fully computed view (nothing stored beyond Income/discretionary
 // categories, both already backed — BQ-010); goals carry live-computed `progress`
@@ -102,6 +103,18 @@ export function BudgetingScreen() {
       <View style={styles.card}>
         <BudgetRow label="Income" display={incomeDisplay} />
         <BudgetRow label="Recurring outflows" display={formatRupees(budget.recurring_outflows_total)} />
+        {budget.recurring_outflows.length > 0 && (
+          <View style={styles.provenance}>
+            <Text style={styles.provenanceTitle}>Where this comes from</Text>
+            {budget.recurring_outflows.map((item, index) => (
+              <BudgetRow
+                key={`${item.product_type}-${item.source_field}-${index}`}
+                label={`${humanizeProductType(item.product_type)} · ${item.frequency}`}
+                display={formatRupees(item.monthly_amount)}
+              />
+            ))}
+          </View>
+        )}
         <BudgetRow label="Discretionary" display={discretionaryDisplay} />
         {/* Net is the emphasized row (6.1) — bigger figure, no bottom rule, no valence
             colour even when negative (P10): it renders in ink either way. */}
@@ -598,6 +611,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   rowLabel: typography.ledgerLabel,
+  provenance: { marginTop: spacing.sm, marginBottom: spacing.sm, paddingLeft: spacing.md, borderLeftWidth: 2, borderLeftColor: colors.line },
+  provenanceTitle: { fontFamily: font.uiMedium, fontSize: 13, color: colors.inkSecondary, marginBottom: spacing.xs },
   rowSubtitle: { fontFamily: font.mono, fontSize: 11, color: colors.inkMuted, marginTop: 2 },
   // Ledger-row value spec (1E) — font.mono 15/600/ink.
   rowValue: typography.ledgerValue,

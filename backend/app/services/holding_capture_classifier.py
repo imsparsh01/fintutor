@@ -19,11 +19,11 @@ _NONE_TOKEN = "NONE"
 # the same product-type literals with a comment rather than importing a shared source).
 _CHARACTERISTIC_FIELDS: dict[str, list[str]] = {
     "equity_mutual_fund": [
-        "expense_ratio", "lock_in_period", "investment_mode", "invested_amount",
+        "expense_ratio", "lock_in_period", "investment_mode", "invested_amount", "sip_frequency",
         "current_value", "start_date", "risk_bucket",
     ],
     "debt_mutual_fund": [
-        "expense_ratio", "lock_in_period", "investment_mode", "invested_amount",
+        "expense_ratio", "lock_in_period", "investment_mode", "invested_amount", "sip_frequency",
         "current_value", "start_date", "risk_bucket",
     ],
     "stocks": ["sector", "invested_amount", "current_value", "purchase_date", "risk_bucket"],
@@ -32,11 +32,11 @@ _CHARACTERISTIC_FIELDS: dict[str, list[str]] = {
     ],
     "ppf_epf": ["retirement_fund_type", "current_balance", "annual_contribution", "interest_rate"],
     "home_loan": [
-        "principal", "interest_rate", "tenure_months", "emi_amount", "start_date",
+        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "start_date",
         "outstanding_balance",
     ],
     "personal_loan": [
-        "principal", "interest_rate", "tenure_months", "emi_amount", "start_date",
+        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "start_date",
         "outstanding_balance",
     ],
     "credit_card_debt": [
