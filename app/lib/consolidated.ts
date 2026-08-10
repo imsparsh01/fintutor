@@ -7,6 +7,18 @@ export interface ConsolidatedTotals {
   investments_total: number;
   loans_total: number;
   insurance_total: number;
+  investments_status: 'empty' | 'valued' | 'unvalued' | 'mixed' | 'excluded';
+  loans_status: 'empty' | 'valued' | 'unvalued' | 'mixed' | 'excluded';
+  insurance_status: 'empty' | 'valued' | 'unvalued' | 'mixed' | 'excluded';
+  investments_holding_count: number;
+  loans_holding_count: number;
+  insurance_holding_count: number;
+  investments_valued_holding_count: number;
+  loans_valued_holding_count: number;
+  insurance_valued_holding_count: number;
+  investments_excluded_holding_count: number;
+  loans_excluded_holding_count: number;
+  insurance_excluded_holding_count: number;
 }
 
 export async function fetchConsolidated(userId: string): Promise<ConsolidatedTotals> {

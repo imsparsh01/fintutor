@@ -48,18 +48,24 @@ export function ConsolidatedTotalsCard({ userId }: { userId: string | null }) {
     <View style={styles.container}>
       <View style={styles.row}>
         <Text style={styles.label}>Investments</Text>
-        <Text style={styles.value}>{formatRupees(totals.investments_total)}</Text>
+        <Text style={styles.value}>{displayValue(totals.investments_status, totals.investments_total)}</Text>
       </View>
       <View style={styles.row}>
         <Text style={styles.label}>Loans</Text>
-        <Text style={styles.value}>{formatRupees(totals.loans_total)}</Text>
+        <Text style={styles.value}>{displayValue(totals.loans_status, totals.loans_total)}</Text>
       </View>
       <View style={styles.row}>
         <Text style={styles.label}>Insurance (cash value)</Text>
-        <Text style={styles.value}>{formatRupees(totals.insurance_total)}</Text>
+        <Text style={styles.value}>{displayValue(totals.insurance_status, totals.insurance_total)}</Text>
       </View>
     </View>
   );
+}
+
+function displayValue(status: ConsolidatedTotals['investments_status'], total: number): string {
+  if (status === 'empty') return '—';
+  if (status === 'unvalued' || status === 'excluded') return 'Not valued yet';
+  return formatRupees(total);
 }
 
 const styles = StyleSheet.create({
