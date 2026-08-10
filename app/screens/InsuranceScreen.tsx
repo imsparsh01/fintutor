@@ -6,8 +6,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HoldingEditModal } from '../components/HoldingEditModal';
 import { TeachingBlock } from '../components/TeachingBlock';
-import { colors, font, radius, spacing } from '../design/tokens';
+import { colors, figure, font, radius, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 import { useAuth } from '../lib/AuthContext';
+import { fetchConsolidated, type ConsolidatedTotals } from '../lib/consolidated';
+import { formatRupees } from '../lib/format';
 import { fetchHoldings, type Holding } from '../lib/holdings';
 import { humanizeProductType, INSURANCE_TYPES } from '../lib/taxonomy';
 import type { HoldingsStackParamList, MainTabsParamList } from '../navigation/types';
@@ -17,12 +20,35 @@ const Stack = createNativeStackNavigator<HoldingsStackParamList>();
 
 type ListProps = NativeStackScreenProps<HoldingsStackParamList, 'List'>;
 
+// "Endowment / ULIP" reads better than humanizeProductType's literal "Endowment Ulip" —
+// a display-only override, not a taxonomy change (lib/taxonomy.ts is untouched).
+function productLabel(productType: string): string {
+  return productType === 'endowment_ulip' ? 'Endowment / ULIP' : humanizeProductType(productType);
+}
+
+// Per-row value — mirrors backend/app/services/consolidated.py's own insurance_total
+// mapping (current_fund_value, Endowment/ULIP only; Term Insurance has no fund value and
+// is deliberately "not valued", matching that file's own comment, never guessed).
+function holdingValue(h: Holding): number | null {
+  const c = h.characteristics;
+  return h.product_type === 'endowment_ulip' && typeof c.current_fund_value === 'number'
+    ? (c.current_fund_value as number)
+    : null;
+}
+
+function holdingDetail(h: Holding): string {
+  const c = h.characteristics;
+  const label = productLabel(h.product_type);
+  return typeof c.premium === 'number' ? `${label} · Premium ${formatRupees(c.premium)}` : label;
+}
+
 // D-089: an empty family section is a teaching surface, not a dead end — see the
 // matching comment in InvestmentsScreen.tsx for why this list is implemented locally
 // rather than through a shared list component (the generic one has since been deleted).
 function InsuranceList({ navigation }: ListProps) {
   const { userId } = useAuth();
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
+  const [totals, setTotals] = useState<ConsolidatedTotals | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
@@ -33,6 +59,9 @@ function InsuranceList({ navigation }: ListProps) {
     fetchHoldings(userId)
       .then((all) => setHoldings(all.filter((h) => INSURANCE_TYPES.includes(h.product_type))))
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load holdings'));
+    fetchConsolidated(userId)
+      .then(setTotals)
+      .catch(() => setTotals(null));
   }, [userId]);
 
   useFocusEffect(load);
@@ -43,10 +72,17 @@ function InsuranceList({ navigation }: ListProps) {
     });
   };
 
+  const startAlreadyHave = () => {
+    parentNavigation?.navigate('Chat', {
+      prefillQuestion: 'I think I already have a policy — can you help me note it down?',
+    });
+  };
+
   const modal = adding && (
     <HoldingEditModal
       holding={null}
       familyTypes={INSURANCE_TYPES}
+      noun="policy"
       onClose={() => setAdding(false)}
       onChanged={load}
     />
@@ -85,20 +121,42 @@ function InsuranceList({ navigation }: ListProps) {
     );
   }
 
+  // Empty state (mockup 4.2) — teaching copy and "+ Add a policy manually" wording are
+  // preserved verbatim (recently finalized); only the surrounding layout changes: a muted
+  // "Nothing recorded here" line under the title, the walkthrough question moved in front of
+  // the buttons, the walkthrough button's label shortened to match the mockup (its
+  // navigation action is untouched per BQ-049/BQ-050), and a new "I think I have one"
+  // second entry point into Ask, one tier below the walkthrough offer.
   if (holdings.length === 0) {
     return (
       <ScrollView style={styles.screen} contentContainerStyle={styles.emptyContainer}>
         <Text style={styles.pageTitle}>Insurance</Text>
+        <Text style={styles.emptySubtitle}>Nothing recorded here</Text>
 
         <TeachingBlock heading="What lives in this section" style={styles.teachingBlockWrap}>
           Two mechanisms sit under "insurance", and they behave very differently: one buys protection
-          only, one mixes protection with savings. Knowing which is which is most of the literacy.
+          only, the other mixes protection with savings. Term cover pays a fixed sum to your family if
+          you die within the policy period and costs nothing beyond that promise — the premium is a pure
+          expense, with no return if the term ends without a claim. Endowment and ULIP plans wrap a
+          savings or market-linked layer inside the same envelope; premiums are higher, part funds the
+          cover, part accumulates on a schedule set by the plan. Whether that combination is worth
+          carrying depends on whether you need the savings discipline the policy enforces, or whether
+          pure cover is what matters. Knowing which mechanism you hold — and why — is most of the
+          literacy.
         </TeachingBlock>
 
+        <Text style={styles.walkthroughPrompt}>
+          Want to walk through how each one works, using your own numbers? It takes about two minutes
+          and commits you to nothing.
+        </Text>
+
         <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
-          <Text style={styles.walkthroughButtonText}>Walk me through it, with my numbers</Text>
+          <Text style={styles.walkthroughButtonText}>Walk me through it</Text>
         </Pressable>
-        <Text style={styles.walkthroughCaption}>Takes about two minutes. Commits you to nothing.</Text>
+
+        <Pressable style={styles.alreadyHaveButton} onPress={startAlreadyHave}>
+          <Text style={styles.alreadyHaveButtonText}>I think I have one</Text>
+        </Pressable>
 
         <Pressable style={styles.addButtonSecondary} onPress={() => setAdding(true)}>
           <Text style={styles.addButtonSecondaryText}>+ Add a policy manually</Text>
@@ -112,22 +170,34 @@ function InsuranceList({ navigation }: ListProps) {
   return (
     <View style={styles.listContainer}>
       <Text style={styles.pageTitle}>Insurance</Text>
+      <Text style={styles.subtitle}>{holdings.length} {holdings.length === 1 ? 'policy' : 'policies'}</Text>
+      {totals && <Text style={styles.familyTotal}>{formatRupees(totals.insurance_total)}</Text>}
       <FlatList
         data={holdings}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Pressable
-            style={styles.row}
-            onPress={() => navigation.navigate('Detail', { holding: item })}
-          >
-            <Text style={styles.rowTitle}>{item.display_name ?? item.alias}</Text>
-            <Text style={styles.rowSubtitle}>{humanizeProductType(item.product_type)}</Text>
-          </Pressable>
-        )}
+        style={styles.list}
+        renderItem={({ item }) => {
+          const value = holdingValue(item);
+          return (
+            <Pressable
+              style={styles.row}
+              onPress={() => navigation.navigate('Detail', { holding: item })}
+            >
+              <View style={styles.rowMain}>
+                <Text style={styles.rowTitle}>{item.display_name ?? item.alias}</Text>
+                <Text style={styles.rowSubtitle}>{holdingDetail(item)}</Text>
+              </View>
+              <Text style={value === null ? styles.rowValueMissing : styles.rowValue}>
+                {value === null ? 'not valued' : formatRupees(value)}
+              </Text>
+            </Pressable>
+          );
+        }}
       />
       <Pressable style={styles.addButtonSecondary} onPress={() => setAdding(true)}>
-        <Text style={styles.addButtonSecondaryText}>+ Add insurance</Text>
+        <Text style={styles.addButtonSecondaryText}>+ Add a policy</Text>
       </Pressable>
+      <Text style={styles.addCaption}>Or just mention it in Ask — that's usually faster.</Text>
       {modal}
     </View>
   );
@@ -137,11 +207,7 @@ export function InsuranceScreen() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="List" component={InsuranceList} />
-      <Stack.Screen
-        name="Detail"
-        component={HoldingDetailScreen}
-        options={{ headerShown: true, title: 'Holding' }}
-      />
+      <Stack.Screen name="Detail" component={HoldingDetailScreen} />
     </Stack.Navigator>
   );
 }
@@ -151,45 +217,61 @@ const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, backgroundColor: colors.screen },
   listContainer: { flex: 1, backgroundColor: colors.screen, paddingHorizontal: spacing.xl, paddingTop: spacing.xl },
   emptyContainer: { flexGrow: 1, padding: spacing.xl, paddingBottom: spacing.xxxl },
-  pageTitle: {
-    fontFamily: font.ui,
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.ink,
-    marginBottom: spacing.lg,
-  },
+  pageTitle: typography.pageTitle,
   body: { fontFamily: font.ui, color: colors.inkSecondary, textAlign: 'center' },
   errorText: { fontFamily: font.ui, color: colors.danger, textAlign: 'center' },
+  subtitle: { fontFamily: font.mono, fontSize: 13, color: colors.inkMuted, marginTop: -spacing.sm },
+  familyTotal: {
+    fontFamily: font.monoSemibold,
+    fontSize: figure.subHero,
+    color: colors.ink,
+    marginTop: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  list: { flex: 1 },
   row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.line,
   },
-  rowTitle: { fontFamily: font.ui, fontSize: 16, fontWeight: '500', color: colors.ink },
+  rowMain: { flex: 1, paddingRight: spacing.md },
+  rowTitle: { fontFamily: font.uiMedium, fontSize: 16, color: colors.ink },
   rowSubtitle: {
     fontFamily: font.mono,
-    fontSize: 11,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    fontSize: 12,
     color: colors.inkMuted,
     marginTop: spacing.xs,
   },
+  rowValue: typography.ledgerValue,
+  rowValueMissing: { fontFamily: font.mono, fontSize: 13, color: colors.inkMuted, fontStyle: 'italic' },
+  emptySubtitle: { fontFamily: font.ui, fontSize: 14, color: colors.inkMuted, marginTop: spacing.xs, marginBottom: spacing.xl },
   teachingBlockWrap: { marginBottom: spacing.xl },
+  walkthroughPrompt: {
+    fontFamily: font.tutor,
+    fontSize: 15,
+    lineHeight: 22,
+    color: colors.inkSecondary,
+    marginBottom: spacing.lg,
+  },
   walkthroughButton: {
     backgroundColor: colors.tutor,
     borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
+  },
+  walkthroughButtonText: typography.primaryButtonText,
+  alreadyHaveButton: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.tutor,
+    borderRadius: radius.md,
+    paddingVertical: 14,
+    alignItems: 'center',
     marginTop: spacing.md,
   },
-  walkthroughButtonText: { fontFamily: font.ui, color: colors.screen, fontWeight: '600', fontSize: 15 },
-  walkthroughCaption: {
-    fontFamily: font.ui,
-    fontSize: 12,
-    color: colors.inkMuted,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
+  alreadyHaveButtonText: typography.secondaryButtonText,
   retryButton: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.tutor,
@@ -199,7 +281,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.lg,
   },
-  retryButtonText: { fontFamily: font.ui, fontSize: 15, color: colors.tutor, fontWeight: '600' },
+  retryButtonText: typography.secondaryButtonText,
   addButtonSecondary: { paddingVertical: spacing.md, alignItems: 'center', marginTop: spacing.xl },
   addButtonSecondaryText: { fontFamily: font.ui, fontSize: 13, color: colors.inkSecondary },
+  addCaption: {
+    fontFamily: font.ui,
+    fontSize: 12,
+    color: colors.inkMuted,
+    textAlign: 'center',
+    marginTop: -spacing.md,
+  },
 });

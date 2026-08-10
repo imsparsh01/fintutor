@@ -28,6 +28,10 @@ export function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
+        // Each screen draws its own in-content header (the mockup register — e.g. Home's
+        // "Good evening" greeting, the family screens' pageTitle), so the tab navigator's
+        // default route-name header is redundant and is hidden.
+        headerShown: false,
         tabBarActiveTintColor: colors.tutor,
         tabBarInactiveTintColor: colors.inkMuted,
         tabBarStyle: {
@@ -38,12 +42,14 @@ export function MainTabs() {
         tabBarLabelStyle: { fontFamily: font.ui, fontSize: 11 },
       }}
     >
-      <Tab.Screen name="Consolidated" component={ConsolidatedScreen} />
-      <Tab.Screen name="Chat" component={ChatScreen} />
-      <Tab.Screen name="Investments" component={InvestmentsScreen} />
-      <Tab.Screen name="Loans" component={LoansScreen} />
-      <Tab.Screen name="Insurance" component={InsuranceScreen} />
-      <Tab.Screen name="Budgeting" component={BudgetingScreen} />
+      {/* Route names are unchanged (they're referenced by navigation.navigate calls);
+          only the visible tab labels are set to the mockup's shorter wording. */}
+      <Tab.Screen name="Consolidated" component={ConsolidatedScreen} options={{ tabBarLabel: 'Home' }} />
+      <Tab.Screen name="Chat" component={ChatScreen} options={{ tabBarLabel: 'Chat' }} />
+      <Tab.Screen name="Investments" component={InvestmentsScreen} options={{ tabBarLabel: 'Invest' }} />
+      <Tab.Screen name="Loans" component={LoansScreen} options={{ tabBarLabel: 'Loans' }} />
+      <Tab.Screen name="Insurance" component={InsuranceScreen} options={{ tabBarLabel: 'Insure' }} />
+      <Tab.Screen name="Budgeting" component={BudgetingScreen} options={{ tabBarLabel: 'Budget' }} />
     </Tab.Navigator>
   );
 }

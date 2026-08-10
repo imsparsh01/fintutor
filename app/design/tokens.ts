@@ -12,8 +12,6 @@
 //   P11 (D-088) — the tutor's voice has its own typeface. `font.tutor` is for generated teaching
 //                 copy ONLY; everything the app *is* uses `font.ui` or `font.mono`.
 
-import { Platform } from 'react-native';
-
 export const colors = {
   // Ink — all real financial figures render in these, undecorated (P10).
   ink: '#16211C',
@@ -47,17 +45,30 @@ export const colors = {
   danger: '#B4342A',
 } as const;
 
-// Typeface roles (P11, D-088). System faces only — the mockups' Newsreader / IBM Plex would
-// need expo-font + @expo-google-fonts/*, which is a dependency decision that has NOT been made
-// (D-088, D-093). P11 is satisfied by the distinction, not by any particular face, so this is a
-// complete implementation of the principle rather than a placeholder.
+// Typeface roles (P11, D-088; real faces adopted D-094). The mockups' drawn faces —
+// Newsreader (tutor voice), IBM Plex Sans (UI), IBM Plex Mono (figures) — are loaded in
+// App.tsx via expo-font + @expo-google-fonts/* and referenced here by their loaded family
+// names. D-088 shipped platform-system stand-ins because the dependency was deferred; D-094
+// authorised the real faces, so P11's distinction is now carried by the actual typefaces the
+// mockups specify.
+//
+// WEIGHTS: custom faces do NOT synthesise a bold from `fontWeight` on native — each weight is
+// its own loaded family. Reach for the weight-specific token (`uiSemibold`, `monoMedium`, …)
+// instead of pairing the base token with `fontWeight`. The base token is the 400/Regular face.
 export const font = {
   // The tutor speaks. Generated teaching/explanatory copy only.
-  tutor: Platform.select({ ios: 'Georgia', android: 'serif', default: 'serif' }) as string,
+  tutor: 'Newsreader_400Regular',
+  tutorMedium: 'Newsreader_500Medium',
+  tutorSemibold: 'Newsreader_600SemiBold',
   // The app labels and reports. Interface chrome, buttons, headings.
-  ui: Platform.select({ ios: 'System', android: 'sans-serif', default: 'System' }) as string,
+  ui: 'IBMPlexSans_400Regular',
+  uiMedium: 'IBMPlexSans_500Medium',
+  uiSemibold: 'IBMPlexSans_600SemiBold',
+  uiBold: 'IBMPlexSans_700Bold',
   // Figures and labels. Every real number renders here.
-  mono: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }) as string,
+  mono: 'IBMPlexMono_400Regular',
+  monoMedium: 'IBMPlexMono_500Medium',
+  monoSemibold: 'IBMPlexMono_600SemiBold',
 } as const;
 
 export const spacing = {

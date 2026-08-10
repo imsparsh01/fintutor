@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { TeachingBlock } from './TeachingBlock';
 import { colors, figure, font, radius, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 import { formatRupees } from '../lib/format';
 import { fetchTaxSavingRoom, type TaxSavingRoomResult } from '../lib/taxSavingRoom';
+import type { MainTabsParamList } from '../navigation/types';
 
 // D-067's user-triggered entry point + D-070/BRIEF-016's math. Tax regime is asked here,
 // in the tool, each time — never stored on the profile (Gap A's resolution).
@@ -12,18 +16,33 @@ import { fetchTaxSavingRoom, type TaxSavingRoomResult } from '../lib/taxSavingRo
 // ("so which instrument should I put this in?") is the natural next thought and nothing else
 // on screen addresses it — so it carries an explicit "what we won't say" block, adopted
 // verbatim rather than reworded per-context (see docs/decisions/D-091-what-we-wont-say-block.md).
+//
+// Mockup alignment (Flow 05, 5.3): title reads "Your 80C room"; once computed, a sub-line
+// states the fiscal year/regime/provenance and the ledger renders as Ceiling / recorded
+// contributions / Unused room (hero, figure.hero) rather than a single card. The mockup's
+// literal ledger splits recorded contributions into "EPF (your share)" and "Life policy
+// premium" as separate lines — the backend (backend/app/services/tax_saving_room.py) only
+// ever returns their sum as `known_contributions`, with no per-category breakdown in the
+// API. Splitting them here would mean inventing numbers the backend never computed, so this
+// stays one combined line, labelled honestly, until/unless the API is extended (a backend
+// change, out of scope for this pass). "Compare the categories" hands that category detail
+// to the tutor instead, reusing the same navigate-to-Chat-with-a-prefill pattern already
+// used identically in ConsolidatedScreen/LoansScreen/InsuranceScreen/InvestmentsScreen.
 export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClose: () => void }) {
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
+  const [regime, setRegime] = useState<'old' | 'new' | null>(null);
   const [result, setResult] = useState<TaxSavingRoomResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const check = async (regime: 'old' | 'new') => {
+  const check = async (r: 'old' | 'new') => {
+    setRegime(r);
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const r = await fetchTaxSavingRoom(userId, regime);
-      setResult(r);
+      const res = await fetchTaxSavingRoom(userId, r);
+      setResult(res);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to check');
     } finally {
@@ -31,10 +50,23 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
     }
   };
 
+  const startOver = () => {
+    setResult(null);
+    setRegime(null);
+  };
+
+  const compareCategories = () => {
+    onClose();
+    navigation.navigate('Chat', {
+      prefillQuestion:
+        "Can you compare the 80C categories — EPF, life insurance premiums, ELSS and PPF — their lock-in, risk and mechanism?",
+    });
+  };
+
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Check my 80C room</Text>
+        <Text style={styles.title}>Your 80C room</Text>
 
         {!result && !loading && (
           <>
@@ -57,9 +89,21 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
           <View style={styles.results}>
             {result.applicable ? (
               <>
+                <Text style={styles.computedSubtitle}>
+                  {currentFiscalYearLabel()} · {regime} regime · computed from what you've
+                  recorded
+                </Text>
+
                 <View style={styles.card}>
-                  <Text style={styles.cardLabel}>Unused 80C room</Text>
-                  <Text style={styles.cardValue}>{formatRupees(result.unused_room ?? 0)}</Text>
+                  <LedgerLine label="Ceiling" value={formatRupees(result.cap ?? 150000)} />
+                  <LedgerLine
+                    label="Recorded contributions (EPF + life policy)"
+                    value={formatRupees(result.known_contributions ?? 0)}
+                  />
+                  <View style={styles.heroBlock}>
+                    <Text style={styles.heroLabel}>Unused room</Text>
+                    <Text style={styles.heroValue}>{formatRupees(result.unused_room ?? 0)}</Text>
+                  </View>
                   <Text style={styles.cardNote}>{result.note}</Text>
                 </View>
 
@@ -71,15 +115,26 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
                   </Text>
                   <Text style={styles.wontSayKeyLine}>Room isn't an instruction.</Text>
                 </TeachingBlock>
+
+                <View style={styles.actionsRow}>
+                  <Pressable style={styles.actionButton} onPress={compareCategories}>
+                    <Text style={styles.actionButtonText}>Compare the categories</Text>
+                  </Pressable>
+                  <Pressable style={styles.actionButton} onPress={startOver}>
+                    <Text style={styles.actionButtonText}>Old vs new regime</Text>
+                  </Pressable>
+                </View>
               </>
             ) : (
-              <View style={styles.card}>
-                <Text style={styles.cardNote}>{result.note}</Text>
-              </View>
+              <>
+                <View style={styles.card}>
+                  <Text style={styles.cardNote}>{result.note}</Text>
+                </View>
+                <Pressable style={styles.tryAgain} onPress={startOver}>
+                  <Text style={styles.tryAgainText}>Old vs new regime</Text>
+                </Pressable>
+              </>
             )}
-            <Pressable style={styles.tryAgain} onPress={() => setResult(null)}>
-              <Text style={styles.tryAgainText}>Check the other regime</Text>
-            </Pressable>
           </View>
         )}
 
@@ -91,16 +146,40 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
   );
 }
 
+// The Ceiling / recorded-contributions rows share this exact row shape — plain ledger
+// weight, no color, no valence (P10). The one figure that decides anything here (Unused
+// room) is broken out into its own hero block below, not folded into this component.
+function LedgerLine({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.ledgerRow}>
+      <Text style={styles.ledgerRowLabel}>{label}</Text>
+      <Text style={styles.ledgerRowValue}>{value}</Text>
+    </View>
+  );
+}
+
+// Display-only fiscal-year label (India's FY runs April–March) — a calendar computation,
+// not a financial one, purely for the "FY 2026-27 · …" provenance sub-line the mockup
+// specifies. No stored data, no tax logic.
+function currentFiscalYearLabel(): string {
+  const now = new Date();
+  const startYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  const endYearShort = String((startYear + 1) % 100).padStart(2, '0');
+  return `FY ${startYear}-${endYearShort}`;
+}
+
 const styles = StyleSheet.create({
   container: { padding: spacing.xl, paddingTop: spacing.xxxl, backgroundColor: colors.screen },
-  title: {
-    fontFamily: font.ui,
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.ink,
-    marginBottom: spacing.lg,
-  },
+  title: typography.pageTitle,
   subtitle: { fontFamily: font.ui, fontSize: 14, color: colors.inkSecondary, marginBottom: spacing.lg },
+  // Sub-line device: fiscal year / regime / provenance, once a result exists.
+  computedSubtitle: {
+    fontFamily: font.mono,
+    fontSize: 12,
+    letterSpacing: 0.3,
+    color: colors.inkMuted,
+    marginBottom: spacing.md,
+  },
   regimeRow: { flexDirection: 'row', gap: spacing.md },
   regimeButton: {
     flex: 1,
@@ -110,7 +189,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     alignItems: 'center',
   },
-  regimeButtonText: { fontFamily: font.ui, fontSize: 15, fontWeight: '600', color: colors.ink },
+  regimeButtonText: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.ink },
   spinner: { marginTop: spacing.xl },
   errorText: { fontFamily: font.ui, color: colors.danger, marginTop: spacing.md },
   results: { gap: spacing.md },
@@ -120,19 +199,22 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.lg,
   },
-  // Ledger label (1D) — font.mono 12 / ls 0.5 / uppercase / inkMuted. Was the retired
-  // middle variant (ls 1.0 / inkSecondary).
-  cardLabel: {
-    fontFamily: font.mono,
-    fontSize: 12,
-    color: colors.inkMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+  ledgerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.lineSoft,
   },
-  cardValue: {
-    fontFamily: font.mono,
-    fontSize: figure.subHero,
-    fontWeight: '700',
+  ledgerRowLabel: typography.ledgerLabel,
+  ledgerRowValue: typography.ledgerValue,
+  // The deciding figure: largest type on the screen (mandatory device #3). Hero scale (1G).
+  heroBlock: { marginTop: spacing.md },
+  heroLabel: typography.ledgerLabel,
+  heroValue: {
+    fontFamily: font.monoSemibold, // only 600 loaded for this face
+    fontSize: figure.hero,
     color: colors.ink,
     marginTop: spacing.xs,
   },
@@ -153,15 +235,26 @@ const styles = StyleSheet.create({
   },
   // font.tutor, not font.ui — this is the tutor's own emphasis, not interface chrome.
   wontSayKeyLine: {
-    fontFamily: font.tutor,
+    fontFamily: font.tutorSemibold,
     fontSize: 15,
     lineHeight: 21,
-    fontWeight: '600',
     color: colors.ink,
     marginTop: spacing.sm,
   },
+  // "Compare the categories" / "Old vs new regime" — two plain, equal-weight actions,
+  // neither styled as primary over the other (no valence, P10).
+  actionsRow: { flexDirection: 'row', gap: spacing.md },
+  actionButton: {
+    flex: 1,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.tutor,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+  },
+  actionButtonText: typography.secondaryButtonText,
   tryAgain: { alignItems: 'center', paddingVertical: spacing.sm },
-  tryAgainText: { fontFamily: font.ui, color: colors.tutor, fontWeight: '600', fontSize: 13 },
+  tryAgainText: { fontFamily: font.uiSemibold, color: colors.tutor, fontSize: 13 },
   cancel: { alignItems: 'center', marginTop: spacing.xl },
   cancelText: { fontFamily: font.ui, color: colors.inkMuted },
 });

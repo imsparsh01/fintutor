@@ -35,9 +35,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   heading: {
-    fontFamily: font.ui,
+    fontFamily: font.uiBold,
     fontSize: 11,
-    fontWeight: '700',
     letterSpacing: 1.2,
     textTransform: 'uppercase',
     color: colors.tutor,

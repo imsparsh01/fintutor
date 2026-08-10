@@ -23,9 +23,10 @@ that fleet is BLOCKED on an owner decision below, not on build work.)*
 
 ## BLOCKED — do not start
 
-> **BQ-049..BQ-054 all came out of the three-reviewer audit of the D-086..D-092 reskin (session
+> **BQ-049..BQ-052 came out of the three-reviewer audit of the D-086..D-092 reskin (session
 > 2026-08-10b).** None is an engineering question — each needs an owner decision first, and several are
 > Tier 3. Do not resolve any of them by picking the reasonable-looking option.
+> BQ-053 and BQ-054 from the same audit are now DONE (10-Aug-2026).
 
 - **BQ-049 — The empty-section CTA promises a walkthrough it does not deliver.** All three family screens
   render "Walk me through it, with my numbers" / "Takes about two minutes. Commits you to nothing." wired
@@ -49,15 +50,6 @@ that fleet is BLOCKED on an owner decision below, not on build work.)*
   factually false (it claimed a tax computation the service does not perform). The inconsistency is in the
   decision document, not the code. Owner: narrow the requirement, or give the ESOP block an accurate offer
   half. Compliance-category — Tier 3, no Tier-2 resolution available.
-- **BQ-053 — Goal progress bar: keep the bar or show the fraction only?** `BudgetingScreen`'s monochrome
-  ink fill on a `lineSoft` track honours P10's letter (no colour, no valence). But a filled bar's *form*
-  still asserts "how far along you are", which is the one opinion the register avoids elsewhere. The
-  mockup's own answer was the fraction in neutral ink, no bar. Owner's call — flagged by the design review
-  as borderline, deliberately not treated as a violation.
-- **BQ-054 — Insurance empty-state copy is inconsistent with its two siblings.** Two lines against
-  Investments' and Loans' five (it was lifted from D-089's *illustrative* example, never written as
-  finished screen copy), and the noun switches mid-screen: "+ Add a policy manually" in the empty state vs
-  "+ Add insurance" in the populated list. Copy decision, not an engineering one.
 
 ---
 

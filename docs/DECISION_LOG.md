@@ -150,6 +150,31 @@
   `docs/decisions/D-092-refusal-meta-statement-dropped.md`.
 - **Date:** 10-Aug-2026
 
+### D-095 — Local web-preview infrastructure to verify the D-094 rebuild (CORS + dev bypass)
+- **Tier:** mixed. The CORS backend change was explicitly owner-approved in conversation; the frontend dev
+  aids are Tier-1 dev-infrastructure, env-gated and inert in a real build. Added FastAPI `CORSMiddleware`
+  (localhost origins only) so the browser preview can reach the backend; fixed `EXPO_PUBLIC_BACKEND_URL`
+  (blank → `http://localhost:8000`, the cause of the "Unexpected token '<'" errors — empty string defeated
+  the `??` fallback); added an env-gated dev auth bypass (`EXPO_PUBLIC_DEV_USER_ID`) + `displayName` so the
+  preview renders inner screens without a password. **Cleanup owed before any non-dev deploy:** tighten CORS
+  to real origins, leave the dev env vars unset (real login flow is unchanged and default). Full write-up:
+  `docs/decisions/D-095-local-preview-infrastructure.md`.
+- **Date:** 10-Aug-2026
+
+### D-094 — Full mockup-match rebuild authorised: scope expanded beyond D-093's reskin-only grant
+- **Tier:** 3, owner-decided directly in conversation. **Extends D-093.** Authorises bringing the running
+  app into line with the v1 mockups across visual style AND workflow — not just the reskin of existing
+  screens D-093 permitted. Owner now owns the boundary crossings D-093 reserved: new dependencies
+  (`expo-font` + the drawn Google Fonts, `react-native-reanimated`), new screens/flows (onboarding chip
+  conversation, wired teaching walkthrough, engagement surfaces), and workflow changes to match Flows
+  01–07. **Still NOT authorised, flagged not absorbed:** backend/schema changes (hard stop, unchanged); the
+  reconciliation UI (no mockup drawn — cannot build what isn't designed); BQ-052's Tier-3 ESOP-block
+  wording (owner still owes it, agents leave existing wording untouched). Concern recorded: authorised off
+  a desktop RN-Web preview that is not the real mobile target, with drawn fonts not yet installed — owner
+  chose full rebuild over diagnosing first, knowingly. Full write-up:
+  `docs/decisions/D-094-full-mockup-match-rebuild-authorised.md`.
+- **Date:** 10-Aug-2026
+
 ### D-093 — D-014 unparked: execution subagents authorised, scoped to the D-086..D-092 reskin
 - **Tier:** 3, owner-decided. **Interprets D-014** by satisfying its unpark condition, not overriding it:
   Phase 1 is validated (D-080) and the design decisions now exist (D-086..D-092), honouring D-014's own

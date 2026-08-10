@@ -45,7 +45,9 @@ export function OnboardingScreen({ userId, onDone }: { userId: string; onDone: (
         {/* P9/D-058: must render unconditionally, from the very first frame — never
             gated behind `engaged` or any other state. Only the label text changes. */}
         <Pressable onPress={onDone} hitSlop={8}>
-          <Text style={styles.skip}>{engaged ? 'Done — go to app' : 'Skip for now'}</Text>
+          <Text style={[styles.skip, engaged && styles.skipEngaged]}>
+            {engaged ? 'Done — go to app' : 'Skip for now'}
+          </Text>
         </Pressable>
       </View>
 
@@ -85,8 +87,21 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xxl,
     paddingBottom: spacing.md,
   },
-  title: { fontSize: 20, fontWeight: '600', color: colors.ink, fontFamily: font.ui },
-  skip: { color: colors.inkSecondary, fontSize: 14, fontFamily: font.ui },
+  // Mockup Flow 1.2 draws this header at 16px/medium, not a full page-title weight — this
+  // is a persistent chrome bar, not the screen's H1.
+  title: { fontSize: 16, color: colors.ink, fontFamily: font.uiMedium },
+  skip: {
+    color: colors.inkSecondary,
+    fontSize: 13,
+    fontFamily: font.ui,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
+    paddingBottom: 2,
+  },
+  // Once engaged, "Done — go to app" earns the tutor colour — this is the one moment the
+  // onboarding chrome itself signals the teaching thread has started (D-058's own bar,
+  // not a font.tutor voice change: this is still app chrome, font.ui throughout).
+  skipEngaged: { color: colors.tutor, fontFamily: font.uiMedium },
   emptyState: { alignItems: 'center' },
   // Static product copy, font.ui — and correctly so under P11. The distinction P11 draws
   // is about the act of EXPLAINING (font.tutor), not about whether the copy happened to be

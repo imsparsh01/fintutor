@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { supabase } from '../lib/supabase';
 import type { AuthStackParamList } from '../navigation/types';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 
@@ -80,10 +81,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
     marginBottom: spacing.xxl,
     color: colors.ink,
-    fontFamily: font.ui,
+    fontFamily: font.uiSemibold,
   },
   field: { marginBottom: spacing.lg },
   label: {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.sm,
   },
-  buttonText: { fontSize: 15, color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  buttonText: typography.primaryButtonText,
   link: {
     marginTop: spacing.lg,
     textAlign: 'center',

@@ -27,6 +27,6 @@ const styles = StyleSheet.create({
   },
   containerActive: { backgroundColor: colors.behaviourSoft },
   flame: { fontSize: 14, marginRight: spacing.xs },
-  text: { fontSize: 14, fontWeight: '600', color: colors.inkSecondary, fontFamily: font.ui },
+  text: { fontSize: 14, color: colors.inkSecondary, fontFamily: font.uiSemibold },
   textActive: { color: colors.behaviour },
 });

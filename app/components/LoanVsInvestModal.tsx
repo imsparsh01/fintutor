@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, figure, font, radius, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 import { fetchLoanVsInvest, type LoanVsInvestResult } from '../lib/loanVsInvest';
 import { formatRupees } from '../lib/format';
 
@@ -13,6 +14,16 @@ import { formatRupees } from '../lib/format';
 // parallel structure below (identical cards, the order note, the named third path) is
 // what enacts neutrality. Narrating "I won't tell you which one to do" over a screen that
 // already visibly isn't telling them would spend confidence on posture instead of maths.
+//
+// Mockup alignment (Flow 05, 5.1/5.2): preset amount chips ahead of the free-text field
+// (Setup), "Two ways to prepay ₹X" heading over the two columns, and each column now a
+// three-row ledger (Loan ends in / Interest saved / Monthly outgo) in identical order and
+// weight (P10) rather than prose lines. Where a path holds a field constant by definition
+// (EMI unchanged in the "keep same EMI" path; end date unchanged in the "keep same tenure"
+// path), that row reads "Unchanged" rather than a fabricated figure — the backend doesn't
+// return the current EMI amount at all, so this is the honest value, not a placeholder.
+const PRESET_PREPAY_AMOUNTS = [25000, 50000, 100000, 200000];
+
 export function LoanVsInvestModal({
   userId,
   holdingId,
@@ -27,8 +38,8 @@ export function LoanVsInvestModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const calculate = async () => {
-    const parsed = Number(amount);
+  const runCalculate = async (rawAmount: string) => {
+    const parsed = Number(rawAmount);
     if (!parsed || parsed <= 0) {
       setError('Enter an amount greater than 0');
       return;
@@ -46,6 +57,13 @@ export function LoanVsInvestModal({
     }
   };
 
+  const selectPreset = (preset: number) => {
+    setAmount(String(preset));
+    runCalculate(String(preset));
+  };
+
+  const calculate = () => runCalculate(amount);
+
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -54,11 +72,27 @@ export function LoanVsInvestModal({
           How much extra do you have to put toward this loan?
         </Text>
 
+        <View style={styles.chipRow}>
+          {PRESET_PREPAY_AMOUNTS.map((preset) => (
+            <Pressable
+              key={preset}
+              style={[styles.chip, amount === String(preset) && styles.chipSelected]}
+              onPress={() => selectPreset(preset)}
+            >
+              <Text
+                style={[styles.chipText, amount === String(preset) && styles.chipTextSelected]}
+              >
+                {formatRupees(preset)}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
         <TextInput
           style={styles.input}
           value={amount}
           onChangeText={setAmount}
-          placeholder="Amount (₹)"
+          placeholder="Or enter a different amount (₹)"
           placeholderTextColor={colors.inkMuted}
           keyboardType="numeric"
         />
@@ -81,26 +115,36 @@ export function LoanVsInvestModal({
               <Text style={styles.hurdleNote}>{result.hurdle_rate_note}</Text>
             </View>
 
+            <Text style={styles.pathsHeading}>
+              Two ways to prepay {formatRupees(result.prepay_amount)}
+            </Text>
             <Text style={styles.orderNote}>Order = as entered</Text>
 
-            <Text style={styles.sectionTitle}>If you keep the same EMI</Text>
+            <Text style={styles.sectionTitle}>Keep same EMI</Text>
             <View style={styles.pathCard}>
-              <Text style={styles.pathLine}>
-                Loan ends in {result.tenure_reduction.new_remaining_months.toFixed(0)} months instead
-              </Text>
-              <Text style={styles.pathValue}>
-                {formatRupees(result.tenure_reduction.interest_saved)} interest saved
-              </Text>
+              <PathRow
+                label="Loan ends in"
+                value={`${result.tenure_reduction.new_remaining_months.toFixed(0)} months`}
+              />
+              <PathRow
+                label="Interest saved"
+                value={formatRupees(result.tenure_reduction.interest_saved)}
+              />
+              <PathRow label="Monthly outgo" value="Unchanged" last />
             </View>
 
-            <Text style={styles.sectionTitle}>If you keep the same tenure</Text>
+            <Text style={styles.sectionTitle}>Keep same tenure</Text>
             <View style={styles.pathCard}>
-              <Text style={styles.pathLine}>
-                EMI drops to {formatRupees(result.emi_reduction.new_emi_amount)}
-              </Text>
-              <Text style={styles.pathValue}>
-                {formatRupees(result.emi_reduction.interest_saved)} interest saved
-              </Text>
+              <PathRow label="Loan ends in" value="Unchanged" />
+              <PathRow
+                label="Interest saved"
+                value={formatRupees(result.emi_reduction.interest_saved)}
+              />
+              <PathRow
+                label="Monthly outgo"
+                value={formatRupees(result.emi_reduction.new_emi_amount)}
+                last
+              />
             </View>
 
             <Text style={styles.caveat}>{result.prepayment_charge_note}</Text>
@@ -131,9 +175,20 @@ export function LoanVsInvestModal({
   );
 }
 
+// Both path cards render this exact row component — identical parallel structure
+// (mandatory device #1). Do not diverge the row shape between the two paths.
+function PathRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+  return (
+    <View style={[styles.pathRow, last && styles.pathRowLast]}>
+      <Text style={styles.pathRowLabel}>{label}</Text>
+      <Text style={styles.pathRowValue}>{value}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { padding: spacing.xl, paddingTop: spacing.xxxl, backgroundColor: colors.screen },
-  title: { fontFamily: font.ui, fontSize: 20, fontWeight: '600', color: colors.ink },
+  title: { fontFamily: font.uiSemibold, fontSize: 20, color: colors.ink },
   subtitle: {
     fontFamily: font.ui,
     fontSize: 14,
@@ -141,6 +196,18 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     marginBottom: spacing.lg,
   },
+  // Setup device: preset prepay-amount chips ahead of the free-text field.
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.md },
+  chip: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.line,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+  },
+  chipSelected: { backgroundColor: colors.tutor, borderColor: colors.tutor },
+  chipText: { fontFamily: font.ui, fontSize: 13, color: colors.ink },
+  chipTextSelected: { color: colors.screen },
   input: {
     fontFamily: font.ui,
     borderWidth: StyleSheet.hairlineWidth,
@@ -159,7 +226,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  calculateButtonText: { fontFamily: font.ui, fontSize: 15, color: colors.screen, fontWeight: '600' },
+  calculateButtonText: typography.primaryButtonText,
   errorText: { fontFamily: font.ui, color: colors.danger, marginTop: spacing.md },
   results: { marginTop: spacing.xl },
   hurdleCard: {
@@ -169,18 +236,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   // Ledger label (1D) — font.mono 12 / ls 0.5 / uppercase / inkMuted.
-  hurdleLabel: {
-    fontFamily: font.mono,
-    fontSize: 12,
-    color: colors.inkMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
+  hurdleLabel: typography.ledgerLabel,
   // The deciding figure: largest type on the screen (mandatory device #3). Hero scale (1G).
   hurdleValue: {
-    fontFamily: font.mono,
+    fontFamily: font.monoSemibold, // only 600 loaded for this face
     fontSize: figure.hero,
-    fontWeight: '700',
     color: colors.ink,
     marginTop: spacing.xs,
   },
@@ -198,6 +258,18 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     lineHeight: 18,
   },
+  // Section header over the two columns — "Two ways to prepay ₹X" (mockup's literal
+  // heading). Source string stays sentence case; textTransform renders it uppercase,
+  // matching the app's one section-header treatment (1H), same as orderNote/sectionTitle.
+  pathsHeading: {
+    fontFamily: font.monoSemibold,
+    fontSize: 13,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.ink,
+    marginTop: spacing.xl,
+    marginBottom: spacing.xs,
+  },
   // Mandatory device #2: sequence is input order, not preference.
   orderNote: {
     fontFamily: font.mono,
@@ -207,9 +279,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: spacing.sm,
   },
-  // Aligned to the app's one section-header treatment (1H) — this was the only section
-  // header left in sentence case, font.ui. The string itself is unchanged; only the
-  // rendered casing changes, via textTransform below.
   sectionTitle: {
     fontFamily: font.mono,
     fontSize: 12,
@@ -219,22 +288,25 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     marginBottom: spacing.xs,
   },
-  // Both path cards share this single style object — identical parallel structure
-  // (mandatory device #1). Do not diverge styling between the two paths.
+  // Both path cards share these row styles — identical parallel structure (mandatory
+  // device #1). Do not diverge styling, field order, or weight between the two paths.
   pathCard: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.lineSoft,
     borderRadius: radius.sm,
     padding: spacing.md,
   },
-  pathLine: { fontFamily: font.ui, fontSize: 14, color: colors.ink },
-  pathValue: {
-    fontFamily: font.mono,
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.ink,
-    marginTop: spacing.xs,
+  pathRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.lineSoft,
   },
+  pathRowLast: { borderBottomWidth: 0 },
+  pathRowLabel: typography.ledgerLabel,
+  pathRowValue: typography.ledgerValue,
   caveat: {
     fontFamily: font.tutor,
     fontSize: 12,
@@ -245,9 +317,8 @@ const styles = StyleSheet.create({
   // Mandatory device #4: hands judgement back with criteria, third path named explicitly.
   closingBlock: { marginTop: spacing.xl, gap: spacing.sm },
   closingHeading: {
-    fontFamily: font.ui,
+    fontFamily: font.uiBold,
     fontSize: 12,
-    fontWeight: '700',
     color: colors.inkSecondary,
     textTransform: 'uppercase',
     letterSpacing: 1,

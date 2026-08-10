@@ -18,9 +18,28 @@ export const INSURANCE_TYPES = ['term_insurance', 'endowment_ulip'];
 // the UI offers the known taxonomy rather than free text to avoid silent typos/new types.
 export const ALL_PRODUCT_TYPES = [...INVESTMENT_TYPES, ...LOAN_TYPES, ...INSURANCE_TYPES];
 
+// Display labels that naive title-casing gets wrong (acronyms, slashed pairs). Matches the
+// mockup's wording (e.g. "FD / RD", "PPF / EPF", "ESOP") rather than "Fd Rd" / "Ppf Epf" / "Esop".
+const PRODUCT_TYPE_LABELS: Record<string, string> = {
+  equity_mutual_fund: 'Equity Mutual Fund',
+  debt_mutual_fund: 'Debt Mutual Fund',
+  stocks: 'Stocks',
+  fd_rd: 'FD / RD',
+  ppf_epf: 'PPF / EPF',
+  esop: 'ESOP',
+  home_loan: 'Home Loan',
+  personal_loan: 'Personal Loan',
+  credit_card_debt: 'Credit Card Debt',
+  term_insurance: 'Term Insurance',
+  endowment_ulip: 'Endowment / ULIP',
+};
+
 export function humanizeProductType(productType: string): string {
-  return productType
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return (
+    PRODUCT_TYPE_LABELS[productType] ??
+    productType
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  );
 }

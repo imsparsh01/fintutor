@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 
 // ---------------------------------------------------------------------------
 // TeachingWalkthrough — full-screen, multi-step teaching moment ("fork 1f").
@@ -212,9 +213,8 @@ const styles = StyleSheet.create({
     color: colors.inkMuted,
   },
   skipText: {
-    fontFamily: font.ui,
+    fontFamily: font.uiSemibold,
     fontSize: 15,
-    fontWeight: '600',
     color: colors.inkSecondary,
   },
   dashRow: {
@@ -243,9 +243,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   title: {
-    fontFamily: font.ui,
+    fontFamily: font.uiBold,
     fontSize: 20,
-    fontWeight: '700',
     color: colors.ink,
     marginBottom: spacing.lg,
   },
@@ -269,13 +268,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   // Ledger label (1D) — font.mono 12 / ls 0.5 / uppercase / inkMuted.
-  figureLabel: {
-    fontFamily: font.mono,
-    fontSize: 12,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    color: colors.inkMuted,
-  },
+  figureLabel: typography.ledgerLabel,
   // P10 — real financial figures render undecorated in mono ink; no valence colour.
   figureValue: {
     fontFamily: font.mono,
@@ -299,9 +292,8 @@ const styles = StyleSheet.create({
     opacity: 0.35,
   },
   navText: {
-    fontFamily: font.ui,
+    fontFamily: font.uiSemibold,
     fontSize: 15,
-    fontWeight: '600',
     color: colors.inkSecondary,
   },
   navTextDisabled: {
@@ -316,10 +308,5 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: spacing.xxl,
   },
-  primaryButtonText: {
-    fontFamily: font.ui,
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.screen,
-  },
+  primaryButtonText: typography.primaryButtonText,
 });

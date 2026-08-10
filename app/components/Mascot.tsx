@@ -39,5 +39,5 @@ const styles = StyleSheet.create({
   containerActive: { backgroundColor: colors.behaviourSoft },
   emoji: { fontSize: 40 },
   message: { fontSize: 13, color: colors.inkSecondary, marginTop: spacing.xs, fontFamily: font.ui },
-  messageActive: { color: colors.behaviour, fontWeight: '600' },
+  messageActive: { color: colors.behaviour, fontFamily: font.uiSemibold },
 });

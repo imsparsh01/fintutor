@@ -4,6 +4,7 @@ from datetime import date
 
 import anthropic
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
@@ -44,6 +45,18 @@ from app.services.teaching import TeachingEngineNotConfigured, ask_teaching_engi
 logger = logging.getLogger("fintutor.health")
 
 app = FastAPI(title="FinTutor API")
+
+# D-095: CORS for local web-preview dev only. The app was built for native RN (no CORS),
+# but the mockup-match rebuild is being verified in a browser (localhost:8081 -> :8000),
+# which is cross-origin. Scoped to localhost dev origins; owner-approved. Not a product/
+# schema change — remove or tighten before any non-dev deployment.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"http://localhost:\d+",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class HoldingCreate(BaseModel):

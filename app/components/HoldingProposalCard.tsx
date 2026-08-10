@@ -4,6 +4,7 @@ import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
 import type { HoldingProposal } from '../lib/chat';
 import { humanizeProductType } from '../lib/taxonomy';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 
 // D-078 Fork 2: a read-only preview of what the classifier extracted. Nothing is written to the
 // database until Save is tapped — Not now just dismisses, same weight as declining. No in-card
@@ -80,19 +81,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.sm,
-    maxWidth: '85%',
+    maxWidth: '90%',
     alignSelf: 'flex-start',
   },
   title: {
     fontSize: 12,
-    fontWeight: '600',
     color: colors.inkMuted,
     marginBottom: spacing.sm,
-    fontFamily: font.mono,
+    fontFamily: font.monoSemibold,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  productType: { fontSize: 16, fontWeight: '600', color: colors.ink, marginBottom: spacing.sm, fontFamily: font.ui },
+  productType: { fontSize: 16, color: colors.ink, marginBottom: spacing.sm, fontFamily: font.uiSemibold },
   // Hairline-separated label/value field rows, mono throughout — the ledger register.
   fieldRow: {
     flexDirection: 'row',
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  fieldValue: { color: colors.ink, fontWeight: '500', fontFamily: font.mono, fontSize: 13 },
+  fieldValue: { color: colors.ink, fontFamily: font.monoMedium, fontSize: 13 },
   fieldValueUnset: { color: colors.inkMuted, fontStyle: 'italic', fontFamily: font.mono, fontSize: 13 },
   errorText: { color: colors.danger, fontSize: 12, marginTop: spacing.sm, fontFamily: font.ui },
   actions: { flexDirection: 'row', marginTop: spacing.md, gap: spacing.sm },
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
   },
-  dismissButtonText: { fontSize: 15, color: colors.ink, fontWeight: '600', fontFamily: font.ui },
+  dismissButtonText: { fontSize: 15, color: colors.ink, fontFamily: font.uiSemibold },
   saveButton: {
     flex: 1,
     backgroundColor: colors.tutor,
@@ -134,5 +134,5 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
   },
-  saveButtonText: { fontSize: 15, color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  saveButtonText: typography.primaryButtonText,
 });

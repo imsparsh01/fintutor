@@ -52,11 +52,33 @@ function AuthenticatedApp({ userId }: { userId: string }) {
   return <MainTabs />;
 }
 
+// First name for the greeting, best-effort from Supabase user metadata, falling back to
+// the email local-part. Presentation only — never blocks render if absent.
+function deriveDisplayName(session: Session): string | null {
+  const meta = session.user.user_metadata ?? {};
+  const full = (meta.full_name || meta.name || '') as string;
+  if (full.trim()) return full.trim().split(/\s+/)[0];
+  const email = session.user.email ?? '';
+  if (email.includes('@')) {
+    const local = email.split('@')[0].split(/[._-]/)[0];
+    return local ? local.charAt(0).toUpperCase() + local.slice(1) : null;
+  }
+  return null;
+}
+
 export function RootNavigator() {
+  // DEV-ONLY (D-094 verification aid): when EXPO_PUBLIC_DEV_USER_ID is set, skip the
+  // Supabase login gate and render the authenticated tabs directly for that user id, so
+  // the local web preview can display inner screens without a password. Unset in any real
+  // build — this branch is inert when the env var is absent. Not a product auth path.
+  // Read once as a build-constant; hooks below still run unconditionally (Rules of Hooks).
+  const devUserId = process.env.EXPO_PUBLIC_DEV_USER_ID;
+
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(isSupabaseConfigured);
 
   useEffect(() => {
+    if (devUserId) return;
     if (!isSupabaseConfigured || !supabase) return;
 
     supabase.auth.getSession().then(({ data }) => {
@@ -69,7 +91,17 @@ export function RootNavigator() {
     });
 
     return () => listener.subscription.unsubscribe();
-  }, []);
+  }, [devUserId]);
+
+  if (devUserId) {
+    return (
+      <NavigationContainer theme={navigationTheme}>
+        <AuthProvider userId={devUserId} displayName={process.env.EXPO_PUBLIC_DEV_USER_NAME ?? null}>
+          <MainTabs />
+        </AuthProvider>
+      </NavigationContainer>
+    );
+  }
 
   if (!isSupabaseConfigured) {
     return (
@@ -86,7 +118,7 @@ export function RootNavigator() {
   return (
     <NavigationContainer theme={navigationTheme}>
       {session ? (
-        <AuthProvider userId={session.user.id}>
+        <AuthProvider userId={session.user.id} displayName={deriveDisplayName(session)}>
           <AuthenticatedApp userId={session.user.id} />
         </AuthProvider>
       ) : (

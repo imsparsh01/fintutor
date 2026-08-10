@@ -12,6 +12,26 @@
 
 ---
 
+## BQ-053 — Goal progress bar: kept — DONE 10-Aug-2026
+
+Owner decision: keep the monochrome fill bar. No code change — the existing 4px ink fill on a `lineSoft`
+track in `BudgetingScreen.tsx` stands as shipped. The fraction (`progress / target_amount`) renders above
+it; no colour or valence encoding touches either element, satisfying P10. Flagged-as-borderline concern
+(form asserting progress-direction) noted and accepted by owner.
+
+## BQ-054 — Insurance empty-state copy and button noun — DONE 10-Aug-2026
+
+Two changes in `app/screens/InsuranceScreen.tsx`:
+1. **TeachingBlock body expanded** — from 2 illustrative sentences (lifted from D-089's example) to a
+   full paragraph matching the depth of the Investments and Loans siblings: names the two mechanisms
+   (term cover / endowment+ULIP), explains each mechanism's shape and cost structure, and lands on the
+   same "knowing which is which is most of the literacy" close.
+2. **Button noun made consistent** — populated-list add button changed from "+ Add insurance" to
+   "+ Add a policy", matching the empty-state's existing "+ Add a policy manually" and the siblings'
+   own noun-consistent pattern (investment/investment, loan/loan, policy/policy).
+
+---
+
 ## BQ-043..BQ-048 — Mockups v1 reskin fleet (D-086..D-093) — DONE 10-Aug-2026
 
 Shipped as ONE authorised fleet under D-093 (which unparked D-014's execution subagents by satisfying its

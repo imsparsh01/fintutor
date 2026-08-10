@@ -25,10 +25,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
     marginBottom: spacing.md,
     color: colors.ink,
-    fontFamily: font.ui,
+    fontFamily: font.uiSemibold,
   },
   body: {
     fontSize: 14,

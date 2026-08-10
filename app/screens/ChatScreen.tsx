@@ -43,5 +43,5 @@ export function ChatScreen({ route, navigation }: Props) {
 
 const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
-  body: { color: colors.inkSecondary, fontFamily: font.ui, textAlign: 'center' },
+  body: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 15, textAlign: 'center' },
 });

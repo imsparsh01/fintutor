@@ -5,6 +5,7 @@ import { useAuth } from '../lib/AuthContext';
 import { createHolding, deleteHolding, updateHolding, type Holding } from '../lib/holdings';
 import { ALL_PRODUCT_TYPES, humanizeProductType } from '../lib/taxonomy';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 
 // Characteristics are form-edited as strings, converted to their real type on save.
 // A field left blank is omitted from the payload rather than sent as an empty string.
@@ -28,18 +29,35 @@ function initialCharacteristicsState(
 // a holding, including the per-type characteristics field blob (BQ-028), keyed off the
 // known D-013 field list per product_type (see lib/characteristicsSchema.ts).
 //
+// "Endowment / ULIP" reads better than humanizeProductType's literal "Endowment Ulip" —
+// a display-only override for the chip label, not a taxonomy change (lib/taxonomy.ts is
+// untouched). Mirrors the same override in InsuranceScreen.tsx/HoldingDetailScreen.tsx.
+function chipLabel(productType: string): string {
+  return productType === 'endowment_ulip' ? 'Endowment / ULIP' : humanizeProductType(productType);
+}
+
+// "Add a policy" / "Add an investment" (mockup 4.4) — a small article helper so the title
+// reads naturally regardless of which family's noun is passed in.
+function articleFor(word: string): string {
+  return /^[aeiou]/i.test(word) ? 'an' : 'a';
+}
+
 // D-074: a null `holding` switches this to create mode — no alias field (the backend
 // generates one), no delete button, POST instead of PATCH. `familyTypes` scopes the
 // product-type picker to the tab the user tapped "+ Add" from; edit mode ignores it and
 // keeps the existing unconstrained ALL_PRODUCT_TYPES recategorize picker (BQ-027/D-059).
+// `noun` (mockup 4.4) is purely the display word for the title/save button — "investment"
+// / "loan" / "policy" from the calling screen, defaulting to the generic "holding".
 export function HoldingEditModal({
   holding,
   familyTypes,
+  noun = 'holding',
   onClose,
   onChanged,
 }: {
   holding: Holding | null;
   familyTypes?: string[];
+  noun?: string;
   onClose: () => void;
   onChanged: () => void;
 }) {
@@ -125,9 +143,16 @@ export function HoldingEditModal({
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>{isCreate ? 'Add holding' : 'Edit holding'}</Text>
+        <Text style={styles.title}>
+          {isCreate ? `Add ${articleFor(noun)} ${noun}` : `Edit ${noun}`}
+        </Text>
+        {isCreate && (
+          <Text style={styles.titleCaption}>
+            You can also just tell me about it in Ask — I'll fill this in for you.
+          </Text>
+        )}
 
-        <Text style={styles.fieldLabel}>Display name</Text>
+        <Text style={styles.fieldLabel}>What do you call it?</Text>
         <TextInput
           style={styles.input}
           value={displayName}
@@ -138,6 +163,9 @@ export function HoldingEditModal({
           placeholder="e.g. My home loan"
           placeholderTextColor={colors.inkMuted}
         />
+        <Text style={styles.fieldNote}>
+          Only you see this name. It's stored on your device's account, never sent to the model.
+        </Text>
 
         {!isCreate && (
           <>
@@ -152,7 +180,7 @@ export function HoldingEditModal({
           </>
         )}
 
-        <Text style={styles.fieldLabel}>Product type</Text>
+        <Text style={styles.fieldLabel}>Type</Text>
         <View style={styles.chipRow}>
           {pickerTypes.map((type) => (
             <Pressable
@@ -161,13 +189,16 @@ export function HoldingEditModal({
               onPress={() => setProductType(type)}
             >
               <Text style={[styles.chipText, type === productType && styles.chipTextSelected]}>
-                {humanizeProductType(type)}
+                {chipLabel(type)}
               </Text>
             </Pressable>
           ))}
         </View>
 
         <Text style={styles.fieldLabel}>Characteristics</Text>
+        <Text style={styles.fieldNote}>
+          Anything you leave blank stays blank — we won't guess, and nothing here is required.
+        </Text>
         {fields.length === 0 ? (
           <Text style={styles.noFieldsText}>No known fields for this product type.</Text>
         ) : (
@@ -213,7 +244,7 @@ export function HoldingEditModal({
 
         <Pressable style={[styles.button, styles.saveButton]} onPress={save} disabled={saving}>
           <Text style={styles.saveButtonText}>
-            {saving ? 'Saving…' : isCreate ? 'Add holding' : 'Save changes'}
+            {saving ? 'Saving…' : isCreate ? `Save ${noun}` : 'Save changes'}
           </Text>
         </Pressable>
 
@@ -233,7 +264,9 @@ export function HoldingEditModal({
 
 const styles = StyleSheet.create({
   container: { padding: spacing.xl, paddingTop: spacing.xxxl, backgroundColor: colors.screen },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: spacing.xl, color: colors.ink, fontFamily: font.ui },
+  title: { fontSize: 20, marginBottom: spacing.sm, color: colors.ink, fontFamily: font.uiSemibold },
+  // Mockup 4.4's caption under the title, pointing at the faster Ask-based capture path.
+  titleCaption: { fontFamily: font.ui, fontSize: 13, color: colors.inkMuted, marginBottom: spacing.lg },
   // `label` and `fieldLabel` were byte-identical except marginTop — merged (1H). Mono
   // uppercase to match every other form label in the app (this one was the odd one out,
   // font.ui sentence case).
@@ -246,6 +279,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginTop: spacing.md,
   },
+  // Mockup 4.4's reassurance notes — display-name privacy, and "nothing here is required".
+  fieldNote: { fontFamily: font.ui, fontSize: 12, color: colors.inkMuted, marginTop: -2, marginBottom: spacing.sm },
   noFieldsText: { fontSize: 13, color: colors.inkMuted, fontStyle: 'italic', fontFamily: font.ui },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -271,7 +306,7 @@ const styles = StyleSheet.create({
   errorText: { color: colors.danger, marginTop: spacing.lg, fontFamily: font.ui },
   button: { borderRadius: radius.md, paddingVertical: 14, alignItems: 'center', marginTop: spacing.xl },
   saveButton: { backgroundColor: colors.tutor },
-  saveButtonText: { fontSize: 15, color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  saveButtonText: typography.primaryButtonText,
   // Delete is a genuine destructive action — colors.danger here is correct P10 usage
   // (a real error/destructive state, not a negative financial value).
   deleteButton: {
@@ -280,7 +315,7 @@ const styles = StyleSheet.create({
     borderColor: colors.danger,
     marginTop: spacing.md,
   },
-  deleteButtonText: { color: colors.danger, fontWeight: '600', fontFamily: font.ui },
+  deleteButtonText: { color: colors.danger, fontFamily: font.uiSemibold },
   cancel: { alignItems: 'center', marginTop: spacing.lg },
   cancelText: { color: colors.inkMuted, fontFamily: font.ui },
 });

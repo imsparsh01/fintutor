@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, font, spacing } from '../design/tokens';
+import { typography } from '../design/typography';
 import { fetchConsolidated, type ConsolidatedTotals } from '../lib/consolidated';
 import { formatRupees } from '../lib/format';
 
@@ -82,6 +83,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  value: { fontSize: 15, fontWeight: '600', color: colors.ink, fontFamily: font.mono },
+  value: typography.ledgerValue,
   errorText: { color: colors.danger, textAlign: 'center', fontFamily: font.ui },
 });
