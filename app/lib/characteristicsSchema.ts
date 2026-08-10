@@ -27,6 +27,7 @@ const LOAN_FIELDS: FieldSpec[] = [
   { key: 'tenure_months', label: 'Tenure (months)', kind: 'number' },
   { key: 'emi_amount', label: 'EMI amount (₹)', kind: 'number' },
   { key: 'emi_frequency', label: 'EMI frequency', kind: 'text' },
+  { key: 'emi_due_day', label: 'EMI due day (1–31)', kind: 'number' },
   { key: 'start_date', label: `Start date${DATE_HINT}`, kind: 'date' },
   { key: 'outstanding_balance', label: 'Outstanding balance (₹)', kind: 'number' },
 ];

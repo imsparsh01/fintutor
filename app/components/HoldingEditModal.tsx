@@ -6,6 +6,7 @@ import { createHolding, deleteHolding, updateHolding, type Holding } from '../li
 import { ALL_PRODUCT_TYPES, humanizeProductType } from '../lib/taxonomy';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
+import { scheduleHoldingReminder } from '../lib/reminders';
 
 // Characteristics are form-edited as strings, converted to their real type on save.
 // A field left blank is omitted from the payload rather than sent as an empty string.
@@ -96,18 +97,20 @@ export function HoldingEditModal({
         characteristicsPayload[field.key] = field.kind === 'number' ? Number(raw) : raw;
       }
       if (isCreate) {
-        await createHolding(userId, {
+        const created = await createHolding(userId, {
           product_type: productType,
           display_name: displayName || null,
           characteristics: characteristicsPayload,
         });
+        await scheduleHoldingReminder(created);
       } else {
-        await updateHolding(userId, holding.id, {
+        const updated = await updateHolding(userId, holding.id, {
           alias,
           display_name: displayName || null,
           product_type: productType,
           characteristics: characteristicsPayload,
         });
+        await scheduleHoldingReminder(updated);
       }
       onChanged();
       onClose();

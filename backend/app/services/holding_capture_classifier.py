@@ -32,11 +32,11 @@ _CHARACTERISTIC_FIELDS: dict[str, list[str]] = {
     ],
     "ppf_epf": ["retirement_fund_type", "current_balance", "annual_contribution", "interest_rate"],
     "home_loan": [
-        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "start_date",
+        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "emi_due_day", "start_date",
         "outstanding_balance",
     ],
     "personal_loan": [
-        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "start_date",
+        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "emi_due_day", "start_date",
         "outstanding_balance",
     ],
     "credit_card_debt": [

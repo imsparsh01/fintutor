@@ -15,6 +15,7 @@ import { askQuestion, type HoldingProposal } from '../lib/chat';
 import { createHolding } from '../lib/holdings';
 import { HoldingProposalCard } from './HoldingProposalCard';
 import { Mascot, type MascotMood } from './Mascot';
+import { scheduleHoldingReminder } from '../lib/reminders';
 
 interface Message {
   id: string;
@@ -175,6 +176,7 @@ export const ChatThread = forwardRef<
       product_type: proposal.product_type,
       characteristics: proposal.characteristics,
     });
+    await scheduleHoldingReminder(savedHolding);
     setMessages((prev) => prev.map((m) => (m.id === messageId
       ? { ...m, proposalResolved: true, proposalSaved: true, reconciliation: savedHolding.reconciliation }
       : m)));

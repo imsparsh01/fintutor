@@ -98,6 +98,10 @@
 - **Tier:** 3, owner-approved directly in conversation. App-open rewards show one curated mechanism fact selected independently of user data; no financial figure is scored or personalized. Full write-up: `docs/decisions/D-100-static-mechanism-facts-as-reward.md`.
 - **Date:** 10-Aug-2026
 
+### D-101 — Local reminders and explicit EMI due day
+- **Tier:** 3, owner-approved directly in conversation. Local notifications use recorded credit-card dates and an optional 1–31 EMI due day; unknown dates are never inferred or scheduled. Full write-up: `docs/decisions/D-101-local-reminders-and-emi-due-day.md`.
+- **Date:** 10-Aug-2026
+
 ### D-085 — Limited memory for the onboarding exchange: exactly one prior AI message, never persisted
 - Owner-decided directly in conversation, triggered by a live-verification finding: a short/referential
   reply ("no, that's the only one") broke the model's next turn because D-022 sends zero prior-turn
