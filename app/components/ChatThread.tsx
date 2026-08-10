@@ -10,7 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { colors, spacing } from '../design/tokens';
+import { colors, font, radius, spacing } from '../design/tokens';
 import { askQuestion, type HoldingProposal } from '../lib/chat';
 import { createHolding } from '../lib/holdings';
 import { HoldingProposalCard } from './HoldingProposalCard';
@@ -144,7 +144,12 @@ export const ChatThread = forwardRef<
           renderItem={({ item }) => (
             <View>
               <View style={[styles.bubble, item.role === 'user' ? styles.userBubble : styles.assistantBubble]}>
-                <Text style={styles.bubbleText}>{item.text}</Text>
+                {/* P11: the tutor's generated prose renders in font.tutor (serif); the
+                    user's own words render in font.ui — the typeface itself is the tell,
+                    with no other cue needed. */}
+                <Text style={item.role === 'user' ? styles.userBubbleText : styles.assistantBubbleText}>
+                  {item.text}
+                </Text>
               </View>
               {item.holdingProposal && !item.proposalResolved && (
                 <HoldingProposalCard
@@ -179,32 +184,42 @@ export const ChatThread = forwardRef<
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: colors.screen },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
   list: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.lg },
-  bubble: { borderRadius: 12, padding: spacing.md, marginBottom: spacing.sm, maxWidth: '85%' },
-  userBubble: { backgroundColor: colors.borderLight, alignSelf: 'flex-end' },
-  assistantBubble: { backgroundColor: '#eef6ee', alignSelf: 'flex-start' },
-  bubbleText: { fontSize: 15, color: colors.text, lineHeight: 21 },
+  bubble: { borderRadius: radius.lg, padding: spacing.md, marginBottom: spacing.sm, maxWidth: '85%' },
+  // User messages: quieter, a hairline outline on the app's own canvas surface.
+  userBubble: {
+    backgroundColor: colors.canvas,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.line,
+    alignSelf: 'flex-end',
+  },
+  // Tutor messages: the teaching surface — tutorSoft fill, no border.
+  assistantBubble: { backgroundColor: colors.tutorSoft, alignSelf: 'flex-start' },
+  userBubbleText: { fontSize: 15, color: colors.ink, lineHeight: 21, fontFamily: font.ui },
+  assistantBubbleText: { fontSize: 15, color: colors.ink, lineHeight: 22, fontFamily: font.tutor },
   spinner: { marginVertical: spacing.sm },
-  errorText: { color: colors.danger, paddingHorizontal: spacing.lg, marginBottom: spacing.sm },
+  errorText: { color: colors.danger, paddingHorizontal: spacing.lg, marginBottom: spacing.sm, fontFamily: font.ui },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     padding: spacing.md,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.borderLight,
+    borderTopColor: colors.lineSoft,
   },
   input: {
     flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    borderRadius: 20,
+    borderColor: colors.line,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
     maxHeight: 100,
     fontSize: 15,
+    fontFamily: font.ui,
+    color: colors.ink,
   },
   sendButton: { marginLeft: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
-  sendButtonText: { color: colors.success, fontWeight: '600' },
+  sendButtonText: { color: colors.tutor, fontWeight: '600', fontFamily: font.ui },
 });

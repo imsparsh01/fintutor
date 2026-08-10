@@ -5,7 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EsopExerciseCostModal } from '../components/EsopExerciseCostModal';
 import { HoldingEditModal } from '../components/HoldingEditModal';
 import { LoanVsInvestModal } from '../components/LoanVsInvestModal';
-import { colors, spacing } from '../design/tokens';
+import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
 import { humanizeProductType } from '../lib/taxonomy';
@@ -16,6 +16,13 @@ type Props = NativeStackScreenProps<HoldingsStackParamList, 'Detail'>;
 // D-067's scope for the loan-vs-invest comparison: Home Loan / Personal Loan only,
 // matching backend/app/services/loan_vs_invest.py's own restriction.
 const LOAN_VS_INVEST_TYPES = new Set(['home_loan', 'personal_loan']);
+
+// D-091: the "what we won't say" block goes wherever a verdict is the natural next
+// thought. In the current taxonomy (lib/taxonomy.ts) that's specifically the mixed
+// protection-and-savings insurance type — a term policy or a loan doesn't carry the
+// same keep/surrender/paid-up fork. Scoped narrowly on purpose rather than shown for
+// every product type, per D-091's "name the SPECIFIC verdict" requirement.
+const WHAT_WE_WONT_SAY_TYPES = new Set(['endowment_ulip']);
 
 // BQ-022: read-only home for teaching content about one specific holding, reached by
 // tapping a row in HoldingsList. Full edit/delete/recategorize authority (BQ-027/D-059)
@@ -31,6 +38,8 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
   // D-069/BRIEF-015's scope: ESOP options only, not RSU (no exercise decision for RSUs).
   const isEsopOptions =
     holding.product_type === 'esop' && holding.characteristics.grant_type === 'options';
+
+  const showWontSayBlock = WHAT_WE_WONT_SAY_TYPES.has(holding.product_type);
 
   const fields = CHARACTERISTICS_SCHEMA[holding.product_type] ?? [];
   const filledFields = fields.filter((field) => {
@@ -51,11 +60,11 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
 
   return (
     <>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
         <Text style={styles.title}>{holding.display_name ?? holding.alias}</Text>
         <Text style={styles.subtitle}>{humanizeProductType(holding.product_type)}</Text>
 
-        <View style={styles.card}>
+        <View>
           {filledFields.length === 0 ? (
             <Text style={styles.emptyText}>No characteristic details recorded yet.</Text>
           ) : (
@@ -67,6 +76,16 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
             ))
           )}
         </View>
+
+        {showWontSayBlock && (
+          <View style={styles.teachingCard}>
+            <Text style={styles.teachingHeading}>WHAT WE WON'T SAY</Text>
+            <Text style={styles.teachingBody}>
+              Whether to keep it, surrender it, or make it paid-up. We'll show what each of those does to
+              your numbers, in the same detail, whenever you ask.
+            </Text>
+          </View>
+        )}
 
         <Pressable style={styles.askButton} onPress={askAboutThis}>
           <Text style={styles.askButtonText}>Ask about this</Text>
@@ -120,49 +139,75 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  screen: { backgroundColor: colors.screen },
   container: { padding: spacing.xl, paddingBottom: spacing.xxxl },
-  title: { fontSize: 20, fontWeight: '600', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.textSecondary, marginTop: spacing.xs, marginBottom: spacing.xl },
-  card: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.borderLight,
-    borderRadius: 12,
-    padding: spacing.md,
+  title: { fontFamily: font.ui, fontSize: 20, fontWeight: '600', color: colors.ink },
+  subtitle: {
+    fontFamily: font.mono,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: colors.inkMuted,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xl,
   },
-  emptyText: { color: colors.textMuted, fontSize: 13, fontStyle: 'italic' },
+  emptyText: { fontFamily: font.ui, color: colors.inkMuted, fontSize: 13, fontStyle: 'italic' },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.borderLight,
+    borderBottomColor: colors.line,
   },
-  rowLabel: { fontSize: 14, color: colors.textSecondary, flex: 1 },
-  rowValue: { fontSize: 14, fontWeight: '600', color: colors.text },
+  rowLabel: {
+    fontFamily: font.mono,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: colors.inkMuted,
+    flex: 1,
+  },
+  rowValue: { fontFamily: font.mono, fontSize: 14, color: colors.ink },
+  teachingCard: {
+    backgroundColor: colors.tutorSoft,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginTop: spacing.xl,
+  },
+  teachingHeading: {
+    fontFamily: font.ui,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: colors.tutor,
+    marginBottom: spacing.sm,
+  },
+  teachingBody: { fontFamily: font.tutor, fontSize: 15, lineHeight: 22, color: colors.ink },
   askButton: {
-    backgroundColor: colors.success,
-    borderRadius: 8,
+    backgroundColor: colors.tutor,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: spacing.xl,
   },
-  askButtonText: { color: '#fff', fontWeight: '600' },
+  askButtonText: { fontFamily: font.ui, color: colors.screen, fontWeight: '600' },
   compareButton: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.success,
-    borderRadius: 8,
+    borderColor: colors.tutor,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  compareButtonText: { color: colors.success, fontWeight: '600' },
+  compareButtonText: { fontFamily: font.ui, color: colors.tutor, fontWeight: '600' },
   editButton: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    borderRadius: 8,
+    borderColor: colors.line,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  editButtonText: { color: colors.text, fontWeight: '600' },
+  editButtonText: { fontFamily: font.ui, color: colors.ink, fontWeight: '600' },
 });

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { supabase } from '../lib/supabase';
 import type { AuthStackParamList } from '../navigation/types';
+import { colors, font, radius, spacing } from '../design/tokens';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
@@ -25,26 +26,39 @@ export function LoginScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log in</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+
+      <View style={styles.field}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="you@example.com"
+          placeholderTextColor={colors.inkMuted}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
+      </View>
+
+      <View style={styles.field}>
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="••••••••"
+          placeholderTextColor={colors.inkMuted}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+      </View>
+
       {error && <Text style={styles.error}>{error}</Text>}
+
       <Pressable style={styles.button} onPress={handleLogin} disabled={submitting}>
         <Text style={styles.buttonText}>{submitting ? 'Logging in…' : 'Log in'}</Text>
       </Pressable>
-      <Pressable onPress={() => navigation.navigate('Register')}>
+
+      <Pressable onPress={() => navigation.navigate('Register')} hitSlop={8}>
         <Text style={styles.link}>Don't have an account? Register</Text>
       </Pressable>
     </View>
@@ -52,23 +66,50 @@ export function LoginScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 24 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: spacing.xl,
+    backgroundColor: colors.screen,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: spacing.xxl,
+    color: colors.ink,
+    fontFamily: font.ui,
+  },
+  field: { marginBottom: spacing.lg },
+  label: {
+    fontSize: 11,
+    fontFamily: font.mono,
+    color: colors.inkMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+  },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
+    borderColor: colors.line,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    fontSize: 15,
+    fontFamily: font.ui,
+    color: colors.ink,
   },
   button: {
-    backgroundColor: '#111',
-    borderRadius: 8,
-    padding: 14,
+    backgroundColor: colors.tutor,
+    borderRadius: radius.md,
+    padding: spacing.md,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
-  buttonText: { color: '#fff', fontWeight: '600' },
-  link: { marginTop: 16, textAlign: 'center', color: '#111' },
-  error: { color: '#c00', marginBottom: 12 },
+  buttonText: { color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  link: {
+    marginTop: spacing.lg,
+    textAlign: 'center',
+    color: colors.inkSecondary,
+    fontFamily: font.ui,
+  },
+  error: { color: colors.danger, marginBottom: spacing.md, fontFamily: font.ui },
 });

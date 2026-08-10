@@ -4,6 +4,7 @@ import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
 import { useAuth } from '../lib/AuthContext';
 import { createHolding, deleteHolding, updateHolding, type Holding } from '../lib/holdings';
 import { ALL_PRODUCT_TYPES, humanizeProductType } from '../lib/taxonomy';
+import { colors, font, radius, spacing } from '../design/tokens';
 
 // Characteristics are form-edited as strings, converted to their real type on save.
 // A field left blank is omitted from the payload rather than sent as an empty string.
@@ -131,7 +132,10 @@ export function HoldingEditModal({
           style={styles.input}
           value={displayName}
           onChangeText={setDisplayName}
-          placeholder="e.g. HDFC Home Loan"
+          // No real product, fund, insurer, or bank name may appear in app-authored copy —
+          // PROJECT_SPEC.md §2's strict compliance stance. The user's own display_name may of
+          // course be anything they like (P6); the placeholder we suggest may not.
+          placeholder="e.g. My home loan"
         />
 
         {!isCreate && (
@@ -225,36 +229,40 @@ export function HoldingEditModal({
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 24, paddingTop: 48, backgroundColor: '#fff' },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 24 },
-  label: { fontSize: 13, color: '#666', marginBottom: 6, marginTop: 16 },
-  fieldLabel: { fontSize: 13, color: '#666', marginBottom: 6, marginTop: 12 },
-  noFieldsText: { fontSize: 13, color: '#888', fontStyle: 'italic' },
+  container: { padding: 24, paddingTop: 48, backgroundColor: colors.screen },
+  title: { fontSize: 20, fontWeight: '600', marginBottom: spacing.xl, color: colors.ink, fontFamily: font.ui },
+  label: { fontSize: 13, color: colors.inkMuted, marginBottom: 6, marginTop: spacing.lg, fontFamily: font.ui },
+  fieldLabel: { fontSize: 13, color: colors.inkMuted, marginBottom: 6, marginTop: spacing.md, fontFamily: font.ui },
+  noFieldsText: { fontSize: 13, color: colors.inkMuted, fontStyle: 'italic', fontFamily: font.ui },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.line,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
     paddingVertical: 10,
     fontSize: 16,
+    color: colors.ink,
+    fontFamily: font.ui,
   },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#ccc',
-    borderRadius: 16,
-    paddingHorizontal: 12,
+    borderColor: colors.line,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
     paddingVertical: 6,
   },
-  chipSelected: { backgroundColor: '#116611', borderColor: '#116611' },
-  chipText: { fontSize: 13, color: '#333' },
-  chipTextSelected: { color: '#fff' },
-  errorText: { color: '#c00', marginTop: 16 },
-  button: { borderRadius: 8, paddingVertical: 14, alignItems: 'center', marginTop: 24 },
-  saveButton: { backgroundColor: '#116611' },
-  saveButtonText: { color: '#fff', fontWeight: '600' },
-  deleteButton: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#c00', marginTop: 12 },
-  deleteButtonText: { color: '#c00', fontWeight: '600' },
-  cancel: { alignItems: 'center', marginTop: 16 },
-  cancelText: { color: '#888' },
+  chipSelected: { backgroundColor: colors.tutor, borderColor: colors.tutor },
+  chipText: { fontSize: 13, color: colors.ink, fontFamily: font.ui },
+  chipTextSelected: { color: colors.screen },
+  errorText: { color: colors.danger, marginTop: spacing.lg, fontFamily: font.ui },
+  button: { borderRadius: radius.md, paddingVertical: 14, alignItems: 'center', marginTop: spacing.xl },
+  saveButton: { backgroundColor: colors.tutor },
+  saveButtonText: { color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  // Delete is a genuine destructive action — colors.danger here is correct P10 usage
+  // (a real error/destructive state, not a negative financial value).
+  deleteButton: { backgroundColor: colors.screen, borderWidth: 1, borderColor: colors.danger, marginTop: spacing.md },
+  deleteButtonText: { color: colors.danger, fontWeight: '600', fontFamily: font.ui },
+  cancel: { alignItems: 'center', marginTop: spacing.lg },
+  cancelText: { color: colors.inkMuted, fontFamily: font.ui },
 });

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { ChatThread, type ChatThreadHandle } from '../components/ChatThread';
-import { colors } from '../design/tokens';
+import { colors, font, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import type { MainTabsParamList } from '../navigation/types';
 
@@ -42,6 +42,6 @@ export function ChatScreen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  body: { color: colors.textSecondary, textAlign: 'center' },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
+  body: { color: colors.inkSecondary, fontFamily: font.ui, textAlign: 'center' },
 });

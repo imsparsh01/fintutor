@@ -1,10 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StyleSheet } from 'react-native';
 import { BudgetingScreen } from '../screens/BudgetingScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ConsolidatedScreen } from '../screens/ConsolidatedScreen';
 import { InsuranceScreen } from '../screens/InsuranceScreen';
 import { InvestmentsScreen } from '../screens/InvestmentsScreen';
 import { LoansScreen } from '../screens/LoansScreen';
+import { colors, font } from '../design/tokens';
 import type { MainTabsParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
@@ -19,9 +21,23 @@ const Tab = createBottomTabNavigator<MainTabsParamList>();
 // easily-revised placement, consistent with D-031's always-accessible sections.
 // BQ-025 (D-058's onboarding flow) may change this once designed — that's its call,
 // not this item's.
+// P8: all six tabs stay present and reachable at all times, including with zero
+// holdings — never hidden, disabled, or gated on data. Styling below is presentation
+// only (colours, hairline, label typeface); it does not touch which tabs exist.
 export function MainTabs() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: colors.tutor,
+        tabBarInactiveTintColor: colors.inkMuted,
+        tabBarStyle: {
+          backgroundColor: colors.canvas,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: colors.line,
+        },
+        tabBarLabelStyle: { fontFamily: font.ui, fontSize: 11 },
+      }}
+    >
       <Tab.Screen name="Consolidated" component={ConsolidatedScreen} />
       <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Investments" component={InvestmentsScreen} />

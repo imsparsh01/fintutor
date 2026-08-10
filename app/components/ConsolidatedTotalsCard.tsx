@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing } from '../design/tokens';
+import { colors, font, spacing } from '../design/tokens';
 import { fetchConsolidated, type ConsolidatedTotals } from '../lib/consolidated';
 import { formatRupees } from '../lib/format';
 
@@ -56,14 +56,25 @@ export function ConsolidatedTotalsCard({ userId }: { userId: string | null }) {
 
 const styles = StyleSheet.create({
   container: { width: '100%', paddingHorizontal: spacing.xl, marginBottom: spacing.xl },
+  // Warm-ledger row: label-left/value-right, separated by a hairline rule — not a
+  // shadowed card or filled box. Generous vertical rhythm per the visual register.
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
+    alignItems: 'center',
+    paddingVertical: spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.borderLight,
+    borderBottomColor: colors.line,
   },
-  label: { fontSize: 14, color: colors.textSecondary },
-  value: { fontSize: 14, fontWeight: '600', color: colors.text },
-  errorText: { color: colors.danger, textAlign: 'center' },
+  // P10: these are real financial figures — undecorated, no valence. Label and value
+  // both render in font.mono per the ledger register; only weight/color differ.
+  label: {
+    fontSize: 12,
+    color: colors.inkMuted,
+    fontFamily: font.mono,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  value: { fontSize: 15, fontWeight: '600', color: colors.ink, fontFamily: font.mono },
+  errorText: { color: colors.danger, textAlign: 'center', fontFamily: font.ui },
 });

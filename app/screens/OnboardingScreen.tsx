@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ChatThread, type ChatThreadHandle } from '../components/ChatThread';
-import { colors, spacing } from '../design/tokens';
+import { colors, font, radius, spacing } from '../design/tokens';
 
 // D-058: chip-guided conversation (Option C — no structured field anywhere), the default
 // landing screen right after registration, never a hard gate. "Skip for now" is always
@@ -42,6 +42,8 @@ export function OnboardingScreen({ userId, onDone }: { userId: string; onDone: (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Welcome to FinTutor</Text>
+        {/* P9/D-058: must render unconditionally, from the very first frame — never
+            gated behind `engaged` or any other state. Only the label text changes. */}
         <Pressable onPress={onDone} hitSlop={8}>
           <Text style={styles.skip}>{engaged ? 'Done — go to app' : 'Skip for now'}</Text>
         </Pressable>
@@ -74,7 +76,7 @@ export function OnboardingScreen({ userId, onDone }: { userId: string; onDone: (
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: colors.screen },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -83,17 +85,25 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xxl,
     paddingBottom: spacing.md,
   },
-  title: { fontSize: 18, fontWeight: '600', color: colors.text },
-  skip: { color: colors.textSecondary, fontSize: 14 },
+  title: { fontSize: 18, fontWeight: '600', color: colors.ink, fontFamily: font.ui },
+  skip: { color: colors.inkSecondary, fontSize: 14, fontFamily: font.ui },
   emptyState: { alignItems: 'center' },
-  prompt: { fontSize: 16, color: colors.text, marginBottom: spacing.lg, textAlign: 'center' },
+  // Static product copy, not model-generated prose — font.ui per P11 (font.tutor is
+  // reserved for the tutor's own generated teaching/explanatory replies).
+  prompt: {
+    fontSize: 16,
+    color: colors.ink,
+    fontFamily: font.ui,
+    marginBottom: spacing.lg,
+    textAlign: 'center',
+  },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.sm },
   chip: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    borderRadius: 20,
+    borderColor: colors.line,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
-  chipText: { fontSize: 14, color: colors.text },
+  chipText: { fontSize: 14, color: colors.ink, fontFamily: font.ui },
 });

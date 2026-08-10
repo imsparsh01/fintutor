@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, spacing } from '../design/tokens';
+import { colors, font, radius, spacing } from '../design/tokens';
 
 export type MascotMood = 'neutral' | 'celebrating' | 'encouraging';
 
@@ -23,16 +23,21 @@ const MOOD_MESSAGE: Record<MascotMood, string> = {
 // and a completed teaching moment (this item, ChatThread) both call in;
 // defaults to 'neutral' otherwise.
 export function Mascot({ mood = 'neutral' }: { mood?: MascotMood }) {
+  const active = mood !== 'neutral';
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, active && styles.containerActive]}>
       <Text style={styles.emoji}>{MOOD_EMOJI[mood]}</Text>
-      <Text style={styles.message}>{MOOD_MESSAGE[mood]}</Text>
+      <Text style={[styles.message, active && styles.messageActive]}>{MOOD_MESSAGE[mood]}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', justifyContent: 'center', padding: spacing.md },
+  container: { alignItems: 'center', justifyContent: 'center', padding: spacing.md, borderRadius: radius.xl },
+  // Clay marks a reaction moment (celebrating/encouraging) — never present at rest,
+  // and never driven by anything but the app-behavior mood passed in.
+  containerActive: { backgroundColor: colors.behaviourSoft },
   emoji: { fontSize: 40 },
-  message: { fontSize: 13, color: colors.textSecondary, marginTop: spacing.xs },
+  message: { fontSize: 13, color: colors.inkSecondary, marginTop: spacing.xs, fontFamily: font.ui },
+  messageActive: { color: colors.behaviour, fontWeight: '600' },
 });

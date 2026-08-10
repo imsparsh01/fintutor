@@ -7,6 +7,7 @@ import { useAuth } from '../lib/AuthContext';
 import { fetchHoldings, type Holding } from '../lib/holdings';
 import { humanizeProductType } from '../lib/taxonomy';
 import type { HoldingsStackParamList } from '../navigation/types';
+import { colors, font, spacing } from '../design/tokens';
 
 // List view (BQ-019). Tapping a row navigates to the detail screen (BQ-022) — full
 // edit/delete/recategorize authority (BQ-027/D-059) lives there now, one tap deeper,
@@ -117,19 +118,34 @@ export function HoldingsList({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
-  listContainer: { flex: 1, backgroundColor: '#fff', paddingTop: 16 },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 8, textAlign: 'center' },
-  body: { color: '#666', paddingHorizontal: 24, textAlign: 'center' },
-  errorText: { color: '#c00', paddingHorizontal: 24, textAlign: 'center' },
-  row: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#eee',
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.screen },
+  listContainer: { flex: 1, backgroundColor: colors.screen, paddingTop: spacing.lg },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+    color: colors.ink,
+    fontFamily: font.ui,
   },
-  rowTitle: { fontSize: 16, fontWeight: '500' },
-  rowSubtitle: { fontSize: 13, color: '#888', marginTop: 2 },
-  addButton: { paddingVertical: 12, alignItems: 'center' },
-  addButtonText: { color: '#116611', fontWeight: '600', fontSize: 14 },
+  body: { color: colors.inkSecondary, paddingHorizontal: spacing.xl, textAlign: 'center', fontFamily: font.ui },
+  errorText: { color: colors.danger, paddingHorizontal: spacing.xl, textAlign: 'center', fontFamily: font.ui },
+  // Ledger row: hairline-separated, no card, no fill, no shadow.
+  row: {
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
+  },
+  rowTitle: { fontSize: 16, fontWeight: '500', color: colors.ink, fontFamily: font.ui },
+  rowSubtitle: {
+    fontSize: 12,
+    color: colors.inkMuted,
+    marginTop: 2,
+    fontFamily: font.mono,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  addButton: { paddingVertical: spacing.md, alignItems: 'center' },
+  addButtonText: { color: colors.tutor, fontWeight: '600', fontSize: 14, fontFamily: font.ui },
 });

@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { colors, font, spacing } from '../design/tokens';
 
 // Shown when app/.env is missing EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY
 // (D-052's dependency flag) — a clear state instead of a crash.
@@ -19,17 +20,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
+    padding: spacing.xl,
+    backgroundColor: colors.screen,
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: spacing.md,
+    color: colors.ink,
+    fontFamily: font.ui,
   },
   body: {
     fontSize: 14,
     textAlign: 'center',
-    color: '#444',
+    color: colors.inkSecondary,
+    fontFamily: font.ui,
   },
 });

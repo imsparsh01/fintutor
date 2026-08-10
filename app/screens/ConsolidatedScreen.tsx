@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ConsolidatedTotalsCard } from '../components/ConsolidatedTotalsCard';
 import { Mascot, type MascotMood } from '../components/Mascot';
 import { StreakBadge } from '../components/StreakBadge';
+import { colors, font, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { pingBackendHealth } from '../lib/backend';
 import { recordAppOpen, type StreakOpenResult } from '../lib/streaks';
@@ -42,7 +43,9 @@ export function ConsolidatedScreen() {
       <ConsolidatedTotalsCard userId={userId} />
 
       <View style={styles.statusBox}>
-        <Text style={styles.statusLabel}>Backend health</Text>
+        <Text style={styles.statusLabel}>BACKEND HEALTH</Text>
+        {/* Not a financial figure (P10 doesn't apply) — this is a system diagnostic, so
+            danger is a genuine error state (unreachable), not a valence judgement. */}
         <Text style={status?.ok ? styles.statusOk : styles.statusFail}>
           {status ? `${status.ok ? 'OK' : 'unreachable'} — ${status.detail}` : 'checking…'}
         </Text>
@@ -56,13 +59,26 @@ export function ConsolidatedScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 8 },
-  body: { color: '#666', paddingHorizontal: 24, textAlign: 'center', marginBottom: 24 },
-  statusBox: { alignItems: 'center', marginBottom: 32 },
-  statusLabel: { fontSize: 12, color: '#888', marginBottom: 4 },
-  statusOk: { color: '#116611', fontWeight: '600' },
-  statusFail: { color: '#c00', fontWeight: '600' },
-  signOut: { padding: 12 },
-  signOutText: { color: '#c00' },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.screen },
+  title: {
+    fontFamily: font.ui,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.ink,
+    marginBottom: spacing.sm,
+  },
+  body: { fontFamily: font.ui, color: colors.inkSecondary, paddingHorizontal: spacing.xl, textAlign: 'center', marginBottom: spacing.xl },
+  statusBox: { alignItems: 'center', marginTop: spacing.lg, marginBottom: spacing.xxl },
+  statusLabel: {
+    fontFamily: font.mono,
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.inkMuted,
+    marginBottom: spacing.xs,
+  },
+  statusOk: { fontFamily: font.ui, color: colors.ink, fontWeight: '600' },
+  statusFail: { fontFamily: font.ui, color: colors.danger, fontWeight: '600' },
+  signOut: { padding: spacing.md },
+  signOutText: { fontFamily: font.ui, color: colors.danger },
 });

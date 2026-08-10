@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { TaxSavingRoomModal } from '../components/TaxSavingRoomModal';
-import { colors, spacing } from '../design/tokens';
+import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { fetchBudget, type BudgetSummary } from '../lib/budget';
 import {
@@ -66,7 +66,7 @@ export function BudgetingScreen() {
   if (budget === null) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator />
+        <ActivityIndicator color={colors.ink} />
       </View>
     );
   }
@@ -75,14 +75,23 @@ export function BudgetingScreen() {
     .flatMap((record) => record.sources)
     .some((source) => source.amount_high != null);
 
+  const incomeSources = income.flatMap((record) => record.sources);
+  // Em-dash for "nothing recorded here yet" (D-086 register), distinct from a real
+  // computed zero — these two rows are the ones directly backed by a list this screen
+  // knows to be empty or not; recurring outflows and net are real computed totals
+  // regardless, so they always render as a figure.
+  const incomeDisplay = incomeSources.length === 0 ? '—' : formatRupees(budget.income_total);
+  const discretionaryDisplay =
+    discretionaryCategories.length === 0 ? '—' : formatRupees(budget.discretionary_total);
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.sectionTitle}>Budget</Text>
-      <View style={styles.card}>
-        <BudgetRow label="Income" value={budget.income_total} />
-        <BudgetRow label="Recurring outflows" value={budget.recurring_outflows_total} />
-        <BudgetRow label="Discretionary" value={budget.discretionary_total} />
-        <BudgetRow label="Net" value={budget.net} bold />
+      <View>
+        <BudgetRow label="Income" display={incomeDisplay} />
+        <BudgetRow label="Recurring outflows" display={formatRupees(budget.recurring_outflows_total)} />
+        <BudgetRow label="Discretionary" display={discretionaryDisplay} />
+        <BudgetRow label="Net" display={formatRupees(budget.net)} bold />
       </View>
       {hasVariableIncome && (
         <Text style={styles.caption}>
@@ -95,25 +104,23 @@ export function BudgetingScreen() {
       </Pressable>
 
       <Text style={styles.sectionTitle}>Income</Text>
-      <View style={styles.card}>
-        {income.flatMap((record) => record.sources).length === 0 ? (
+      <View>
+        {incomeSources.length === 0 ? (
           <Text style={styles.emptyText}>No income sources yet.</Text>
         ) : (
-          income
-            .flatMap((record) => record.sources)
-            .map((source, idx) => (
-              <View key={idx} style={styles.row}>
-                <Text style={styles.rowLabel}>{source.label}</Text>
-                <View>
-                  <Text style={styles.rowValue}>
-                    {formatRupees(source.amount)} / {source.frequency}
-                  </Text>
-                  {source.amount_high != null && (
-                    <Text style={styles.rowSubtitle}>typical ~{formatRupees(source.amount_high)}</Text>
-                  )}
-                </View>
+          incomeSources.map((source, idx) => (
+            <View key={idx} style={styles.row}>
+              <Text style={styles.rowLabel}>{source.label}</Text>
+              <View>
+                <Text style={styles.rowValue}>
+                  {formatRupees(source.amount)} / {source.frequency}
+                </Text>
+                {source.amount_high != null && (
+                  <Text style={styles.rowSubtitle}>typical ~{formatRupees(source.amount_high)}</Text>
+                )}
               </View>
-            ))
+            </View>
+          ))
         )}
       </View>
       <AddIncomeForm
@@ -123,7 +130,7 @@ export function BudgetingScreen() {
       />
 
       <Text style={styles.sectionTitle}>Discretionary spending</Text>
-      <View style={styles.card}>
+      <View>
         {discretionaryCategories.length === 0 ? (
           <Text style={styles.emptyText}>No discretionary categories yet.</Text>
         ) : (
@@ -138,21 +145,33 @@ export function BudgetingScreen() {
       <AddDiscretionaryCategoryForm userId={userId} onAdded={load} />
 
       <Text style={styles.sectionTitle}>Goals</Text>
-      <View style={styles.card}>
+      <View>
         {goals.length === 0 ? (
           <Text style={styles.emptyText}>No goals yet.</Text>
         ) : (
-          goals.map((goal) => (
-            <View key={goal.id} style={styles.row}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.rowLabel}>{goal.category}</Text>
-                <Text style={styles.rowSubtitle}>by {goal.target_date}</Text>
+          goals.map((goal) => {
+            const pct = goal.target_amount > 0
+              ? Math.max(0, Math.min(100, (goal.progress / goal.target_amount) * 100))
+              : 0;
+            return (
+              <View key={goal.id} style={styles.goalRow}>
+                <View style={styles.row}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.rowLabel}>{goal.category}</Text>
+                    <Text style={styles.rowSubtitle}>by {goal.target_date}</Text>
+                  </View>
+                  <Text style={styles.rowValue}>
+                    {formatRupees(goal.progress)} / {formatRupees(goal.target_amount)}
+                  </Text>
+                </View>
+                {/* Neutral ink fill on a lineSoft track (P10) — a goal at 27% is at 27%,
+                    not "behind". No colour or gradient tied to how close it is. */}
+                <View style={styles.goalTrack}>
+                  <View style={[styles.goalFill, { width: `${pct}%` }]} />
+                </View>
               </View>
-              <Text style={styles.rowValue}>
-                {formatRupees(goal.progress)} / {formatRupees(goal.target_amount)}
-              </Text>
-            </View>
-          ))
+            );
+          })
         )}
       </View>
       <AddGoalForm userId={userId} onAdded={load} />
@@ -164,11 +183,11 @@ export function BudgetingScreen() {
   );
 }
 
-function BudgetRow({ label, value, bold }: { label: string; value: number; bold?: boolean }) {
+function BudgetRow({ label, display, bold }: { label: string; display: string; bold?: boolean }) {
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={[styles.rowValue, bold && styles.rowValueBold]}>{formatRupees(value)}</Text>
+      <Text style={[styles.rowValue, bold && styles.rowValueBold]}>{display}</Text>
     </View>
   );
 }
@@ -229,10 +248,17 @@ function AddIncomeForm({
 
   return (
     <View style={styles.form}>
-      <TextInput style={styles.input} placeholder="Label (e.g. Salary)" value={label} onChangeText={setLabel} />
+      <TextInput
+        style={styles.input}
+        placeholder="Label (e.g. Salary)"
+        placeholderTextColor={colors.inkMuted}
+        value={label}
+        onChangeText={setLabel}
+      />
       <TextInput
         style={styles.input}
         placeholder="Monthly amount you can count on (₹)"
+        placeholderTextColor={colors.inkMuted}
         keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
@@ -240,6 +266,7 @@ function AddIncomeForm({
       <TextInput
         style={styles.input}
         placeholder="Typical amount, if it varies (₹, optional)"
+        placeholderTextColor={colors.inkMuted}
         keyboardType="numeric"
         value={amountHigh}
         onChangeText={setAmountHigh}
@@ -290,12 +317,14 @@ function AddDiscretionaryCategoryForm({ userId, onAdded }: { userId: string; onA
       <TextInput
         style={styles.input}
         placeholder="Category (e.g. Eating out)"
+        placeholderTextColor={colors.inkMuted}
         value={label}
         onChangeText={setLabel}
       />
       <TextInput
         style={styles.input}
         placeholder="Planned monthly amount (₹)"
+        placeholderTextColor={colors.inkMuted}
         keyboardType="numeric"
         value={plannedAmount}
         onChangeText={setPlannedAmount}
@@ -351,12 +380,14 @@ function AddGoalForm({ userId, onAdded }: { userId: string; onAdded: () => void 
       <TextInput
         style={styles.input}
         placeholder="What's this for? (e.g. Child's education)"
+        placeholderTextColor={colors.inkMuted}
         value={category}
         onChangeText={setCategory}
       />
       <TextInput
         style={styles.input}
         placeholder="Target amount (₹)"
+        placeholderTextColor={colors.inkMuted}
         keyboardType="numeric"
         value={targetAmount}
         onChangeText={setTargetAmount}
@@ -364,6 +395,7 @@ function AddGoalForm({ userId, onAdded }: { userId: string; onAdded: () => void 
       <TextInput
         style={styles.input}
         placeholder="Target date (YYYY-MM-DD)"
+        placeholderTextColor={colors.inkMuted}
         value={targetDate}
         onChangeText={setTargetDate}
       />
@@ -376,52 +408,66 @@ function AddGoalForm({ userId, onAdded }: { userId: string; onAdded: () => void 
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: colors.screen },
   content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
-  body: { color: colors.textSecondary, textAlign: 'center' },
-  errorText: { color: colors.danger, marginTop: spacing.xs },
-  caption: { fontSize: 12, color: colors.textMuted, marginTop: spacing.xs },
-  sectionTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginTop: spacing.xl, marginBottom: spacing.sm },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, backgroundColor: colors.screen },
+  body: { fontFamily: font.ui, color: colors.inkSecondary, textAlign: 'center' },
+  errorText: { fontFamily: font.ui, color: colors.danger, marginTop: spacing.xs },
+  caption: { fontFamily: font.ui, fontSize: 12, color: colors.inkMuted, marginTop: spacing.xs },
+  sectionTitle: {
+    fontFamily: font.mono,
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.inkMuted,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.sm,
+  },
   taxSavingButton: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.success,
-    borderRadius: 8,
+    borderColor: colors.tutor,
+    borderRadius: radius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  taxSavingButtonText: { color: colors.success, fontWeight: '600' },
-  card: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.borderLight,
-    borderRadius: 12,
-    padding: spacing.md,
-  },
-  emptyText: { color: colors.textMuted, fontSize: 13 },
+  taxSavingButtonText: { fontFamily: font.ui, color: colors.tutor, fontWeight: '600' },
+  emptyText: { fontFamily: font.ui, color: colors.inkMuted, fontSize: 13 },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.borderLight,
+    borderBottomColor: colors.line,
   },
-  rowLabel: { fontSize: 14, color: colors.textSecondary },
-  rowSubtitle: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
-  rowValue: { fontSize: 14, fontWeight: '600', color: colors.text },
-  rowValueBold: { fontSize: 16 },
+  goalRow: { marginBottom: spacing.xs },
+  goalTrack: {
+    height: 4,
+    backgroundColor: colors.lineSoft,
+    borderRadius: radius.sm,
+    marginTop: spacing.xs,
+    marginBottom: spacing.md,
+    overflow: 'hidden',
+  },
+  goalFill: { height: '100%', backgroundColor: colors.ink },
+  rowLabel: { fontFamily: font.mono, fontSize: 12, letterSpacing: 0.5, textTransform: 'uppercase', color: colors.inkMuted },
+  rowSubtitle: { fontFamily: font.mono, fontSize: 11, color: colors.inkMuted, marginTop: 2 },
+  rowValue: { fontFamily: font.mono, fontSize: 15, color: colors.ink },
+  rowValueBold: { fontSize: 17, fontWeight: '600' },
   addButton: { paddingVertical: spacing.sm, marginTop: spacing.xs },
-  addButtonText: { color: colors.success, fontWeight: '600', fontSize: 14 },
+  addButtonText: { fontFamily: font.ui, color: colors.tutor, fontWeight: '600', fontSize: 14 },
   form: { marginTop: spacing.xs, gap: spacing.sm },
   input: {
+    fontFamily: font.ui,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    borderRadius: 8,
+    borderColor: colors.line,
+    borderRadius: radius.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: 10,
     fontSize: 15,
+    color: colors.ink,
   },
-  saveButton: { backgroundColor: colors.success, borderRadius: 8, paddingVertical: spacing.sm, alignItems: 'center' },
-  saveButtonText: { color: '#fff', fontWeight: '600' },
+  saveButton: { backgroundColor: colors.tutor, borderRadius: radius.sm, paddingVertical: spacing.sm, alignItems: 'center' },
+  saveButtonText: { fontFamily: font.ui, color: colors.screen, fontWeight: '600' },
 });

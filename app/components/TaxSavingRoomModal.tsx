@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing } from '../design/tokens';
+import { colors, font, radius, spacing } from '../design/tokens';
 import { formatRupees } from '../lib/format';
 import { fetchTaxSavingRoom, type TaxSavingRoomResult } from '../lib/taxSavingRoom';
 
 // D-067's user-triggered entry point + D-070/BRIEF-016's math. Tax regime is asked here,
 // in the tool, each time — never stored on the profile (Gap A's resolution).
+//
+// D-091 (10-Aug-2026): the unused-room figure below is exactly the surface where a verdict
+// ("so which instrument should I put this in?") is the natural next thought and nothing else
+// on screen addresses it — so it carries an explicit "what we won't say" block, adopted
+// verbatim rather than reworded per-context (see docs/decisions/D-091-what-we-wont-say-block.md).
 export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClose: () => void }) {
   const [result, setResult] = useState<TaxSavingRoomResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,11 +55,23 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
         {result && (
           <View style={styles.results}>
             {result.applicable ? (
-              <View style={styles.card}>
-                <Text style={styles.cardLabel}>Unused 80C room</Text>
-                <Text style={styles.cardValue}>{formatRupees(result.unused_room ?? 0)}</Text>
-                <Text style={styles.cardNote}>{result.note}</Text>
-              </View>
+              <>
+                <View style={styles.card}>
+                  <Text style={styles.cardLabel}>Unused 80C room</Text>
+                  <Text style={styles.cardValue}>{formatRupees(result.unused_room ?? 0)}</Text>
+                  <Text style={styles.cardNote}>{result.note}</Text>
+                </View>
+
+                <View style={styles.wontSayBlock}>
+                  <Text style={styles.wontSayHeading}>What we won't say</Text>
+                  <Text style={styles.wontSayBody}>
+                    Which instrument to fill it with, or whether to fill it at all. Ask about any
+                    qualifying category and we'll show you its lock-in, risk and mechanism side by
+                    side.
+                  </Text>
+                  <Text style={styles.wontSayKeyLine}>Room isn't an instruction.</Text>
+                </View>
+              </>
             ) : (
               <View style={styles.card}>
                 <Text style={styles.cardNote}>{result.note}</Text>
@@ -75,33 +92,87 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
 }
 
 const styles = StyleSheet.create({
-  container: { padding: spacing.xl, paddingTop: spacing.xxxl, backgroundColor: colors.background },
-  title: { fontSize: 20, fontWeight: '600', color: colors.text, marginBottom: spacing.lg },
-  subtitle: { fontSize: 14, color: colors.textSecondary, marginBottom: spacing.lg },
+  container: { padding: spacing.xl, paddingTop: spacing.xxxl, backgroundColor: colors.screen },
+  title: {
+    fontFamily: font.ui,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.ink,
+    marginBottom: spacing.lg,
+  },
+  subtitle: { fontFamily: font.ui, fontSize: 14, color: colors.inkSecondary, marginBottom: spacing.lg },
   regimeRow: { flexDirection: 'row', gap: spacing.md },
   regimeButton: {
     flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
-    borderRadius: 10,
+    borderColor: colors.line,
+    borderRadius: radius.sm,
     paddingVertical: spacing.md,
     alignItems: 'center',
   },
-  regimeButtonText: { fontSize: 15, fontWeight: '600', color: colors.text },
+  regimeButtonText: { fontFamily: font.ui, fontSize: 15, fontWeight: '600', color: colors.ink },
   spinner: { marginTop: spacing.xl },
-  errorText: { color: colors.danger, marginTop: spacing.md },
+  errorText: { fontFamily: font.ui, color: colors.danger, marginTop: spacing.md },
   results: { gap: spacing.md },
   card: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.borderLight,
-    borderRadius: 12,
+    borderColor: colors.lineSoft,
+    borderRadius: radius.md,
     padding: spacing.lg,
   },
-  cardLabel: { fontSize: 12, color: colors.textSecondary, textTransform: 'uppercase' },
-  cardValue: { fontSize: 22, fontWeight: '700', color: colors.text, marginTop: spacing.xs },
-  cardNote: { fontSize: 12, color: colors.textMuted, marginTop: spacing.sm, lineHeight: 17 },
+  cardLabel: {
+    fontFamily: font.mono,
+    fontSize: 12,
+    color: colors.inkSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  cardValue: {
+    fontFamily: font.mono,
+    fontSize: 22,
+    fontWeight: '700',
+    color: colors.ink,
+    marginTop: spacing.xs,
+  },
+  cardNote: {
+    fontFamily: font.tutor,
+    fontSize: 12,
+    color: colors.inkMuted,
+    marginTop: spacing.sm,
+    lineHeight: 17,
+  },
+  // D-091 block — placed immediately after the figure it answers for.
+  wontSayBlock: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.lineSoft,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+    backgroundColor: colors.canvas,
+  },
+  wontSayHeading: {
+    fontFamily: font.ui,
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.inkSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: spacing.xs,
+  },
+  wontSayBody: {
+    fontFamily: font.tutor,
+    fontSize: 14,
+    color: colors.inkSecondary,
+    lineHeight: 20,
+  },
+  wontSayKeyLine: {
+    fontFamily: font.ui,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.ink,
+    marginTop: spacing.sm,
+  },
   tryAgain: { alignItems: 'center', paddingVertical: spacing.sm },
-  tryAgainText: { color: colors.success, fontWeight: '600', fontSize: 13 },
+  tryAgainText: { fontFamily: font.ui, color: colors.tutor, fontWeight: '600', fontSize: 13 },
   cancel: { alignItems: 'center', marginTop: spacing.xl },
-  cancelText: { color: colors.textMuted },
+  cancelText: { fontFamily: font.ui, color: colors.inkMuted },
 });
