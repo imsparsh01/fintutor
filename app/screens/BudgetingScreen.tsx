@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.line,
   },
@@ -453,7 +453,9 @@ const styles = StyleSheet.create({
   goalFill: { height: '100%', backgroundColor: colors.ink },
   rowLabel: { fontFamily: font.mono, fontSize: 12, letterSpacing: 0.5, textTransform: 'uppercase', color: colors.inkMuted },
   rowSubtitle: { fontFamily: font.mono, fontSize: 11, color: colors.inkMuted, marginTop: 2 },
-  rowValue: { fontFamily: font.mono, fontSize: 15, color: colors.ink },
+  // Ledger-row value spec (1E) — font.mono 15/600/ink. rowValueBold (Net) is a deliberate
+  // larger hero on top of this, untouched by the convergence.
+  rowValue: { fontFamily: font.mono, fontSize: 15, fontWeight: '600', color: colors.ink },
   rowValueBold: { fontSize: 17, fontWeight: '600' },
   addButton: { paddingVertical: spacing.sm, marginTop: spacing.xs },
   addButtonText: { fontFamily: font.ui, color: colors.tutor, fontWeight: '600', fontSize: 14 },
@@ -468,6 +470,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.ink,
   },
-  saveButton: { backgroundColor: colors.tutor, borderRadius: radius.sm, paddingVertical: spacing.sm, alignItems: 'center' },
-  saveButtonText: { fontFamily: font.ui, color: colors.screen, fontWeight: '600' },
+  // Primary button spec (1C).
+  saveButton: { backgroundColor: colors.tutor, borderRadius: radius.md, paddingVertical: 14, alignItems: 'center' },
+  saveButtonText: { fontSize: 15, fontFamily: font.ui, color: colors.screen, fontWeight: '600' },
 });

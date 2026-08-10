@@ -79,8 +79,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.screen,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '600',
     marginBottom: spacing.xxl,
     color: colors.ink,
     fontFamily: font.ui,
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   input: {
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.line,
     borderRadius: radius.md,
     padding: spacing.md,
@@ -103,14 +103,15 @@ const styles = StyleSheet.create({
     fontFamily: font.ui,
     color: colors.ink,
   },
+  // Primary button spec (1C).
   button: {
     backgroundColor: colors.tutor,
     borderRadius: radius.md,
-    padding: spacing.md,
+    paddingVertical: 14,
     alignItems: 'center',
     marginTop: spacing.sm,
   },
-  buttonText: { color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  buttonText: { fontSize: 15, color: colors.screen, fontWeight: '600', fontFamily: font.ui },
   link: {
     marginTop: spacing.lg,
     textAlign: 'center',

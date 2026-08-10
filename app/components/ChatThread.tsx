@@ -163,7 +163,7 @@ export const ChatThread = forwardRef<
         />
       )}
 
-      {sending && <ActivityIndicator style={styles.spinner} />}
+      {sending && <ActivityIndicator style={styles.spinner} color={colors.ink} />}
       {error && <Text style={styles.errorText}>{error}</Text>}
 
       <View style={styles.inputRow}>
@@ -172,6 +172,7 @@ export const ChatThread = forwardRef<
           value={input}
           onChangeText={setInput}
           placeholder="Ask a question…"
+          placeholderTextColor={colors.inkMuted}
           multiline
           editable={!sending}
         />

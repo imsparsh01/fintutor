@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, font, radius, spacing } from '../design/tokens';
+import { TeachingBlock } from './TeachingBlock';
+import { colors, figure, font, radius, spacing } from '../design/tokens';
 import { formatRupees } from '../lib/format';
 import { fetchEsopExerciseCost, type EsopExerciseCostResult } from '../lib/esopExerciseCost';
 
@@ -37,7 +38,7 @@ export function EsopExerciseCostModal({
 
         {error && <Text style={styles.errorText}>{error}</Text>}
 
-        {!error && !result && <ActivityIndicator style={styles.spinner} />}
+        {!error && !result && <ActivityIndicator style={styles.spinner} color={colors.ink} />}
 
         {result && (
           <View style={styles.results}>
@@ -63,13 +64,10 @@ export function EsopExerciseCostModal({
               {result.spread_note && <Text style={styles.cardNote}>{result.spread_note}</Text>}
             </View>
 
-            <View style={styles.wontSayBlock}>
-              <Text style={styles.wontSayHeading}>The input only you have</Text>
-              <Text style={styles.wontSayBody}>
-                A view on whether the company's value holds. Nothing here estimates that, and no
-                part of this figure should be read as expecting it to.
-              </Text>
-            </View>
+            <TeachingBlock heading="The input only you have">
+              A view on whether the company's value holds. Nothing here estimates that, and no
+              part of this figure should be read as expecting it to.
+            </TeachingBlock>
 
             {result.exercise_window_note && (
               <Text style={styles.caveat}>{result.exercise_window_note}</Text>
@@ -103,16 +101,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.lg,
   },
+  // Ledger label (1D) — font.mono 12 / ls 0.5 / uppercase / inkMuted.
   cardLabel: {
     fontFamily: font.mono,
     fontSize: 12,
-    color: colors.inkSecondary,
+    color: colors.inkMuted,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   cardValue: {
     fontFamily: font.mono,
-    fontSize: 22,
+    fontSize: figure.subHero,
     fontWeight: '700',
     color: colors.ink,
     marginTop: spacing.xs,
@@ -123,29 +122,6 @@ const styles = StyleSheet.create({
     color: colors.inkMuted,
     marginTop: spacing.sm,
     lineHeight: 17,
-  },
-  // D-091 block — placed immediately after the figures it answers for.
-  wontSayBlock: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.lineSoft,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-    backgroundColor: colors.canvas,
-  },
-  wontSayHeading: {
-    fontFamily: font.ui,
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.inkSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: spacing.xs,
-  },
-  wontSayBody: {
-    fontFamily: font.tutor,
-    fontSize: 14,
-    color: colors.inkSecondary,
-    lineHeight: 20,
   },
   caveat: { fontFamily: font.tutor, fontSize: 12, color: colors.inkMuted, fontStyle: 'italic' },
   cancel: { alignItems: 'center', marginTop: spacing.xl },

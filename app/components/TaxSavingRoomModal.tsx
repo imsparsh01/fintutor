@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, font, radius, spacing } from '../design/tokens';
+import { TeachingBlock } from './TeachingBlock';
+import { colors, figure, font, radius, spacing } from '../design/tokens';
 import { formatRupees } from '../lib/format';
 import { fetchTaxSavingRoom, type TaxSavingRoomResult } from '../lib/taxSavingRoom';
 
@@ -49,7 +50,7 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
           </>
         )}
 
-        {loading && <ActivityIndicator style={styles.spinner} />}
+        {loading && <ActivityIndicator style={styles.spinner} color={colors.ink} />}
         {error && <Text style={styles.errorText}>{error}</Text>}
 
         {result && (
@@ -62,15 +63,14 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
                   <Text style={styles.cardNote}>{result.note}</Text>
                 </View>
 
-                <View style={styles.wontSayBlock}>
-                  <Text style={styles.wontSayHeading}>What we won't say</Text>
+                <TeachingBlock heading="What we won't say">
                   <Text style={styles.wontSayBody}>
                     Which instrument to fill it with, or whether to fill it at all. Ask about any
                     qualifying category and we'll show you its lock-in, risk and mechanism side by
                     side.
                   </Text>
                   <Text style={styles.wontSayKeyLine}>Room isn't an instruction.</Text>
-                </View>
+                </TeachingBlock>
               </>
             ) : (
               <View style={styles.card}>
@@ -120,16 +120,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.lg,
   },
+  // Ledger label (1D) — font.mono 12 / ls 0.5 / uppercase / inkMuted. Was the retired
+  // middle variant (ls 1.0 / inkSecondary).
   cardLabel: {
     fontFamily: font.mono,
     fontSize: 12,
-    color: colors.inkSecondary,
+    color: colors.inkMuted,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   cardValue: {
     fontFamily: font.mono,
-    fontSize: 22,
+    fontSize: figure.subHero,
     fontWeight: '700',
     color: colors.ink,
     marginTop: spacing.xs,
@@ -141,32 +143,19 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     lineHeight: 17,
   },
-  // D-091 block — placed immediately after the figure it answers for.
-  wontSayBlock: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.lineSoft,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-    backgroundColor: colors.canvas,
-  },
-  wontSayHeading: {
-    fontFamily: font.ui,
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.inkSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: spacing.xs,
-  },
+  // D-091 block body — TeachingBlock (1A) supplies the card itself; these two style the
+  // two paragraphs inside it (a fixed sentence, then a bolded key line).
   wontSayBody: {
     fontFamily: font.tutor,
-    fontSize: 14,
-    color: colors.inkSecondary,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
+    color: colors.ink,
   },
+  // font.tutor, not font.ui — this is the tutor's own emphasis, not interface chrome.
   wontSayKeyLine: {
-    fontFamily: font.ui,
-    fontSize: 14,
+    fontFamily: font.tutor,
+    fontSize: 15,
+    lineHeight: 21,
     fontWeight: '600',
     color: colors.ink,
     marginTop: spacing.sm,

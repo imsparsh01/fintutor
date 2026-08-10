@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
     color: colors.ink,
     marginBottom: spacing.sm,
   },
-  body: { fontFamily: font.ui, color: colors.inkSecondary, paddingHorizontal: spacing.xl, textAlign: 'center', marginBottom: spacing.xl },
   statusBox: { alignItems: 'center', marginTop: spacing.lg, marginBottom: spacing.xxl },
   statusLabel: {
     fontFamily: font.mono,
@@ -80,5 +79,7 @@ const styles = StyleSheet.create({
   statusOk: { fontFamily: font.ui, color: colors.ink, fontWeight: '600' },
   statusFail: { fontFamily: font.ui, color: colors.danger, fontWeight: '600' },
   signOut: { padding: spacing.md },
-  signOutText: { fontFamily: font.ui, color: colors.danger },
+  // Signing out destroys nothing — colors.danger was wrong here (reserved for genuine
+  // error/destructive states, not a routine account action).
+  signOutText: { fontFamily: font.ui, color: colors.inkSecondary },
 });

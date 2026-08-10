@@ -34,7 +34,6 @@ export const colors = {
   // surfaces and primary actions (Save, Ask, Send) — never to signal that a number is good.
   tutor: '#1D5C46',
   tutorSoft: '#E4EFE8',
-  tutorSoftAlt: '#F4F8F5',
 
   // Engagement layer ONLY — streak, mascot, reward moments (P7, D-086).
   // Never on a ledger row, a holding value, a budget figure, or any real number.
@@ -80,6 +79,14 @@ export const radius = {
   md: 12,
   lg: 14,
   xl: 18,
-  xxl: 26,
   pill: 34,
+} as const;
+
+// Two-step figure scale (1G) — the largest computed numbers in the calculator modals.
+// `hero` is for the one deciding figure on a screen (there is ever only one); `subHero`
+// is every other prominent card value. Added here rather than left as a magic number so
+// the next modal has a documented value to reach for instead of inventing a third size.
+export const figure = {
+  hero: 32,
+  subHero: 22,
 } as const;

@@ -127,7 +127,7 @@ export function HoldingEditModal({
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>{isCreate ? 'Add holding' : 'Edit holding'}</Text>
 
-        <Text style={styles.label}>Display name</Text>
+        <Text style={styles.fieldLabel}>Display name</Text>
         <TextInput
           style={styles.input}
           value={displayName}
@@ -136,21 +136,23 @@ export function HoldingEditModal({
           // PROJECT_SPEC.md §2's strict compliance stance. The user's own display_name may of
           // course be anything they like (P6); the placeholder we suggest may not.
           placeholder="e.g. My home loan"
+          placeholderTextColor={colors.inkMuted}
         />
 
         {!isCreate && (
           <>
-            <Text style={styles.label}>Alias</Text>
+            <Text style={styles.fieldLabel}>Alias</Text>
             <TextInput
               style={styles.input}
               value={alias}
               onChangeText={setAlias}
               placeholder="e.g. Loan-1"
+              placeholderTextColor={colors.inkMuted}
             />
           </>
         )}
 
-        <Text style={styles.label}>Product type</Text>
+        <Text style={styles.fieldLabel}>Product type</Text>
         <View style={styles.chipRow}>
           {pickerTypes.map((type) => (
             <Pressable
@@ -165,7 +167,7 @@ export function HoldingEditModal({
           ))}
         </View>
 
-        <Text style={styles.label}>Characteristics</Text>
+        <Text style={styles.fieldLabel}>Characteristics</Text>
         {fields.length === 0 ? (
           <Text style={styles.noFieldsText}>No known fields for this product type.</Text>
         ) : (
@@ -200,6 +202,7 @@ export function HoldingEditModal({
                   }
                   keyboardType={field.kind === 'number' ? 'numeric' : 'default'}
                   placeholder={field.label}
+                  placeholderTextColor={colors.inkMuted}
                 />
               )}
             </View>
@@ -229,10 +232,20 @@ export function HoldingEditModal({
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 24, paddingTop: 48, backgroundColor: colors.screen },
+  container: { padding: spacing.xl, paddingTop: spacing.xxxl, backgroundColor: colors.screen },
   title: { fontSize: 20, fontWeight: '600', marginBottom: spacing.xl, color: colors.ink, fontFamily: font.ui },
-  label: { fontSize: 13, color: colors.inkMuted, marginBottom: 6, marginTop: spacing.lg, fontFamily: font.ui },
-  fieldLabel: { fontSize: 13, color: colors.inkMuted, marginBottom: 6, marginTop: spacing.md, fontFamily: font.ui },
+  // `label` and `fieldLabel` were byte-identical except marginTop — merged (1H). Mono
+  // uppercase to match every other form label in the app (this one was the odd one out,
+  // font.ui sentence case).
+  fieldLabel: {
+    fontFamily: font.mono,
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.inkMuted,
+    marginBottom: 6,
+    marginTop: spacing.md,
+  },
   noFieldsText: { fontSize: 13, color: colors.inkMuted, fontStyle: 'italic', fontFamily: font.ui },
   input: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -258,10 +271,15 @@ const styles = StyleSheet.create({
   errorText: { color: colors.danger, marginTop: spacing.lg, fontFamily: font.ui },
   button: { borderRadius: radius.md, paddingVertical: 14, alignItems: 'center', marginTop: spacing.xl },
   saveButton: { backgroundColor: colors.tutor },
-  saveButtonText: { color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  saveButtonText: { fontSize: 15, color: colors.screen, fontWeight: '600', fontFamily: font.ui },
   // Delete is a genuine destructive action — colors.danger here is correct P10 usage
   // (a real error/destructive state, not a negative financial value).
-  deleteButton: { backgroundColor: colors.screen, borderWidth: 1, borderColor: colors.danger, marginTop: spacing.md },
+  deleteButton: {
+    backgroundColor: colors.screen,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.danger,
+    marginTop: spacing.md,
+  },
   deleteButtonText: { color: colors.danger, fontWeight: '600', fontFamily: font.ui },
   cancel: { alignItems: 'center', marginTop: spacing.lg },
   cancelText: { color: colors.inkMuted, fontFamily: font.ui },

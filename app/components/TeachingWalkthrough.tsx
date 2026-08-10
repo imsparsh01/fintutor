@@ -91,6 +91,16 @@ export function TeachingWalkthrough({ visible, steps, onDismiss }: TeachingWalkt
     }
   }, [visible, fade]);
 
+  // 2D robustness fix: steps=[] with visible=true used to hit `if (!step) return null`
+  // below and render nothing — no modal, so onDismiss could never fire, and the caller's
+  // `visible` state got stuck true with no way for the user to back out. An empty step
+  // list isn't a valid call, so dismiss immediately instead of rendering a dead screen.
+  useEffect(() => {
+    if (visible && steps.length === 0) {
+      onDismiss();
+    }
+  }, [visible, steps.length, onDismiss]);
+
   const total = steps.length;
   const safeIndex = Math.min(stepIndex, Math.max(total - 1, 0));
   const step = steps[safeIndex];
@@ -258,10 +268,13 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     justifyContent: 'space-between',
   },
+  // Ledger label (1D) — font.mono 12 / ls 0.5 / uppercase / inkMuted.
   figureLabel: {
-    fontFamily: font.ui,
-    fontSize: 14,
-    color: colors.inkSecondary,
+    fontFamily: font.mono,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: colors.inkMuted,
   },
   // P10 — real financial figures render undecorated in mono ink; no valence colour.
   figureValue: {
@@ -294,16 +307,19 @@ const styles = StyleSheet.create({
   navTextDisabled: {
     color: colors.inkMuted,
   },
+  // Primary button spec (1C) — radius.md/paddingVertical 14/weight 600, same as every
+  // other primary CTA in the app; paddingHorizontal stays wider since this one sits
+  // inline in a footer row rather than full-bleed.
   primaryButton: {
     backgroundColor: colors.tutor,
-    borderRadius: radius.pill,
-    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+    paddingVertical: 14,
     paddingHorizontal: spacing.xxl,
   },
   primaryButtonText: {
     fontFamily: font.ui,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '600',
     color: colors.screen,
   },
 });

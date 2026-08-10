@@ -17,8 +17,9 @@ export type MainTabsParamList = {
 };
 
 // BQ-022: each family tab (Investments/Loans/Insurance) is its own small stack —
-// List (HoldingsList) pushes Detail (HoldingDetailScreen) on row tap. The full holding
-// is passed via params rather than re-fetched by id, since the list screen already has it.
+// List (each family screen's local list) pushes Detail (HoldingDetailScreen) on row tap.
+// The full holding is passed via params rather than re-fetched by id, since the list
+// screen already has it.
 export type HoldingsStackParamList = {
   List: undefined;
   Detail: { holding: Holding };

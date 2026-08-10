@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, font, spacing } from '../design/tokens';
 import { fetchConsolidated, type ConsolidatedTotals } from '../lib/consolidated';
 import { formatRupees } from '../lib/format';
@@ -10,13 +11,19 @@ export function ConsolidatedTotalsCard({ userId }: { userId: string | null }) {
   const [totals, setTotals] = useState<ConsolidatedTotals | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  // 2A: was useEffect(..., [userId]) — the Consolidated screen never unmounts in the
+  // bottom-tab navigator, so that effect never re-ran after the initial mount. Adding a
+  // holding on another tab and returning here left the total stale for the rest of the
+  // session. useFocusEffect matches the idiom the three list screens already use.
+  const load = useCallback(() => {
     if (!userId) return;
     setError(null);
     fetchConsolidated(userId)
       .then(setTotals)
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load totals'));
   }, [userId]);
+
+  useFocusEffect(load);
 
   if (!userId) return null;
 
@@ -31,7 +38,7 @@ export function ConsolidatedTotalsCard({ userId }: { userId: string | null }) {
   if (totals === null) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator />
+        <ActivityIndicator color={colors.ink} />
       </View>
     );
   }

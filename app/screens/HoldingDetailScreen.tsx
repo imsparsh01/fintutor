@@ -5,6 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { EsopExerciseCostModal } from '../components/EsopExerciseCostModal';
 import { HoldingEditModal } from '../components/HoldingEditModal';
 import { LoanVsInvestModal } from '../components/LoanVsInvestModal';
+import { TeachingBlock } from '../components/TeachingBlock';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
@@ -78,13 +79,10 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
         </View>
 
         {showWontSayBlock && (
-          <View style={styles.teachingCard}>
-            <Text style={styles.teachingHeading}>WHAT WE WON'T SAY</Text>
-            <Text style={styles.teachingBody}>
-              Whether to keep it, surrender it, or make it paid-up. We'll show what each of those does to
-              your numbers, in the same detail, whenever you ask.
-            </Text>
-          </View>
+          <TeachingBlock heading="What we won't say" style={styles.teachingBlockWrap}>
+            Whether to keep it, surrender it, or make it paid-up. We'll show what each of those does to
+            your numbers, in the same detail, whenever you ask.
+          </TeachingBlock>
         )}
 
         <Pressable style={styles.askButton} onPress={askAboutThis}>
@@ -155,7 +153,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.line,
   },
@@ -167,23 +165,8 @@ const styles = StyleSheet.create({
     color: colors.inkMuted,
     flex: 1,
   },
-  rowValue: { fontFamily: font.mono, fontSize: 14, color: colors.ink },
-  teachingCard: {
-    backgroundColor: colors.tutorSoft,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginTop: spacing.xl,
-  },
-  teachingHeading: {
-    fontFamily: font.ui,
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: colors.tutor,
-    marginBottom: spacing.sm,
-  },
-  teachingBody: { fontFamily: font.tutor, fontSize: 15, lineHeight: 22, color: colors.ink },
+  rowValue: { fontFamily: font.mono, fontSize: 15, fontWeight: '600', color: colors.ink },
+  teachingBlockWrap: { marginTop: spacing.xl },
   askButton: {
     backgroundColor: colors.tutor,
     borderRadius: radius.md,
@@ -191,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.xl,
   },
-  askButtonText: { fontFamily: font.ui, color: colors.screen, fontWeight: '600' },
+  askButtonText: { fontFamily: font.ui, fontSize: 15, color: colors.screen, fontWeight: '600' },
   compareButton: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.tutor,
@@ -201,13 +184,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   compareButtonText: { fontFamily: font.ui, color: colors.tutor, fontWeight: '600' },
+  // Tertiary/quiet tier (1F) — Edit is a management action, secondary to Ask/Compare,
+  // not a bordered choice of its own. Borderless, muted, matches addButtonSecondary
+  // elsewhere in the app.
   editButton: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    paddingVertical: 14,
+    paddingVertical: spacing.md,
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  editButtonText: { fontFamily: font.ui, color: colors.ink, fontWeight: '600' },
+  editButtonText: { fontFamily: font.ui, fontSize: 13, color: colors.inkSecondary },
 });

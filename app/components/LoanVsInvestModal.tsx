@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors, font, radius, spacing } from '../design/tokens';
+import { colors, figure, font, radius, spacing } from '../design/tokens';
 import { fetchLoanVsInvest, type LoanVsInvestResult } from '../lib/loanVsInvest';
 import { formatRupees } from '../lib/format';
 
@@ -151,14 +151,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.ink,
   },
+  // Primary button spec (1C) — was colors.ink, the only primary button not in colors.tutor.
   calculateButton: {
-    backgroundColor: colors.ink,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.md,
+    backgroundColor: colors.tutor,
+    borderRadius: radius.md,
+    paddingVertical: 14,
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  calculateButtonText: { fontFamily: font.ui, color: colors.screen, fontWeight: '600' },
+  calculateButtonText: { fontFamily: font.ui, fontSize: 15, color: colors.screen, fontWeight: '600' },
   errorText: { fontFamily: font.ui, color: colors.danger, marginTop: spacing.md },
   results: { marginTop: spacing.xl },
   hurdleCard: {
@@ -167,17 +168,18 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.lg,
   },
+  // Ledger label (1D) — font.mono 12 / ls 0.5 / uppercase / inkMuted.
   hurdleLabel: {
     fontFamily: font.mono,
     fontSize: 12,
-    color: colors.inkSecondary,
+    color: colors.inkMuted,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
-  // The deciding figure: largest type on the screen (mandatory device #3).
+  // The deciding figure: largest type on the screen (mandatory device #3). Hero scale (1G).
   hurdleValue: {
     fontFamily: font.mono,
-    fontSize: 40,
+    fontSize: figure.hero,
     fontWeight: '700',
     color: colors.ink,
     marginTop: spacing.xs,
@@ -205,10 +207,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: spacing.sm,
   },
+  // Aligned to the app's one section-header treatment (1H) — this was the only section
+  // header left in sentence case, font.ui. The string itself is unchanged; only the
+  // rendered casing changes, via textTransform below.
   sectionTitle: {
-    fontFamily: font.ui,
-    fontSize: 13,
-    color: colors.inkSecondary,
+    fontFamily: font.mono,
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.inkMuted,
     marginTop: spacing.md,
     marginBottom: spacing.xs,
   },

@@ -114,23 +114,25 @@ const styles = StyleSheet.create({
   errorText: { color: colors.danger, fontSize: 12, marginTop: spacing.sm, fontFamily: font.ui },
   actions: { flexDirection: 'row', marginTop: spacing.md, gap: spacing.sm },
   // Equally-weighted buttons: same padding, same border, same radius — only fill differs.
+  // Primary spec (1C) applied to saveButton; dismissButton's geometry matches it exactly
+  // to preserve that equal weighting.
   dismissButton: {
     flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.line,
-    borderRadius: radius.sm,
+    borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    paddingVertical: 14,
     alignItems: 'center',
   },
-  dismissButtonText: { color: colors.ink, fontWeight: '600', fontFamily: font.ui },
+  dismissButtonText: { fontSize: 15, color: colors.ink, fontWeight: '600', fontFamily: font.ui },
   saveButton: {
     flex: 1,
     backgroundColor: colors.tutor,
-    borderRadius: radius.sm,
+    borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+    paddingVertical: 14,
     alignItems: 'center',
   },
-  saveButtonText: { color: colors.screen, fontWeight: '600', fontFamily: font.ui },
+  saveButtonText: { fontSize: 15, color: colors.screen, fontWeight: '600', fontFamily: font.ui },
 });
