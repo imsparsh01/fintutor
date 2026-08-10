@@ -199,6 +199,13 @@
   `docs/decisions/D-094-full-mockup-match-rebuild-authorised.md`.
 - **Date:** 10-Aug-2026
 
+### D-102 — Token-lean codemaps added; session-start protocol updated to use them
+- **Tier:** 1. Generates `docs/CODEMAPS/{architecture,backend,frontend,data}.md` covering all 48
+  source files in ~2K tokens total; `CLAUDE.md` step 2c now reads `architecture.md` always plus the
+  relevant layer maps per task, replacing cold source-file reads for orientation. Full write-up:
+  `docs/decisions/D-102-codemaps-session-orientation.md`.
+- **Date:** 11-Aug-2026
+
 ### D-093 — D-014 unparked: execution subagents authorised, scoped to the D-086..D-092 reskin
 - **Tier:** 3, owner-decided. **Interprets D-014** by satisfying its unpark condition, not overriding it:
   Phase 1 is validated (D-080) and the design decisions now exist (D-086..D-092), honouring D-014's own

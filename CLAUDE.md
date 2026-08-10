@@ -52,6 +52,14 @@ mechanical.
    invent a task from PROJECT_SPEC.md §8 that isn't in the queue. As of **D-081**
    completed items live in `docs/BUILD_QUEUE_ARCHIVE.md`, not in this file — you
    don't need it to pick up new work, only to look up how something was built.
+   2c. Read `docs/CODEMAPS/architecture.md` at the start of every build session.
+   Then read whichever layer codemaps the task touches: `frontend.md` for any
+   `app/` work, `backend.md` for any `backend/` work, `data.md` for anything
+   involving the DB schema. These are token-lean orientation maps (~2K tokens total)
+   that replace cold source-file reads — do not read individual source files just
+   to understand what a module does; the codemaps answer that. **Keep them current:**
+   if a session adds a new screen, component, route, service, or DB table, update
+   the relevant codemap before committing. Outdated codemaps are worse than none.
 3. Read `docs/DECISION_PROTOCOL_CHEATSHEET.md` if the task is anything other than
    pure mechanical implementation — it defines what you're allowed to decide yourself
    (Tier 1) vs. what must be escalated (Tier 2/3). As of **D-081** this is a
@@ -113,7 +121,7 @@ If a session's explicit, stated task is to edit one of these, that's fine — th
 constraint is against incidental rewrites, not against ever touching them.
 
 **Fully yours to build in:**
-- `app/`, `backend/`, `docs/sessions/`, new entries in `docs/decisions/`
+- `app/`, `backend/`, `docs/sessions/`, new entries in `docs/decisions/`, `docs/CODEMAPS/`
 
 **Per-feature subfolders (D-082):** `docs/features/<slug>/` is an alternative home for a feature big
 enough to need its own PRD/design docs — same append-only discipline as `docs/decisions/` applies to its
