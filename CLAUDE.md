@@ -70,6 +70,36 @@ mechanical.
    owner before acting. Do not expand scope mid-session even if a related fix or
    related question seems obvious — flag it instead.
 
+## Build sprint — gstack (D-107)
+
+Every build session follows this loop. It mirrors garrytan/gstack's sprint structure, adapted
+for FinTutor's single-owner setup. Skills live in `~/.claude/skills/gstack/` (installed
+11-Aug-2026; `/qa` and browser skills unavailable until `bun` is installed and `./setup` is run).
+
+**Plan** — before writing any code:
+- For any non-trivial task (new screen, new feature, new service, or anything touching more than
+  2 files): invoke `/plan-eng-review` to lock architecture, surface edge cases, and spot scope
+  creep before it's embedded in code.
+- Skip only for trivial isolated changes: a copy edit, a single-token fix, session housekeeping
+  (archiving, session logs, decision files).
+
+**Build** — execute the task exactly as scoped in BUILD_QUEUE. Flag related fixes rather than
+absorbing them mid-session.
+
+**Review** — before committing:
+- Invoke `/review` for a staff-engineer audit of the diff. Fix any issues flagged.
+- Do not commit before `/review` passes (or before you have consciously decided a finding is
+  a false positive and noted why).
+- Exception: documentation-only changes (session logs, archiving, decision files) may skip.
+
+**Test** — after review, if applicable:
+- If the session added or modified UI (screens, components, flows): invoke `/qa`.
+- On this machine (Windows), `/qa` requires the `browse` binary — not yet built (bun absent).
+  If `/qa` fails, note it in the session log and proceed; it is best-effort, not a blocker.
+
+**Ship + Reflect** — handled by the "End of every session" checklist below (D-034/D-056;
+no PR — gstack's `/ship` is skipped in favour of direct-merge-to-main).
+
 ## File permissions — read this before editing anything
 
 **Deliberate-only — editing requires an explicit, owner-confirmed decision first,

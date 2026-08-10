@@ -17,112 +17,6 @@
 
 ---
 
-### D-079 — `savings_balance` is not a missing 9th D-013 type — it's an instance of the already-deferred Cash & bank family
-- **Tier:** 2, owner-confirmed. Interprets D-031 (REVIEW-FLAGGED per D-020). The open 25-Jul-2026 question
-  is resolved: a savings-account balance is an instance of D-031's "Cash & bank" family, already DECIDED
-  DIRECTION deferred to post-Phase-1 — not a gap inside D-013's three-MVP-family taxonomy. No new type, no
-  new build work, no fixture change. Full write-up:
-  `docs/decisions/D-079-savings-balance-not-a-9th-type.md`.
-- **Date:** 05-Aug-2026
-
-### D-080 — D-051's WHEN-stage verification satisfied (Phase-1 Run 7); network-access assumption and a live dependency bug corrected
-- **Tier:** 1. Ran Q7 (n=5, live) against the current prompt (v0.8) and `FIXTURE_user_01.json` —
-  FINDING 8 does not reproduce, 0/5, satisfying D-051's precondition for treating `known_gaps` surfacing as
-  verified rather than provisional. Also corrects two standing facts: this specific remote environment CAN
-  make live, authenticated Anthropic API calls (contrary to the assumption baked into
-  `scripts/run_phase1_test.py` and several prior `BUILD_QUEUE.md` entries — verified directly, not assumed),
-  and a real, previously-undetected `anthropic`/`httpx` version incompatibility in
-  `backend/requirements.txt` would have crashed the backend's first live `/chat` call — fixed by pinning
-  `httpx<0.28`. Full write-up: `docs/decisions/D-080-when-stage-surfacing-verified.md`.
-- **Date:** 05-Aug-2026
-
-### D-081 — Governance-file restructuring for token efficiency: rolling-window archives + protocol cheat sheet
-- Owner-authorized directly in conversation. `DECISION_LOG.md` fully normalized to the D-046 pattern
-  retroactively (D-001–D-044 + 4 BRIEFs extracted to `docs/decisions/`, content verified byte-identical),
-  then given a rolling window (~20 live, rest in `docs/DECISION_LOG_ARCHIVE.md`). `BUILD_QUEUE.md`'s DONE
-  section (44 entries) moved wholesale to `docs/BUILD_QUEUE_ARCHIVE.md`. New
-  `docs/DECISION_PROTOCOL_CHEATSHEET.md` companion (full protocol untouched, authoritative for anything
-  ambiguous). `PROJECT_SPEC.md` §10 given the same rolling window. `CLAUDE.md` updated to point at all of
-  it and make archiving a standing session-close habit. Measured ~58K mandatory-read tokens per session
-  down to ~9–10K. Full write-up: `docs/decisions/D-081-governance-file-token-optimization.md`.
-- **Date:** 05-Aug-2026
-
-### D-082 — Onboarding reopened for a structured conversation flow (not structured fields); new per-feature subfolder convention adopted, piloted on onboarding
-- Owner-decided directly in conversation, narrowing D-058: "the objection is to conversation flow shape,
-  not to structured fields" — D-058's no-form-field rule holds, but onboarding's single reused general-
-  teaching-engine turn is replaced by a structured, model-driven multi-stage flow, scoped to onboarding
-  only for now. Fail-safe requirement: a user must never reach a turn with no way forward. New convention:
-  `docs/features/<slug>/` holds a feature's PRD/design docs + its own `decisions/`, piloted here, without
-  forking `BUILD_QUEUE.md`'s single global queue. **Leaves one question open, not resolved by this entry:**
-  a structured flow needs some cross-turn state, and conversation memory is standing-PARKED under D-022
-  pending the still-unwritten D-010 privacy policy — the PRD opens on this fork before any design proceeds.
-  Full write-up: `docs/decisions/D-082-onboarding-structured-flow-scope.md`.
-- **Date:** 05-Aug-2026
-
-### D-083 — D-082's open fork resolved: a narrow stage-indicator, not conversation memory
-- Owner-decided directly in conversation. Path A adopted: onboarding tracks progress via a small structured
-  `onboarding_stage`-shaped indicator, not a stored transcript or dialogue history — never sent to the
-  model as conversation memory. Does not reopen D-022 (full conversation memory stays parked pending
-  D-010); a stage pointer is structurally the same category as the already-persisted `hasSeenOnboarding`
-  state, not a new class of data. Doesn't decide the stage taxonomy or fail-safe mechanics — that's the
-  PRD's next section — and doesn't queue a build item yet. Full write-up:
-  `docs/features/onboarding/decisions/D-083-stage-indicator-resolved.md`.
-- **Date:** 05-Aug-2026
-
-### D-084 — Onboarding structured-flow PRD confirmed as proposed, build item queued
-- Owner-confirmed, no changes requested. Confirms `docs/features/onboarding/PRD.md`'s draft stage/path map
-  (four tracks, each ending in `complete`), the `onboarding_states` persisted-state shape (modeled on the
-  existing `StreakState` pattern), and the 4-turn fail-safe budget as build-ready. The BRIEF-011 compliance
-  note on the `fresh_starter` → `sequencing` stage's fixed-order risk stays attached, not cleared by this
-  confirmation. Build item added to `docs/BUILD_QUEUE.md` READY. Full write-up:
-  `docs/features/onboarding/decisions/D-084-prd-confirmed.md`.
-- **Date:** 10-Aug-2026
-
-### D-096 — Empty sections use a static walkthrough followed by an optional Chat handoff
-- **Tier:** 3, owner-decided directly in conversation. Empty family sections use static mechanism steps in the existing full-screen walkthrough; the final step points to Chat for applying the mechanism to the user's own numbers. Full write-up: `docs/decisions/D-096-empty-section-walkthrough-option-d.md`.
-- **Date:** 10-Aug-2026
-
-### D-097 — Consolidated totals expose explicit valuation metadata
-- **Tier:** 3, owner-approved directly in conversation. `/consolidated` now returns per-family holding, valued, excluded, and status metadata so the client never infers financial meaning from numeric zero. Full write-up: `docs/decisions/D-097-consolidated-valuation-metadata.md`.
-- **Date:** 10-Aug-2026
-
-### D-098 — Recurring cadence is explicit before budget provenance is shown
-- **Tier:** 3, owner-approved directly in conversation. EMI and SIP cadence fields are explicit; budget provenance and monthly normalization require a captured frequency, with EPF deferred. Full write-up: `docs/decisions/D-098-recurring-cadence-before-budget-provenance.md`.
-- **Date:** 10-Aug-2026
-
-### D-099 — In-chat reconciliation status after explicit holding confirmation
-- **Tier:** 3, owner-approved directly in conversation. Confirmed holding writes return structured reconciliation metadata and Chat renders a compact new/updated/contradiction status; no history surface is added. Full write-up: `docs/decisions/D-099-in-chat-reconciliation-status.md`.
-- **Date:** 10-Aug-2026
-
-### D-100 — Static mechanism facts are the variable reward
-- **Tier:** 3, owner-approved directly in conversation. App-open rewards show one curated mechanism fact selected independently of user data; no financial figure is scored or personalized. Full write-up: `docs/decisions/D-100-static-mechanism-facts-as-reward.md`.
-- **Date:** 10-Aug-2026
-
-### D-101 — Local reminders and explicit EMI due day
-- **Tier:** 3, owner-approved directly in conversation. Local notifications use recorded credit-card dates and an optional 1–31 EMI due day; unknown dates are never inferred or scheduled. Full write-up: `docs/decisions/D-101-local-reminders-and-emi-due-day.md`.
-- **Date:** 10-Aug-2026
-
-### D-085 — Limited memory for the onboarding exchange: exactly one prior AI message, never persisted
-- Owner-decided directly in conversation, triggered by a live-verification finding: a short/referential
-  reply ("no, that's the only one") broke the model's next turn because D-022 sends zero prior-turn
-  content, ever. Narrowly forwards the AI's own single immediately-preceding message, onboarding calls
-  only, never persisted server-side (the frontend already holds it as local display state — this changes
-  only "never sent back," for onboarding). Does not reopen D-022's general case: no new stored data means
-  nothing for the still-unwritten D-010 policy to need to cover; full dialogue recall/history stays exactly
-  as parked. Full write-up:
-  `docs/features/onboarding/decisions/D-085-limited-onboarding-exchange-memory.md`.
-- **Date:** 10-Aug-2026
-
-### D-086 — Aesthetic layer adopted: the warm-ledger visual register (1a) and its token set
-- **Tier:** 2, owner-confirmed. Closes `PROJECT_SPEC.md` §8's long-parked aesthetic-layer item — the
-  mockups are the "real screen decisions force it" condition it was waiting for. Fork `1a` chosen: warm
-  off-white screen, near-black ink, hairline rules, forest-green teaching accent, clay quarantined to
-  engagement. `success: '#116611'` is **renamed to `tutor`, not recoloured** — "leaving a token called
-  `success` in place while giving it a valence-free colour would preserve exactly the semantic this
-  decision removes." Clay's reservation makes P7 checkable by eye. Full write-up:
-  `docs/decisions/D-086-aesthetic-layer-warm-ledger.md`.
-- **Date:** 10-Aug-2026
-
 ### D-087 — P10 added: a real financial figure is never styled by valence
 - **Tier:** 2, owner-confirmed. New principle. Test: "does this styling choice tell the user something is
   *true*, or something is *good*? ... the second is a verdict delivered by typography and is forbidden."
@@ -235,3 +129,12 @@
   work). D-014's broader standing-capability ambition stays parked. Full write-up:
   `docs/decisions/D-093-d014-unparked-execution-subagents.md`.
 - **Date:** 10-Aug-2026
+
+### D-107 — gstack sprint methodology adopted for all FinTutor build sessions
+- **Tier:** 3, owner-decided directly in conversation. "Plan and Review were the structural gaps — ad-hoc
+  rather than mandatory. D-107 closes both." garrytan/gstack cloned to `~/.claude/skills/gstack/`; text-based
+  skills (planning, review, retro) are live. Browser skills (/qa, /browse) pending `bun` install. Adapted
+  sprint: Plan (`/plan-eng-review`) mandatory before non-trivial code; Review (`/review`) mandatory before
+  committing; Test (`/qa`) best-effort for UI changes; Ship stays D-056 direct-merge (no PR). GBrain and
+  gstack team mode not adopted. Full write-up: `docs/decisions/D-107-gstack-sprint-methodology.md`.
+- **Date:** 11-Aug-2026
