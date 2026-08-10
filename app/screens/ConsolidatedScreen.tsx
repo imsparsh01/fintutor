@@ -11,6 +11,7 @@ import { formatRupees } from '../lib/format';
 import { recordAppOpen, type StreakOpenResult } from '../lib/streaks';
 import { fetchSurfacingCandidates, type SurfacingCandidate } from '../lib/surfacing';
 import { supabase } from '../lib/supabase';
+import { randomRewardFact } from '../lib/rewardFacts';
 import type { MainTabsParamList } from '../navigation/types';
 
 // Home (mockup Flow 02): one layout, filled to whatever data the user has. Three family
@@ -24,12 +25,16 @@ export function ConsolidatedScreen() {
   const [streak, setStreak] = useState<StreakOpenResult | null>(null);
   const [candidate, setCandidate] = useState<SurfacingCandidate | null>(null);
   const [dismissed, setDismissed] = useState(false);
+  const [rewardFact, setRewardFact] = useState<string | null>(null);
 
   // Record the app-open once per mount (engagement mechanic, D-060) — the backend owns
   // whether today is a new streak day; we just reflect the count back in the header.
   useEffect(() => {
     if (!userId) return;
-    recordAppOpen(userId).then(setStreak).catch(() => {});
+    recordAppOpen(userId).then((result) => {
+      setStreak(result);
+      if (result.reward_fired) setRewardFact(randomRewardFact());
+    }).catch(() => {});
   }, [userId]);
 
   const loadBudget = useCallback(() => {
@@ -62,6 +67,16 @@ export function ConsolidatedScreen() {
 
       <Text style={styles.sectionLabel}>Family totals</Text>
       <ConsolidatedTotalsCard userId={userId} />
+
+      {rewardFact && (
+        <View style={styles.rewardFact}>
+          <Text style={styles.rewardLabel}>A fact worth knowing</Text>
+          <Text style={styles.rewardBody}>{rewardFact}</Text>
+          <Pressable onPress={() => setRewardFact(null)}>
+            <Text style={styles.rewardDismiss}>Dismiss</Text>
+          </Pressable>
+        </View>
+      )}
 
       <Text style={styles.sectionLabel}>This month</Text>
       <View style={styles.ledger}>
@@ -211,4 +226,8 @@ const styles = StyleSheet.create({
   tutorSecondaryText: { fontFamily: font.ui, fontSize: 14, color: colors.inkSecondary },
   signOut: { paddingVertical: spacing.md, marginTop: spacing.xxl, alignItems: 'center' },
   signOutText: { fontFamily: font.ui, fontSize: 13, color: colors.inkMuted },
+  rewardFact: { backgroundColor: colors.behaviourSoft, borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.xl },
+  rewardLabel: { fontFamily: font.mono, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: colors.behaviour },
+  rewardBody: { fontFamily: font.tutor, fontSize: 16, lineHeight: 24, color: colors.ink, marginTop: spacing.sm },
+  rewardDismiss: { fontFamily: font.uiMedium, fontSize: 13, color: colors.inkSecondary, marginTop: spacing.md },
 });

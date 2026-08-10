@@ -94,6 +94,10 @@
 - **Tier:** 3, owner-approved directly in conversation. Confirmed holding writes return structured reconciliation metadata and Chat renders a compact new/updated/contradiction status; no history surface is added. Full write-up: `docs/decisions/D-099-in-chat-reconciliation-status.md`.
 - **Date:** 10-Aug-2026
 
+### D-100 — Static mechanism facts are the variable reward
+- **Tier:** 3, owner-approved directly in conversation. App-open rewards show one curated mechanism fact selected independently of user data; no financial figure is scored or personalized. Full write-up: `docs/decisions/D-100-static-mechanism-facts-as-reward.md`.
+- **Date:** 10-Aug-2026
+
 ### D-085 — Limited memory for the onboarding exchange: exactly one prior AI message, never persisted
 - Owner-decided directly in conversation, triggered by a live-verification finding: a short/referential
   reply ("no, that's the only one") broke the model's next turn because D-022 sends zero prior-turn
