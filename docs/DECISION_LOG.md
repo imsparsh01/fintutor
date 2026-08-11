@@ -142,3 +142,10 @@
   through ~10-year working professionals and establishes learning/activity progression as a top priority.
   Full write-up: `docs/features/progression/decisions/D-114-learning-progression-strategy-and-path-a-boundary.md`.
 - **Date:** 12-Aug-2026
+
+### D-115 — Standing execution-agent authorisation for already-decided work
+- **Tier:** 3, owner-decided. “This is standing mechanical authority, not delegated product judgment.”
+  Supersedes D-093’s reskin-only scope and fully unparks D-014, while preserving every hard stop and the
+  primary agent’s integration/review responsibility. Full write-up:
+  `docs/decisions/D-115-standing-execution-agent-authorisation.md`.
+- **Date:** 12-Aug-2026

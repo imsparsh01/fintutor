@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v3.8, 05-Aug-2026)
+# FinTutor — Project Spec (v4.1, 12-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -56,22 +56,12 @@ user's own money — never advises, only educates so the user makes their own in
   afterthought bolted on before launch. See D-010.
 
 ## 3. Target user
-Anyone earning who wants to self-manage their finances and build literacy — not hand it to an advisor.
-Primary moment: "financially unmanaged but willing." Not defined by age; defined by intent. *(This framing
-itself is an open question as of D-053/BRIEF-008 — see the note below.)*
-
-> **MVP founding segment locked at D-053 (03-Aug-2026), broadened at D-054 (03-Aug-2026).** MVP design and
-> Phase-3 (private structured testing) target **early-career earners with a single income stream and low
-> financial complexity** (0–2 holding types, no legacy portfolio) — the segment both an independently-run
-> product-fit lens and a business/GTM lens converged on (BRIEF-008). D-054 resolved that this founding
-> segment is **not** narrowed further to one sub-slice: it spans three internal profiles surfaced by a
-> follow-up two-lens pass (BRIEF-009) — by financial-habit maturity (fresh starters / reactive dabblers /
-> habit-formers) and, judged by the owner to describe the same three people, by career-stage/timing
-> (campus-to-first-job / settled early-career / early-stage startup-gig). Design must serve all three, not
-> treat one as the "real" target and the others as edge cases. **All other candidate segments** (fragmented
-> multi-holding, gig/variable income, debt-heavy/reactive, household financial coordinators, dual-income
-> households, NRIs) **are DIRECTION, not MVP BUILD** — parked for post-MVP phases, same
-> direction-vs-build split D-031 used for holding families. See BRIEF-008, BRIEF-009, D-053, D-054.
+People beginning or actively building their financial understanding: students, recent graduates and
+early-career earners, and working professionals with up to roughly ten years of experience. Approximately
+ages 18–32 is the product-design and marketing audience, never an access gate. Experienced/sophisticated
+investors are not the target. The shared primary moment remains "financially unmanaged but willing" — from
+learning before regular income through managing a growing mix of income, goals, holdings, insurance, debt,
+and tax context. See D-114, which supersedes D-053/D-054's narrower founding-segment direction.
 
 ## 4. What the MVP does (scope — keep ruthless)
 > **Scope expanded at D-031 (25-Jul-2026).** The app is structured as **persistent, user-facing category
@@ -97,13 +87,13 @@ itself is an open question as of D-053/BRIEF-008 — see the note below.)*
    in its section. A manual add/browse path is the secondary route into the same sections. See D-012, D-031.
 7. Reminders: EMI dates, credit-card payment dates
 8. (Open-ended chat comes LATER — not in MVP)
-9. **Engagement/gamification layer (D-060, D-061).** Duolingo-style engagement mechanics — streaks,
+9. **Engagement/gamification and learning progression (D-060, D-061, D-114).** Duolingo-style engagement mechanics — streaks,
    variable/unpredictable reward feedback, the full Hook Loop architecture (trigger → action → variable
-   reward → investment) — drive daily app usage, adopted in full per D-060. Bounded by D-061: cosmetic,
-   behavior-reactive game elements (mascot reactions, celebratory feedback tied to app usage) are
-   permitted; no game element (XP, badge, level, mascot mood, fictional/RPG skin) may be derived from or
-   reactive to the user's real financial data — real numbers are always shown straight, undecorated, never
-   scored or fictionalized.
+   reward → investment) — drive daily app usage, adopted in full per D-060. D-114 adds named levels plus
+   continuous progress based on meaningful learning and app participation. Bounded by D-061/D-114: cosmetic,
+   behavior-reactive game elements and rewards are permitted; no XP, badge, level, streak, celebration, or
+   cosmetic status may derive from actual financial data or change. Portfolio Health and financial change
+   remain factual, separate surfaces; relevant teaching content is never level-gated (P9).
 
 ## 5. Explicitly NOT in the MVP (parked)
 - **Real estate, Cash & bank balances, Alternatives/other holding families** — DECIDED DIRECTION (D-031), but
@@ -304,6 +294,13 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.1 (12-Aug-2026) — **Target audience and progression direction updated (D-114); standing execution-agent
+  authorisation adopted (D-115).** §3 now covers students through working professionals with roughly ten
+  years' experience (approximately 18–32 as audience, never access gate), superseding D-053/D-054's narrower
+  early-career-only direction. §4's engagement item now includes levels plus continuous learning progress,
+  with Path A's binding separation: real financial data/change never drives game progress or rewards. D-115
+  authorises parallel agents for already-decided work across the repo without per-fleet owner approval;
+  decision-protocol hard stops and deliberate-only file controls remain unchanged.
 - v4.0 (10-Aug-2026) — **The aesthetic layer is decided (D-086 through D-092); execution subagents
   unparked (D-093).** §8's UX-principles item carried a standing note that visual style, density, motion
   and hierarchy were "deliberately still left for when real screen decisions force it." The v1 mockups
@@ -368,11 +365,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   the first time. Two other candidate principles from the same session — gated feature-unlock sequencing,
   social/group stakes — were NOT adopted; both already contradict standing decisions (D-058, §5) and
   needed no new decision. Scope edit deliberately batched rather than applied incrementally per cluster.
-- v3.1 (04-Aug-2026) — **Decision 2 resolved (D-059).** Per-item management depth: Path C adopted — full
-  per-field edit, delete, and `product_type` recategorization via a standard UI, not routed exclusively
-  through AI conversation. Chosen over view-only/delete-only alternatives because the chat surface
-  (BQ-023/BQ-024) is still unbuilt, so a chat-dependent correction path would leave holdings functionally
-  frozen in MVP. Owner explicitly weighed and accepted the resulting tension with §2's "living baseline...
-  not a CRUD save" framing, drawing a line between capture (D-012's concern) and post-capture management
-  (this decision's concern). §8 item checked off. Also unblocks the UX-principles-section dependency in
-  `PRODUCT_PRINCIPLES.md` (both Decision 2 and Decision 3 now resolved) — not acted on in this entry.

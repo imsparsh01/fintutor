@@ -10,6 +10,15 @@
 
 ---
 
+- v3.1 (04-Aug-2026) — **Decision 2 resolved (D-059).** Per-item management depth: Path C adopted — full
+  per-field edit, delete, and `product_type` recategorization via a standard UI, not routed exclusively
+  through AI conversation. Chosen over view-only/delete-only alternatives because the chat surface
+  (BQ-023/BQ-024) is still unbuilt, so a chat-dependent correction path would leave holdings functionally
+  frozen in MVP. Owner explicitly weighed and accepted the resulting tension with §2's "living baseline...
+  not a CRUD save" framing, drawing a line between capture (D-012's concern) and post-capture management
+  (this decision's concern). §8 item checked off. Also unblocks the UX-principles-section dependency in
+  `PRODUCT_PRINCIPLES.md` (both Decision 2 and Decision 3 now resolved) — not acted on in this entry.
+
 - v3.0 (03-Aug-2026) — **ESOP added to the product-type taxonomy (D-055), resolving BRIEF-010's escalated
   fork.** ESOP confusion was independently named the startup/gig founding-sub-profile's (D-054) top pain
   point (BRIEF-010); owner chose to add it to MVP scope rather than park it, so that profile isn't
