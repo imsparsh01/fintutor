@@ -1,4 +1,4 @@
-<!-- Updated: 2026-08-12 | BQ-065 onboarding assessment foundation -->
+<!-- Updated: 2026-08-12 | BQ-066 onboarding assessment API -->
 
 # FinTutor — Architecture Overview
 
@@ -29,6 +29,19 @@ ChatScreen / OnboardingScreen
 ChatThread.tsx renders response; HoldingProposalCard renders proposal (D-078 Fork 2)
 ```
 
+## Data flow: Onboarding assessment v2
+
+```
+Onboarding v2 UI (BQ-067)
+  → dedicated /onboarding-assessment/* normalized actions
+      onboarding_assessment service → onboarding_assessments table
+  ← minimal structural state + normalized answers
+
+No baseline assembly, model call, deepen/capture classifier, Portfolio Health math, or legacy-track
+transition runs on these routes. Ordinary /chat may receive only derived presentation style and one
+topic-matched prior-exposure boolean; never the full assessment.
+```
+
 ## Navigation structure
 
 ```
@@ -56,4 +69,4 @@ RootNavigator
 - **D-022**: zero conversation memory per call (Anthropic stateless). D-085 narrows one exception for onboarding.
 - **D-078**: holding proposals are never auto-saved; user must confirm via POST /holdings.
 - **D-119**: onboarding v2 persists normalized category codes only in a separate versioned table;
-  legacy four-track rows keep their original meaning. API/frontend integration follows in BQ-066/067.
+  legacy four-track rows keep their original meaning. API shipped in BQ-066; frontend is BQ-067.

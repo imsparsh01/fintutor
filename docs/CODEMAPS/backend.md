@@ -1,4 +1,4 @@
-<!-- Updated: 2026-08-12 | BQ-065 onboarding assessment foundation -->
+<!-- Updated: 2026-08-12 | BQ-066 onboarding assessment API -->
 
 # FinTutor — Backend Codemap
 
@@ -37,9 +37,18 @@ GET  /tax-saving-room           → compute_tax_saving_room(…, tax_regime)
 GET  /streak                    → get_streak(db, user_id)
 POST /streak/open               → record_app_open(…) + evaluate_reward(is_new_day)
 
+GET  /onboarding-assessment             → read v2 state; 404 without creating
+POST /onboarding-assessment/start       → strict 18+ acknowledgement; idempotent start/resume
+POST /onboarding-assessment/answer      → normalized ordered answer
+POST /onboarding-assessment/skip        → normalized undisclosed + one-step advance
+POST /onboarding-assessment/handle      → global exit; fill unknowns neutrally
+PUT  /onboarding-assessment/context/{q} → post-handle normalized context correction
+POST /onboarding-assessment/clear       → clear context without reopening/completion loss
+
 POST /chat                      → assemble_baseline → ask_teaching_engine → classify_holding_capture
                                   body: {question, deepen_alias?, onboarding?, onboarding_track_hint?,
-                                         onboarding_last_ai_message?}
+                                         onboarding_last_ai_message?, learning_topic?}
+                                  ordinary chat may add derived `learning_context`; legacy onboarding never does
 ```
 
 ## Services → what each computes
@@ -61,9 +70,11 @@ services/onboarding.py (242)    start_or_resume() / record_turn() / build_onboar
 services/onboarding_assessment.py
                                  Versioned v2 assessment state: start/get, ordered normalized answer/skip,
                                  global handle, clear-context, idempotent retry, row locking/concurrent start.
-                                 No raw text and no legacy-track inference. API wiring is BQ-066.
+                                 API-safe response projection, post-handle correction, and minimum derived
+                                 Arya presentation context. No raw text and no legacy-track inference.
 services/teaching.py (48)       ask_teaching_engine() — single Anthropic API call (claude-3-5-sonnet).
                                  Raises TeachingEngineNotConfigured if ANTHROPIC_API_KEY unset.
+                                 Runtime D-119 addendum limits `learning_context` to presentation only.
 services/holding_capture_classifier.py (139)  classify_holding_capture() — keyword-match heuristic;
                                  returns {product_type, alias, characteristics} proposal or None.
 services/deepen_classifier.py (59)   classify_deepen() — picks alias from baseline to surface in depth.

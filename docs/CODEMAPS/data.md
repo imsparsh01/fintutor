@@ -1,4 +1,4 @@
-<!-- Updated: 2026-08-12 | 7 model files | BQ-065 -->
+<!-- Updated: 2026-08-12 | BQ-066 minimum-context boundary -->
 
 # FinTutor — Data Codemap
 
@@ -79,11 +79,14 @@ Sent to LLM (via assemble_baseline):
   income.sources (label + amounts)
   goals (all fields)
   surfacing candidates (computed from holdings + known_gaps list)
+  derived learning_context on ordinary chat only: explanation_style and, for a caller-supplied generic
+    topic, one matching prior_exposure_to_current_topic boolean
 
 Never sent to LLM:
   holdings.display_name  (real product/institution name — D-011)
   streak / onboarding state
-  onboarding assessment by default (BQ-066 may send only the minimum relevant normalized abstraction)
+  complete onboarding assessment, immediate intent, earning/responsibility context, eligibility,
+    lifecycle/timestamps, unanswered/undisclosed/cleared context
   conversation history (D-022 — stateless calls; D-085 narrow exception for onboarding last AI turn)
 ```
 

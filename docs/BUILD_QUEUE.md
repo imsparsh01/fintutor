@@ -16,12 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-066 — Onboarding v2 API and minimum-context Arya integration
-
-Traces to D-118/D-119. Add the normalized question/action/state API, deterministic chip transitions,
-handled/skip semantics, and minimum relevant assessment abstraction in the teaching baseline. Do not run
-holding capture inside assessment v2 and do not send the full profile by default.
-
 ### BQ-067 — Onboarding v2 frontend flow and eligibility acknowledgement
 
 Traces to D-118/D-119. Replace the four starter tracks for new users with the five-question chip-assisted

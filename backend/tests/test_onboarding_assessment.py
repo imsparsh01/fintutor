@@ -15,6 +15,7 @@ from app.services.onboarding_assessment import (
     handle_assessment,
     skip_current_question,
     start_assessment,
+    update_context,
 )
 
 
@@ -134,6 +135,8 @@ class OnboardingAssessmentServiceTests(unittest.TestCase):
         self.assertEqual(
             cleared["eligibility_confirmed_at"], started["eligibility_confirmed_at"]
         )
+        cleared_again = clear_assessment(self.db, self.user_id)
+        self.assertEqual(cleared_again["cleared_at"], cleared["cleared_at"])
 
     def test_clear_in_progress_handles_without_forcing_redisclosure(self) -> None:
         start_assessment(self.db, self.user_id, eligibility_confirmed=True)
@@ -155,6 +158,17 @@ class OnboardingAssessmentServiceTests(unittest.TestCase):
         )
         self.assertEqual(state["flow_version"], 3)
         self.assertEqual(state["current_question"], "earning_context")
+
+    def test_handled_context_can_be_changed_without_reopening(self) -> None:
+        start_assessment(self.db, self.user_id, eligibility_confirmed=True)
+        handled = handle_assessment(self.db, self.user_id)
+        updated = update_context(
+            self.db, self.user_id, "familiarity", "working_basics"
+        )
+        self.assertEqual(updated["status"], "handled")
+        self.assertEqual(updated["handled_at"], handled["handled_at"])
+        self.assertEqual(updated["familiarity"], "working_basics")
+        self.assertIsNone(updated["cleared_at"])
 
     def test_legacy_state_is_not_read_or_mutated(self) -> None:
         legacy = OnboardingState(

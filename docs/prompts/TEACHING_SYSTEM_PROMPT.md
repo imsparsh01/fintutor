@@ -267,6 +267,9 @@ STOP. Modeling all paths fully is required (nothing hidden); resolving them is f
 > Still a stub HERE, but §4 is written in full in the generated runnable prompt (mechanical from D-013).
 > **D-028 adds the `deepen` field** — see SYSTEM_PROMPT_v0.4_runnable.md §4. Backend sets it; the model obeys
 > it; absent means deepen nothing.
+> **D-119/BQ-066 adds a runtime `learning_context` addendum** in `services/teaching.py`. It contains only
+> derived presentation style and, for an app-known generic topic, one prior-exposure boolean. It is never
+> competence, health, suitability, advice permission, or the full onboarding assessment.
 > To draft. Describe the profile-context shape the model is fed: baseline (income), aliased holdings + their
 > characteristics (per D-013 taxonomy), goals. So the model knows what it's reasoning over.
 

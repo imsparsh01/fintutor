@@ -12,6 +12,25 @@
 
 ---
 
+## BQ-066 — Onboarding v2 API and minimum-context Arya integration — DONE 12-Aug-2026
+
+Added dedicated normalized assessment endpoints for read/start, answer, per-question skip, global handle,
+post-handle context correction, and clear. API responses omit user ID, eligibility timestamps, DB IDs, and
+raw/internal objects. Eligibility requires a strict boolean; validation, stale/conflicting state, and
+missing-state errors have stable 422/409/404 responses without echoing submitted values.
+
+Assessment routes never enter baseline assembly, Arya, deepen, holding capture, legacy onboarding, or
+financial calculations. Ordinary chat may receive only a derived explanation style and one positive
+prior-exposure boolean for a taxonomy-validated caller topic hint. It never receives immediate intent,
+earning/responsibility context, timestamps, eligibility, unknown/cleared context, or the full assessment.
+Legacy onboarding is explicitly excluded from the new context contract. Added a runtime prompt addendum
+that makes the signal presentation-only, never competence, health, suitability, or advice permission.
+
+Expanded the built-in suite to 20 passing service/API tests, including full pipeline isolation, minimal
+response shape, strict eligibility parsing, stable errors, context clearing/editing, Arya payload
+minimization, and legacy-context suppression. The known caller-supplied `user_id` auth gap remains a
+pre-existing external-deployment blocker documented in `KNOWN_LIMITATIONS.md`.
+
 ## BQ-065 — Onboarding v2 persisted assessment foundation — DONE 12-Aug-2026
 
 Implemented D-118/D-119 as a separate `onboarding_assessments` model and additive Alembic migration,

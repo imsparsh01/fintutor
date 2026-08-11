@@ -1,11 +1,12 @@
 import logging
 import uuid
 from datetime import date
+from typing import Literal
 
 import anthropic
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictBool
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -35,6 +36,19 @@ from app.services.onboarding import (
     build_onboarding_instruction,
     record_turn,
     start_or_resume,
+)
+from app.services.onboarding_assessment import (
+    AssessmentConflictError,
+    AssessmentValidationError,
+    answer_current_question,
+    build_learning_context,
+    clear_assessment,
+    get_assessment,
+    handle_assessment,
+    skip_current_question,
+    start_assessment,
+    to_api_state,
+    update_context,
 )
 from app.services.rewards import evaluate_reward
 from app.services.streaks import get_streak, record_app_open
@@ -130,6 +144,35 @@ class ChatRequest(BaseModel):
     # onboarding conversation, forwarded from the frontend's local display state, never
     # persisted server-side. Ignored (and never sent by the client) outside onboarding.
     onboarding_last_ai_message: str | None = None
+    # D-119/BQ-066: optional caller-provided generic presentation hint. It can expose one
+    # matching prior-exposure boolean to Arya, but the runtime prompt forbids using it for
+    # conclusions, suitability, or advice. The backend never derives it from free text.
+    learning_topic: Literal[
+        "spending",
+        "saving",
+        "investing",
+        "borrowing",
+        "insurance",
+        "goals",
+        "workplace_and_tax",
+    ] | None = None
+
+
+class AssessmentStart(BaseModel):
+    eligibility_confirmed: StrictBool
+
+
+class AssessmentAnswer(BaseModel):
+    question: str
+    value: str | list[str]
+
+
+class AssessmentSkip(BaseModel):
+    question: str
+
+
+class AssessmentContextUpdate(BaseModel):
+    value: str | list[str]
 
 
 @app.get("/health")
@@ -323,9 +366,104 @@ def post_streak_open(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     return {**streak, **reward}
 
 
+def _assessment_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, LookupError):
+        return HTTPException(status_code=404, detail="Onboarding assessment not found")
+    if isinstance(exc, AssessmentConflictError):
+        return HTTPException(status_code=409, detail="Assessment state changed; refresh and try again")
+    return HTTPException(status_code=422, detail="Unsupported onboarding assessment action")
+
+
+@app.get("/onboarding-assessment")
+def get_onboarding_assessment(
+    user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    assessment = get_assessment(db, user_id)
+    if assessment is None:
+        raise HTTPException(status_code=404, detail="Onboarding assessment not found")
+    return to_api_state(assessment)
+
+
+@app.post("/onboarding-assessment/start")
+def post_onboarding_assessment_start(
+    user_id: uuid.UUID, body: AssessmentStart, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return to_api_state(
+            start_assessment(
+                db, user_id, eligibility_confirmed=body.eligibility_confirmed
+            )
+        )
+    except AssessmentValidationError as exc:
+        raise _assessment_error(exc) from exc
+
+
+@app.post("/onboarding-assessment/answer")
+def post_onboarding_assessment_answer(
+    user_id: uuid.UUID, body: AssessmentAnswer, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return to_api_state(
+            answer_current_question(db, user_id, body.question, body.value)
+        )
+    except (LookupError, AssessmentConflictError, AssessmentValidationError) as exc:
+        raise _assessment_error(exc) from exc
+
+
+@app.post("/onboarding-assessment/skip")
+def post_onboarding_assessment_skip(
+    user_id: uuid.UUID, body: AssessmentSkip, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return to_api_state(skip_current_question(db, user_id, body.question))
+    except (LookupError, AssessmentConflictError, AssessmentValidationError) as exc:
+        raise _assessment_error(exc) from exc
+
+
+@app.post("/onboarding-assessment/handle")
+def post_onboarding_assessment_handle(
+    user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return to_api_state(handle_assessment(db, user_id))
+    except LookupError as exc:
+        raise _assessment_error(exc) from exc
+
+
+@app.put("/onboarding-assessment/context/{question}")
+def put_onboarding_assessment_context(
+    question: str,
+    user_id: uuid.UUID,
+    body: AssessmentContextUpdate,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        return to_api_state(update_context(db, user_id, question, body.value))
+    except (LookupError, AssessmentConflictError, AssessmentValidationError) as exc:
+        raise _assessment_error(exc) from exc
+
+
+@app.post("/onboarding-assessment/clear")
+def post_onboarding_assessment_clear(
+    user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return to_api_state(clear_assessment(db, user_id))
+    except LookupError as exc:
+        raise _assessment_error(exc) from exc
+
+
 @app.post("/chat")
 def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_db)) -> dict:
     baseline = assemble_baseline(db, user_id, body.deepen_alias)
+    # Legacy onboarding keeps its one existing context contract. V2 assessment itself is
+    # non-LLM; only ordinary chat may receive the new presentation abstraction.
+    if not body.onboarding:
+        learning_context = build_learning_context(
+            get_assessment(db, user_id), body.learning_topic
+        )
+        if learning_context is not None:
+            baseline["learning_context"] = learning_context
     # D-072: only when D-071's deterministic UI-signal path didn't already set deepen.
     if "deepen" not in baseline:
         classified = classify_deepen(body.question, baseline["holdings"])

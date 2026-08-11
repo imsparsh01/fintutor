@@ -10,6 +10,15 @@ from app.core.config import REPO_ROOT, settings
 _MODEL = "claude-sonnet-5"
 _MAX_TOKENS = 4096
 _SYSTEM_PROMPT_PATH = REPO_ROOT / "docs" / "prompts" / "SYSTEM_PROMPT_v0_8_runnable.md"
+_LEARNING_CONTEXT_ADDENDUM = """
+
+RUNTIME ADDENDUM — OPTIONAL LEARNING CONTEXT (D-119/BQ-066)
+The profile slice may contain `learning_context` with an `explanation_style` and, only when the app knows
+the active generic topic, `prior_exposure_to_current_topic`. Use this solely for vocabulary, pacing, and
+how much mechanism to unpack first. It is self-reported presentation context—not competence, financial
+health, suitability, permission to advise, or a reason to change any conclusion. Never mention or infer an
+onboarding label from it.
+""".strip()
 
 
 class TeachingEngineNotConfigured(Exception):
@@ -17,7 +26,7 @@ class TeachingEngineNotConfigured(Exception):
 
 
 def _load_system_prompt() -> str:
-    return _SYSTEM_PROMPT_PATH.read_text()
+    return f"{_SYSTEM_PROMPT_PATH.read_text()}\n\n{_LEARNING_CONTEXT_ADDENDUM}"
 
 
 def ask_teaching_engine(baseline: dict, question: str) -> str:
