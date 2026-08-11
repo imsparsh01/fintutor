@@ -60,23 +60,18 @@ user sees their cadence acknowledged in one place and silently ignored in two ot
 matching frontend entry — but adding it on only one side would create a *second* divergence of the
 kind above, so it has to be done in both or neither.
 
-### LOW — Backend has no CORS middleware; browser-based testing needs a workaround
-**Traces to:** the 04-Aug-2026(j) live-verification pass (device/simulator session — see
-`docs/sessions/2026-08-04j.md`). `backend/app/main.py` configures no `CORSMiddleware`, so a browser calling
-the backend from a different origin (Expo's web dev server on `:19006` calling the backend on `:8000`) gets
-blocked by the browser's own CORS policy — every screen showed "Failed to fetch" until worked around.
-Doesn't affect the real product target: native iOS/Android `fetch()` isn't subject to CORS at all, so this
-was invisible to every prior BQ item's `npx expo export` verification. Worked around for this testing
-session only (never in shipped code) by launching the test Chromium with `--disable-web-security` — a
-browser flag, not a backend change.
-**Revisit if:** a web deployment target is ever decided for real (would need a real, scoped `allow_origins`
-list, not a wildcard) — that would be its own new decision, not implied by this note. Also relevant to any
-*future* browser-based verification pass — same workaround applies, documented here so it isn't
-re-discovered from scratch.
-
 ---
 
 ## Structural gaps — need a design pass, not just a field
+
+### Backend endpoints trust a caller-supplied `user_id`; JWT ownership is not enforced
+**Traces to:** `docs/CODEMAPS/architecture.md`, `backend/app/main.py`. Supabase authenticates the app, but
+the FastAPI routes accept `user_id` as a query parameter and do not validate a Supabase JWT or prove that
+the caller owns that UUID. A caller who can reach the API could request another user's records if they
+know or obtain the UUID. This is acceptable only for the current private development environment, not for
+real-user deployment.
+**Revisit:** before any external/private-beta user can reach the backend. Requires an explicit auth-boundary
+decision and implementation plan; it touches sensitive financial data and cannot be added as a drive-by.
 
 ### `baseline.dependents` / `baseline.emergency_fund_months` missing from the teaching engine
 **Traces to:** BQ-023, `backend/app/services/baseline.py`. `SYSTEM_PROMPT_v0_8_runnable.md` §4 documents

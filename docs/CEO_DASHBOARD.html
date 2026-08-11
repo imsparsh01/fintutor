@@ -1,3 +1,9 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Current FinTutor project status, risks, decisions, and next actions.">
 <title>FinTutor — Founder Dashboard</title>
 <style>
   :root {
@@ -293,6 +299,8 @@
     * { transition: none !important; }
   }
 </style>
+</head>
+<body>
 
 <div class="wrap">
 
@@ -302,29 +310,29 @@
       <span class="tagline">Founder Status Dashboard</span>
     </div>
     <div class="meta">
-      <span class="synced">Last synced 05 Aug 2026 · through D-082</span>
-      <span class="phase-pill"><span class="dot"></span>Build queue empty — 2 real gaps remain (down from 3)</span>
+      <span class="synced">Last synced 12 Aug 2026 · through D-111</span>
+      <span class="phase-pill"><span class="dot"></span>Queued app work shipped · launch blockers remain</span>
     </div>
   </div>
 
   <div class="resolved-banner">
-    <div class="rb-title">✓ Resolved since last sync (04 Aug)</div>
+    <div class="rb-title">✓ Shipped since the previous dashboard refresh</div>
     <ul>
-      <li><b>AI-surfaced holding creation is built</b> (D-078) — was the #1 critical risk last sync; narrow Haiku reconciliation call + explicit confirm-card UI in chat.</li>
-      <li><b>Real infrastructure confirmed end-to-end on web</b> (2026-08-05d) — live Postgres, a live backend, and a genuine authenticated Supabase session all verified working together for the first time.</li>
+      <li><b>The app’s primary experience is assembled</b> — five-tab navigation, onboarding, holdings, goals, tools, scenarios, Arya, and the eight-section Home feed are built.</li>
+      <li><b>Portfolio Health is live on Home and Portfolio</b> (D-109–D-111) — one shared computation, four tappable mechanism rows, neutral presentation.</li>
     </ul>
   </div>
 
   <div class="stats">
     <div class="stat">
       <div class="label">Day</div>
-      <div class="value accent">15</div>
+      <div class="value accent">22</div>
       <div class="sub">since kickoff, 22 Jul</div>
     </div>
     <div class="stat">
       <div class="label">Decisions logged</div>
-      <div class="value">80</div>
-      <div class="sub">+8 since 04 Aug · 18 BRIEFs, 100% resolved</div>
+      <div class="value">109</div>
+      <div class="sub">indexed entries · through D-111</div>
     </div>
     <div class="stat">
       <div class="label">Findings closed</div>
@@ -338,8 +346,8 @@
     </div>
     <div class="stat">
       <div class="label">Code files</div>
-      <div class="value good">29 + 46</div>
-      <div class="sub">backend + app · 44 build items archived DONE</div>
+      <div class="value good">37 + 61</div>
+      <div class="sub">backend + app source files</div>
     </div>
   </div>
 
@@ -370,15 +378,15 @@
             <li>
               <div class="node-col"><div class="node active">●</div><div class="line"></div></div>
               <div>
-                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">2 real gaps remain</span></div>
-                <div class="desc">29 backend + 46 app files. AI-surfaced holding creation (D-012's primary path) is now <b>built</b> (D-078) — closes last sync's top risk. Real backend + Supabase auth confirmed live end-to-end on web. Not done: a true native device/simulator pass, and the data privacy policy — the latter now also blocking the onboarding redesign directly.</div>
+                <div class="title-row"><span class="title">2 · App &amp; backend build</span><span class="status active">Queued work shipped</span></div>
+                <div class="desc">Every formal build-queue item is complete. The app now has 61 TypeScript/TSX files and the backend/Alembic layer has 37 Python files. Remaining work is launch hardening, calculation decisions, native QA, tests, and follow-on scope.</div>
               </div>
             </li>
             <li>
               <div class="node-col"><div class="node todo">3</div><div class="line"></div></div>
               <div>
                 <div class="title-row"><span class="title">3 · Private structured testing</span><span class="status todo">Not started</span></div>
-                <div class="desc">Closer than ever — the two biggest build gaps from last sync are both closed — but a native device pass and the privacy policy are still reasonable gates first.</div>
+                <div class="desc">Not started. Privacy, API authorization, native authentication/rendering, and the 80C inconsistency should be closed before external users.</div>
               </div>
             </li>
             <li>
@@ -395,7 +403,7 @@
       <div class="card">
         <div class="card-head">
           <h2>Decision activity</h2>
-          <span class="hint">cumulative decisions logged, by date</span>
+          <span class="hint">cumulative indexed decisions · latest point 12 Aug</span>
         </div>
         <div class="card-body">
           <div class="chart-wrap" id="chartWrap" style="position:relative;">
@@ -417,8 +425,8 @@
               <text class="gap-label" x="270" y="11" text-anchor="middle">build-home offline (laptop repair)</text>
 
               <!-- area + line -->
-              <path class="area-fill" d="M40,178.3 L90,141.2 L140,135.3 L400,133.3 L449,123.6 L498,84.4 L557,51.2 L624,35.6 L624,192 L40,192 Z"/>
-              <path class="line-path" d="M40,178.3 L90,141.2 L140,135.3 L400,133.3 L449,123.6 L498,84.4 L557,51.2 L624,35.6"/>
+              <path class="area-fill" d="M40,178.3 L90,141.2 L140,135.3 L400,133.3 L449,123.6 L498,84.4 L557,51.2 L624,16 L624,192 L40,192 Z"/>
+              <path class="line-path" d="M40,178.3 L90,141.2 L140,135.3 L400,133.3 L449,123.6 L498,84.4 L557,51.2 L624,16"/>
 
               <!-- points -->
               <circle class="pt" data-x="40"  data-y="178.3" data-d="22 Jul" data-v="7"  cx="40"  cy="178.3" r="3.5"/>
@@ -428,9 +436,9 @@
               <circle class="pt" data-x="449" data-y="123.6" data-d="2 Aug"  data-v="35" cx="449" cy="123.6" r="3.5"/>
               <circle class="pt" data-x="498" data-y="84.4"  data-d="3 Aug"  data-v="55" cx="498" cy="84.4"  r="3.5"/>
               <circle class="pt" data-x="557" data-y="51.2"  data-d="4 Aug"  data-v="72" cx="557" cy="51.2"  r="3.5"/>
-              <circle class="pt end" data-x="624" data-y="35.6" data-d="5 Aug · today" data-v="80" cx="624" cy="35.6" r="5"/>
+              <circle class="pt end" data-x="624" data-y="16" data-d="12 Aug · today" data-v="109" cx="624" cy="16" r="5"/>
 
-              <text class="end-label" x="586" y="29">80</text>
+              <text class="end-label" x="580" y="12">109</text>
 
               <text class="axis-label" x="40"  y="210" text-anchor="middle">22 Jul</text>
               <text class="axis-label" x="90"  y="210" text-anchor="middle">23 Jul</text>
@@ -439,7 +447,7 @@
               <text class="axis-label" x="449" y="210" text-anchor="middle">2 Aug</text>
               <text class="axis-label" x="498" y="210" text-anchor="middle">3 Aug</text>
               <text class="axis-label" x="557" y="210" text-anchor="middle">4 Aug</text>
-              <text class="axis-label" x="624" y="210" text-anchor="end">5 Aug</text>
+              <text class="axis-label" x="624" y="210" text-anchor="end">12 Aug</text>
 
               <line class="crosshair" id="crosshair" x1="0" y1="16" x2="0" y2="192"/>
               <circle class="hover-dot" id="hoverDot" r="5.5"/>
@@ -458,12 +466,12 @@
           <table class="ledger">
             <thead><tr><th>ID</th><th>Tier</th><th>Date</th><th>What</th></tr></thead>
             <tbody>
-              <tr><td class="did">D-082</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">05 Aug</td><td>Onboarding reopened for a structured <i>conversation flow</i> (not fields) — narrows D-058, scoped to onboarding only; new <code>docs/features/&lt;slug&gt;</code> convention adopted.</td></tr>
-              <tr><td class="did">D-081</td><td><span class="tier-chip t3">Owner-authorized</span></td><td class="ddate">05 Aug</td><td>Governance-file restructuring: rolling-window archives + protocol cheat sheet — cut mandatory-reading tokens ~80%.</td></tr>
-              <tr><td class="did">D-080</td><td><span class="tier-chip t1">Tier 1</span></td><td class="ddate">05 Aug</td><td>Phase-1 Run 7 live-reverifies FINDING 8 stays closed (0/5) — <code>known_gaps</code> surfacing moves from provisional to verified.</td></tr>
-              <tr><td class="did">D-079</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">05 Aug</td><td><code>savings_balance</code> clarified as an instance of the already-deferred Cash &amp; bank family, not a missing 9th taxonomy type.</td></tr>
-              <tr><td class="did">D-078</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">05 Aug</td><td>AI-surfaced holding-capture mechanism confirmed and <b>built</b> — narrow Haiku reconciliation call + explicit confirm UI in chat.</td></tr>
-              <tr><td class="did">D-077</td><td><span class="tier-chip t1">Tier 1</span></td><td class="ddate">05 Aug</td><td>P9 added to PRODUCT_PRINCIPLES.md — teaching content is never gated behind a quiz or prior lesson.</td></tr>
+              <tr><td class="did">D-111</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">12 Aug</td><td>Home gets a tappable 2×2 <b>Portfolio Health</b> grid; the visible feature name changes from Health Score.</td></tr>
+              <tr><td class="did">D-110</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">12 Aug</td><td>Portfolio and detail screen share a lightweight computed-health snapshot.</td></tr>
+              <tr><td class="did">D-109</td><td><span class="tier-chip t2">Tier 2</span></td><td class="ddate">12 Aug</td><td>Portfolio Health excludes an insurance premium whose cadence is missing.</td></tr>
+              <tr><td class="did">D-108</td><td><span class="tier-chip t1">Tier 1</span></td><td class="ddate">12 Aug</td><td>Scenario rates are user inputs and every prefill remains editable.</td></tr>
+              <tr><td class="did">D-107</td><td><span class="tier-chip t3">Tier 3</span></td><td class="ddate">11 Aug</td><td>Mandatory plan/review sprint loop adopted; local gstack installation is currently unavailable.</td></tr>
+              <tr><td class="did">D-106</td><td><span class="tier-chip t3">Mixed</span></td><td class="ddate">11 Aug</td><td>Five-tab navigation, Portfolio Health formula, scenario batch, and category concentration decided.</td></tr>
             </tbody>
           </table>
         </div>
@@ -480,36 +488,36 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Onboarding fix stalled on a real fork<span class="wl-tag critical">Decide</span></div>
-                <div class="wl-desc">A structured onboarding flow needs cross-turn state; conversation memory is already parked under D-022, gated on the unwritten D-010 privacy policy. Two paths are laid out in <code>docs/features/onboarding/PRD.md</code> — a narrow stage-indicator, or writing D-010 first. Nothing proceeds until this is picked.</div>
+                <div class="wl-title">Privacy policy and backend ownership boundary<span class="wl-tag critical">Decide</span></div>
+                <div class="wl-desc">Define masking, retention, deletion, and export under D-010; separately decide how FastAPI validates Supabase JWTs and proves each caller owns the requested <code>user_id</code>. Both gate private beta.</div>
               </div>
             </li>
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Data privacy policy (D-010) — now an active blocker<span class="wl-tag critical">Decision</span></div>
-                <div class="wl-desc">Was a standing gap; as of today it directly blocks a feature just requested, not just a future one. Priority raised accordingly.</div>
+                <div class="wl-title">80C figures can now conflict on Home<span class="wl-tag critical">Decision</span></div>
+                <div class="wl-desc">BQ-060 met D-109’s revisit trigger. Missing premium cadence is excluded from Portfolio Health but can be counted as monthly in Tax Saving Room. Recommended: use strict cadence handling in both.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Real native device/simulator pass<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Real Postgres, real backend, real Supabase auth, and a real browser all confirmed working end-to-end on web across the last two sessions. Native iOS/Android rendering and the native auth flow remain genuinely unconfirmed. Tooling for this is now available if the owner wants it picked up.</div>
+                <div class="wl-title">Tax-year policy for C-16/C-23<span class="wl-tag warn">Decide</span></div>
+                <div class="wl-desc">The calculators are approved, but D-105 names FY 2025-26 while the project is now in FY 2026-27. Confirm the target year and update policy before implementation.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Legal review of D-009<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Still not scheduled — growing more urgent as build surface grows.</div>
+                <div class="wl-title">Half-yearly premium handling<span class="wl-tag warn">Decide</span></div>
+                <div class="wl-desc">The UI accepts the cadence but two calculations ignore it. Approve adding the same six-month conversion in backend and frontend together.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">BRAND_PRD.md's 3 open fields<span class="wl-tag accent" style="color:var(--accent)">Lower stakes</span></div>
-                <div class="wl-desc">Waitlist incentive (no pricing decision exists yet), visual identity (real blank canvas today), AI-vendor disclosure stance. Not blocking build work — needed to move the landing page forward.</div>
+                <div class="wl-title">Legal, native, testing, and marketing<span class="wl-tag accent" style="color:var(--accent)">Next</span></div>
+                <div class="wl-desc">Schedule D-009 legal review; run native auth/render QA; approve Jest; choose waitlist incentive and AI-vendor disclosure.</div>
               </div>
             </li>
           </ul>
@@ -523,22 +531,22 @@
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Onboarding UX doesn't match the core promise yet<span class="wl-tag critical">New top risk</span></div>
-                <div class="wl-desc">First live test produced a wall-of-text answer instead of a guided first moment. Fix is scoped (D-082) but stalled on the privacy-policy dependency above — a decision problem, not a code problem.</div>
+                <div class="wl-title">API authorization is development-grade<span class="wl-tag critical">Top risk</span></div>
+                <div class="wl-desc">Supabase authenticates the app, but FastAPI trusts caller-supplied UUIDs. Ownership enforcement must exist before external users can reach financial records.</div>
               </div>
             </li>
             <li>
               <div class="stripe critical"></div>
               <div>
-                <div class="wl-title">Data privacy policy undesigned<span class="wl-tag critical">Higher stakes today</span></div>
-                <div class="wl-desc">Same open item as every prior sync, but now directly blocks a requested feature rather than sitting as a theoretical gap.</div>
+                <div class="wl-title">Data privacy policy undesigned<span class="wl-tag critical">Launch blocker</span></div>
+                <div class="wl-desc">Retention, deletion, export, PII masking, and at-rest expectations remain undecided.</div>
               </div>
             </li>
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Native device confirmation still pending<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Substantially de-risked — everything except native rendering itself is now confirmed working on web.</div>
+                <div class="wl-title">Two user-facing 80C calculations can disagree<span class="wl-tag warn">Triggered</span></div>
+                <div class="wl-desc">The exact revisit condition documented in D-109 is now true because Portfolio Health appears on Home.</div>
               </div>
             </li>
             <li>
@@ -551,8 +559,8 @@
             <li>
               <div class="stripe warn"></div>
               <div>
-                <div class="wl-title">Only 2 test fixtures, both pre-app<span class="wl-tag warn">Watch</span></div>
-                <div class="wl-desc">Unchanged — Run 7 re-verified an existing fixture, didn't add a new one.</div>
+                <div class="wl-title">No committed automated tests or CI<span class="wl-tag warn">Watch</span></div>
+                <div class="wl-desc">App and backend behavior currently rely on manual verification. Jest still requires an explicit dependency decision.</div>
               </div>
             </li>
           </ul>
@@ -567,7 +575,7 @@
               <div class="stripe good"></div>
               <div>
                 <div class="wl-title">None in the formal build-queue sense</div>
-                <div class="wl-desc">READY and BLOCKED both still empty. D-082's open fork is a soft blocker on the onboarding PRD specifically — see "Needs your input," not the build queue.</div>
+                <div class="wl-desc">READY and BLOCKED are empty because every queued feature shipped. This does not mean launch-ready: privacy, API authorization, native QA, and calculation consistency sit outside the formal queue.</div>
               </div>
             </li>
           </ul>
@@ -581,36 +589,36 @@
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">1. Decide D-082's open fork</div>
-                <div class="wl-desc">Stage-indicator vs. resolving D-010 first — directly unblocks the onboarding PRD's next section.</div>
+                <div class="wl-title">1. Align the two 80C calculations</div>
+                <div class="wl-desc">Choose strict cadence handling in both surfaces, then resolve half-yearly premiums in the same calculation pass.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">2. Data privacy policy</div>
-                <div class="wl-desc">Doing double duty now — needs a dedicated owner session more than ever.</div>
+                <div class="wl-title">2. Privacy + JWT ownership boundary</div>
+                <div class="wl-desc">Define the user-data contract and how every backend request proves ownership before private beta.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">3. Legal review scheduling</div>
-                <div class="wl-desc">Still not blocking — still worth calendaring.</div>
+                <div class="wl-title">3. Native QA and onboarding resume test</div>
+                <div class="wl-desc">Both are evidence tasks Codex can execute once selected.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">4. A real native device/simulator pass</div>
-                <div class="wl-desc">Tooling now available in-session if the owner wants it picked up.</div>
+                <div class="wl-title">4. Confirm tax-year policy, then build calculators</div>
+                <div class="wl-desc">C-16/C-23 are approved in principle but their FY 2025-26 rule set is stale.</div>
               </div>
             </li>
             <li>
               <div class="stripe accent"></div>
               <div>
-                <div class="wl-title">5. BRAND_PRD.md's open items</div>
-                <div class="wl-desc">Waitlist incentive, visual identity commissioning, AI-vendor disclosure — whenever ready to move on the landing page.</div>
+                <div class="wl-title">5. Approve tests; schedule legal review</div>
+                <div class="wl-desc">Add Jest/backend coverage and CI, then move toward structured private testing.</div>
               </div>
             </li>
           </ul>
@@ -691,3 +699,5 @@
     }, {passive: true});
   })();
 </script>
+</body>
+</html>

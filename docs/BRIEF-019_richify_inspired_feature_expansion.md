@@ -1,6 +1,7 @@
 # BRIEF-019 — Competitive feature expansion: Health Score, Persona, Scenarios, Calculators, Home restructure
 
-**Status:** OPEN — both Richify and Novelty Wealth reviewed; pending owner decisions on all items in summary table
+**Status:** RESOLVED for the confirmed first build wave by D-104–D-111. Remaining calculators and the
+explicitly parked Account Aggregator work are follow-ons, not unresolved blockers on that shipped wave.
 **Date logged:** 11-Aug-2026
 **Last updated:** 11-Aug-2026 (Novelty Wealth analysis added)
 **Source:** Competitive analysis of Richify (richify.ai, live screenshots) + Novelty Wealth (noveltywealth.in, web research)
