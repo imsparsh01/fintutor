@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-062 — Align strict 80C cadence handling and add six-month conversion — DONE 12-Aug-2026
+
+Implemented D-112 in `healthScore.ts`, `budget.py`, and `tax_saving_room.py`. Both 80C calculations now
+exclude a premium whose cadence is blank or unrecognised. Eight clear six-month variants annualise as
+two payments per year in frontend tax utilisation, backend tax room, and the backend monthly budget.
+Verified with a shared 10-case behavior matrix (monthly, quarterly, six-month, annual, weekly, blank,
+unknown, and null), all eight six-month aliases, TypeScript, Python compile, and Expo web export.
+
 ## BQ-063 — Primary navigation iconography and mobile-width correction — DONE 12-Aug-2026
 
 Implements D-113. Added a five-glyph code-native line-icon set (Home, Portfolio, Goals, Tools, Chat),

@@ -35,31 +35,6 @@ target segment.
 **Revisit if:** usage shows this is a frequent, meaningfully-wrong case, or a non-product-naming way to
 self-flag "this is a tax-saving fund" is found.
 
-### The app's two 80C figures can disagree for a premium with no stated cadence
-**Traces to:** D-109, `app/lib/healthScore.ts` (`annualisePremium`) vs
-`backend/app/services/tax_saving_room.py:43`. The Health Score's "Tax utilisation" row applies
-`budget.py`'s strict Option C — a premium counts only when `premium_frequency` is an explicitly
-recognised cadence. `tax_saving_room.py` calls `_to_monthly` bare, so it reads an unrecognised or
-missing cadence as monthly. For a holding with a premium but no cadence recorded, the Health Score
-excludes it and "Check my 80C room" counts it at 12x its actual annual value. Both surfaces are
-reachable in one session, so a user can see two different 80C totals for the same holdings.
-D-109 accepted this rather than solve it: aligning them means changing a backend calculation, which is
-its own hard stop and well outside a frontend defect fix.
-**Revisit if:** the two surfaces are ever shown together (a Health Score card on Home per BQ-060 would
-do it), or real holdings show blank `premium_frequency` is common rather than rare. The fix is small —
-apply Option C in `tax_saving_room.py` too — but it changes a shipped user-facing figure, so it needs a
-real decision, not a drive-by.
-
-### Half-yearly premiums are recognised for display but not for any calculation
-**Traces to:** D-109. `HoldingDetailScreen.tsx:111` renders "half-yearly" as a premium adjective, so a
-user can enter that cadence and see it reflected back. No calculation recognises it:
-`budget.py`'s `_RECURRING_FREQUENCIES` has no half-yearly entry, so the premium is dropped from the
-monthly budget view, and `healthScore.ts` mirrors that set deliberately and drops it from 80C too. The
-user sees their cadence acknowledged in one place and silently ignored in two others.
-**Revisit if:** anyone is actually entering it. The fix is one divisor in `_to_monthly` plus the
-matching frontend entry — but adding it on only one side would create a *second* divergence of the
-kind above, so it has to be done in both or neither.
-
 ---
 
 ## Structural gaps — need a design pass, not just a field

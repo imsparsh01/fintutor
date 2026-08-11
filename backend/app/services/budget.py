@@ -10,7 +10,29 @@ _EMI_TYPES = {"home_loan", "personal_loan"}
 _SIP_CAPABLE_TYPES = {"equity_mutual_fund", "debt_mutual_fund"}
 # D-013 product_type slugs whose recurring outflow is an insurance premium.
 _PREMIUM_TYPES = {"term_insurance", "endowment_ulip"}
-_RECURRING_FREQUENCIES = {"monthly", "month", "quarterly", "quarter", "annual", "annually", "yearly", "year", "weekly", "week"}
+_SIX_MONTH_FREQUENCIES = {
+    "half-yearly",
+    "half yearly",
+    "semi-annual",
+    "semi annual",
+    "semiannual",
+    "six-monthly",
+    "six monthly",
+    "every six months",
+}
+_RECURRING_FREQUENCIES = {
+    "monthly",
+    "month",
+    "quarterly",
+    "quarter",
+    "annual",
+    "annually",
+    "yearly",
+    "year",
+    "weekly",
+    "week",
+    *_SIX_MONTH_FREQUENCIES,
+}
 
 
 def _to_monthly(amount: float, frequency: str | None) -> float:
@@ -20,6 +42,8 @@ def _to_monthly(amount: float, frequency: str | None) -> float:
         return float(amount) / 12
     if freq in ("quarterly", "quarter"):
         return float(amount) / 3
+    if freq in _SIX_MONTH_FREQUENCIES:
+        return float(amount) / 6
     if freq in ("weekly", "week"):
         return float(amount) * 52 / 12
     # "monthly"/"month" and any unrecognized value are treated as already-monthly.

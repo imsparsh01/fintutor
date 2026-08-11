@@ -95,8 +95,8 @@ esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
                                 80C (taxUtil) reads ppf_epf.annual_contribution + annualised insurance premium.
-                                D-109: a premium with no recognised premium_frequency is EXCLUDED, not read as
-                                monthly — diverges from tax_saving_room.py on purpose; see KNOWN_LIMITATIONS.
+                                D-112: cadence handling matches tax_saving_room.py — missing/unknown is
+                                excluded; recognised six-month variants annualise as two payments.
 concentration.ts        55      computeCategoryConcentration(holdings) → {totalFunds, categories[], largest}.
                                 BQ-061 — counts of equity vs debt MFs. Counts only, never a rupee figure
                                 (D-106 rules that out: a by-value share reads as a weighting verdict).
@@ -166,10 +166,8 @@ S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is Lo
   read by both HealthScoreScreen and GoalsScreen. One answer, two surfaces — do not add a second prompt
   for either question. No vector-icon library is installed: GoalsScreen's goal-type marks are drawn from
   plain Views (rotated squares, a CSS-triangle roof, bordered circles).
-- **80C is computed in two places and they deliberately disagree on one edge case.** `TaxSavingRoomModal`
-  shows the backend's figure (`services/tax_saving_room.py`); `healthScore.ts`'s taxUtil recomputes the
-  same quantity client-side, because `computeSubScores` is a pure sync function and the backend route
-  additionally requires a `tax_regime` input this screen never asks for. Per **D-109** the client-side
-  one excludes a premium with no recognised `premium_frequency` rather than reading it as monthly —
-  that divergence is intentional and logged in `docs/KNOWN_LIMITATIONS.md`. Do not "fix" it by making
-  the two match; read D-109 first.
+- **80C is computed in two places.** `TaxSavingRoomModal` shows the backend figure
+  (`services/tax_saving_room.py`); `healthScore.ts` recomputes taxUtil client-side because the backend
+  route requires a `tax_regime` input this screen never asks for. D-112 supersedes D-109's accepted
+  cadence mismatch: both now exclude blank/unknown premium cadence and recognise the same six-month
+  variants as two payments yearly. Keep the two cadence tables in lockstep.

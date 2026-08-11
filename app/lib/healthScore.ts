@@ -14,12 +14,14 @@ const TAX_80C_INSURANCE_TYPES = ['term_insurance', 'endowment_ulip'];
 // Cadences recognised for annualising an insurance premium. Deliberately the same set as
 // backend/app/services/budget.py's `_RECURRING_FREQUENCIES`, so the frontend and backend agree
 // on what counts as a stated cadence rather than each accepting its own vocabulary.
-// Note: "half-yearly"/"semi-annual" is NOT here — the backend doesn't recognise it either, and
-// inventing a divisor the backend lacks would make the two 80C figures disagree. Such a premium
-// is excluded (see the Option C rule below), not guessed at.
+const SIX_MONTH_FREQUENCIES = new Set([
+  'half-yearly', 'half yearly', 'semi-annual', 'semi annual',
+  'semiannual', 'six-monthly', 'six monthly', 'every six months',
+]);
 const RECURRING_FREQUENCIES = new Set([
   'monthly', 'month', 'quarterly', 'quarter',
   'annual', 'annually', 'yearly', 'year', 'weekly', 'week',
+  ...SIX_MONTH_FREQUENCIES,
 ]);
 
 // Annualises a premium from its stated cadence. Mirrors `_to_monthly` in
@@ -32,10 +34,6 @@ const RECURRING_FREQUENCIES = new Set([
 // a figure the user relies on. Under-counting is the safer failure for this screen, and it
 // matches the rule `investmentRate` already inherits via `budget.recurring_outflows`.
 //
-// This intentionally differs from backend/app/services/tax_saving_room.py, which calls
-// `_to_monthly` bare and so does treat an unrecognised cadence as monthly. The two 80C figures
-// can therefore disagree for a holding with a missing cadence; owner-confirmed as the accepted
-// trade-off, on the reasoning that the conservative reading is the right one to show here.
 function annualisePremium(amount: unknown, frequency: unknown): number | null {
   // Same NaN guard as scenarios.ts's `num()` — `characteristics` is Record<string, unknown>,
   // so any field can be absent, a string, or junk.
@@ -49,6 +47,7 @@ function annualisePremium(amount: unknown, frequency: unknown): number | null {
   if (freq === 'annual' || freq === 'annually' || freq === 'yearly' || freq === 'year') {
     return value;
   }
+  if (SIX_MONTH_FREQUENCIES.has(freq)) return value * 2;
   if (freq === 'quarterly' || freq === 'quarter') return value * 4;
   if (freq === 'weekly' || freq === 'week') return value * 52;
   // Only 'monthly'/'month' can reach here — the recognised-set gate above rejects everything else.

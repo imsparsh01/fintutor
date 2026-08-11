@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from app.models import Holding
-from app.services.budget import _to_monthly
+from app.services.budget import _RECURRING_FREQUENCIES, _to_monthly
 
 # The Section 80C statutory cap. A single figure, not a slab table — this could still go
 # stale in a future budget, but the maintenance burden is far smaller than a full
@@ -40,7 +40,14 @@ def compute_tax_saving_room(db: Session, user_id: uuid.UUID, tax_regime: str) ->
         if holding.product_type == "ppf_epf":
             known_contributions += float(c.get("annual_contribution") or 0)
         elif holding.product_type in ("term_insurance", "endowment_ulip"):
-            known_contributions += _to_monthly(c.get("premium") or 0, c.get("premium_frequency")) * 12
+            frequency = c.get("premium_frequency")
+            # D-112: match Portfolio Health's strict cadence rule. A premium with a
+            # blank or unknown cadence is excluded rather than guessed as monthly.
+            if (
+                frequency is not None
+                and str(frequency).strip().lower() in _RECURRING_FREQUENCIES
+            ):
+                known_contributions += _to_monthly(c.get("premium") or 0, str(frequency)) * 12
 
     unused_room = max(0.0, _ANNUAL_80C_CAP - known_contributions)
 

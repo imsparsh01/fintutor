@@ -47,8 +47,9 @@ POST /chat                      → assemble_baseline → ask_teaching_engine �
 ```
 services/baseline.py (75)       assemble_baseline() — merges holdings+income+goals+surfacing into
                                  the dict injected into the teaching prompt. Central to every /chat call.
-services/budget.py (89)         compute_budget() — normalises recurring income/EMI/SIP to monthly;
-                                 returns provenance rows. Requires explicit frequency on recurring items.
+services/budget.py (~110)       compute_budget() — normalises recurring income/EMI/SIP/premium to monthly;
+                                 returns provenance rows. Requires explicit recognised frequency on recurring
+                                 items; D-112 includes six-month cadence variants at amount ÷ 6.
 services/consolidated.py (99)   compute_consolidated() — per-family totals with valuation metadata:
                                  holding/valued/excluded/status per family so client never infers from 0.
 services/holdings.py (137)      CRUD + serialisation. alias auto-generated (D-074) if not provided.
@@ -67,7 +68,8 @@ services/rewards.py (22)        evaluate_reward(is_new_day) — returns reward s
 services/streaks.py (58)        record_app_open() / get_streak().
 services/loan_vs_invest.py (102) Math: prepayment vs invest decision; uses hurdle rate (D-014).
 services/esop_exercise_cost.py (115) ESOP exercise cost computation (D-066).
-services/tax_saving_room.py (53) 80C/NPS room left under old/new regime (D-016).
+services/tax_saving_room.py (~60) 80C/NPS room left under old/new regime (D-016). D-112 strict cadence:
+                                  blank/unknown premium frequency excluded; six-month variants count ×2/year.
 services/baseline.py (75)       Assembles prompt context dict (holdings, income, goals, gaps, deepen).
 services/discretionary_categories.py (32) CRUD for user-labelled discretionary spend buckets.
 ```
