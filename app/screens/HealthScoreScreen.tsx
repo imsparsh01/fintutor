@@ -96,8 +96,10 @@ export function HealthScoreScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      {/* Back navigation */}
-      <Pressable style={styles.back} onPress={() => navigation.goBack()}>
+      {/* Explicit navigate, not goBack(). A bottom-tab navigator defaults to
+          backBehavior: 'firstRoute', so goBack() from a hidden screen lands on Home —
+          verified in the web preview — which contradicts the label on this control. */}
+      <Pressable style={styles.back} onPress={() => navigation.navigate('Portfolio')}>
         <Text style={styles.backText}>‹ Portfolio</Text>
       </Pressable>
 
