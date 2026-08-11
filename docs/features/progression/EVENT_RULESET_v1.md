@@ -15,7 +15,7 @@ which action moved it; the internal point values do not need to be presented as 
 
 | Event | Dimension | Points | Eligibility and repeat limit |
 |---|---:|---:|---|
-| Onboarding completed | Milestone | 40 | Once for the applicable onboarding version. Onboarding alone cannot satisfy a breadth requirement. |
+| Onboarding handled | Milestone | 40 | Once for the applicable onboarding version, whether prompts are answered, individually skipped, or globally skipped. Onboarding alone cannot satisfy a breadth requirement. |
 | Capability first used | Explore | 15 | Once per capability family: teaching, calculator, scenario, Arya, and recap. May accompany the qualifying completion event. |
 | Teaching moment explored | Explore | 10 | Once per distinct teaching subject. Opening and immediately leaving does not qualify. |
 | Teaching moment revisited | Reflect | 5 | Same subject, at least 7 calendar days after its first qualifying exploration; at most one revisit award per day. |

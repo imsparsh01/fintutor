@@ -26,8 +26,10 @@ _(Empty — every decided item has shipped. New items enter here once their deci
 ### BQ-064 — Financial learning progression system — TOP PRIORITY, BLOCKED
 
 Traces to D-114. Do not build yet. Level architecture/naming is resolved in D-116 and event rules are
-resolved in D-117. The remaining pre-build blocker from `docs/features/progression/STRATEGY.md` is the
-exact onboarding flow/migration from the current four-track model.
+resolved in D-117. D-118 resolves the five-question product flow and non-inference legacy experience.
+The remaining pre-build hard stop is owner approval of onboarding v2's persistence/privacy/eligibility,
+authoritative-completion, and legacy-credit package in
+`docs/features/onboarding/BRIEF-assessment-v2-persistence-privacy.md`.
 Once resolved, replace this umbrella item with bounded build items rather than implementing the whole
 system in one session.
 

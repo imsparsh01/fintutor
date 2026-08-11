@@ -163,3 +163,10 @@
   weights, a 60-point repeatable daily cap, breadth/return-day gates, and open-ended Expanding milestones.
   Full write-up: `docs/features/progression/decisions/D-117-learning-progression-event-rules-v1.md`.
 - **Date:** 12-Aug-2026
+
+### D-118 — Five-axis onboarding assessment product contract
+- **Tier:** 2, REVIEW-FLAGGED. “Every user starts at Discovering.” Replaces the four-track product flow
+  with five optional self-reported axes, no amounts or public persona, equal progress for answer/skip, and
+  no inferred migration. Implementation awaits the Tier-3 persistence/privacy package. Full write-up:
+  `docs/features/onboarding/decisions/D-118-five-axis-onboarding-assessment-contract.md`.
+- **Date:** 12-Aug-2026
