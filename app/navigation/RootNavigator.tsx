@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { DefaultTheme, NavigationContainer, type Theme } from '@react-navigation/native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
 import { NotConfiguredScreen } from '../screens/NotConfiguredScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
-import { colors } from '../design/tokens';
+import { colors, font } from '../design/tokens';
 import { AuthProvider } from '../lib/AuthContext';
 import { hasSeenOnboarding } from '../lib/onboarding';
 import {
@@ -68,7 +69,14 @@ function AuthenticatedApp({ userId }: { userId: string }) {
     };
   }, [userId]);
 
-  if (onboardingDone === null) return null;
+  if (onboardingDone === null) {
+    return (
+      <View style={styles.assessmentLoading} accessibilityLiveRegion="polite">
+        <ActivityIndicator color={colors.tutor} />
+        <Text style={styles.assessmentLoadingText}>Preparing your starting point…</Text>
+      </View>
+    );
+  }
 
   if (!onboardingDone) {
     return (
@@ -86,6 +94,11 @@ function AuthenticatedApp({ userId }: { userId: string }) {
 
   return <MainTabs initialRouteName={destination} />;
 }
+
+const styles = StyleSheet.create({
+  assessmentLoading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.screen },
+  assessmentLoadingText: { marginTop: 12, color: colors.inkSecondary, fontFamily: font.ui, fontSize: 14 },
+});
 
 // First name for the greeting, best-effort from Supabase user metadata, falling back to
 // the email local-part. Presentation only — never blocks render if absent.

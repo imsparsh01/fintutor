@@ -2,12 +2,12 @@ import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, font, radius, spacing } from '../design/tokens';
 import {
   answerAssessment,
@@ -235,7 +235,7 @@ export function OnboardingScreen({
         <Text style={styles.kicker}>{content.eyebrow.toUpperCase()}</Text>
         <Text style={styles.questionTitle}>{content.title}</Text>
         <Text style={styles.helper}>{content.helper}</Text>
-        <View style={styles.options}>
+        <View style={styles.options} accessibilityRole={content.multi ? undefined : 'radiogroup'}>
           {content.options.map((option) => {
             const isSelected = selected.includes(option.value);
             return (
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.7 },
   closing: { flex: 1, justifyContent: 'center', padding: spacing.xl, maxWidth: 620, width: '100%', alignSelf: 'center' },
   closingTitle: { color: colors.ink, fontFamily: font.uiSemibold, fontSize: 34, lineHeight: 41, marginBottom: spacing.lg },
-  closingBody: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 17, lineHeight: 27, marginBottom: spacing.xxl },
+  closingBody: { color: colors.inkSecondary, fontFamily: font.tutor, fontSize: 19, lineHeight: 28, marginBottom: spacing.xxl },
   handoff: { borderLeftWidth: 2, borderLeftColor: colors.tutor, paddingLeft: spacing.lg, paddingVertical: spacing.sm, marginBottom: spacing.xxl },
   handoffLabel: { color: colors.inkMuted, fontFamily: font.monoMedium, fontSize: 10, letterSpacing: 0.8, marginBottom: spacing.sm },
   handoffText: { color: colors.ink, fontFamily: font.uiMedium, fontSize: 16, lineHeight: 23 },
