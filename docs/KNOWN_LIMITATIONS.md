@@ -39,6 +39,15 @@ self-flag "this is a tax-saving fund" is found.
 
 ## Structural gaps — need a design pass, not just a field
 
+### Legacy assessment invitation dismissal is installation-local
+**Traces to:** BQ-068/D-119, `app/lib/onboardingAssessment.ts`. Legacy access and v2 assessment state are
+backend-authoritative across devices, but dismissing the optional “Personalize how Arya explains things”
+invitation is remembered only in local storage. It can therefore appear once again after reinstall or on
+another device. Persisting that preference would add a new durable personal-context value outside the
+approved assessment schema; BQ-068 does not silently expand D-119's storage package.
+**Revisit:** before external launch if “dismiss everywhere” is required. This needs an explicit persistence,
+retention, and deletion decision—not a drive-by column or mutation of preserved legacy rows.
+
 ### Backend endpoints trust a caller-supplied `user_id`; JWT ownership is not enforced
 **Traces to:** `docs/CODEMAPS/architecture.md`, `backend/app/main.py`. Supabase authenticates the app, but
 the FastAPI routes accept `user_id` as a query parameter and do not validate a Supabase JWT or prove that

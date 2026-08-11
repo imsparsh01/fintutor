@@ -13,6 +13,7 @@ import { LoansScreen } from '../screens/LoansScreen';
 import { PortfolioScreen } from '../screens/PortfolioScreen';
 import { ScenarioScreen } from '../screens/ScenarioScreen';
 import { ToolsScreen } from '../screens/ToolsScreen';
+import { VoluntaryAssessmentScreen } from '../screens/VoluntaryAssessmentScreen';
 import { colors, font } from '../design/tokens';
 import type { MainTabsParamList } from './types';
 
@@ -107,6 +108,15 @@ export function MainTabs({ initialRouteName = 'Consolidated' }: { initialRouteNa
         name="HealthScore"
         component={HealthScoreScreen}
         options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Assessment"
+        component={VoluntaryAssessmentScreen}
+        options={{
+          tabBarButton: () => null,
+          tabBarItemStyle: { display: 'none' },
+          tabBarStyle: { display: 'none' },
+        }}
       />
     </Tab.Navigator>
   );

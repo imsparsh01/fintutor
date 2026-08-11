@@ -117,10 +117,12 @@ export function OnboardingScreen({
   userId,
   initialState,
   onDone,
+  onCancel,
 }: {
   userId: string;
   initialState: AssessmentState | null;
   onDone: (destination: OnboardingDestination) => void;
+  onCancel?: () => void;
 }) {
   const [assessment, setAssessment] = useState(initialState);
   const [selected, setSelected] = useState<string[]>([]);
@@ -210,6 +212,11 @@ export function OnboardingScreen({
           </View>
           {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
           <PrimaryButton label="I’m 18 or older — begin" busy={saving} onPress={() => run(() => startAssessment(userId))} />
+          {onCancel ? (
+            <Pressable accessibilityRole="button" disabled={saving} onPress={onCancel} style={styles.skipQuestion}>
+              <Text style={styles.skipQuestionText}>Not now</Text>
+            </Pressable>
+          ) : null}
         </ScrollView>
       </SafeAreaView>
     );

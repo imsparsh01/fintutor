@@ -16,12 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-068 — Onboarding v2 legacy compatibility and voluntary reassessment
-
-Traces to D-119. Grandfather legacy users, infer no v2 answers, preserve old rows through compatibility,
-and add one dismissible “Personalize how Arya explains things” route for voluntary v2 assessment. Verify
-legacy-complete, legacy-incomplete, second-device, reinstall, interruption, and clear-context paths.
-
 ---
 
 ## BLOCKED — do not start

@@ -9,7 +9,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.db.session import Base, get_db
 from app.main import app
-from app.models import OnboardingAssessment
+from app.models import OnboardingAssessment, OnboardingState
 from app.services.onboarding_assessment import (
     QUESTION_ORDER,
     answer_current_question,
@@ -25,7 +25,10 @@ class OnboardingAssessmentApiTests(unittest.TestCase):
             connect_args={"check_same_thread": False},
             poolclass=StaticPool,
         )
-        Base.metadata.create_all(self.engine, tables=[OnboardingAssessment.__table__])
+        Base.metadata.create_all(
+            self.engine,
+            tables=[OnboardingState.__table__, OnboardingAssessment.__table__],
+        )
         self.Session = sessionmaker(bind=self.engine)
         self.db = self.Session()
         self.user_id = uuid.uuid4()
@@ -55,6 +58,35 @@ class OnboardingAssessmentApiTests(unittest.TestCase):
         self.assertIn("answers", body)
         self.assertNotIn("user_id", body)
         self.assertNotIn("eligibility_confirmed_at", body)
+
+    def test_compatibility_grandfathers_any_legacy_state_without_inference(self) -> None:
+        empty = self.client.get(self._path("/compatibility"))
+        self.assertEqual(empty.status_code, 200)
+        self.assertEqual(empty.json(), {"legacy_user": False})
+
+        legacy = OnboardingState(
+            user_id=self.user_id,
+            track="fresh_starter",
+            stage="intro",
+            turns_in_stage=1,
+        )
+        self.db.add(legacy)
+        self.db.commit()
+
+        present = self.client.get(self._path("/compatibility"))
+        self.assertEqual(present.json(), {"legacy_user": True})
+        self.assertEqual(self.client.get(self._path()).status_code, 404)
+        self.db.refresh(legacy)
+        self.assertEqual(legacy.track, "fresh_starter")
+        self.assertEqual(legacy.stage, "intro")
+
+        legacy.stage = "complete"
+        self.db.commit()
+        complete = self.client.get(self._path("/compatibility"))
+        self.assertEqual(complete.json(), {"legacy_user": True})
+        self.db.refresh(legacy)
+        self.assertEqual(legacy.track, "fresh_starter")
+        self.assertEqual(legacy.stage, "complete")
 
     def test_invalid_and_stale_answers_have_stable_status_codes(self) -> None:
         self.client.post(self._path("/start"), json={"eligibility_confirmed": True})

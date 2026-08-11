@@ -39,6 +39,8 @@ export type MainTabsParamList = {
   Budgeting: undefined;
   // BQ-054/BQ-060: Portfolio Health — optionally opens one sub-score's mechanism detail.
   HealthScore: { focus?: PortfolioHealthFocus } | undefined;
+  // BQ-068: hidden voluntary route for grandfathered users; never a primary tab.
+  Assessment: undefined;
 };
 
 // BQ-022: each family tab (Investments/Loans/Insurance) is its own small stack —

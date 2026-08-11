@@ -11,6 +11,7 @@ import {
   AssessmentApiError,
   cacheHandledAssessment,
   getAssessment,
+  getLegacyCompatibility,
   hasHandledAssessmentCache,
   type AssessmentState,
 } from '../lib/onboardingAssessment';
@@ -43,6 +44,9 @@ function AuthenticatedApp({ userId }: { userId: string }) {
 
   useEffect(() => {
     let active = true;
+    setOnboardingDone(null);
+    setAssessmentState(null);
+    setDestination('Consolidated');
     async function resolveOnboarding() {
       try {
         const state = await getAssessment(userId);
@@ -53,14 +57,25 @@ function AuthenticatedApp({ userId }: { userId: string }) {
       } catch (error) {
         if (!active) return;
         if (error instanceof AssessmentApiError && error.status === 404) {
-          // Preserve access for users who already dismissed the legacy flow. BQ-068
-          // will offer v2 as a voluntary reassessment without inferring any answers.
-          setOnboardingDone(await hasSeenOnboarding(userId));
+          // BQ-068: any legacy backend row grandfathers access on every device. The
+          // old device flag remains a fallback for users who dismissed before a row existed.
+          try {
+            const legacyUser = await getLegacyCompatibility(userId);
+            const locallySeen = await hasSeenOnboarding(userId);
+            if (active) setOnboardingDone(legacyUser || locallySeen);
+          } catch {
+            const locallySeen = await hasSeenOnboarding(userId);
+            if (active) setOnboardingDone(locallySeen);
+          }
           return;
         }
         // D-119: backend state is authoritative. The local value is only an outage
-        // fallback for a completion already observed on this device.
-        setOnboardingDone(await hasHandledAssessmentCache(userId));
+        // fallback for a v2 completion or legacy dismissal observed on this device.
+        const [v2Handled, legacyHandled] = await Promise.all([
+          hasHandledAssessmentCache(userId),
+          hasSeenOnboarding(userId),
+        ]);
+        if (active) setOnboardingDone(v2Handled || legacyHandled);
       }
     }
     resolveOnboarding();

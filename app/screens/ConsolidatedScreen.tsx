@@ -6,6 +6,13 @@ import { ConsolidatedTotalsCard } from '../components/ConsolidatedTotalsCard';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { loadHealthScoreSnapshot } from '../lib/healthScoreSnapshot';
+import {
+  AssessmentApiError,
+  dismissLegacyInvite,
+  getAssessment,
+  getLegacyCompatibility,
+  hasDismissedLegacyInvite,
+} from '../lib/onboardingAssessment';
 import { randomRewardFact } from '../lib/rewardFacts';
 import { recordAppOpen, type StreakOpenResult } from '../lib/streaks';
 import { fetchSurfacingCandidates, type SurfacingCandidate } from '../lib/surfacing';
@@ -57,6 +64,7 @@ export function ConsolidatedScreen() {
   const [dismissed, setDismissed] = useState(false);
   const [rewardFact, setRewardFact] = useState<string | null>(null);
   const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
+  const [showAssessmentInvite, setShowAssessmentInvite] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -75,6 +83,16 @@ export function ConsolidatedScreen() {
   }, [userId]);
 
   useFocusEffect(loadHome);
+
+  useFocusEffect(useCallback(() => {
+    if (!userId) return;
+    let active = true;
+    setShowAssessmentInvite(false);
+    shouldOfferAssessment(userId)
+      .then((show) => { if (active) setShowAssessmentInvite(show); })
+      .catch(() => { if (active) setShowAssessmentInvite(false); });
+    return () => { active = false; };
+  }, [userId]));
 
   if (!userId) return null;
 
@@ -100,6 +118,30 @@ export function ConsolidatedScreen() {
       <PortfolioHealthCard health={health} navigation={navigation} />
 
       <SectionLabel>Ask Arya</SectionLabel>
+      {showAssessmentInvite && (
+        <View style={styles.personalizeCard}>
+          <Text style={styles.personalizeLabel}>OPTIONAL PERSONALIZATION</Text>
+          <Text style={styles.personalizeTitle}>Personalize how Arya explains things</Text>
+          <Text style={styles.personalizeBody}>
+            Five quick, optional questions can tune where explanations begin. No amounts or account details.
+          </Text>
+          <View style={styles.aryaActions}>
+            <Pressable accessibilityRole="button" style={styles.primaryButton} onPress={() => navigation.navigate('Assessment')}>
+              <Text style={styles.primaryButtonText}>Personalize Arya</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" onPress={async () => {
+              try {
+                await dismissLegacyInvite(userId);
+                setShowAssessmentInvite(false);
+              } catch {
+                // Leave the card visible if its dismissal could not be remembered.
+              }
+            }}>
+              <Text style={styles.secondaryAction}>Not now</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
       <View style={styles.aryaCard}>
         <View style={styles.aryaIdentity}>
           <View style={styles.aryaMark}><Text style={styles.aryaMarkText}>A</Text></View>
@@ -250,6 +292,25 @@ function currentMonthLabel(): string {
   return new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 }
 
+async function shouldOfferAssessment(userId: string): Promise<boolean> {
+  try {
+    if (await hasDismissedLegacyInvite(userId)) return false;
+  } catch {
+    // A storage failure must not turn an optional invitation into a blocking error.
+  }
+  try {
+    await getAssessment(userId);
+    return false;
+  } catch (error) {
+    if (!(error instanceof AssessmentApiError) || error.status !== 404) return false;
+  }
+  try {
+    return await getLegacyCompatibility(userId);
+  } catch {
+    return false;
+  }
+}
+
 function tutorPrompt(candidate: SurfacingCandidate): string {
   if (candidate.reason === 'loan_without_life_cover') {
     return "You’re carrying a loan, but there’s no term cover on record. Want to see how term insurance works with your own numbers?";
@@ -295,6 +356,10 @@ const styles = StyleSheet.create({
   healthCellLabel: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: spacing.xs },
   healthCellOpen: { fontFamily: font.uiMedium, fontSize: 11, color: colors.tutor, marginTop: spacing.sm },
   aryaCard: { backgroundColor: colors.tutorSoft, borderRadius: radius.lg, padding: spacing.lg },
+  personalizeCard: { backgroundColor: colors.canvas, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, padding: spacing.lg, marginBottom: spacing.md },
+  personalizeLabel: { color: colors.tutor, fontFamily: font.monoMedium, fontSize: 10, letterSpacing: 0.8 },
+  personalizeTitle: { color: colors.ink, fontFamily: font.uiSemibold, fontSize: 17, marginTop: spacing.sm },
+  personalizeBody: { color: colors.inkSecondary, fontFamily: font.tutor, fontSize: 15, lineHeight: 22, marginTop: spacing.sm },
   aryaIdentity: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md },
   aryaMark: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.tutor, alignItems: 'center', justifyContent: 'center' },
   aryaMarkText: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.screen },

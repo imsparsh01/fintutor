@@ -34,6 +34,7 @@ from app.services.income import create_income, list_income, update_income
 from app.services.loan_vs_invest import compute_loan_vs_invest
 from app.services.onboarding import (
     build_onboarding_instruction,
+    has_legacy_onboarding_state,
     record_turn,
     start_or_resume,
 )
@@ -382,6 +383,14 @@ def get_onboarding_assessment(
     if assessment is None:
         raise HTTPException(status_code=404, detail="Onboarding assessment not found")
     return to_api_state(assessment)
+
+
+@app.get("/onboarding-assessment/compatibility")
+def get_onboarding_assessment_compatibility(
+    user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    # BQ-068: presence only. Never expose or infer a v2 axis from legacy track data.
+    return {"legacy_user": has_legacy_onboarding_state(db, user_id)}
 
 
 @app.post("/onboarding-assessment/start")

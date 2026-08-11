@@ -25,6 +25,8 @@ LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
 OnboardingScreen        screens/ (~340)            Five-axis normalized assessment v2: 18+ acknowledgement,
                                                    deterministic chips, skip/exit, progress, and intent handoff
+VoluntaryAssessmentScreen screens/ (~55)            Hidden BQ-068 wrapper: loads/resumes v2 for a legacy opt-in,
+                                                   permits cancel before eligibility, then reuses OnboardingScreen
 ConsolidatedScreen      screens/ (~390)            Home — 8-section feed: financial picture, tappable
                                                    Portfolio Health grid, Arya, calculators, scenarios,
                                                    Learn, and streak/reward (BQ-060/D-111)
@@ -84,7 +86,8 @@ budget.ts               24      fetchBudget() → {income, provenance, goals, di
 income.ts               53      fetchIncome / saveIncome
 goals.ts                45      fetchGoals / createGoal
 onboarding.ts           17      Legacy device-local completion helpers (retained for BQ-068 compatibility)
-onboardingAssessment.ts ~95     Dedicated v2 normalized API client + handled-state outage cache
+onboardingAssessment.ts ~130    Dedicated v2 normalized API client + handled-state outage cache,
+                                legacy-presence compatibility read, and local invite dismissal
 reminders.ts            50      scheduleReminder() — Expo Notifications; credit card due + EMI due day (D-101)
 streaks.ts              32      fetchStreak / recordAppOpen
 surfacing.ts            17      fetchSurfacingCandidates()
@@ -162,7 +165,8 @@ S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is Lo
 - `TeachingWalkthrough` is reused by all three family screens; steps come from `walkthroughSteps.ts`.
 - New-user onboarding v2 never uses `ChatThread` or `/chat`. `RootNavigator` reads backend-authoritative
   assessment state and only falls back to a locally cached handled state during a backend outage. The
-  old `ChatThread` onboarding path remains temporarily for BQ-068 legacy compatibility.
+  old legacy row is read only for presence: any row grants cross-device access without inferring v2 axes.
+  Home offers those users one locally dismissible opt-in route to `VoluntaryAssessmentScreen`.
 - `CalculatorScreen` receives `{ type: CalculatorType; label: string }` as route params and renders the
   appropriate calculator. ToolsScreen is the only entry point (hidden tab pattern).
 - **AsyncStorage keys `hs_emergency_months` / `hs_has_health_ins`** are written by HealthScoreScreen and

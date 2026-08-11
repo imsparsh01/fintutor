@@ -40,6 +40,10 @@ Onboarding v2 UI (BQ-067)
 No baseline assembly, model call, deepen/capture classifier, Portfolio Health math, or legacy-track
 transition runs on these routes. Ordinary /chat may receive only derived presentation style and one
 topic-matched prior-exposure boolean; never the full assessment.
+
+BQ-068 adds a presence-only compatibility read against `onboarding_states`. Any legacy row grandfathers
+app access across devices without exposing, translating, or changing its old track. Legacy users can opt
+into v2 from one dismissible Home invitation; an interrupted v2 row then resumes normally.
 ```
 
 ## Navigation structure
@@ -58,6 +62,7 @@ RootNavigator
               ├── Goals         → GoalsScreen
               ├── Tools         → ToolsScreen
               └── Chat          → ChatScreen
+              └── Assessment    → VoluntaryAssessmentScreen (hidden legacy opt-in route)
 ```
 
 ## Key design constraints (affect every build task)

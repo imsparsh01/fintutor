@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BACKEND_URL } from './backend';
 
 const HANDLED_CACHE_PREFIX = 'fintutor:onboarding_v2_handled:';
+const LEGACY_INVITE_DISMISSED_PREFIX = 'fintutor:onboarding_v2_invite_dismissed:';
 
 export const assessmentQuestions = [
   'immediate_intent',
@@ -65,6 +66,20 @@ export function getAssessment(userId: string): Promise<AssessmentState> {
   return request('/onboarding-assessment', userId);
 }
 
+export async function getLegacyCompatibility(userId: string): Promise<boolean> {
+  let response: Response;
+  try {
+    response = await fetch(
+      `${BACKEND_URL}/onboarding-assessment/compatibility?user_id=${encodeURIComponent(userId)}`,
+    );
+  } catch {
+    throw new AssessmentApiError('FinTutor could not reach the server.', null);
+  }
+  if (!response.ok) throw new AssessmentApiError('Compatibility state could not be read.', response.status);
+  const body = (await response.json()) as { legacy_user?: boolean };
+  return body.legacy_user === true;
+}
+
 export function startAssessment(userId: string): Promise<AssessmentState> {
   return request('/onboarding-assessment/start', userId, {
     method: 'POST',
@@ -103,4 +118,12 @@ export async function hasHandledAssessmentCache(userId: string): Promise<boolean
 
 export function cacheHandledAssessment(userId: string): Promise<void> {
   return AsyncStorage.setItem(`${HANDLED_CACHE_PREFIX}${userId}`, 'true');
+}
+
+export async function hasDismissedLegacyInvite(userId: string): Promise<boolean> {
+  return (await AsyncStorage.getItem(`${LEGACY_INVITE_DISMISSED_PREFIX}${userId}`)) === 'true';
+}
+
+export function dismissLegacyInvite(userId: string): Promise<void> {
+  return AsyncStorage.setItem(`${LEGACY_INVITE_DISMISSED_PREFIX}${userId}`, 'true');
 }

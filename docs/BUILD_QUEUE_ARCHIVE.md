@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-068 — Onboarding v2 legacy compatibility and voluntary reassessment — DONE 12-Aug-2026
+
+Added a presence-only compatibility endpoint so any legacy onboarding row—complete or incomplete—grants
+backend-authoritative access on a second device or after reinstall without translating or mutating its old
+track. The original device flag remains an outage and pre-row dismissal fallback; v2 state stays separate.
+
+Grandfathered users receive one locally dismissible Home invitation to “Personalize how Arya explains
+things.” Opting in opens the existing five-question flow as a hidden voluntary route, supports cancellation
+before eligibility acknowledgement, resumes an interrupted server-side assessment, and removes the invite
+once v2 exists. No progression credit was added while BQ-069 remains blocked. Automated coverage verifies
+legacy presence/non-inference and existing clear-context behavior; mobile browser QA covers invitation,
+voluntary entry/cancel, and remembered dismissal.
+
 ## BQ-067 — Onboarding v2 frontend flow and eligibility acknowledgement — DONE 12-Aug-2026
 
 Replaced the four-track chat onboarding for new users with the approved deterministic five-question flow.

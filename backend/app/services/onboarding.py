@@ -98,6 +98,20 @@ def get_onboarding_state(db: Session, user_id: uuid.UUID) -> dict:
     return _to_dict(state)
 
 
+def has_legacy_onboarding_state(db: Session, user_id: uuid.UUID) -> bool:
+    """Compatibility-only presence check.
+
+    A legacy row is enough to grandfather access regardless of its old track/stage.
+    The row is deliberately not translated into v2 answers or modified here.
+    """
+    return (
+        db.query(OnboardingState.id)
+        .filter(OnboardingState.user_id == user_id)
+        .first()
+        is not None
+    )
+
+
 def _classify_track(message: str) -> str:
     """Degrades to 'unclassified' — the PRD's own safe fallback — on any failure or unconfident
     reply. Never raises."""
