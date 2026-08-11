@@ -31,9 +31,12 @@ const visibleTabIcons: Partial<Record<keyof MainTabsParamList, TabIconName>> = {
 // tabBarButton: () => null keeps them navigable from PortfolioScreen without showing
 // in the tab bar. Calculator is also a hidden screen, entered from ToolsScreen.
 // P8 nav accessibility preserved: all screens remain navigable at all times.
-export function MainTabs() {
+export type OnboardingDestination = 'Consolidated' | 'Portfolio' | 'Tools' | 'Chat';
+
+export function MainTabs({ initialRouteName = 'Consolidated' }: { initialRouteName?: OnboardingDestination }) {
   return (
     <Tab.Navigator
+      initialRouteName={initialRouteName}
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: colors.tutor,

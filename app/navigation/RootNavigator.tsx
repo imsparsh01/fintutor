@@ -5,10 +5,17 @@ import { NotConfiguredScreen } from '../screens/NotConfiguredScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { colors } from '../design/tokens';
 import { AuthProvider } from '../lib/AuthContext';
-import { hasSeenOnboarding, markOnboardingSeen } from '../lib/onboarding';
+import { hasSeenOnboarding } from '../lib/onboarding';
+import {
+  AssessmentApiError,
+  cacheHandledAssessment,
+  getAssessment,
+  hasHandledAssessmentCache,
+  type AssessmentState,
+} from '../lib/onboardingAssessment';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { AuthStack } from './AuthStack';
-import { MainTabs } from './MainTabs';
+import { MainTabs, type OnboardingDestination } from './MainTabs';
 
 // Presentation only — the warm-ledger palette applied to the navigation chrome itself
 // (screen transitions, tab/stack backgrounds) so no white flash shows through between
@@ -25,14 +32,40 @@ const navigationTheme: Theme = {
   },
 };
 
-// D-058: the chip-guided onboarding conversation is the default landing screen after
-// auth, but never a hard gate. `onboardingDone` starts `null` (checking AsyncStorage)
-// to avoid a one-frame flash of the wrong screen.
+// D-119: assessment v2 state is authoritative on the backend. `onboardingDone` starts
+// null while that state is checked, preventing a flash of either onboarding or the app;
+// the device cache is consulted only when the backend cannot be reached.
 function AuthenticatedApp({ userId }: { userId: string }) {
   const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
+  const [assessmentState, setAssessmentState] = useState<AssessmentState | null>(null);
+  const [destination, setDestination] = useState<OnboardingDestination>('Consolidated');
 
   useEffect(() => {
-    hasSeenOnboarding(userId).then(setOnboardingDone);
+    let active = true;
+    async function resolveOnboarding() {
+      try {
+        const state = await getAssessment(userId);
+        if (!active) return;
+        setAssessmentState(state);
+        setOnboardingDone(state.status === 'handled');
+        if (state.status === 'handled') await cacheHandledAssessment(userId);
+      } catch (error) {
+        if (!active) return;
+        if (error instanceof AssessmentApiError && error.status === 404) {
+          // Preserve access for users who already dismissed the legacy flow. BQ-068
+          // will offer v2 as a voluntary reassessment without inferring any answers.
+          setOnboardingDone(await hasSeenOnboarding(userId));
+          return;
+        }
+        // D-119: backend state is authoritative. The local value is only an outage
+        // fallback for a completion already observed on this device.
+        setOnboardingDone(await hasHandledAssessmentCache(userId));
+      }
+    }
+    resolveOnboarding();
+    return () => {
+      active = false;
+    };
   }, [userId]);
 
   if (onboardingDone === null) return null;
@@ -41,15 +74,17 @@ function AuthenticatedApp({ userId }: { userId: string }) {
     return (
       <OnboardingScreen
         userId={userId}
-        onDone={() => {
-          markOnboardingSeen(userId);
+        initialState={assessmentState}
+        onDone={async (nextDestination) => {
+          await cacheHandledAssessment(userId);
+          setDestination(nextDestination);
           setOnboardingDone(true);
         }}
       />
     );
   }
 
-  return <MainTabs />;
+  return <MainTabs initialRouteName={destination} />;
 }
 
 // First name for the greeting, best-effort from Supabase user metadata, falling back to
@@ -73,6 +108,7 @@ export function RootNavigator() {
   // build — this branch is inert when the env var is absent. Not a product auth path.
   // Read once as a build-constant; hooks below still run unconditionally (Rules of Hooks).
   const devUserId = process.env.EXPO_PUBLIC_DEV_USER_ID;
+  const devShowOnboarding = process.env.EXPO_PUBLIC_DEV_SHOW_ONBOARDING === 'true';
 
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(isSupabaseConfigured);
@@ -97,7 +133,7 @@ export function RootNavigator() {
     return (
       <NavigationContainer theme={navigationTheme}>
         <AuthProvider userId={devUserId} displayName={process.env.EXPO_PUBLIC_DEV_USER_NAME ?? null}>
-          <MainTabs />
+          {devShowOnboarding ? <AuthenticatedApp userId={devUserId} /> : <MainTabs />}
         </AuthProvider>
       </NavigationContainer>
     );

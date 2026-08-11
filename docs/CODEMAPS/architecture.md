@@ -1,4 +1,4 @@
-<!-- Updated: 2026-08-12 | BQ-066 onboarding assessment API -->
+<!-- Updated: 2026-08-12 | BQ-067 onboarding assessment frontend -->
 
 # FinTutor — Architecture Overview
 
@@ -51,14 +51,13 @@ RootNavigator
   │     ├── LoginScreen
   │     └── RegisterScreen
   └── AuthenticatedApp
-        ├── OnboardingScreen   (first launch; marks seen → goes to MainTabs)
+        ├── OnboardingScreen   (v2 server state; five optional normalized questions)
         └── MainTabs (bottom tabs)
               ├── Consolidated  → ConsolidatedScreen
-              ├── Chat          → ChatScreen
-              ├── Investments   → InvestmentsScreen
-              ├── Loans         → LoansScreen
-              ├── Insurance     → InsuranceScreen
-              └── Budgeting     → BudgetingScreen
+              ├── Portfolio     → PortfolioScreen
+              ├── Goals         → GoalsScreen
+              ├── Tools         → ToolsScreen
+              └── Chat          → ChatScreen
 ```
 
 ## Key design constraints (affect every build task)

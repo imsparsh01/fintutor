@@ -23,7 +23,8 @@ Screen                  File (lines)               Purpose
 NotConfiguredScreen     screens/ (38)              Supabase env vars absent
 LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
-OnboardingScreen        screens/ (127)             Chip-guided 4-track conversation (D-082/D-084)
+OnboardingScreen        screens/ (~340)            Five-axis normalized assessment v2: 18+ acknowledgement,
+                                                   deterministic chips, skip/exit, progress, and intent handoff
 ConsolidatedScreen      screens/ (~390)            Home — 8-section feed: financial picture, tappable
                                                    Portfolio Health grid, Arya, calculators, scenarios,
                                                    Learn, and streak/reward (BQ-060/D-111)
@@ -75,14 +76,15 @@ TabIcon                     components/ (~180) Five code-native primary-nav glyp
 ```
 File                    Lines   Purpose
 ────────────────────────────────────────────────────────────────────────────
-backend.ts              17      Base URL (EXPO_PUBLIC_BACKEND_URL ?? localhost:8000)
+backend.ts              17      Shared base URL (EXPO_PUBLIC_BACKEND_URL ?? localhost:8000)
 chat.ts                 78      sendChatMessage() — POST /chat wrapper; onboarding fields
 holdings.ts             74      fetchHoldings / createHolding / updateHolding / deleteHolding
 consolidated.ts         30      fetchConsolidated() → {families, totals, metadata}
 budget.ts               24      fetchBudget() → {income, provenance, goals, discretionary, taxRoom}
 income.ts               53      fetchIncome / saveIncome
 goals.ts                45      fetchGoals / createGoal
-onboarding.ts           17      hasSeenOnboarding / markOnboardingSeen (AsyncStorage)
+onboarding.ts           17      Legacy device-local completion helpers (retained for BQ-068 compatibility)
+onboardingAssessment.ts ~95     Dedicated v2 normalized API client + handled-state outage cache
 reminders.ts            50      scheduleReminder() — Expo Notifications; credit card due + EMI due day (D-101)
 streaks.ts              32      fetchStreak / recordAppOpen
 surfacing.ts            17      fetchSurfacingCandidates()
@@ -158,8 +160,9 @@ S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is Lo
 - `HoldingEditModal` is driven entirely by `CHARACTERISTICS_SCHEMA[product_type]` — adding a new type only
   requires adding an entry there.
 - `TeachingWalkthrough` is reused by all three family screens; steps come from `walkthroughSteps.ts`.
-- `ChatThread` handles both the general Chat tab and the onboarding conversation — distinguished by the
-  `onboarding` prop which controls Arya header visibility and sets `onboarding: true` in the POST /chat body.
+- New-user onboarding v2 never uses `ChatThread` or `/chat`. `RootNavigator` reads backend-authoritative
+  assessment state and only falls back to a locally cached handled state during a backend outage. The
+  old `ChatThread` onboarding path remains temporarily for BQ-068 legacy compatibility.
 - `CalculatorScreen` receives `{ type: CalculatorType; label: string }` as route params and renders the
   appropriate calculator. ToolsScreen is the only entry point (hidden tab pattern).
 - **AsyncStorage keys `hs_emergency_months` / `hs_has_health_ins`** are written by HealthScoreScreen and

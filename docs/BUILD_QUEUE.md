@@ -16,12 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-067 — Onboarding v2 frontend flow and eligibility acknowledgement
-
-Traces to D-118/D-119. Replace the four starter tracks for new users with the five-question chip-assisted
-flow, 18+ acknowledgement, per-question/global skip, clear progress/exit states, tailored non-financial
-navigation handoff, and backend-authoritative cross-device completion with local cache fallback.
-
 ### BQ-068 — Onboarding v2 legacy compatibility and voluntary reassessment
 
 Traces to D-119. Grandfather legacy users, infer no v2 answers, preserve old rows through compatibility,

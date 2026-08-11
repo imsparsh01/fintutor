@@ -12,6 +12,20 @@
 
 ---
 
+## BQ-067 — Onboarding v2 frontend flow and eligibility acknowledgement — DONE 12-Aug-2026
+
+Replaced the four-track chat onboarding for new users with the approved deterministic five-question flow.
+The screen now includes the 18+ acknowledgement, normalized single- and multi-select answers, mutually
+exclusive exposure sentinels, per-question skip, global exit, visible progress, retry-safe error states,
+and a Discovering-stage closing explanation. Immediate intent produces only a clearly attributed,
+non-financial handoff to Home, Portfolio, Tools, or Arya.
+
+`RootNavigator` now reads backend assessment state before routing, resumes the authoritative current
+question across devices, and caches only an already-observed handled state for temporary backend outages.
+The assessment client calls only the dedicated normalized BQ-066 routes; no raw dialogue or chat pipeline
+is involved. A development-only preview switch was added for onboarding QA. Legacy grandfathering and
+voluntary reassessment remain isolated in BQ-068.
+
 ## BQ-066 — Onboarding v2 API and minimum-context Arya integration — DONE 12-Aug-2026
 
 Added dedicated normalized assessment endpoints for read/start, answer, per-question skip, global handle,

@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+export const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
 
 export async function pingBackendHealth(): Promise<{ ok: boolean; detail: string }> {
   try {
