@@ -86,8 +86,11 @@ rewardFacts.ts          9       Curated mechanism-fact array for app-open reward
 taxSavingRoom.ts        24      fetchTaxSavingRoom()
 loanVsInvest.ts         30      fetchLoanVsInvest()
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
-healthScore.ts          60      computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
+healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
+                                80C (taxUtil) reads ppf_epf.annual_contribution + annualised insurance premium.
+                                D-109: a premium with no recognised premium_frequency is EXCLUDED, not read as
+                                monthly — diverges from tax_saving_room.py on purpose; see KNOWN_LIMITATIONS.
 concentration.ts        55      computeCategoryConcentration(holdings) → {totalFunds, categories[], largest}.
                                 BQ-061 — counts of equity vs debt MFs. Counts only, never a rupee figure
                                 (D-106 rules that out: a by-value share reads as a weighting verdict).

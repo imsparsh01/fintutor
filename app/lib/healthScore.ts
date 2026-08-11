@@ -4,9 +4,56 @@ import type { Holding } from './holdings';
 // Product types that count as investment outflows for the investment rate sub-score.
 const SIP_TYPES = ['equity_mutual_fund', 'debt_mutual_fund'];
 
-// Product types that contribute to 80C tax utilisation.
-const TAX_80C_TYPES = ['ppf', 'epf'];
+// Product types that contribute to 80C tax utilisation. `ppf_epf` is a single D-013 taxonomy
+// type (see taxonomy.ts INVESTMENT_TYPES) — PPF and EPF are distinguished by the
+// `retirement_fund_type` characteristic, not by product_type, and both count toward 80C.
+// Matches backend/app/services/tax_saving_room.py's own 80C filter.
+const TAX_80C_TYPES = ['ppf_epf'];
 const TAX_80C_INSURANCE_TYPES = ['term_insurance', 'endowment_ulip'];
+
+// Cadences recognised for annualising an insurance premium. Deliberately the same set as
+// backend/app/services/budget.py's `_RECURRING_FREQUENCIES`, so the frontend and backend agree
+// on what counts as a stated cadence rather than each accepting its own vocabulary.
+// Note: "half-yearly"/"semi-annual" is NOT here — the backend doesn't recognise it either, and
+// inventing a divisor the backend lacks would make the two 80C figures disagree. Such a premium
+// is excluded (see the Option C rule below), not guessed at.
+const RECURRING_FREQUENCIES = new Set([
+  'monthly', 'month', 'quarterly', 'quarter',
+  'annual', 'annually', 'yearly', 'year', 'weekly', 'week',
+]);
+
+// Annualises a premium from its stated cadence. Mirrors `_to_monthly` in
+// backend/app/services/budget.py, then scales to a year.
+//
+// Returns null when there is no amount or no explicitly recognised cadence. This is the
+// "Option C" rule budget.py already applies to recurring outflows: an amount without a stated
+// cadence is NOT silently read as monthly. It matters here because reading a blank cadence as
+// monthly would multiply an annually-paid premium by 12 and pin `taxUtil` at 100 — overstating
+// a figure the user relies on. Under-counting is the safer failure for this screen, and it
+// matches the rule `investmentRate` already inherits via `budget.recurring_outflows`.
+//
+// This intentionally differs from backend/app/services/tax_saving_room.py, which calls
+// `_to_monthly` bare and so does treat an unrecognised cadence as monthly. The two 80C figures
+// can therefore disagree for a holding with a missing cadence; owner-confirmed as the accepted
+// trade-off, on the reasoning that the conservative reading is the right one to show here.
+function annualisePremium(amount: unknown, frequency: unknown): number | null {
+  // Same NaN guard as scenarios.ts's `num()` — `characteristics` is Record<string, unknown>,
+  // so any field can be absent, a string, or junk.
+  const value = Number(amount);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  if (typeof frequency !== 'string') return null;
+
+  const freq = frequency.trim().toLowerCase();
+  if (!RECURRING_FREQUENCIES.has(freq)) return null;
+
+  if (freq === 'annual' || freq === 'annually' || freq === 'yearly' || freq === 'year') {
+    return value;
+  }
+  if (freq === 'quarterly' || freq === 'quarter') return value * 4;
+  if (freq === 'weekly' || freq === 'week') return value * 52;
+  // Only 'monthly'/'month' can reach here — the recognised-set gate above rejects everything else.
+  return value * 12;
+}
 
 export interface SubScores {
   investmentRate: number | null;
@@ -71,7 +118,12 @@ export function computeSubScores(
         annual80C += Number(h.characteristics.annual_contribution) || 0;
       }
       if (TAX_80C_INSURANCE_TYPES.includes(h.product_type)) {
-        annual80C += Number(h.characteristics.premium_annual) || 0;
+        // The schema stores `premium` + `premium_frequency` (characteristicsSchema.ts) — there is
+        // no pre-annualised field, so the cadence has to be applied here.
+        annual80C += annualisePremium(
+          h.characteristics.premium,
+          h.characteristics.premium_frequency
+        ) ?? 0;
       }
     }
     taxUtil = Math.min(100, Math.round((annual80C / 150000) * 100));
