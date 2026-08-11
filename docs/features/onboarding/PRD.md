@@ -1,4 +1,7 @@
-# Onboarding — structured conversation flow PRD (CONFIRMED — build-ready, D-084)
+# Onboarding — legacy four-track structured conversation PRD (SHIPPED; SUPERSEDED FOR NEW USERS BY D-118/D-119)
+
+> Historical implementation reference only. D-118/D-119 replace the four-track product flow with
+> `ASSESSMENT_V2.md`. D-082's ungated structured-flow and fail-safe principles survive.
 
 > Piloting the `docs/features/<slug>/` convention (D-082). Open Question #1 resolved (D-083); the stage/path
 > map, persisted-state shape, and fail-safe mechanics below are **confirmed as proposed (D-084)**, no

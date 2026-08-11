@@ -235,3 +235,12 @@
   platform for hosting+auth. Java rejected for backend (boilerplate + weaker AI ecosystem). Remaining
   open: specific managed platform, API key, compliance stance.
 - v0.1 (22-Jul-2026) — Spec created. MVP scope, philosophy, architecture locked. Stack + compliance open.
+
+- v3.2 (04-Aug-2026) — **Gamification/engagement layer added to MVP scope (D-060, D-061).** New §4 item
+  9: Duolingo-style engagement mechanics (streaks, variable reward, Hook Loop) adopted in full (D-060) — a
+  real scope increase (trigger 5), explicitly recorded as running counter to P4's start-strict default
+  rather than a clean application of it. Bounded by D-061: game elements may react to app behavior but
+  never to the user's real financial data — an interpretation of P6 extended into gamification design for
+  the first time. Two other candidate principles from the same session — gated feature-unlock sequencing,
+  social/group stakes — were NOT adopted; both already contradict standing decisions (D-058, §5) and
+  needed no new decision. Scope edit deliberately batched rather than applied incrementally per cluster.

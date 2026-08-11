@@ -56,10 +56,11 @@ user's own money — never advises, only educates so the user makes their own in
   afterthought bolted on before launch. See D-010.
 
 ## 3. Target user
-People beginning or actively building their financial understanding: students, recent graduates and
+People beginning or actively building their financial understanding: adult students, recent graduates and
 early-career earners, and working professionals with up to roughly ten years of experience. Approximately
-ages 18–32 is the product-design and marketing audience, never an access gate. Experienced/sophisticated
-investors are not the target. The shared primary moment remains "financially unmanaged but willing" — from
+ages 18–32 is the product-design and marketing audience. Initial release is 18+ with an eligibility
+acknowledgement before onboarding (D-119); age does not become a personalization score or public label.
+Experienced/sophisticated investors are not the target. The shared primary moment remains "financially unmanaged but willing" — from
 learning before regular income through managing a growing mix of income, goals, holdings, insurance, debt,
 and tax context. See D-114, which supersedes D-053/D-054's narrower founding-segment direction.
 
@@ -294,6 +295,11 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.2 (12-Aug-2026) — **D-118/D-119 onboarding v2 contract and privacy/persistence boundary approved.**
+  Initial release is 18+; the five optional axes store only normalized categories in a separate versioned
+  assessment table; raw dialogue is not persisted; backend completion is cross-device authoritative; and
+  legacy users are grandfathered without inferred answers or forced reassessment. This authorises bounded
+  onboarding implementation, not the broader progression event ledger or final D-010 privacy policy.
 - v4.1 (12-Aug-2026) — **Target audience and progression direction updated (D-114); standing execution-agent
   authorisation adopted (D-115).** §3 now covers students through working professionals with roughly ten
   years' experience (approximately 18–32 as audience, never access gate), superseding D-053/D-054's narrower
@@ -357,11 +363,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   session, self-authored and vendored categories, this one a vendored frontend design-taste skill,
   explicit-ask only) as available inspiration for when the aesthetic layer is actually designed. Not a
   product decision — proposed and owner-confirmed before applying, per §8's own edit rule.
-- v3.2 (04-Aug-2026) — **Gamification/engagement layer added to MVP scope (D-060, D-061).** New §4 item
-  9: Duolingo-style engagement mechanics (streaks, variable reward, Hook Loop) adopted in full (D-060) — a
-  real scope increase (trigger 5), explicitly recorded as running counter to P4's start-strict default
-  rather than a clean application of it. Bounded by D-061: game elements may react to app behavior but
-  never to the user's real financial data — an interpretation of P6 extended into gamification design for
-  the first time. Two other candidate principles from the same session — gated feature-unlock sequencing,
-  social/group stakes — were NOT adopted; both already contradict standing decisions (D-058, §5) and
-  needed no new decision. Scope edit deliberately batched rather than applied incrementally per cluster.

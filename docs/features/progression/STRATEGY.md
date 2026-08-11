@@ -56,10 +56,9 @@ is never locked, and explanation depth always remains user-overridable.
 
 1. ~~Level architecture and user-facing naming.~~ **Resolved — D-116.**
 2. ~~Progress-event definitions, weights, caps, and anti-farming rules.~~ **Resolved — D-117.**
-3. **Partially resolved — D-118.** Exact five-question flow, skip semantics, and non-inference legacy
-   experience are settled. Durable persistence, privacy/eligibility, authoritative completion, and legacy
-   progression credit await the Tier-3 package in
-   `../onboarding/BRIEF-assessment-v2-persistence-privacy.md`.
+3. ~~Exact onboarding question flow and migration from the current four-track model.~~ **Resolved —
+   D-118/D-119.** Five-question flow, normalized-only persistence, 18+ eligibility, authoritative
+   completion, and grandfathered non-inference migration are approved.
 4. Placement of level, progress, recap, and profile-coverage surfaces.
 5. Instrumentation, privacy/consent, and the definition of a meaningful learning session.
 6. Paid-tier boundary; “eventual paid conversion” is a metric, not yet a monetisation decision.

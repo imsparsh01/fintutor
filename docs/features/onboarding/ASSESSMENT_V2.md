@@ -1,7 +1,6 @@
 # Onboarding assessment v2 — product contract
 
-**Status:** Product flow confirmed by D-118. Implementation is blocked on the Tier-3 persistence/privacy
-package in `BRIEF-assessment-v2-persistence-privacy.md`.
+**Status:** Build-ready. Product flow confirmed by D-118; persistence/privacy package approved in D-119.
 **Audience:** Students through working professionals with roughly ten years of experience; ages 18–32 is
 design context, not a score or public label.
 

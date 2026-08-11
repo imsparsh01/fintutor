@@ -16,22 +16,44 @@ Rules for this file:
 
 ## READY — pick one of these
 
-_(Empty — every decided item has shipped. New items enter here once their decision has an ID in
-`docs/DECISION_LOG.md`.)_
+### BQ-065 — Onboarding v2 persisted assessment foundation
+
+Traces to D-118/D-119. Add the separate versioned normalized assessment model and Alembic migration,
+backend state service, validation/transition tests, and legacy-safe reads. Store no raw answers/dialogue;
+do not modify the meaning of legacy `onboarding_states` columns.
+
+### BQ-066 — Onboarding v2 API and minimum-context Arya integration
+
+Traces to D-118/D-119. Add the normalized question/action/state API, deterministic chip transitions,
+handled/skip semantics, and minimum relevant assessment abstraction in the teaching baseline. Do not run
+holding capture inside assessment v2 and do not send the full profile by default.
+
+### BQ-067 — Onboarding v2 frontend flow and eligibility acknowledgement
+
+Traces to D-118/D-119. Replace the four starter tracks for new users with the five-question chip-assisted
+flow, 18+ acknowledgement, per-question/global skip, clear progress/exit states, tailored non-financial
+navigation handoff, and backend-authoritative cross-device completion with local cache fallback.
+
+### BQ-068 — Onboarding v2 legacy compatibility and voluntary reassessment
+
+Traces to D-119. Grandfather legacy users, infer no v2 answers, preserve old rows through compatibility,
+and add one dismissible “Personalize how Arya explains things” route for voluntary v2 assessment. Verify
+legacy-complete, legacy-incomplete, second-device, reinstall, interruption, and clear-context paths.
 
 ---
 
 ## BLOCKED — do not start
 
-### BQ-064 — Financial learning progression system — TOP PRIORITY, BLOCKED
+### BQ-069 — Progression event ledger and rebuildable summary — TOP PRIORITY, BLOCKED
 
-Traces to D-114. Do not build yet. Level architecture/naming is resolved in D-116 and event rules are
-resolved in D-117. D-118 resolves the five-question product flow and non-inference legacy experience.
-The remaining pre-build hard stop is owner approval of onboarding v2's persistence/privacy/eligibility,
-authoritative-completion, and legacy-credit package in
-`docs/features/onboarding/BRIEF-assessment-v2-persistence-privacy.md`.
-Once resolved, replace this umbrella item with bounded build items rather than implementing the whole
-system in one session.
+Traces to D-114/D-116/D-117. Do not build until the instrumentation/privacy package settles event-ledger
+schema, timestamps/day boundaries, consent, retention/deletion, rebuild/version rules, and historical
+credit. D-119 approves onboarding assessment storage only—not this broader behavior ledger.
+
+### BQ-070 — Progression surfaces and placement — TOP PRIORITY, BLOCKED
+
+Traces to D-114/D-116. Await the placement decision for stage, continuous progress, attribution, recap,
+profile coverage, and Expanding milestones, plus BQ-069's approved data contract.
 
 ---
 

@@ -1,6 +1,6 @@
 # Critical brief — assessment v2 persistence, privacy, eligibility, and migration
 
-**Status:** OWNER DECISION REQUIRED before implementation.
+**Status:** APPROVED IN FULL — D-119. Implementation may proceed through the bounded queue items.
 **Why Tier 3:** new durable personal-context schema; external-model data boundary; retention/deletion;
 populated-state migration; legal/age eligibility.
 
@@ -43,8 +43,7 @@ Approve the following as one coherent boundary:
 - **Infer from legacy records:** rejected; old tracks cannot truthfully populate five independent axes.
 - **Mandatory re-onboarding:** rejected; contradicts the ungated experience and creates disclosure pressure.
 
-## Owner response needed
+## Owner response — RESOLVED
 
-“Approve the recommended package” is sufficient. Any change to eligibility, stored values, Arya exposure,
-legacy credit, or lifecycle should be stated explicitly because those choices alter the implementation
-and compliance boundary.
+The owner approved the recommended package without changes on 12-Aug-2026. Any future change to
+eligibility, stored values, Arya exposure, legacy credit, or lifecycle is a new Tier-3 decision.

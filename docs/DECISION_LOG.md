@@ -17,50 +17,6 @@
 
 ---
 
-### D-095 — Local web-preview infrastructure to verify the D-094 rebuild (CORS + dev bypass)
-- **Tier:** mixed. The CORS backend change was explicitly owner-approved in conversation; the frontend dev
-  aids are Tier-1 dev-infrastructure, env-gated and inert in a real build. Added FastAPI `CORSMiddleware`
-  (localhost origins only) so the browser preview can reach the backend; fixed `EXPO_PUBLIC_BACKEND_URL`
-  (blank → `http://localhost:8000`, the cause of the "Unexpected token '<'" errors — empty string defeated
-  the `??` fallback); added an env-gated dev auth bypass (`EXPO_PUBLIC_DEV_USER_ID`) + `displayName` so the
-  preview renders inner screens without a password. **Cleanup owed before any non-dev deploy:** tighten CORS
-  to real origins, leave the dev env vars unset (real login flow is unchanged and default). Full write-up:
-  `docs/decisions/D-095-local-preview-infrastructure.md`.
-- **Date:** 10-Aug-2026
-
-### D-094 — Full mockup-match rebuild authorised: scope expanded beyond D-093's reskin-only grant
-- **Tier:** 3, owner-decided directly in conversation. **Extends D-093.** Authorises bringing the running
-  app into line with the v1 mockups across visual style AND workflow — not just the reskin of existing
-  screens D-093 permitted. Owner now owns the boundary crossings D-093 reserved: new dependencies
-  (`expo-font` + the drawn Google Fonts, `react-native-reanimated`), new screens/flows (onboarding chip
-  conversation, wired teaching walkthrough, engagement surfaces), and workflow changes to match Flows
-  01–07. **Still NOT authorised, flagged not absorbed:** backend/schema changes (hard stop, unchanged); the
-  reconciliation UI (no mockup drawn — cannot build what isn't designed); BQ-052's Tier-3 ESOP-block
-  wording (owner still owes it, agents leave existing wording untouched). Concern recorded: authorised off
-  a desktop RN-Web preview that is not the real mobile target, with drawn fonts not yet installed — owner
-  chose full rebuild over diagnosing first, knowingly. Full write-up:
-  `docs/decisions/D-094-full-mockup-match-rebuild-authorised.md`.
-- **Date:** 10-Aug-2026
-
-### D-106 — Feature expansion sub-decisions round 2: 5-tab nav, Health Score formula, scenario priority, portfolio overlap approach
-- **Tier:** Mixed. Nav = 5 tabs (Home · Portfolio · Goals · Tools · Chat) — existing Invest/Loans/Insure/Budget tabs become stack screens accessible from Portfolio tab. Health Score formula approved: 4 sub-scores averaged (Investment rate, Insurance, Emergency buffer, Tax utilisation) with coverage-breadth framing. Scenario batch 1 = S-05/03/06/07; S-01 uses user-set corpus target; S-04 parked (schema change). Portfolio overlap = Category concentration indicator (no scheme data, no external API). Full write-up: `docs/decisions/D-106-feature-expansion-sub-decisions-round2.md`.
-- **Date:** 11-Aug-2026
-
-### D-105 — Feature expansion sub-decisions round 1: Arya persona, calculator batch 1, tax approval, Health Score display
-- **Tier:** Mixed (3 for persona/P2 ruling; 1 for calculator priority; hard stop resolved for C-16/C-23). Persona = "Arya" (replaces Ankur). Calculator batch 1: SIP goal planner, Home loan EMI, Inflation impact, Step-up SIP, CAGR backward (C-04/10/17/22/24). C-16 income tax + C-23 HRA both approved as mechanism comparisons with D-091 "what we won't say" framing. Health Score display = single 0-100 (NW-style); "scoring formula still TBD in next decision." Full write-up: `docs/decisions/D-105-feature-expansion-sub-decisions-round1.md`.
-- **Date:** 11-Aug-2026
-
-### D-104 — Competitive feature expansion: scope confirmed from Richify + Novelty Wealth analysis
-- **Tier:** 3, owner-decided directly in conversation. Eight MVP feature areas confirmed (Financial Health Score, named persona, scenarios, 21 new calculators, portfolio overlap, Portfolio screen restructure, Goals screen restructure, Home restructure). Account Aggregator explicitly post-MVP. Mascot/Ankur removal confirmed → BQ-053 READY. "Nothing builds until each area's blocking sub-decision is logged — see BUILD_QUEUE BLOCKED." Full write-up: `docs/decisions/D-104-competitive-scope-confirmed.md`.
-- **Date:** 11-Aug-2026
-
-### D-103 — ESOP "what we won't say" block: offer half added (resolves BQ-052)
-- **Tier:** 3, owner-decided directly in conversation. Adds the missing offer half to the ESOP
-  exercise-cost modal's block: "What this screen does give you: the cash cost and the spread — the
-  two numbers that bound your decision regardless of the valuation call." Full write-up:
-  `docs/decisions/D-103-esop-wont-say-offer-half.md`.
-- **Date:** 11-Aug-2026
-
 ### D-102 — Token-lean codemaps added; session-start protocol updated to use them
 - **Tier:** 1. Generates `docs/CODEMAPS/{architecture,backend,frontend,data}.md` covering all 48
   source files in ~2K tokens total; `CLAUDE.md` step 2c now reads `architecture.md` always plus the
@@ -169,4 +125,12 @@
   with five optional self-reported axes, no amounts or public persona, equal progress for answer/skip, and
   no inferred migration. Implementation awaits the Tier-3 persistence/privacy package. Full write-up:
   `docs/features/onboarding/decisions/D-118-five-axis-onboarding-assessment-contract.md`.
+- **Date:** 12-Aug-2026
+
+### D-119 — Assessment v2 persistence, privacy, eligibility, and migration package approved
+- **Tier:** 3, owner-approved. “Store only normalized category codes and structural completion state—never
+  raw answers or dialogue.” Approves 18+ initial release, a separate versioned assessment table,
+  minimum-context Arya exposure, backend-authoritative completion, user control/deletion, and
+  grandfathered non-inference migration. Full write-up:
+  `docs/features/onboarding/decisions/D-119-assessment-v2-persistence-privacy-package.md`.
 - **Date:** 12-Aug-2026
