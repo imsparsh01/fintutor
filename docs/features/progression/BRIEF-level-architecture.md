@@ -1,6 +1,6 @@
 # Executive brief — What should a FinTutor level mean?
 
-**Status:** Owner decision required before the progression PRD or schema can be finalised.
+**Status:** RESOLVED — Path B approved in D-116.
 **Traces to:** D-114 / BQ-064
 **Prepared:** 12-Aug-2026
 
@@ -100,8 +100,7 @@ event ledger plus a rebuildable user-progress summary—not frontend counters an
 results, Portfolio Health values, or product choices. The durable schema, retention, authentication, and
 migration package remains a later Tier-3 approval after event rules are drafted.
 
-## Recommendation
+## Resolution
 
-Approve **Path B**, including the five-stage journey model and the meaning/guardrails above. Treat the five
-names as approved working names unless the owner changes them now; visual identity and microcopy can be
-designed without reopening the architecture.
+Owner approved **Path B**, including the five-stage journey model, meaning, guardrails, and working names.
+Full decision: `decisions/D-116-five-stage-learning-journey.md`.

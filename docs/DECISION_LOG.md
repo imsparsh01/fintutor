@@ -149,3 +149,10 @@
   primary agent’s integration/review responsibility. Full write-up:
   `docs/decisions/D-115-standing-execution-agent-authorisation.md`.
 - **Date:** 12-Aug-2026
+
+### D-116 — Five-stage learning journey adopted
+- **Tier:** 3, owner-decided. “You have meaningfully explored more of FinTutor, across more kinds of
+  learning activity and over time.” Adopts Discovering → Exploring → Connecting → Deepening → Expanding,
+  with continuous progress backed by Explore/Model/Reflect/Return behavior. Full write-up:
+  `docs/features/progression/decisions/D-116-five-stage-learning-journey.md`.
+- **Date:** 12-Aug-2026

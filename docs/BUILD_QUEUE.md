@@ -25,10 +25,11 @@ _(Empty — every decided item has shipped. New items enter here once their deci
 
 ### BQ-064 — Financial learning progression system — TOP PRIORITY, BLOCKED
 
-Traces to D-114. Do not build yet. Blocked on the first three executive sub-decisions in
-`docs/features/progression/STRATEGY.md`: level architecture/naming; event weights/caps/anti-farming; and
-the exact onboarding flow/migration from the current four-track model. Once resolved, replace this umbrella
-item with bounded build items rather than implementing the whole system in one session.
+Traces to D-114. Do not build yet. Level architecture/naming is resolved in D-116. Remaining blockers from
+`docs/features/progression/STRATEGY.md`:
+event weights/caps/anti-farming and the exact onboarding flow/migration from the current four-track model.
+Once resolved, replace this umbrella item with bounded build items rather than implementing the whole
+system in one session.
 
 ---
 
