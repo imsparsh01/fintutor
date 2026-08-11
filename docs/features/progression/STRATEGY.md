@@ -1,8 +1,8 @@
 # Financial learning progression — executive strategy register
 
 **Priority:** Top-level product strategy; resolve before implementation or lower-priority feature expansion.
-**Status:** Direction confirmed in D-114; five-stage journey confirmed in D-116; build blocked pending the
-remaining sub-decisions below.
+**Status:** Direction confirmed in D-114; five-stage journey confirmed in D-116; event rules confirmed in
+D-117; build blocked pending the remaining sub-decisions below.
 **Working label only:** “financial learning progression” is an internal description, not a decided user-facing name.
 
 ## Product promise
@@ -55,7 +55,7 @@ is never locked, and explanation depth always remains user-overridable.
 ## Remaining executive decisions — resolve in order
 
 1. ~~Level architecture and user-facing naming.~~ **Resolved — D-116.**
-2. Progress-event definitions, weights, caps, and anti-farming rules.
+2. ~~Progress-event definitions, weights, caps, and anti-farming rules.~~ **Resolved — D-117.**
 3. Exact onboarding question flow and migration from the current four-track model.
 4. Placement of level, progress, recap, and profile-coverage surfaces.
 5. Instrumentation, privacy/consent, and the definition of a meaningful learning session.

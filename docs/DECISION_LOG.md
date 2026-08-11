@@ -156,3 +156,10 @@
   with continuous progress backed by Explore/Model/Reflect/Return behavior. Full write-up:
   `docs/features/progression/decisions/D-116-five-stage-learning-journey.md`.
 - **Date:** 12-Aug-2026
+
+### D-117 — Learning progression event rules v1
+- **Tier:** 2, REVIEW-FLAGGED; decided autonomously while pre-build and reversible. “Context disclosure is
+  never rewarded by amount, completeness, financial value, or sensitivity.” Sets deterministic event
+  weights, a 60-point repeatable daily cap, breadth/return-day gates, and open-ended Expanding milestones.
+  Full write-up: `docs/features/progression/decisions/D-117-learning-progression-event-rules-v1.md`.
+- **Date:** 12-Aug-2026
