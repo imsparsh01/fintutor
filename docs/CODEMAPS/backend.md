@@ -1,4 +1,4 @@
-<!-- Generated: 2026-08-11 | Files scanned: 31 backend files | Token estimate: ~600 -->
+<!-- Updated: 2026-08-12 | BQ-065 onboarding assessment foundation -->
 
 # FinTutor — Backend Codemap
 
@@ -58,6 +58,10 @@ services/goals.py (55)          CRUD + earmarked_amount linking to holdings.
 services/onboarding.py (242)    start_or_resume() / record_turn() / build_onboarding_instruction()
                                  Track: fresh_starter | reactive_dabbler | habit_former | unclassified
                                  Stage: intro → sequencing → mechanism → reflect → gapscan → complete
+services/onboarding_assessment.py
+                                 Versioned v2 assessment state: start/get, ordered normalized answer/skip,
+                                 global handle, clear-context, idempotent retry, row locking/concurrent start.
+                                 No raw text and no legacy-track inference. API wiring is BQ-066.
 services/teaching.py (48)       ask_teaching_engine() — single Anthropic API call (claude-3-5-sonnet).
                                  Raises TeachingEngineNotConfigured if ANTHROPIC_API_KEY unset.
 services/holding_capture_classifier.py (139)  classify_holding_capture() — keyword-match heuristic;
@@ -84,6 +88,8 @@ Goal              goals table       — target_amount, target_date, category, fu
 DiscretionaryCategory               — label, planned_amount
 StreakState       streak_states     — current_streak, longest_streak, last_active_date
 OnboardingState   onboarding_states — track, stage, turns_in_stage (one row per user)
+OnboardingAssessment onboarding_assessments — versioned normalized five-axis context, structural
+                                      question/status state, eligibility/handled/clear timestamps
 ```
 
 No FK to a Users table (D-043 — Supabase auth handles identity; the DB is data-only).
@@ -93,5 +99,6 @@ No FK to a Users table (D-043 — Supabase auth handles identity; the DB is data
 ```
 backend/app/core/config.py (15)  Reads DATABASE_URL, ANTHROPIC_API_KEY from env.
 backend/app/db/session.py (27)   SQLAlchemy engine + session factory + Base.
+backend/alembic/                 Linear Postgres migration chain; BQ-065 head is `b8f25a9d4c31`.
 backend/app/main.py:53           CORSMiddleware — localhost only (D-095, dev-only, tighten before deploy).
 ```

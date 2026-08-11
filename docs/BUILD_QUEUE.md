@@ -16,12 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-065 — Onboarding v2 persisted assessment foundation
-
-Traces to D-118/D-119. Add the separate versioned normalized assessment model and Alembic migration,
-backend state service, validation/transition tests, and legacy-safe reads. Store no raw answers/dialogue;
-do not modify the meaning of legacy `onboarding_states` columns.
-
 ### BQ-066 — Onboarding v2 API and minimum-context Arya integration
 
 Traces to D-118/D-119. Add the normalized question/action/state API, deterministic chip transitions,

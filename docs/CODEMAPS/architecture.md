@@ -1,4 +1,4 @@
-<!-- Generated: 2026-08-11 | Files scanned: 48 source files | Token estimate: ~400 -->
+<!-- Updated: 2026-08-12 | BQ-065 onboarding assessment foundation -->
 
 # FinTutor — Architecture Overview
 
@@ -55,3 +55,5 @@ RootNavigator
 - **P11 (D-088)**: teaching copy uses `font.tutor` (Newsreader); UI chrome uses `font.ui` (IBM Plex).
 - **D-022**: zero conversation memory per call (Anthropic stateless). D-085 narrows one exception for onboarding.
 - **D-078**: holding proposals are never auto-saved; user must confirm via POST /holdings.
+- **D-119**: onboarding v2 persists normalized category codes only in a separate versioned table;
+  legacy four-track rows keep their original meaning. API/frontend integration follows in BQ-066/067.

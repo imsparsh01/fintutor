@@ -1,10 +1,11 @@
-<!-- Generated: 2026-08-11 | Files scanned: 6 model files | Token estimate: ~300 -->
+<!-- Updated: 2026-08-12 | 7 model files | BQ-065 -->
 
 # FinTutor — Data Codemap
 
 ## Database: Supabase (Postgres). ORM: SQLAlchemy.
 
-No migration framework yet — tables created via `Base.metadata.create_all(engine)` at startup.
+Schema changes use the linear Alembic chain in `backend/alembic/versions/`; current head is
+`b8f25a9d4c31` (BQ-065).
 No FK to a Users table (D-043). Auth is Supabase-side; the DB stores data only, keyed by `user_id UUID`.
 
 ## Tables
@@ -52,6 +53,22 @@ onboarding_states
   track           string?  — fresh_starter | reactive_dabbler | habit_former | unclassified
   stage           string?  — intro | sequencing | mechanism | reflect | gapscan | complete
   turns_in_stage  int
+
+onboarding_assessments
+  id                        UUID PK
+  user_id                   UUID indexed (no FK)
+  flow_version              int; UniqueConstraint(user_id, flow_version)
+  status                    in_progress | handled
+  current_question          one of the five normalized axes, nullable when handled
+  immediate_intent          normalized string?
+  earning_context           normalized string?
+  responsibility_context    normalized string?
+  exposure_flags            constrained varchar[]?; only approved generic category codes
+  familiarity               normalized string?
+  eligibility_confirmed_at  timestamptz
+  handled_at / handled_via  timestamptz? / completed | global_exit
+  cleared_at                timestamptz?
+  created_at / updated_at   timestamptz
 ```
 
 ## What goes to the LLM vs. what stays local
@@ -66,6 +83,7 @@ Sent to LLM (via assemble_baseline):
 Never sent to LLM:
   holdings.display_name  (real product/institution name — D-011)
   streak / onboarding state
+  onboarding assessment by default (BQ-066 may send only the minimum relevant normalized abstraction)
   conversation history (D-022 — stateless calls; D-085 narrow exception for onboarding last AI turn)
 ```
 
@@ -75,3 +93,6 @@ Never sent to LLM:
   not in the DB. Adding a field requires no migration.
 - `alias` uniqueness is enforced DB-side (UniqueConstraint + 409 on conflict).
 - No financial computation happens in the DB — all math is in Python services.
+- Assessment v2 has no raw-answer/dialogue column. PostgreSQL checks constrain scalar values, lifecycle
+  consistency, array contents, non-empty exposure answers, and sentinel exclusivity. Legacy
+  `onboarding_states` rows are not read, inferred into v2, or modified by the v2 service.

@@ -12,6 +12,20 @@
 
 ---
 
+## BQ-065 — Onboarding v2 persisted assessment foundation — DONE 12-Aug-2026
+
+Implemented D-118/D-119 as a separate `onboarding_assessments` model and additive Alembic migration,
+leaving the populated legacy `onboarding_states` table untouched. The versioned row stores only approved
+normalized codes plus structural status/question and eligibility/handled/clear timestamps—no raw answer or
+dialogue field. PostgreSQL constraints enforce scalar vocabularies, lifecycle consistency, non-empty
+allowed exposure arrays, and sentinel exclusivity.
+
+Added a backend state service for idempotent start/resume, ordered answers, per-question skip, global
+handle, context clearing without forced redisclosure, deterministic exposure ordering, row locking, and
+PostgreSQL conflict-safe concurrent starts. Twelve built-in-unittest cases cover eligibility, versioning,
+ordered transitions, retries, skips, validation, clearing, and legacy isolation. The migration was applied
+to the configured Supabase development database and verified at Alembic head `b8f25a9d4c31`.
+
 ## BQ-062 — Align strict 80C cadence handling and add six-month conversion — DONE 12-Aug-2026
 
 Implemented D-112 in `healthScore.ts`, `budget.py`, and `tax_saving_room.py`. Both 80C calculations now
