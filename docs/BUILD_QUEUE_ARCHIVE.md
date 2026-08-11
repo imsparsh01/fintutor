@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-063 — Primary navigation iconography and mobile-width correction — DONE 12-Aug-2026
+
+Implements D-113. Added a five-glyph code-native line-icon set (Home, Portfolio, Goals, Tools, Chat),
+active-state tutor-soft treatment, and balanced tab-bar spacing. Hidden destinations now use
+`tabBarItemStyle: { display: 'none' }`, preserving route navigation without reserving width or truncating
+the five visible labels. No dependency added. Verified by TypeScript, Expo web export, a 390×844 visual
+check, and tapping all five tabs to confirm selected state.
+
 ## BQ-060 — Home screen restructure — DONE 12-Aug-2026
 
 Decision D-104’s eight-section Home layout, with the final Health-card interaction and user-facing name

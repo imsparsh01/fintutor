@@ -16,8 +16,11 @@ Rules for this file:
 
 ## READY — pick one of these
 
-_(Empty — every decided item has shipped. New items enter here once their decision has an ID in
-`docs/DECISION_LOG.md`.)_
+### BQ-062 — Align strict 80C cadence handling and add six-month conversion
+
+Implement D-112 in the frontend Portfolio Health calculation and backend tax-saving-room calculation
+together. Missing/unrecognised cadence is excluded in both; recognised six-month cadence annualises ×2.
+Add a cross-implementation regression matrix so accepted labels and results cannot drift.
 
 ---
 

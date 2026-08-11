@@ -6,8 +6,9 @@
 
 ## Navigation: `app/navigation/MainTabs.tsx`
 
-D-106: 5 visible tabs (Home · Portfolio · Goals · Tools · Chat). Former family tabs are hidden
-screens (tabBarButton: () => null) — navigable from PortfolioScreen without showing in tab bar.
+D-106: 5 visible tabs (Home · Portfolio · Goals · Tools · Chat). D-113 adds matching code-native icons
+via `components/TabIcon.tsx`; hidden destinations set both a null tab button and `display: none` item style,
+so they remain navigable without reserving visible tab-bar width.
 CalculatorScreen is also a hidden tab, entered from ToolsScreen via `{ type: CalculatorType; label }`.
 ScenarioScreen follows the same pattern via `{ type: ScenarioType; label }` (BQ-056).
 
@@ -65,6 +66,7 @@ LoanVsInvestModal           components/ (335)  Prepayment vs invest calculator (
 EsopExerciseCostModal       components/ (166)  ESOP exercise cost today (D-066)
 TaxSavingRoomModal          components/ (260)  80C/NPS headroom calculator (D-016)
 StreakBadge                 components/ (32)   Streak counter — behaviour color only (P7)
+TabIcon                     components/ (~180) Five code-native primary-nav glyphs; no icon dependency
 [Mascot deleted — BQ-053]
 ```
 

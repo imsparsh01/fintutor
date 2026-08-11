@@ -17,57 +17,6 @@
 
 ---
 
-### D-087 — P10 added: a real financial figure is never styled by valence
-- **Tier:** 2, owner-confirmed. New principle. Test: "does this styling choice tell the user something is
-  *true*, or something is *good*? ... the second is a verdict delivered by typography and is forbidden."
-  Extends P2's does-not-says test into the visual channel, and covers the quiet case P7 does not: ordinary
-  non-game styling that still encodes a judgement. A goal at 27% "is not failing; it is at 27%." Full
-  write-up: `docs/decisions/D-087-p10-no-valence-styling.md`.
-- **Date:** 10-Aug-2026
-
-### D-088 — P11 added: the tutor's voice has its own typeface
-- **Tier:** 2, owner-confirmed. New principle. Test: can the user tell, "without reading a word of it,"
-  which text is FinTutor explaining versus the app labelling? Makes D-009/D-025's teaching boundary
-  visible without a per-bubble disclaimer. **Scoped to platform system faces** (serif/sans/mono) — the
-  drawn typefaces (Newsreader, IBM Plex) need `expo-font` + Google Fonts packages, a hard-stop dependency
-  decision deliberately split out so the principle isn't blocked on it. Full write-up:
-  `docs/decisions/D-088-p11-tutor-voice-typeface.md`.
-- **Date:** 10-Aug-2026
-
-### D-089 — Empty sections are teaching surfaces: what an empty family section shows
-- **Tier:** 2, owner-confirmed. **Interprets D-076/P8**, REVIEW-FLAGGED per D-020. Fills the empty-state
-  question P8 explicitly declined to design: an empty section shows what lives there as *mechanisms and
-  categories, never products*, plus a declinable walk-through offer and a visibly-secondary manual add.
-  "A section with nothing in it is the single highest-intent teaching moment in the app." Full write-up:
-  `docs/decisions/D-089-empty-sections-are-teaching-surfaces.md`.
-- **Date:** 10-Aug-2026
-
-### D-090 — Teaching moments render as a full-screen walkthrough (fork 1f), with a mandatory P9 guard
-- **Tier:** 2, **REVIEW-FLAGGED**. Owner chose `1f` over the handoff doc's recommended `1e`, deliberately.
-  Adoptable only with a four-part binding P9 guard: skip live on *every* step, nothing unlocks at the end,
-  no comprehension check anywhere, steps freely navigable. "An implementation missing any of these four is
-  not a permitted variant of `1f` — it is the lesson tree P9 forbids." Riskiest fork because its failure
-  mode is drift, not a single bad call. Full write-up:
-  `docs/decisions/D-090-teaching-moment-fullscreen-walkthrough.md`.
-- **Date:** 10-Aug-2026
-
-### D-091 — The "what we won't say" block is adopted as a standing UI pattern
-- **Tier:** 3, owner-decided. Adopted **as drawn**, rewording-per-context explicitly rejected — "a block
-  that reads the same way every time is recognisable as a standing property of the product rather than a
-  caveat attached to one awkward answer." Answers BRIEF-010's "neutrality reads as evasive" risk: converts
-  silence into a stated, bounded position. Must name the specific verdict declined, state what the app
-  will do instead, and never apologise. Full write-up: `docs/decisions/D-091-what-we-wont-say-block.md`.
-- **Date:** 10-Aug-2026
-
-### D-092 — The refusal-before-result meta-statement is dropped; the parallel structure carries neutrality on its own
-- **Tier:** 3, owner-decided. Drops the comparison flow's upfront "I'm not going to tell you which one to
-  do"; retains every structural device (parallel columns, order note, the deciding rate in largest type,
-  "what would make each true," the named third path). Extracted test, reusable: "state the refusal where
-  the neutrality is otherwise invisible; let the structure speak where it is already visible" — which is
-  what reconciles this with D-091 rather than contradicting it. Full write-up:
-  `docs/decisions/D-092-refusal-meta-statement-dropped.md`.
-- **Date:** 10-Aug-2026
-
 ### D-095 — Local web-preview infrastructure to verify the D-094 rebuild (CORS + dev bypass)
 - **Tier:** mixed. The CORS backend change was explicitly owner-approved in conversation; the frontend dev
   aids are Tier-1 dev-infrastructure, env-gated and inert in a real build. Added FastAPI `CORSMiddleware`
@@ -173,4 +122,16 @@
   legible: the user can see the four inputs and enter the exact mechanism behind any one of them rather
   than treating the single number as an unexplained verdict.” Full write-up:
   `docs/decisions/D-111-portfolio-health-home-grid-and-naming.md`.
+- **Date:** 12-Aug-2026
+
+### D-112 — Both 80C calculations use strict cadence handling and recognise six-month premiums
+- **Tier:** 2, owner-confirmed. “Missing or unrecognised cadence is excluded; it is never silently treated
+  as monthly.” Both frontend and backend recognise an explicit six-month cadence as two payments per year.
+  Full write-up: `docs/decisions/D-112-80c-cadence-consistency-and-six-month-conversion.md`.
+- **Date:** 12-Aug-2026
+
+### D-113 — Primary navigation uses five named icons with full-width mobile layout
+- **Tier:** 1, owner-directed. “Hidden navigator destinations occupy no tab-bar layout width.” Adds a
+  coherent code-native icon set without a new dependency. Full write-up:
+  `docs/decisions/D-113-primary-navigation-iconography.md`.
 - **Date:** 12-Aug-2026

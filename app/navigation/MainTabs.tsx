@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
+import { TabIcon, type TabIconName } from '../components/TabIcon';
 import { BudgetingScreen } from '../screens/BudgetingScreen';
 import { CalculatorScreen } from '../screens/CalculatorScreen';
 import { ChatScreen } from '../screens/ChatScreen';
@@ -17,6 +18,14 @@ import type { MainTabsParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
+const visibleTabIcons: Partial<Record<keyof MainTabsParamList, TabIconName>> = {
+  Consolidated: 'home',
+  Portfolio: 'portfolio',
+  Goals: 'goals',
+  Tools: 'tools',
+  Chat: 'chat',
+};
+
 // D-106: 5 visible tabs (Home · Portfolio · Goals · Tools · Chat).
 // Former family tabs (Investments/Loans/Insurance/Budgeting) are now hidden screens —
 // tabBarButton: () => null keeps them navigable from PortfolioScreen without showing
@@ -25,17 +34,25 @@ const Tab = createBottomTabNavigator<MainTabsParamList>();
 export function MainTabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: colors.tutor,
         tabBarInactiveTintColor: colors.inkMuted,
+        tabBarIcon: ({ color, focused }) => {
+          const icon = visibleTabIcons[route.name];
+          return icon ? <TabIcon name={icon} color={color} focused={focused} /> : undefined;
+        },
         tabBarStyle: {
           backgroundColor: colors.canvas,
           borderTopWidth: StyleSheet.hairlineWidth,
           borderTopColor: colors.line,
+          height: 68,
+          paddingTop: 7,
+          paddingBottom: 7,
         },
-        tabBarLabelStyle: { fontFamily: font.ui, fontSize: 11 },
-      }}
+        tabBarItemStyle: { paddingVertical: 1 },
+        tabBarLabelStyle: { fontFamily: font.uiMedium, fontSize: 11 },
+      })}
     >
       {/* ── Visible tabs ──────────────────────────────────────────────── */}
       <Tab.Screen name="Consolidated" component={ConsolidatedScreen} options={{ tabBarLabel: 'Home' }} />
@@ -48,18 +65,46 @@ export function MainTabs() {
       <Tab.Screen
         name="Calculator"
         component={CalculatorScreen}
-        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+        options={{
+          tabBarButton: () => null,
+          tabBarItemStyle: { display: 'none' },
+          tabBarStyle: { display: 'none' },
+        }}
       />
       <Tab.Screen
         name="Scenario"
         component={ScenarioScreen}
-        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+        options={{
+          tabBarButton: () => null,
+          tabBarItemStyle: { display: 'none' },
+          tabBarStyle: { display: 'none' },
+        }}
       />
-      <Tab.Screen name="Investments" component={InvestmentsScreen} options={{ tabBarButton: () => null }} />
-      <Tab.Screen name="Loans" component={LoansScreen} options={{ tabBarButton: () => null }} />
-      <Tab.Screen name="Insurance" component={InsuranceScreen} options={{ tabBarButton: () => null }} />
-      <Tab.Screen name="Budgeting" component={BudgetingScreen} options={{ tabBarButton: () => null }} />
-      <Tab.Screen name="HealthScore" component={HealthScoreScreen} options={{ tabBarButton: () => null }} />
+      <Tab.Screen
+        name="Investments"
+        component={InvestmentsScreen}
+        options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Loans"
+        component={LoansScreen}
+        options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Insurance"
+        component={InsuranceScreen}
+        options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Budgeting"
+        component={BudgetingScreen}
+        options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="HealthScore"
+        component={HealthScoreScreen}
+        options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' } }}
+      />
     </Tab.Navigator>
   );
 }
