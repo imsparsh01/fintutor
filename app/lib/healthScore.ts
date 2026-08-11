@@ -4,27 +4,54 @@ import type { Holding } from './holdings';
 // Product types that count as investment outflows for the investment rate sub-score.
 const SIP_TYPES = ['equity_mutual_fund', 'debt_mutual_fund'];
 
-// Product types that contribute to 80C tax utilisation.
-// 'ppf_epf' is one type in D-013's taxonomy, not two — see app/lib/taxonomy.ts. This read
-// previously matched 'ppf'/'epf', which no holding has ever been, so it never summed anything.
+// Product types that contribute to 80C tax utilisation. `ppf_epf` is a single D-013 taxonomy
+// type (see taxonomy.ts INVESTMENT_TYPES) — PPF and EPF are distinguished by the
+// `retirement_fund_type` characteristic, not by product_type, and both count toward 80C.
+// Matches backend/app/services/tax_saving_room.py's own 80C filter.
 const TAX_80C_TYPES = ['ppf_epf'];
 const TAX_80C_INSURANCE_TYPES = ['term_insurance', 'endowment_ulip'];
 
-// The ₹1.5L statutory 80C cap. Same figure as the backend's _ANNUAL_80C_CAP
-// (backend/app/services/tax_saving_room.py) — if a future budget changes it, both move.
-const ANNUAL_80C_CAP = 150000;
+// Cadences recognised for annualising an insurance premium. Deliberately the same set as
+// backend/app/services/budget.py's `_RECURRING_FREQUENCIES`, so the frontend and backend agree
+// on what counts as a stated cadence rather than each accepting its own vocabulary.
+// Note: "half-yearly"/"semi-annual" is NOT here — the backend doesn't recognise it either, and
+// inventing a divisor the backend lacks would make the two 80C figures disagree. Such a premium
+// is excluded (see the Option C rule below), not guessed at.
+const RECURRING_FREQUENCIES = new Set([
+  'monthly', 'month', 'quarterly', 'quarter',
+  'annual', 'annually', 'yearly', 'year', 'weekly', 'week',
+]);
 
-// Annualises a premium against its free-text `premium_frequency`. Deliberately identical to
-// `_to_monthly(premium, premium_frequency) * 12` in backend/app/services/tax_saving_room.py —
-// that is the app's existing 80C definition (BRIEF-016/D-070) and this screen must not report
-// a different one. The default is copied too: an unrecognised or blank frequency is read as
-// already-monthly, matching backend/app/services/budget.py::_to_monthly.
-function annualisedPremium(amount: unknown, frequency: unknown): number {
-  const value = Number(amount) || 0;
-  const freq = String(frequency ?? '').trim().toLowerCase();
-  if (['annual', 'annually', 'yearly', 'year'].includes(freq)) return value;
-  if (['quarterly', 'quarter'].includes(freq)) return value * 4;
-  if (['weekly', 'week'].includes(freq)) return value * 52;
+// Annualises a premium from its stated cadence. Mirrors `_to_monthly` in
+// backend/app/services/budget.py, then scales to a year.
+//
+// Returns null when there is no amount or no explicitly recognised cadence. This is the
+// "Option C" rule budget.py already applies to recurring outflows: an amount without a stated
+// cadence is NOT silently read as monthly. It matters here because reading a blank cadence as
+// monthly would multiply an annually-paid premium by 12 and pin `taxUtil` at 100 — overstating
+// a figure the user relies on. Under-counting is the safer failure for this screen, and it
+// matches the rule `investmentRate` already inherits via `budget.recurring_outflows`.
+//
+// This intentionally differs from backend/app/services/tax_saving_room.py, which calls
+// `_to_monthly` bare and so does treat an unrecognised cadence as monthly. The two 80C figures
+// can therefore disagree for a holding with a missing cadence; owner-confirmed as the accepted
+// trade-off, on the reasoning that the conservative reading is the right one to show here.
+function annualisePremium(amount: unknown, frequency: unknown): number | null {
+  // Same NaN guard as scenarios.ts's `num()` — `characteristics` is Record<string, unknown>,
+  // so any field can be absent, a string, or junk.
+  const value = Number(amount);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  if (typeof frequency !== 'string') return null;
+
+  const freq = frequency.trim().toLowerCase();
+  if (!RECURRING_FREQUENCIES.has(freq)) return null;
+
+  if (freq === 'annual' || freq === 'annually' || freq === 'yearly' || freq === 'year') {
+    return value;
+  }
+  if (freq === 'quarterly' || freq === 'quarter') return value * 4;
+  if (freq === 'weekly' || freq === 'week') return value * 52;
+  // Only 'monthly'/'month' can reach here — the recognised-set gate above rejects everything else.
   return value * 12;
 }
 
@@ -91,12 +118,15 @@ export function computeSubScores(
         annual80C += Number(h.characteristics.annual_contribution) || 0;
       }
       if (TAX_80C_INSURANCE_TYPES.includes(h.product_type)) {
-        // The schema field is `premium` + `premium_frequency` (characteristicsSchema.ts).
-        // There is no `premium_annual`; reading it always yielded 0.
-        annual80C += annualisedPremium(h.characteristics.premium, h.characteristics.premium_frequency);
+        // The schema stores `premium` + `premium_frequency` (characteristicsSchema.ts) — there is
+        // no pre-annualised field, so the cadence has to be applied here.
+        annual80C += annualisePremium(
+          h.characteristics.premium,
+          h.characteristics.premium_frequency
+        ) ?? 0;
       }
     }
-    taxUtil = Math.min(100, Math.round((annual80C / ANNUAL_80C_CAP) * 100));
+    taxUtil = Math.min(100, Math.round((annual80C / 150000) * 100));
     // Empty holdings array → annual80C=0 → taxUtil=0 (correct: no 80C contributions)
   }
   // holdings === null → API error → null

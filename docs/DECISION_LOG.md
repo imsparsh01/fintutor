@@ -150,3 +150,14 @@
   committing; Test (`/qa`) best-effort for UI changes; Ship stays D-056 direct-merge (no PR). GBrain and
   gstack team mode not adopted. Full write-up: `docs/decisions/D-107-gstack-sprint-methodology.md`.
 - **Date:** 11-Aug-2026
+
+### D-109 — The Health Score's 80C figure excludes a premium with no stated cadence
+- **Tier:** 2, owner-confirmed (escalated under the "calculations users rely on" hard stop). Resolves the
+  BQ-054 `taxUtil`-always-0 defect. The real question was not how to normalise free text — `_to_monthly`
+  already exists — but which of two *disagreeing* precedents to follow when `premium_frequency` is missing:
+  `tax_saving_room.py`'s lenient read-as-monthly, or `budget.py`'s strict Option C. Chose strict, because
+  "the failure modes are not symmetric ... A score that is too low invites the user to look; a score that is
+  falsely maxed tells them to stop looking." Accepted cost, logged in `docs/KNOWN_LIMITATIONS.md`: the Health
+  Score's 80C total and the "Check my 80C room" figure can disagree for a holding with no stated cadence.
+  Full write-up: `docs/decisions/D-109-80c-premium-annualisation-in-health-score.md`.
+- **Date:** 12-Aug-2026

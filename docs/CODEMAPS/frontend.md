@@ -24,7 +24,8 @@ LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
 OnboardingScreen        screens/ (127)             Chip-guided 4-track conversation (D-082/D-084)
 ConsolidatedScreen      screens/ (233)             "Home" tab — net totals + streak + reward surface
-PortfolioScreen         screens/ (104)             Portfolio tab — family nav rows + Health Score entry + BQ-058/061 stubs
+PortfolioScreen         screens/ (~290)            Portfolio tab — family nav rows, Health Score entry,
+                                                   category concentration card (BQ-061). BQ-058 still a stub.
 HealthScoreScreen       screens/ (260)             Hidden tab — 0-100 score + 4 sub-score rows; entered from PortfolioScreen
 GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
                                                    inline create form, insurance coverage summary,
@@ -85,10 +86,14 @@ rewardFacts.ts          9       Curated mechanism-fact array for app-open reward
 taxSavingRoom.ts        24      fetchTaxSavingRoom()
 loanVsInvest.ts         30      fetchLoanVsInvest()
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
-healthScore.ts          116     computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
+healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
-                                taxUtil mirrors the backend's 80C definition (services/tax_saving_room.py) —
-                                keep the two in step; see "Key patterns" below
+                                80C (taxUtil) reads ppf_epf.annual_contribution + annualised insurance premium.
+                                D-109: a premium with no recognised premium_frequency is EXCLUDED, not read as
+                                monthly — diverges from tax_saving_room.py on purpose; see KNOWN_LIMITATIONS.
+concentration.ts        55      computeCategoryConcentration(holdings) → {totalFunds, categories[], largest}.
+                                BQ-061 — counts of equity vs debt MFs. Counts only, never a rupee figure
+                                (D-106 rules that out: a by-value share reads as a weighting verdict).
 scenarios.ts            ~250    BQ-056 scenario maths — derivePrefills(budget,holdings) plus emergencyRunway /
                                 sipIncrease / debtCost / idleCashOpportunity / monthsToTarget. Pure; every rate
                                 is a caller-supplied user input (the app never asserts a return rate).
@@ -153,9 +158,10 @@ S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is Lo
   read by both HealthScoreScreen and GoalsScreen. One answer, two surfaces — do not add a second prompt
   for either question. No vector-icon library is installed: GoalsScreen's goal-type marks are drawn from
   plain Views (rotated squares, a CSS-triangle roof, bordered circles).
-- **80C is computed in two places and they must agree.** `TaxSavingRoomModal` shows the backend's figure
-  (`services/tax_saving_room.py`); `healthScore.ts`'s taxUtil recomputes the same quantity client-side,
-  because `computeSubScores` is a pure sync function and the backend route additionally requires a
-  `tax_regime` input this screen never asks for. `annualisedPremium()` there is a deliberate port of
-  `_to_monthly(premium, premium_frequency) * 12`, unrecognised-frequency default included. Change one
-  side and you must change the other, or the app reports two different 80C numbers.
+- **80C is computed in two places and they deliberately disagree on one edge case.** `TaxSavingRoomModal`
+  shows the backend's figure (`services/tax_saving_room.py`); `healthScore.ts`'s taxUtil recomputes the
+  same quantity client-side, because `computeSubScores` is a pure sync function and the backend route
+  additionally requires a `tax_regime` input this screen never asks for. Per **D-109** the client-side
+  one excludes a premium with no recognised `premium_frequency` rather than reading it as monthly —
+  that divergence is intentional and logged in `docs/KNOWN_LIMITATIONS.md`. Do not "fix" it by making
+  the two match; read D-109 first.

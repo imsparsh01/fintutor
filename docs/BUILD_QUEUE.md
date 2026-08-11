@@ -16,11 +16,8 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-061 — Portfolio overlap indicator (Option A — category concentration)
-**Decision:** D-106 (Option A confirmed: educational category concentration indicator)
-**Scope:** Add a card to PortfolioScreen showing how many equity MFs are in the same broad
-category. No external API, no ISINs, no scheme names. Copy explains what overlap means and
-why it matters (mechanism fact, P2-safe). Wire to existing holdings data (product_type filter).
+_(Empty — every decided item has shipped. New items enter here once their decision has an ID in
+`docs/DECISION_LOG.md`; the two items in BLOCKED below need an owner decision first.)_
 
 ---
 
