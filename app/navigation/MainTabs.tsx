@@ -5,6 +5,7 @@ import { CalculatorScreen } from '../screens/CalculatorScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ConsolidatedScreen } from '../screens/ConsolidatedScreen';
 import { GoalsScreen } from '../screens/GoalsScreen';
+import { HealthScoreScreen } from '../screens/HealthScoreScreen';
 import { InsuranceScreen } from '../screens/InsuranceScreen';
 import { InvestmentsScreen } from '../screens/InvestmentsScreen';
 import { LoansScreen } from '../screens/LoansScreen';
@@ -52,6 +53,7 @@ export function MainTabs() {
       <Tab.Screen name="Loans" component={LoansScreen} options={{ tabBarButton: () => null }} />
       <Tab.Screen name="Insurance" component={InsuranceScreen} options={{ tabBarButton: () => null }} />
       <Tab.Screen name="Budgeting" component={BudgetingScreen} options={{ tabBarButton: () => null }} />
+      <Tab.Screen name="HealthScore" component={HealthScoreScreen} options={{ tabBarButton: () => null }} />
     </Tab.Navigator>
   );
 }

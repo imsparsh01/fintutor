@@ -1,4 +1,4 @@
-<!-- Generated: 2026-08-11 | Files scanned: 54 frontend files | Token estimate: ~750 -->
+<!-- Generated: 2026-08-11 | Files scanned: 56 frontend files | Token estimate: ~800 -->
 
 # FinTutor — Frontend Codemap
 
@@ -20,7 +20,8 @@ LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
 OnboardingScreen        screens/ (127)             Chip-guided 4-track conversation (D-082/D-084)
 ConsolidatedScreen      screens/ (233)             "Home" tab — net totals + streak + reward surface
-PortfolioScreen         screens/ (97)              Portfolio tab — family nav rows + BQ-054/058/061 stubs
+PortfolioScreen         screens/ (104)             Portfolio tab — family nav rows + Health Score entry + BQ-058/061 stubs
+HealthScoreScreen       screens/ (260)             Hidden tab — 0-100 score + 4 sub-score rows; entered from PortfolioScreen
 GoalsScreen             screens/ (43)              Goals tab — placeholder; BQ-059 fills in
 ToolsScreen             screens/ (80)              Tools tab — calculator list grid (5 items, batch 1)
 CalculatorScreen        screens/ (420)             Hidden tab — 5 calculators: C-04/C-10/C-17/C-22/C-24
@@ -76,6 +77,8 @@ rewardFacts.ts          9       Curated mechanism-fact array for app-open reward
 taxSavingRoom.ts        24      fetchTaxSavingRoom()
 loanVsInvest.ts         30      fetchLoanVsInvest()
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
+healthScore.ts          60      computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
+                                computeOverall(scores) → {score,measured}; pure functions, no side effects
 format.ts               3       Currency formatting util
 taxonomy.ts             45      Product-type → family mapping (investments / loans / insurance)
 discretionaryCategories.ts 33   fetchCategories / createCategory

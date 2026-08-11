@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-054 — Financial Health Score (0-100 score + 4 sub-scores) — DONE 11-Aug-2026
+
+Decisions D-105 (display format), D-106 (formula). Built with /office-hours design session + /plan-eng-review
+(11 issues found, 0 critical, all resolved). New: `app/lib/healthScore.ts` (pure `computeSubScores()` +
+`computeOverall()`), `app/screens/HealthScoreScreen.tsx` (hidden tab with inline expanders for the 2
+user-input rows: emergency months + health insurance). Modified: `navigation/types.ts` (added HealthScore
+route), `navigation/MainTabs.tsx` (hidden tab), `PortfolioScreen.tsx` (replaced "coming soon" with Analysis
+section + FamilyRow → HealthScore). Band label: "N of 4 areas measured" (D-010/P10 compliant; valence
+labels from BUILD_QUEUE spec rejected during review). TODOS.md created with 2 items: jest-expo infra +
+BQ-058 store decision. Unblocks BQ-058 and BQ-060.
+
+---
+
 ## BQ-057 — Calculator suite: batch 1 (C-04, C-10, C-17, C-22, C-24) — DONE 11-Aug-2026
 
 Decisions D-105/D-106. Built 5 calculator screens (SIP Goal Planner, Home Loan EMI, Inflation

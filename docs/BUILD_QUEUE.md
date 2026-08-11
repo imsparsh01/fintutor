@@ -16,16 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-054 — Financial Health Score (0-100 score + 4 sub-scores)
-**Decision:** D-105 (display format: single 0-100); D-106 (formula confirmed)
-**Scope:** Build the Health Score screen. Formula confirmed (D-106): 4 sub-scores averaged.
-- Investment rate: (monthly SIP ÷ monthly income) × 10, capped at 100
-- Insurance safety net: 0 (none) / 50 (only health) / 75 (health + term) / 100 (+ riders)
-- Emergency buffer: (emergency_fund_months × 8.33), capped at 100
-- Tax utilisation: (80C_annual ÷ 150000) × 100
-- Overall = simple average of the four; label bands: 0-39 "Getting started" / 40-59 "Building up" / 60-79 "On track" / 80-100 "Strong"
-Display as single 0-100 score + 4 sub-score rows. Wire from PortfolioScreen's "coming soon" card.
-
 ### BQ-056 — Scenario modelling ("What if…" — batch 1)
 **Decision:** D-106 (batch 1 scenarios + S-01 user-set target; S-04 parked)
 **Scope:** Build 4 scenario cards + user-set target (S-01):
@@ -56,10 +46,10 @@ why it matters (mechanism fact, P2-safe). Wire to existing holdings data (produc
 ## BLOCKED — do not start
 
 ### BQ-058 — Portfolio screen restructure (donut chart, sub-scores, trend section)
-**Blocked on:** BQ-054 (must be built and live first — donut needs health sub-scores).
+**Blocked on:** TODOS.md BQ-058 store decision (shared store vs independent fetch — must be decided before building).
 
 ### BQ-060 — Home screen restructure (8-section scrollable layout)
-**Blocked on:** BQ-054 (Health Score card must be built first).
+**Decision needed:** Health Score card wiring to BQ-060's layout (shape TBD).
 
 ---
 

@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "backend",
-      "runtimeExecutable": "/Users/sparshchauhan/Desktop/fintutor/backend/.venv/bin/python3",
+      "runtimeExecutable": "C:\\Users\\sparsh.chauhan\\Desktop\\fintutor\\backend\\.venv\\Scripts\\python.exe",
       "runtimeArgs": [
         "-m",
         "uvicorn",
@@ -12,7 +12,7 @@
         "--port",
         "8000",
         "--app-dir",
-        "/Users/sparshchauhan/Desktop/fintutor/backend"
+        "C:\\Users\\sparsh.chauhan\\Desktop\\fintutor\\backend"
       ],
       "port": 8000
     },
@@ -21,7 +21,7 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "--prefix",
-        "/Users/sparshchauhan/Desktop/fintutor/app",
+        "C:\\Users\\sparsh.chauhan\\Desktop\\fintutor\\app",
         "run",
         "web",
         "--",

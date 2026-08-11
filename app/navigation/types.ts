@@ -24,6 +24,8 @@ export type MainTabsParamList = {
   Loans: undefined;
   Insurance: undefined;
   Budgeting: undefined;
+  // BQ-054: Financial Health Score — entered from PortfolioScreen.
+  HealthScore: undefined;
 };
 
 // BQ-022: each family tab (Investments/Loans/Insurance) is its own small stack —

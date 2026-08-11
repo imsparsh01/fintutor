@@ -23,9 +23,14 @@ export function PortfolioScreen() {
         <FamilyRow label="Budgeting" sub="Income · EMIs · Spending" onPress={() => navigation.navigate('Budgeting')} last />
       </View>
 
+      <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Analysis</Text>
+      <View style={styles.card}>
+        <FamilyRow label="Health Score" sub="Investment rate · Insurance · Emergency buffer · Tax" onPress={() => navigation.navigate('HealthScore')} last />
+      </View>
+
       <View style={styles.comingSoon}>
         <Text style={styles.comingSoonLabel}>Coming soon</Text>
-        <Text style={styles.comingSoonBody}>Asset allocation, financial health score, and portfolio overlap will appear here once built.</Text>
+        <Text style={styles.comingSoonBody}>Asset allocation and portfolio overlap will appear here once built.</Text>
       </View>
     </ScrollView>
   );
