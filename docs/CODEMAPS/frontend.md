@@ -85,8 +85,10 @@ rewardFacts.ts          9       Curated mechanism-fact array for app-open reward
 taxSavingRoom.ts        24      fetchTaxSavingRoom()
 loanVsInvest.ts         30      fetchLoanVsInvest()
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
-healthScore.ts          60      computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
+healthScore.ts          116     computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
+                                taxUtil mirrors the backend's 80C definition (services/tax_saving_room.py) —
+                                keep the two in step; see "Key patterns" below
 scenarios.ts            ~250    BQ-056 scenario maths — derivePrefills(budget,holdings) plus emergencyRunway /
                                 sipIncrease / debtCost / idleCashOpportunity / monthsToTarget. Pure; every rate
                                 is a caller-supplied user input (the app never asserts a return rate).
@@ -151,3 +153,9 @@ S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is Lo
   read by both HealthScoreScreen and GoalsScreen. One answer, two surfaces — do not add a second prompt
   for either question. No vector-icon library is installed: GoalsScreen's goal-type marks are drawn from
   plain Views (rotated squares, a CSS-triangle roof, bordered circles).
+- **80C is computed in two places and they must agree.** `TaxSavingRoomModal` shows the backend's figure
+  (`services/tax_saving_room.py`); `healthScore.ts`'s taxUtil recomputes the same quantity client-side,
+  because `computeSubScores` is a pure sync function and the backend route additionally requires a
+  `tax_regime` input this screen never asks for. `annualisedPremium()` there is a deliberate port of
+  `_to_monthly(premium, premium_frequency) * 12`, unrecognised-frequency default included. Change one
+  side and you must change the other, or the app reports two different 80C numbers.
