@@ -135,3 +135,10 @@
   coherent code-native icon set without a new dependency. Full write-up:
   `docs/decisions/D-113-primary-navigation-iconography.md`.
 - **Date:** 12-Aug-2026
+
+### D-114 — Learning progression strategy adopted; real financial change is never game progress
+- **Tier:** 3, owner-decided. “Actual financial changes remain visible and factual, but never affect XP,
+  levels, streaks, rewards, celebrations, or cosmetic status.” Expands the target direction to students
+  through ~10-year working professionals and establishes learning/activity progression as a top priority.
+  Full write-up: `docs/features/progression/decisions/D-114-learning-progression-strategy-and-path-a-boundary.md`.
+- **Date:** 12-Aug-2026
