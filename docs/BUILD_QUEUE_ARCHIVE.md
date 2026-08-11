@@ -12,6 +12,32 @@
 
 ---
 
+## BQ-061 — Portfolio overlap indicator (Option A — category concentration) — DONE 12-Aug-2026
+
+Decision D-106 Decision 4. New: `app/lib/concentration.ts` (pure `computeCategoryConcentration`).
+Modified: `app/screens/PortfolioScreen.tsx` — adds the card plus the screen's first data fetch, and
+drops "portfolio overlap" from the Coming soon block (asset allocation, BQ-058, still listed).
+
+Held to D-106's constraints exactly: counts only, no rupee figure, no scheme names, no external API.
+The by-value version was not built — a concentration percentage by value reads as a portfolio-weighting
+verdict, which is the advice line. Deliberately labelled "Category concentration", never "overlap", and
+the D-091 block states that true stock-level overlap needs scheme data the app does not have.
+
+**Taxonomy note:** D-106 names the categories "equity/debt/hybrid", but D-013's taxonomy has no hybrid
+fund type — only `equity_mutual_fund` and `debt_mutual_fund`. Only the two that exist are counted;
+`FUND_CATEGORIES` in `concentration.ts` is the one place to add a third if a hybrid type is ever created.
+
+Five render branches, all verified in the web preview against a seeded synthetic dev user:
+multi-category ("3 of 4 funds you hold are equity funds"), single-category (copy switches to "every fund
+you hold is in the same category"), single fund ("1 of 1", singular unit, copy saying the number starts
+meaning something above one), no funds (D-089 teaching surface + Open Investments link), and holdings
+unavailable (distinct wording, and the D-091 block correctly omitted since no number is shown).
+`tsc --noEmit` clean. Seeded test holdings were deleted afterwards; the dev user is back to zero.
+
+**Note for BQ-058:** this adds the first `useFocusEffect` holdings fetch to PortfolioScreen. It is safe
+today because PortfolioScreen and HealthScoreScreen are never focused together, but it does NOT settle
+the TODOS.md shared-store question, which is about health sub-scores diverging between two surfaces.
+
 ## BQ-059 — Goals screen restructure — DONE 12-Aug-2026
 
 Decision D-106 (Goals tab in the 5-tab nav). Replaced the placeholder `GoalsScreen` with four sections:
