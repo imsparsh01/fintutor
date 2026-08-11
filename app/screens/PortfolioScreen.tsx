@@ -6,41 +6,45 @@ import { TeachingBlock } from '../components/TeachingBlock';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { computeCategoryConcentration } from '../lib/concentration';
-import { fetchHoldings } from '../lib/holdings';
+import { loadHealthScoreSnapshot } from '../lib/healthScoreSnapshot';
+import { INSURANCE_TYPES, INVESTMENT_TYPES, LOAN_TYPES } from '../lib/taxonomy';
 import type { ConcentrationSummary } from '../lib/concentration';
+import type { HealthScoreSnapshot } from '../lib/healthScoreSnapshot';
 import type { Holding } from '../lib/holdings';
 import type { MainTabsParamList } from '../navigation/types';
 
 // D-106: Portfolio tab — detailed holdings view. BQ-054 added the Health Score entry;
-// BQ-061 adds the category concentration card. BQ-058 (donut chart + sub-scores) still to come.
+// BQ-061 added category concentration; BQ-058 adds allocation, sub-scores, and trend teaching.
 // Family section navigation rows (Investments, Loans, Insurance, Budgeting) give access to the
 // family holding screens that were previously their own tabs.
 //
-// This screen fetches holdings independently. That is safe today because it is never focused at
-// the same time as HealthScoreScreen (a hidden tab), so there is no double-fetch on one focus
-// event — but it does NOT settle the shared-store question TODOS.md raises for BQ-058, which is
-// about health sub-scores diverging between two surfaces, not about a holdings count.
 export function PortfolioScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
   const { userId } = useAuth();
-  const [holdings, setHoldings] = useState<Holding[] | null>(null);
+  const [snapshot, setSnapshot] = useState<HealthScoreSnapshot | null>(null);
 
   const loadData = useCallback(() => {
     if (!userId) return;
-    fetchHoldings(userId)
-      .then(setHoldings)
-      .catch(() => setHoldings(null));
+    loadHealthScoreSnapshot(userId, true).then(setSnapshot);
   }, [userId]);
 
   useFocusEffect(loadData);
 
+  const holdings = snapshot?.holdings ?? null;
   const concentration = computeCategoryConcentration(holdings);
+  const allocation = computeFamilyAllocation(holdings);
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.heading}>Portfolio</Text>
 
-      <Text style={styles.sectionLabel}>Holdings</Text>
+      <Text style={styles.sectionLabel}>Allocation</Text>
+      <AllocationCard allocation={allocation} onAdd={() => navigation.navigate('Investments')} />
+
+      <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Health coverage</Text>
+      <HealthSummary snapshot={snapshot} onOpen={() => navigation.navigate('HealthScore')} />
+
+      <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Holdings</Text>
       <View style={styles.card}>
         <FamilyRow label="Investments" sub="Mutual funds · EPF · Stocks" onPress={() => navigation.navigate('Investments')} />
         <FamilyRow label="Loans" sub="Home loan · Personal loan · Cards" onPress={() => navigation.navigate('Loans')} />
@@ -48,19 +52,114 @@ export function PortfolioScreen() {
         <FamilyRow label="Budgeting" sub="Income · EMIs · Spending" onPress={() => navigation.navigate('Budgeting')} last />
       </View>
 
-      <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Analysis</Text>
-      <View style={styles.card}>
-        <FamilyRow label="Health Score" sub="Investment rate · Insurance · Emergency buffer · Tax" onPress={() => navigation.navigate('HealthScore')} last />
-      </View>
-
       <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Category concentration</Text>
       <ConcentrationCard summary={concentration} onAddFunds={() => navigation.navigate('Investments')} />
 
-      <View style={styles.comingSoon}>
-        <Text style={styles.comingSoonLabel}>Coming soon</Text>
-        <Text style={styles.comingSoonBody}>Asset allocation will appear here once built.</Text>
+      <View style={styles.trendCard}>
+        <Text style={styles.trendLabel}>Portfolio trend</Text>
+        <Text style={styles.trendTitle}>A trend needs snapshots, not a single balance</Text>
+        <Text style={styles.trendBody}>
+          Today’s holdings show where your records sit now. A real trend would compare the same
+          measure across dates; FinTutor does not store that history yet, so it will not draw a
+          performance line from one point.
+        </Text>
       </View>
     </ScrollView>
+  );
+}
+
+interface AllocationSlice {
+  label: string;
+  count: number;
+  marker: string;
+}
+
+function computeFamilyAllocation(holdings: Holding[] | null): AllocationSlice[] | null {
+  if (holdings === null) return null;
+  const slices = [
+    { label: 'Investments', count: holdings.filter((h) => INVESTMENT_TYPES.includes(h.product_type)).length, marker: colors.ink },
+    { label: 'Loans', count: holdings.filter((h) => LOAN_TYPES.includes(h.product_type)).length, marker: colors.inkSecondary },
+    { label: 'Insurance', count: holdings.filter((h) => INSURANCE_TYPES.includes(h.product_type)).length, marker: colors.tutor },
+  ];
+  return slices.filter((slice) => slice.count > 0);
+}
+
+function AllocationCard({ allocation, onAdd }: { allocation: AllocationSlice[] | null; onAdd: () => void }) {
+  if (allocation === null) {
+    return <View style={[styles.card, styles.plainRow]}><Text style={styles.bodyText}>Your allocation could not be loaded just now.</Text></View>;
+  }
+  const total = allocation.reduce((sum, item) => sum + item.count, 0);
+  if (total === 0) {
+    return (
+      <View style={[styles.card, styles.plainRow]}>
+        <Text style={styles.bodyText}>Add a holding and this view will show how your records divide across investments, loans, and insurance.</Text>
+        <Pressable style={styles.inlineLink} onPress={onAdd}><Text style={styles.linkText}>Add a holding ›</Text></Pressable>
+      </View>
+    );
+  }
+
+  const segments = Array.from({ length: 12 }, (_, index) => {
+    const point = ((index + 0.5) / 12) * total;
+    let running = 0;
+    return allocation.find((slice) => {
+      running += slice.count;
+      return point <= running;
+    }) ?? allocation[allocation.length - 1];
+  });
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.allocationBody}>
+        <View style={styles.donut} accessibilityLabel={`Allocation by record count: ${allocation.map((item) => `${item.label} ${item.count}`).join(', ')}`}>
+          {segments.map((segment, index) => (
+            <View key={index} style={[styles.donutSegment, { backgroundColor: segment.marker, transform: [{ rotate: `${index * 30}deg` }, { translateY: -42 }] }]} />
+          ))}
+          <View style={styles.donutCenter}>
+            <Text style={styles.donutNumber}>{total}</Text>
+            <Text style={styles.donutUnit}>records</Text>
+          </View>
+        </View>
+        <View style={styles.allocationLegend}>
+          {allocation.map((slice) => (
+            <View key={slice.label} style={styles.legendRow}>
+              <View style={[styles.legendMarker, { backgroundColor: slice.marker }]} />
+              <Text style={styles.legendLabel}>{slice.label}</Text>
+              <Text style={styles.legendValue}>{slice.count}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+      <Text style={styles.allocationNote}>By holding records, not rupee value. Each recorded holding counts once.</Text>
+    </View>
+  );
+}
+
+function HealthSummary({ snapshot, onOpen }: { snapshot: HealthScoreSnapshot | null; onOpen: () => void }) {
+  const rows = [
+    ['Investment rate', snapshot?.subScores.investmentRate],
+    ['Insurance', snapshot?.subScores.insurance],
+    ['Emergency buffer', snapshot?.subScores.emergency],
+    ['Tax utilisation', snapshot?.subScores.taxUtil],
+  ] as const;
+  return (
+    <Pressable style={styles.card} onPress={onOpen}>
+      <View style={styles.healthHeader}>
+        <View>
+          <Text style={styles.healthTitle}>Health Score</Text>
+          <Text style={styles.healthMeta}>{snapshot ? `${snapshot.measured} of 4 areas measured` : 'Loading your coverage'}</Text>
+        </View>
+        <Text style={styles.healthScore}>{snapshot?.score ?? '—'}</Text>
+      </View>
+      <View style={styles.scoreGrid}>
+        {rows.map(([label, value]) => (
+          <View key={label} style={styles.scoreCell}>
+            <Text style={styles.scoreCellValue}>{value === undefined || value === null ? '—' : value}</Text>
+            <Text style={styles.scoreCellLabel}>{label}</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.openHealth}>Open the four levers ›</Text>
+    </Pressable>
   );
 }
 
@@ -205,6 +304,73 @@ const styles = StyleSheet.create({
   rowSub: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: 2 },
   chevron: { fontFamily: font.ui, fontSize: 18, color: colors.inkMuted, marginLeft: spacing.sm },
 
+  // ── BQ-058 allocation + health summary
+  allocationBody: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.xl,
+    gap: spacing.xl,
+  },
+  donut: { width: 116, height: 116, alignItems: 'center', justifyContent: 'center' },
+  donutSegment: {
+    position: 'absolute',
+    width: 9,
+    height: 22,
+    borderRadius: radius.pill,
+  },
+  donutCenter: { alignItems: 'center' },
+  donutNumber: { fontFamily: font.monoSemibold, fontSize: 24, color: colors.ink },
+  donutUnit: {
+    fontFamily: font.mono,
+    fontSize: 9,
+    color: colors.inkMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  allocationLegend: { flex: 1, gap: spacing.md },
+  legendRow: { flexDirection: 'row', alignItems: 'center' },
+  legendMarker: { width: 8, height: 8, borderRadius: radius.pill, marginRight: spacing.sm },
+  legendLabel: { flex: 1, fontFamily: font.ui, fontSize: 13, color: colors.inkSecondary },
+  legendValue: { fontFamily: font.mono, fontSize: 14, color: colors.ink },
+  allocationNote: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.line,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontFamily: font.tutor,
+    fontSize: 12,
+    lineHeight: 17,
+    color: colors.inkSecondary,
+  },
+  healthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
+  },
+  healthTitle: { fontFamily: font.uiSemibold, fontSize: 16, color: colors.ink },
+  healthMeta: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: 2 },
+  healthScore: { fontFamily: font.monoSemibold, fontSize: 30, color: colors.ink },
+  scoreGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+  scoreCell: {
+    width: '50%',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.lineSoft,
+  },
+  scoreCellValue: { fontFamily: font.mono, fontSize: 18, color: colors.ink },
+  scoreCellLabel: { fontFamily: font.ui, fontSize: 11, color: colors.inkSecondary, marginTop: 2 },
+  openHealth: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontFamily: font.uiMedium,
+    fontSize: 13,
+    color: colors.tutor,
+  },
+
   // ── BQ-061 concentration card
   plainRow: { padding: spacing.lg },
   bodyText: { fontFamily: font.tutor, fontSize: 14, lineHeight: 20, color: colors.inkSecondary },
@@ -245,13 +411,13 @@ const styles = StyleSheet.create({
   },
   teachingBlock: { marginTop: spacing.lg },
 
-  comingSoon: {
+  trendCard: {
     marginTop: spacing.xxl,
     backgroundColor: colors.tutorSoft,
     borderRadius: radius.lg,
     padding: spacing.lg,
   },
-  comingSoonLabel: {
+  trendLabel: {
     fontFamily: font.mono,
     fontSize: 11,
     letterSpacing: 1,
@@ -259,5 +425,6 @@ const styles = StyleSheet.create({
     color: colors.tutor,
     marginBottom: spacing.xs,
   },
-  comingSoonBody: { fontFamily: font.tutor, fontSize: 15, lineHeight: 22, color: colors.ink },
+  trendTitle: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.ink, marginBottom: spacing.xs },
+  trendBody: { fontFamily: font.tutor, fontSize: 14, lineHeight: 20, color: colors.inkSecondary },
 });

@@ -12,6 +12,25 @@
 
 ---
 
+## BQ-058 — Portfolio screen restructure — DONE 12-Aug-2026
+
+Decision D-106, with the store mechanism resolved by owner-confirmed D-110. Added a detailed Portfolio
+surface with a holding-family allocation donut, the four Health Score sub-scores, the existing category-
+concentration indicator, family navigation, and a portfolio-trend mechanism panel.
+
+Allocation is explicitly by holding-record count, not rupee value: the holdings schema does not provide
+one comparable current-value field across every family, and inventing one would make the chart false.
+The trend panel likewise does not draw a performance line because the app stores no historical snapshots;
+it teaches why a trend needs repeated measurements instead.
+
+Added `app/lib/healthScoreSnapshot.ts`, a lightweight module-level snapshot keyed by user ID. Portfolio
+refreshes it on focus, HealthScoreScreen reuses it, active requests are deduplicated, and local answers
+recompute the shared value immediately. No dependency, provider, backend, or schema change.
+
+Verified with `npx tsc --noEmit` and `git diff --check`. The required gstack plan/review skills were not
+installed at the repository-recorded path on this machine, so the architecture and diff reviews were run
+manually.
+
 ## BQ-061 — Portfolio overlap indicator (Option A — category concentration) — DONE 12-Aug-2026
 
 Decision D-106 Decision 4. New: `app/lib/concentration.ts` (pure `computeCategoryConcentration`).

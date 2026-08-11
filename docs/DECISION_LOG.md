@@ -161,3 +161,9 @@
   Score's 80C total and the "Check my 80C room" figure can disagree for a holding with no stated cadence.
   Full write-up: `docs/decisions/D-109-80c-premium-annualisation-in-health-score.md`.
 - **Date:** 12-Aug-2026
+
+### D-110 — Portfolio and Health Score share a lightweight computed snapshot
+- **Tier:** 2, owner-confirmed. Interprets D-106. "It solves the actual risk—two surfaces calculating
+  from different fetches—without establishing a new app-wide state architecture for one feature."
+  Full write-up: `docs/decisions/D-110-health-score-lightweight-shared-snapshot.md`.
+- **Date:** 12-Aug-2026

@@ -24,8 +24,9 @@ LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
 OnboardingScreen        screens/ (127)             Chip-guided 4-track conversation (D-082/D-084)
 ConsolidatedScreen      screens/ (233)             "Home" tab — net totals + streak + reward surface
-PortfolioScreen         screens/ (~290)            Portfolio tab — family nav rows, Health Score entry,
-                                                   category concentration card (BQ-061). BQ-058 still a stub.
+PortfolioScreen         screens/ (~430)            Portfolio tab — allocation donut by record count,
+                                                   shared Health Score sub-scores, family nav rows,
+                                                   category concentration, trend mechanism panel (BQ-058/061)
 HealthScoreScreen       screens/ (260)             Hidden tab — 0-100 score + 4 sub-score rows; entered from PortfolioScreen
 GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
                                                    inline create form, insurance coverage summary,
@@ -94,6 +95,8 @@ healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealt
 concentration.ts        55      computeCategoryConcentration(holdings) → {totalFunds, categories[], largest}.
                                 BQ-061 — counts of equity vs debt MFs. Counts only, never a rupee figure
                                 (D-106 rules that out: a by-value share reads as a weighting verdict).
+healthScoreSnapshot.ts  ~85     BQ-058/D-110 lightweight shared computed snapshot. Portfolio refreshes;
+                                HealthScore reuses; in-flight loads deduplicated; local answers recompute cache.
 scenarios.ts            ~250    BQ-056 scenario maths — derivePrefills(budget,holdings) plus emergencyRunway /
                                 sipIncrease / debtCost / idleCashOpportunity / monthsToTarget. Pure; every rate
                                 is a caller-supplied user input (the app never asserts a return rate).

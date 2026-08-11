@@ -13,73 +13,52 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TeachingBlock } from '../components/TeachingBlock';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
-import { fetchBudget } from '../lib/budget';
-import { fetchHoldings } from '../lib/holdings';
-import { computeSubScores, computeOverall } from '../lib/healthScore';
-import type { BudgetSummary } from '../lib/budget';
-import type { Holding } from '../lib/holdings';
+import { loadHealthScoreSnapshot, updateHealthScoreInputs } from '../lib/healthScoreSnapshot';
+import type { HealthScoreSnapshot } from '../lib/healthScoreSnapshot';
 import type { MainTabsParamList } from '../navigation/types';
 
 type ExpandedRow = 'emergency' | 'insurance' | null;
 
-interface ScreenState {
-  budget: BudgetSummary | null;
-  holdings: Holding[] | null;
-  emergencyMonths: string | null;
-  hasHealthIns: 'yes' | 'no' | null;
-}
-
 export function HealthScoreScreen() {
   const { userId } = useAuth();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
-  const [state, setState] = useState<ScreenState>({
-    budget: null,
-    holdings: null,
-    emergencyMonths: null,
-    hasHealthIns: null,
-  });
+  const [state, setState] = useState<HealthScoreSnapshot | null>(null);
   const [expanded, setExpanded] = useState<ExpandedRow>(null);
   const [draftMonths, setDraftMonths] = useState('');
 
   const loadData = useCallback(() => {
     if (!userId) return;
-    Promise.all([
-      fetchBudget(userId).catch(() => null),
-      fetchHoldings(userId).catch((): Holding[] | null => null),
-      AsyncStorage.multiGet(['hs_emergency_months', 'hs_has_health_ins']),
-    ]).then(([budget, holdings, stored]) => {
-      const em = stored[0][1];
-      const hi = stored[1][1];
-      setState({
-        budget,
-        holdings,
-        emergencyMonths: em,
-        hasHealthIns: hi === 'yes' || hi === 'no' ? hi : null,
-      });
-    });
+    loadHealthScoreSnapshot(userId).then(setState);
   }, [userId]);
 
   useFocusEffect(loadData);
 
-  const subScores = computeSubScores(
-    state.budget,
-    state.holdings,
-    state.emergencyMonths,
-    state.hasHealthIns
-  );
-  const { score, measured } = computeOverall(subScores);
+  const subScores = state?.subScores ?? {
+    investmentRate: null,
+    insurance: null,
+    emergency: null,
+    taxUtil: null,
+  };
+  const score = state?.score ?? null;
+  const measured = state?.measured ?? 0;
 
   async function saveEmergencyMonths() {
     const trimmed = draftMonths.trim();
     await AsyncStorage.setItem('hs_emergency_months', trimmed);
-    setState((s) => ({ ...s, emergencyMonths: trimmed }));
+    if (userId) {
+      const next = updateHealthScoreInputs(userId, { emergencyMonths: trimmed });
+      if (next) setState(next);
+    }
     setExpanded(null);
     setDraftMonths('');
   }
 
   async function saveHealthIns(answer: 'yes' | 'no') {
     await AsyncStorage.setItem('hs_has_health_ins', answer);
-    setState((s) => ({ ...s, hasHealthIns: answer }));
+    if (userId) {
+      const next = updateHealthScoreInputs(userId, { hasHealthIns: answer });
+      if (next) setState(next);
+    }
     setExpanded(null);
   }
 
@@ -89,7 +68,7 @@ export function HealthScoreScreen() {
     } else {
       setExpanded(row);
       if (row === 'emergency') {
-        setDraftMonths(state.emergencyMonths ?? '');
+        setDraftMonths(state?.emergencyMonths ?? '');
       }
     }
   }
@@ -147,16 +126,16 @@ export function HealthScoreScreen() {
               <Text style={styles.inlineQuestion}>Do you have health insurance?</Text>
               <View style={styles.inlineButtons}>
                 <Pressable
-                  style={[styles.answerBtn, state.hasHealthIns === 'yes' && styles.answerBtnSelected]}
+                  style={[styles.answerBtn, state?.hasHealthIns === 'yes' && styles.answerBtnSelected]}
                   onPress={() => saveHealthIns('yes')}
                 >
-                  <Text style={[styles.answerBtnText, state.hasHealthIns === 'yes' && styles.answerBtnTextSelected]}>Yes</Text>
+                  <Text style={[styles.answerBtnText, state?.hasHealthIns === 'yes' && styles.answerBtnTextSelected]}>Yes</Text>
                 </Pressable>
                 <Pressable
-                  style={[styles.answerBtn, state.hasHealthIns === 'no' && styles.answerBtnSelected]}
+                  style={[styles.answerBtn, state?.hasHealthIns === 'no' && styles.answerBtnSelected]}
                   onPress={() => saveHealthIns('no')}
                 >
-                  <Text style={[styles.answerBtnText, state.hasHealthIns === 'no' && styles.answerBtnTextSelected]}>No</Text>
+                  <Text style={[styles.answerBtnText, state?.hasHealthIns === 'no' && styles.answerBtnTextSelected]}>No</Text>
                 </Pressable>
               </View>
             </View>
