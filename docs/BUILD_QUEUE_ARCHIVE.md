@@ -12,6 +12,34 @@
 
 ---
 
+## BQ-059 — Goals screen restructure — DONE 12-Aug-2026
+
+Decision D-106 (Goals tab in the 5-tab nav). Replaced the placeholder `GoalsScreen` with four sections:
+existing goal progress rows, four goal-type cards (Higher education / Secure retirement / Dream house /
+Perfect wedding) with an inline create form, an insurance coverage summary, and an emergency readiness
+card. Only `app/screens/GoalsScreen.tsx` changed — no new routes, no new lib files, no backend work.
+
+Illustration call (delegated to build time by the queue entry): the four goal marks are drawn from plain
+`View`s — a rotated square + rule for the mortarboard, ascending bars, a CSS-triangle roof over bordered
+walls, two overlapping rings. `react-native-svg` is NOT a dependency and adding one would be a hard stop,
+so no vector library was introduced. The drawn-from-rules look also sits closer to D-086's warm-ledger
+register than clip-art would.
+
+Goal creation reuses the existing `createGoal` endpoint (D-038) with `category` taken from the card the
+user tapped, so the form asks only for amount and date. Goals are created unfunded; linking holdings to a
+goal remains BudgetingScreen's job, unchanged. Insurance summary reads `sum_assured` off term and
+endowment/ULIP holdings; health cover is the yes/no already stored at `hs_has_health_ins`. Emergency
+readiness reads `hs_emergency_months` — the same key HealthScoreScreen writes, so the user is never asked
+twice.
+
+Verified end-to-end with both the backend and the Expo web preview running (`.claude/launch.json`):
+created a real goal through the form and watched it appear with a 0% ink progress track, confirmed
+validation rejects an empty save, and confirmed the emergency card picks up a figure entered on the
+Health Score screen after a tab re-focus. `tsc --noEmit` clean.
+
+P10 held throughout: progress is an ink fill on a `lineSoft` track, all figures in `colors.ink`.
+`colors.danger` is used only for a rejected save, which is a genuine failure state per tokens.ts.
+
 ## BQ-056 — Scenario modelling ("What if…" — batch 1) — DONE 12-Aug-2026
 
 Decision D-106 (batch 1 scenarios + S-01 user-set target; S-04 parked). Build conventions logged as

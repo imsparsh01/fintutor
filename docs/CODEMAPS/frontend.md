@@ -26,7 +26,9 @@ OnboardingScreen        screens/ (127)             Chip-guided 4-track conversat
 ConsolidatedScreen      screens/ (233)             "Home" tab — net totals + streak + reward surface
 PortfolioScreen         screens/ (104)             Portfolio tab — family nav rows + Health Score entry + BQ-058/061 stubs
 HealthScoreScreen       screens/ (260)             Hidden tab — 0-100 score + 4 sub-score rows; entered from PortfolioScreen
-GoalsScreen             screens/ (43)              Goals tab — placeholder; BQ-059 fills in
+GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
+                                                   inline create form, insurance coverage summary,
+                                                   emergency readiness CTA (BQ-059)
 ToolsScreen             screens/ (80)              Tools tab — calculator list grid (5 items, batch 1)
 CalculatorScreen        screens/ (420)             Hidden tab — 5 calculators: C-04/C-10/C-17/C-22/C-24
 ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
@@ -145,3 +147,7 @@ S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is Lo
   `onboarding` prop which controls Arya header visibility and sets `onboarding: true` in the POST /chat body.
 - `CalculatorScreen` receives `{ type: CalculatorType; label: string }` as route params and renders the
   appropriate calculator. ToolsScreen is the only entry point (hidden tab pattern).
+- **AsyncStorage keys `hs_emergency_months` / `hs_has_health_ins`** are written by HealthScoreScreen and
+  read by both HealthScoreScreen and GoalsScreen. One answer, two surfaces — do not add a second prompt
+  for either question. No vector-icon library is installed: GoalsScreen's goal-type marks are drawn from
+  plain Views (rotated squares, a CSS-triangle roof, bordered circles).

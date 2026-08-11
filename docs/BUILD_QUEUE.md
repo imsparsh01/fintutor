@@ -16,15 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-059 — Goals screen restructure (illustrated goal cards, insurance entry, emergency CTA)
-**Decision:** D-106 (Goals tab confirmed in 5-tab nav; placeholder GoalsScreen already live)
-**Scope:** Replace GoalsScreen placeholder with full illustrated layout:
-- 4 goal-type cards (Higher education, Secure retirement, Dream house, Perfect wedding)
-- Insurance entry card with coverage summary
-- Emergency readiness CTA
-Illustration style: decide during build — simple icon (SF Symbol / vector) is acceptable as
-placeholder; no external asset library needed.
-
 ### BQ-061 — Portfolio overlap indicator (Option A — category concentration)
 **Decision:** D-106 (Option A confirmed: educational category concentration indicator)
 **Scope:** Add a card to PortfolioScreen showing how many equity MFs are in the same broad
