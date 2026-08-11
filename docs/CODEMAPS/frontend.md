@@ -9,6 +9,10 @@
 D-106: 5 visible tabs (Home · Portfolio · Goals · Tools · Chat). Former family tabs are hidden
 screens (tabBarButton: () => null) — navigable from PortfolioScreen without showing in tab bar.
 CalculatorScreen is also a hidden tab, entered from ToolsScreen via `{ type: CalculatorType; label }`.
+ScenarioScreen follows the same pattern via `{ type: ScenarioType; label }` (BQ-056).
+
+Hidden screens use `navigation.navigate('<parent tab>')` for their back control, NOT `goBack()` —
+a bottom-tab navigator defaults to `backBehavior: 'firstRoute'`, so `goBack()` lands on Home.
 
 ## Screen inventory
 
@@ -25,6 +29,8 @@ HealthScoreScreen       screens/ (260)             Hidden tab — 0-100 score + 
 GoalsScreen             screens/ (43)              Goals tab — placeholder; BQ-059 fills in
 ToolsScreen             screens/ (80)              Tools tab — calculator list grid (5 items, batch 1)
 CalculatorScreen        screens/ (420)             Hidden tab — 5 calculators: C-04/C-10/C-17/C-22/C-24
+ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
+                                                   Prefills inputs from budget+holdings; every field editable.
 InvestmentsScreen       screens/ (338)             Hidden tab — holdings list (equity/debt/fd/ppf/stocks)
 LoansScreen             screens/ (290)             Hidden tab — holdings list (home_loan/personal_loan/cc)
 InsuranceScreen         screens/ (296)             Hidden tab — holdings list (term_insurance/endowment_ulip)
@@ -79,6 +85,9 @@ loanVsInvest.ts         30      fetchLoanVsInvest()
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          60      computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
+scenarios.ts            ~250    BQ-056 scenario maths — derivePrefills(budget,holdings) plus emergencyRunway /
+                                sipIncrease / debtCost / idleCashOpportunity / monthsToTarget. Pure; every rate
+                                is a caller-supplied user input (the app never asserts a return rate).
 format.ts               3       Currency formatting util
 taxonomy.ts             45      Product-type → family mapping (investments / loans / insurance)
 discretionaryCategories.ts 33   fetchCategories / createCategory
@@ -113,6 +122,18 @@ CalculatorType (navigation/types.ts):
   'cagr_backward'  C-24 — CAGR Calculator
 ```
 All 5 are pure frontend math. Batch 2 (C-16 income tax, C-23 HRA) approved but not yet built.
+
+## Scenario types (D-106, BQ-056)
+
+```
+ScenarioType (navigation/types.ts):
+  'emergency_runway'  S-05 — months your balances cover with no income
+  'sip_increase'      S-03 — corpus difference from an extra monthly amount
+  'debt_cost'         S-06 — interest inside the remaining repayments
+  'idle_cash'         S-07 — a cash balance compounded at two user-set rates
+  'corpus_target'     S-01 — years until the corpus reaches a user-set target
+```
+S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is LoanVsInvestModal (D-014).
 
 ## Key patterns
 

@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "backend",
-      "runtimeExecutable": "C:\\Users\\sparsh.chauhan\\Desktop\\fintutor\\backend\\.venv\\Scripts\\python.exe",
+      "runtimeExecutable": "backend/.venv/bin/python",
       "runtimeArgs": [
         "-m",
         "uvicorn",
@@ -12,23 +12,24 @@
         "--port",
         "8000",
         "--app-dir",
-        "C:\\Users\\sparsh.chauhan\\Desktop\\fintutor\\backend"
+        "backend"
       ],
       "port": 8000
     },
     {
       "name": "app",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "C:\\Users\\sparsh.chauhan\\Desktop\\fintutor\\app",
-        "run",
-        "web",
-        "--",
-        "--port",
-        "8081"
-      ],
+      "runtimeArgs": ["--prefix", "app", "run", "web", "--", "--port", "8081"],
       "port": 8081
+    },
+    {
+      "name": "app-dev-user",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "EXPO_PUBLIC_DEV_USER_ID=00000000-0000-0000-0000-000000000001 npm --prefix app run web -- --port 8082"
+      ],
+      "port": 8082
     }
   ]
 }

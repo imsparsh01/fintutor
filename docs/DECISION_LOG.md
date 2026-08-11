@@ -130,6 +130,18 @@
   `docs/decisions/D-093-d014-unparked-execution-subagents.md`.
 - **Date:** 10-Aug-2026
 
+### D-108 — Scenario build conventions: the app never asserts a rate, and prefills are always editable
+- **Tier:** 1 — records existing precedent from CalculatorScreen, does not create a new principle.
+  "A return figure the app hands the user is a forecast the app then has to defend. Asking for it is
+  not." Applied across BQ-056's five scenarios: every rate is a user input (S-07 asks for two);
+  every prefill from real data is editable and labelled; RDs excluded from the deposit total because
+  their stored figure is an instalment, not a balance. S-01 follows D-106's wording (years/age to a
+  user-set target) over BUILD_QUEUE's compressed "shows SIP needed", which would have duplicated
+  C-04. Flags two things for the owner rather than deciding them: the "Inaction tax" label's P2
+  tension, and whether to elevate the no-asserted-rate rule to a named principle. Full write-up:
+  `docs/decisions/D-108-scenario-build-conventions.md`.
+- **Date:** 12-Aug-2026
+
 ### D-107 — gstack sprint methodology adopted for all FinTutor build sessions
 - **Tier:** 3, owner-decided directly in conversation. "Plan and Review were the structural gaps — ad-hoc
   rather than mandatory. D-107 closes both." garrytan/gstack cloned to `~/.claude/skills/gstack/`; text-based

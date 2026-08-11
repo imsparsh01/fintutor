@@ -10,6 +10,15 @@ export type AuthStackParamList = {
 // screens (tabBarButton: () => null) so existing navigation.navigate calls keep working.
 export type CalculatorType = 'sip_goal' | 'emi' | 'inflation' | 'stepup_sip' | 'cagr_backward';
 
+// BQ-056 (D-106): scenario batch 1. S-04 (rent vs buy) is parked — it needs input fields the
+// schema doesn't have. S-02 (prepay vs invest) is already the LoanVsInvest modal (D-014).
+export type ScenarioType =
+  | 'emergency_runway' // S-05
+  | 'sip_increase' // S-03
+  | 'debt_cost' // S-06
+  | 'idle_cash' // S-07
+  | 'corpus_target'; // S-01
+
 export type MainTabsParamList = {
   Consolidated: undefined;
   Portfolio: undefined;
@@ -20,6 +29,8 @@ export type MainTabsParamList = {
   Chat: { prefillQuestion?: string; deepenAlias?: string } | undefined;
   // Hidden (tabBarButton: null) — D-106: family screens remain navigable from Portfolio/Home.
   Calculator: { type: CalculatorType; label: string };
+  // BQ-056: "What if…" scenarios — entered from ToolsScreen, same hidden-tab pattern.
+  Scenario: { type: ScenarioType; label: string };
   Investments: undefined;
   Loans: undefined;
   Insurance: undefined;

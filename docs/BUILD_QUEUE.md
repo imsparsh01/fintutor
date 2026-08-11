@@ -16,16 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-056 — Scenario modelling ("What if…" — batch 1)
-**Decision:** D-106 (batch 1 scenarios + S-01 user-set target; S-04 parked)
-**Scope:** Build 4 scenario cards + user-set target (S-01):
-- S-05: Emergency runway — "If you lost income today, how long could you sustain expenses?"
-- S-03: SIP increase — "What does ₹2000 more/month do to your corpus in 10 years?"
-- S-06: Debt cost — "How much is your outstanding debt costing you per year?"
-- S-07: Inaction tax — "What's the opportunity cost of cash sitting in a savings account?"
-- S-01: User-set corpus target (user enters the number; app shows SIP needed)
-S-04 (Rent vs buy) is parked — schema change required. C-16/C-23 are batch 2.
-
 ### BQ-059 — Goals screen restructure (illustrated goal cards, insurance entry, emergency CTA)
 **Decision:** D-106 (Goals tab confirmed in 5-tab nav; placeholder GoalsScreen already live)
 **Scope:** Replace GoalsScreen placeholder with full illustrated layout:

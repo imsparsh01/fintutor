@@ -10,6 +10,7 @@ import { InsuranceScreen } from '../screens/InsuranceScreen';
 import { InvestmentsScreen } from '../screens/InvestmentsScreen';
 import { LoansScreen } from '../screens/LoansScreen';
 import { PortfolioScreen } from '../screens/PortfolioScreen';
+import { ScenarioScreen } from '../screens/ScenarioScreen';
 import { ToolsScreen } from '../screens/ToolsScreen';
 import { colors, font } from '../design/tokens';
 import type { MainTabsParamList } from './types';
@@ -47,6 +48,11 @@ export function MainTabs() {
       <Tab.Screen
         name="Calculator"
         component={CalculatorScreen}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
+      />
+      <Tab.Screen
+        name="Scenario"
+        component={ScenarioScreen}
         options={{ tabBarButton: () => null, tabBarStyle: { display: 'none' } }}
       />
       <Tab.Screen name="Investments" component={InvestmentsScreen} options={{ tabBarButton: () => null }} />

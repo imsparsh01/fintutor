@@ -12,6 +12,32 @@
 
 ---
 
+## BQ-056 — Scenario modelling ("What if…" — batch 1) — DONE 12-Aug-2026
+
+Decision D-106 (batch 1 scenarios + S-01 user-set target; S-04 parked). Build conventions logged as
+D-108. New: `app/lib/scenarios.ts` (pure `derivePrefills` + five compute functions),
+`app/screens/ScenarioScreen.tsx` (hidden tab, same `{type, label}` pattern as CalculatorScreen).
+Modified: `navigation/types.ts` (`ScenarioType` + `Scenario` route), `navigation/MainTabs.tsx` (hidden
+screen registration), `screens/ToolsScreen.tsx` ("What if…" section below Calculators),
+`docs/CODEMAPS/frontend.md`.
+
+Shipped: S-05 emergency runway, S-03 SIP increase, S-06 debt cost, S-07 idle cash, S-01 corpus target.
+Every rate is a user input; every prefill from budget/holdings is editable and labelled (D-108). Each
+scenario carries a D-091 "what we won't say" block. Figures render in `font.mono`/`colors.ink` (P10).
+
+S-04 (rent vs buy) remains parked — needs schema fields. S-02 (prepay vs invest) not duplicated; it is
+LoanVsInvestModal (D-014). C-16/C-23 calculators are batch 2, unrelated to this item.
+
+Verified in the Expo web preview (`.claude/launch.json`, D-095 dev-user bypass): all five screens render,
+`tsc --noEmit` clean, debt-cost and corpus-target outputs hand-checked against the formulas. Backend was
+down during verification, which exercised the null-prefill path — screens degrade to blank editable
+fields with no errors. Two bugs found and fixed during the pass: silent no-op when a compute function
+returned null (now shows a Notice saying which input is missing), and the back control landing on Home
+because bottom-tab `goBack()` defaults to `backBehavior: 'firstRoute'`.
+
+**gstack gate not run:** `/plan-eng-review` and `/review` (D-107) are not installed on this machine —
+`~/.claude/skills/` is empty. Substituted an inline plan and a manual diff review. Flagged to the owner.
+
 ## BQ-054 — Financial Health Score (0-100 score + 4 sub-scores) — DONE 11-Aug-2026
 
 Decisions D-105 (display format), D-106 (formula). Built with /office-hours design session + /plan-eng-review
