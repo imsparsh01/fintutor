@@ -17,14 +17,13 @@ Rules for this file:
 ## READY — pick one of these
 
 _(Empty — every decided item has shipped. New items enter here once their decision has an ID in
-`docs/DECISION_LOG.md`; the item in BLOCKED below needs an owner decision first.)_
+`docs/DECISION_LOG.md`.)_
 
 ---
 
 ## BLOCKED — do not start
 
-### BQ-060 — Home screen restructure (8-section scrollable layout)
-**Decision needed:** Health Score card wiring to BQ-060's layout (shape TBD).
+_(Empty.)_
 
 ---
 

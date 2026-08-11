@@ -4,31 +4,60 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { ConsolidatedTotalsCard } from '../components/ConsolidatedTotalsCard';
 import { colors, font, radius, spacing } from '../design/tokens';
-import { typography } from '../design/typography';
 import { useAuth } from '../lib/AuthContext';
-import { fetchBudget, type BudgetSummary } from '../lib/budget';
-import { formatRupees } from '../lib/format';
+import { loadHealthScoreSnapshot } from '../lib/healthScoreSnapshot';
+import { randomRewardFact } from '../lib/rewardFacts';
 import { recordAppOpen, type StreakOpenResult } from '../lib/streaks';
 import { fetchSurfacingCandidates, type SurfacingCandidate } from '../lib/surfacing';
 import { supabase } from '../lib/supabase';
-import { randomRewardFact } from '../lib/rewardFacts';
-import type { MainTabsParamList } from '../navigation/types';
+import type { HealthScoreSnapshot } from '../lib/healthScoreSnapshot';
+import type {
+  CalculatorType,
+  MainTabsParamList,
+  PortfolioHealthFocus,
+  ScenarioType,
+} from '../navigation/types';
 
-// Home (mockup Flow 02): one layout, filled to whatever data the user has. Three family
-// totals shown side by side and NEVER summed into a net-worth figure (D-065); the streak
-// is a quiet mono counter that counts app opens, never money (P7/D-061); the tutor card
-// carries the teaching thread. Replaces the D-052 placeholder (mascot + dev health box).
+const HEALTH_ROWS: Array<{ key: PortfolioHealthFocus; label: string }> = [
+  { key: 'investmentRate', label: 'Investment rate' },
+  { key: 'insurance', label: 'Insurance' },
+  { key: 'emergency', label: 'Emergency buffer' },
+  { key: 'taxUtil', label: 'Tax utilisation' },
+];
+
+const CALCULATOR_CARDS: Array<{ type: CalculatorType; label: string; prompt: string }> = [
+  { type: 'sip_goal', label: 'SIP goal', prompt: 'Monthly amount for a target corpus' },
+  { type: 'emi', label: 'Home-loan EMI', prompt: 'Instalment and interest from loan inputs' },
+  { type: 'inflation', label: 'Inflation impact', prompt: "What today's cost becomes later" },
+  { type: 'stepup_sip', label: 'Step-up SIP', prompt: 'Corpus when contributions rise yearly' },
+  { type: 'cagr_backward', label: 'CAGR', prompt: 'Annualised change between two values' },
+];
+
+const SCENARIO_CARDS: Array<{ type: ScenarioType; label: string; prompt: string }> = [
+  { type: 'emergency_runway', label: 'Emergency runway', prompt: 'Months your balances could cover' },
+  { type: 'sip_increase', label: 'Invest more monthly', prompt: 'The corpus difference over time' },
+  { type: 'debt_cost', label: 'Debt cost', prompt: 'Interest inside remaining repayments' },
+  { type: 'idle_cash', label: 'Idle cash', prompt: 'One balance at two user-set rates' },
+  { type: 'corpus_target', label: 'Corpus target', prompt: 'When your current path reaches it' },
+];
+
+const LEARN_CARDS = [
+  { label: 'How compounding works', question: 'Teach me how compounding works with a simple example.' },
+  { label: 'What an EMI contains', question: 'Teach me how principal and interest move inside an EMI.' },
+  { label: 'What insurance transfers', question: 'Teach me what financial risk insurance transfers.' },
+];
+
+// BQ-060 / D-111: Richify-inspired structure adapted to FinTutor's eight approved sections.
+// Every number remains neutral (P10), and every tool card opens a user-controlled mechanism.
 export function ConsolidatedScreen() {
   const { userId, displayName } = useAuth();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
-  const [budget, setBudget] = useState<BudgetSummary | null>(null);
   const [streak, setStreak] = useState<StreakOpenResult | null>(null);
   const [candidate, setCandidate] = useState<SurfacingCandidate | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [rewardFact, setRewardFact] = useState<string | null>(null);
+  const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
 
-  // Record the app-open once per mount (engagement mechanic, D-060) — the backend owns
-  // whether today is a new streak day; we just reflect the count back in the header.
   useEffect(() => {
     if (!userId) return;
     recordAppOpen(userId).then((result) => {
@@ -37,23 +66,22 @@ export function ConsolidatedScreen() {
     }).catch(() => {});
   }, [userId]);
 
-  const loadBudget = useCallback(() => {
+  const loadHome = useCallback(() => {
     if (!userId) return;
-    fetchBudget(userId).then(setBudget).catch(() => setBudget(null));
+    loadHealthScoreSnapshot(userId, true).then(setHealth);
     fetchSurfacingCandidates(userId)
-      .then((cs) => setCandidate(cs[0] ?? null))
+      .then((items) => setCandidate(items[0] ?? null))
       .catch(() => setCandidate(null));
   }, [userId]);
 
-  useFocusEffect(loadBudget);
+  useFocusEffect(loadHome);
 
   if (!userId) return null;
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      {/* Header: greeting + month on the left, quiet streak counter on the right. */}
       <View style={styles.header}>
-        <View style={{ flex: 1 }}>
+        <View style={styles.headerCopy}>
           <Text style={styles.greeting}>{greeting(displayName)}</Text>
           <Text style={styles.month}>{currentMonthLabel()}</Text>
         </View>
@@ -65,51 +93,84 @@ export function ConsolidatedScreen() {
         )}
       </View>
 
-      <Text style={styles.sectionLabel}>Family totals</Text>
+      <SectionLabel>Financial picture</SectionLabel>
       <ConsolidatedTotalsCard userId={userId} />
 
-      {rewardFact && (
+      <SectionLabel>Portfolio health</SectionLabel>
+      <PortfolioHealthCard health={health} navigation={navigation} />
+
+      <SectionLabel>Ask Arya</SectionLabel>
+      <View style={styles.aryaCard}>
+        <View style={styles.aryaIdentity}>
+          <View style={styles.aryaMark}><Text style={styles.aryaMarkText}>A</Text></View>
+          <View style={styles.headerCopy}>
+            <Text style={styles.aryaName}>Arya</Text>
+            <Text style={styles.aryaRole}>Your financial tutor</Text>
+          </View>
+        </View>
+        <Text style={styles.aryaBody}>
+          {candidate && !dismissed
+            ? tutorPrompt(candidate)
+            : 'Bring one number or mechanism you want to understand. We can take it apart without choosing for you.'}
+        </Text>
+        <View style={styles.aryaActions}>
+          <Pressable
+            style={styles.primaryButton}
+            onPress={() => navigation.navigate('Chat', {
+              prefillQuestion: candidate && !dismissed ? tutorPrefill(candidate) : undefined,
+            })}
+          >
+            <Text style={styles.primaryButtonText}>Start a conversation</Text>
+          </Pressable>
+          {candidate && !dismissed && (
+            <Pressable onPress={() => setDismissed(true)}><Text style={styles.secondaryAction}>Not now</Text></Pressable>
+          )}
+        </View>
+      </View>
+
+      <SectionLabel>Run the numbers</SectionLabel>
+      <Text style={styles.sectionNote}>Calculators use figures you enter. No result is treated as a recommendation.</Text>
+      <HorizontalCards>
+        {CALCULATOR_CARDS.map((card) => (
+          <ToolCard key={card.type} label={card.label} prompt={card.prompt} onPress={() => navigation.navigate('Calculator', card)} />
+        ))}
+      </HorizontalCards>
+
+      <SectionLabel>What if…</SectionLabel>
+      <Text style={styles.sectionNote}>Scenarios start from your records, and every prefilled figure remains editable.</Text>
+      <HorizontalCards>
+        {SCENARIO_CARDS.map((card) => (
+          <ToolCard key={card.type} label={card.label} prompt={card.prompt} onPress={() => navigation.navigate('Scenario', card)} />
+        ))}
+      </HorizontalCards>
+
+      <SectionLabel>Learn</SectionLabel>
+      <View style={styles.learnCard}>
+        {LEARN_CARDS.map((card, index) => (
+          <Pressable
+            key={card.label}
+            style={[styles.learnRow, index < LEARN_CARDS.length - 1 && styles.rowBorder]}
+            onPress={() => navigation.navigate('Chat', { prefillQuestion: card.question })}
+          >
+            <Text style={styles.learnLabel}>{card.label}</Text>
+            <Text style={styles.chevron}>›</Text>
+          </Pressable>
+        ))}
+      </View>
+
+      <SectionLabel>Keep learning</SectionLabel>
+      {rewardFact ? (
         <View style={styles.rewardFact}>
           <Text style={styles.rewardLabel}>A fact worth knowing</Text>
           <Text style={styles.rewardBody}>{rewardFact}</Text>
-          <Pressable onPress={() => setRewardFact(null)}>
-            <Text style={styles.rewardDismiss}>Dismiss</Text>
-          </Pressable>
+          <Pressable onPress={() => setRewardFact(null)}><Text style={styles.rewardDismiss}>Dismiss</Text></Pressable>
         </View>
-      )}
-
-      <Text style={styles.sectionLabel}>This month</Text>
-      <View style={styles.ledger}>
-        {budget === null ? (
-          <Text style={styles.muted}>Loading…</Text>
-        ) : (
-          <>
-            <LedgerRow label="Income" value={formatRupees(budget.income_total)} />
-            <LedgerRow
-              label="Recurring outflows"
-              value={formatRupees(budget.recurring_outflows_total)}
-            />
-            <LedgerRow label="Discretionary" value={formatRupees(budget.discretionary_total)} />
-            <LedgerRow label="Net" value={formatRupees(budget.net)} bold />
-          </>
-        )}
-      </View>
-
-      {candidate && !dismissed && (
-        <View style={styles.tutorCard}>
-          <Text style={styles.tutorBody}>{tutorPrompt(candidate)}</Text>
-          <View style={styles.tutorActions}>
-            <Pressable
-              style={styles.tutorPrimary}
-              onPress={() =>
-                navigation.navigate('Chat', { prefillQuestion: tutorPrefill(candidate) })
-              }
-            >
-              <Text style={styles.tutorPrimaryText}>Show me</Text>
-            </Pressable>
-            <Pressable style={styles.tutorSecondary} onPress={() => setDismissed(true)}>
-              <Text style={styles.tutorSecondaryText}>Not now</Text>
-            </Pressable>
+      ) : (
+        <View style={styles.streakCard}>
+          <Text style={styles.streakCardNumber}>{streak?.current_streak ?? '—'}</Text>
+          <View style={styles.headerCopy}>
+            <Text style={styles.streakCardTitle}>day learning streak</Text>
+            <Text style={styles.streakCardBody}>App opens are counted; financial outcomes never are.</Text>
           </View>
         </View>
       )}
@@ -121,18 +182,67 @@ export function ConsolidatedScreen() {
   );
 }
 
-function LedgerRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+function PortfolioHealthCard({
+  health,
+  navigation,
+}: {
+  health: HealthScoreSnapshot | null;
+  navigation: BottomTabNavigationProp<MainTabsParamList>;
+}) {
   return (
-    <View style={styles.row}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <Text style={[styles.rowValue, bold && styles.rowValueBold]}>{value}</Text>
+    <View style={styles.healthCard}>
+      <Pressable style={styles.healthHeader} onPress={() => navigation.navigate('HealthScore', { focus: undefined })}>
+        <View style={styles.headerCopy}>
+          <Text style={styles.healthTitle}>Portfolio Health</Text>
+          <Text style={styles.healthMeta}>{health ? `${health.measured} of 4 areas measured` : 'Loading coverage'}</Text>
+        </View>
+        <Text style={styles.healthOverall}>{health?.score ?? '—'}</Text>
+      </Pressable>
+      <View style={styles.healthGrid}>
+        {HEALTH_ROWS.map((row) => {
+          const value = health?.subScores[row.key];
+          return (
+            <Pressable
+              key={row.key}
+              style={styles.healthCell}
+              onPress={() => navigation.navigate('HealthScore', { focus: row.key })}
+            >
+              <Text style={styles.healthCellValue}>{value === undefined || value === null ? '—' : value}</Text>
+              <Text style={styles.healthCellLabel}>{row.label}</Text>
+              <Text style={styles.healthCellOpen}>Open ›</Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <Text style={styles.sectionLabel}>{children}</Text>;
+}
+
+function HorizontalCards({ children }: { children: React.ReactNode }) {
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalCards}>
+      {children}
+    </ScrollView>
+  );
+}
+
+function ToolCard({ label, prompt, onPress }: { label: string; prompt: string; onPress: () => void }) {
+  return (
+    <Pressable style={styles.toolCard} onPress={onPress}>
+      <Text style={styles.toolLabel}>{label}</Text>
+      <Text style={styles.toolPrompt}>{prompt}</Text>
+      <Text style={styles.toolOpen}>Open ›</Text>
+    </Pressable>
+  );
+}
+
 function greeting(name?: string | null): string {
-  const h = new Date().getHours();
-  const part = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const hour = new Date().getHours();
+  const part = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   return name ? `${part}, ${name}` : part;
 }
 
@@ -140,18 +250,15 @@ function currentMonthLabel(): string {
   return new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 }
 
-// Presentation-only teaching invitations keyed by the backend's coded surfacing reason
-// (D-051). These are offers to explain a MECHANISM, never advice to buy — the actual
-// teaching happens in /chat. Falls back to a neutral phrasing for any unmapped reason.
-function tutorPrompt(c: SurfacingCandidate): string {
-  if (c.reason === 'loan_without_life_cover') {
-    return "You're carrying a loan, but there's no term cover on record. Want to see how term insurance works — what it protects and what it costs — with your own numbers?";
+function tutorPrompt(candidate: SurfacingCandidate): string {
+  if (candidate.reason === 'loan_without_life_cover') {
+    return "You’re carrying a loan, but there’s no term cover on record. Want to see how term insurance works with your own numbers?";
   }
-  return 'There’s a mechanism here worth understanding. Want to walk through it with your own numbers?';
+  return 'There’s a mechanism in your records worth understanding. Want to walk through it with your own numbers?';
 }
 
-function tutorPrefill(c: SurfacingCandidate): string {
-  if (c.reason === 'loan_without_life_cover') {
+function tutorPrefill(candidate: SurfacingCandidate): string {
+  if (candidate.reason === 'loan_without_life_cover') {
     return 'Can you explain how term insurance works, using my own numbers?';
   }
   return 'Can you walk me through this, using my own numbers?';
@@ -160,20 +267,10 @@ function tutorPrefill(c: SurfacingCandidate): string {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.screen },
   content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xl,
-  },
+  header: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.md },
+  headerCopy: { flex: 1 },
   greeting: { fontFamily: font.uiSemibold, fontSize: 24, color: colors.ink },
-  month: {
-    fontFamily: font.mono,
-    fontSize: 12,
-    letterSpacing: 0.5,
-    color: colors.inkMuted,
-    marginTop: spacing.xs,
-  },
-  // Engagement layer — clay is permitted here (streak is behaviour, never a money figure).
+  month: { fontFamily: font.mono, fontSize: 12, letterSpacing: 0.5, color: colors.inkMuted, marginTop: spacing.xs },
   streak: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   streakGlyph: { fontSize: 14 },
   streakCount: { fontFamily: font.monoSemibold, fontSize: 15, color: colors.behaviour },
@@ -183,51 +280,49 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.inkMuted,
-    marginTop: spacing.xl,
+    marginTop: spacing.xxl,
     marginBottom: spacing.xs,
   },
-  ledger: {},
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.line,
-  },
-  rowLabel: {
-    fontFamily: font.mono,
-    fontSize: 12,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    color: colors.inkMuted,
-  },
-  rowValue: typography.ledgerValue,
-  rowValueBold: { fontSize: 17 },
-  muted: { fontFamily: font.ui, color: colors.inkMuted, paddingVertical: spacing.lg },
-  // The teaching plane — tutorSoft ground, tutor voice (serif). The one card that carries
-  // the screen when data is thin (mockup Flow 02).
-  tutorCard: {
-    backgroundColor: colors.tutorSoft,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginTop: spacing.xxl,
-  },
-  tutorBody: { fontFamily: font.tutor, fontSize: 16, lineHeight: 24, color: colors.ink },
-  tutorActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, marginTop: spacing.lg },
-  tutorPrimary: {
-    backgroundColor: colors.tutor,
-    borderRadius: radius.md,
-    paddingVertical: 12,
-    paddingHorizontal: spacing.xl,
-  },
-  tutorPrimaryText: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.screen },
-  tutorSecondary: { paddingVertical: 12 },
-  tutorSecondaryText: { fontFamily: font.ui, fontSize: 14, color: colors.inkSecondary },
-  signOut: { paddingVertical: spacing.md, marginTop: spacing.xxl, alignItems: 'center' },
-  signOutText: { fontFamily: font.ui, fontSize: 13, color: colors.inkMuted },
-  rewardFact: { backgroundColor: colors.behaviourSoft, borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.xl },
+  sectionNote: { fontFamily: font.tutor, fontSize: 13, lineHeight: 18, color: colors.inkSecondary, marginBottom: spacing.md },
+  healthCard: { backgroundColor: colors.canvas, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, overflow: 'hidden' },
+  healthHeader: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
+  healthTitle: { fontFamily: font.uiSemibold, fontSize: 16, color: colors.ink },
+  healthMeta: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: 2 },
+  healthOverall: { fontFamily: font.monoSemibold, fontSize: 30, color: colors.ink },
+  healthGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+  healthCell: { width: '50%', padding: spacing.lg, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.lineSoft },
+  healthCellValue: { fontFamily: font.mono, fontSize: 20, color: colors.ink },
+  healthCellLabel: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: spacing.xs },
+  healthCellOpen: { fontFamily: font.uiMedium, fontSize: 11, color: colors.tutor, marginTop: spacing.sm },
+  aryaCard: { backgroundColor: colors.tutorSoft, borderRadius: radius.lg, padding: spacing.lg },
+  aryaIdentity: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md },
+  aryaMark: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.tutor, alignItems: 'center', justifyContent: 'center' },
+  aryaMarkText: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.screen },
+  aryaName: { fontFamily: font.uiSemibold, fontSize: 16, color: colors.ink },
+  aryaRole: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: 2 },
+  aryaBody: { fontFamily: font.tutor, fontSize: 16, lineHeight: 23, color: colors.ink },
+  aryaActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, marginTop: spacing.lg },
+  primaryButton: { backgroundColor: colors.tutor, borderRadius: radius.md, paddingVertical: 11, paddingHorizontal: spacing.lg },
+  primaryButtonText: { fontFamily: font.uiSemibold, fontSize: 13, color: colors.screen },
+  secondaryAction: { fontFamily: font.ui, fontSize: 13, color: colors.inkSecondary },
+  horizontalCards: { gap: spacing.md, paddingRight: spacing.xl },
+  toolCard: { width: 184, minHeight: 142, backgroundColor: colors.canvas, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, padding: spacing.lg },
+  toolLabel: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.ink },
+  toolPrompt: { flex: 1, fontFamily: font.tutor, fontSize: 13, lineHeight: 18, color: colors.inkSecondary, marginTop: spacing.sm },
+  toolOpen: { fontFamily: font.uiMedium, fontSize: 12, color: colors.tutor, marginTop: spacing.md },
+  learnCard: { backgroundColor: colors.canvas, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, overflow: 'hidden' },
+  learnRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg },
+  rowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line },
+  learnLabel: { flex: 1, fontFamily: font.uiMedium, fontSize: 14, color: colors.ink },
+  chevron: { fontFamily: font.ui, fontSize: 18, color: colors.inkMuted },
+  streakCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, backgroundColor: colors.behaviourSoft, borderRadius: radius.lg, padding: spacing.lg },
+  streakCardNumber: { fontFamily: font.monoSemibold, fontSize: 30, color: colors.behaviour },
+  streakCardTitle: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.ink },
+  streakCardBody: { fontFamily: font.tutor, fontSize: 12, lineHeight: 17, color: colors.inkSecondary, marginTop: 2 },
+  rewardFact: { backgroundColor: colors.behaviourSoft, borderRadius: radius.lg, padding: spacing.lg },
   rewardLabel: { fontFamily: font.mono, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: colors.behaviour },
   rewardBody: { fontFamily: font.tutor, fontSize: 16, lineHeight: 24, color: colors.ink, marginTop: spacing.sm },
   rewardDismiss: { fontFamily: font.uiMedium, fontSize: 13, color: colors.inkSecondary, marginTop: spacing.md },
+  signOut: { paddingVertical: spacing.md, marginTop: spacing.xxl, alignItems: 'center' },
+  signOutText: { fontFamily: font.ui, fontSize: 13, color: colors.inkMuted },
 });

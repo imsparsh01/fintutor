@@ -12,6 +12,26 @@
 
 ---
 
+## BQ-060 — Home screen restructure — DONE 12-Aug-2026
+
+Decision D-104’s eight-section Home layout, with the final Health-card interaction and user-facing name
+resolved by owner-confirmed D-111. Rebuilt `ConsolidatedScreen.tsx` as: greeting, financial picture,
+Portfolio Health, Arya, calculator carousel, scenario carousel, Learn, and streak/reward.
+
+Portfolio Health shows the overall score and a 2×2 grid of all four sub-scores. Each cell deep-links to
+the Portfolio Health screen with its mechanism row expanded. The route carries only a focus key; formulas
+and data remain in the D-110 shared snapshot. “Health Score” was renamed to “Portfolio Health” across
+visible Home, Portfolio, Goals, and detail-screen copy.
+
+Calculator and scenario Home cards launch the already-built Tools flows. They do not fabricate last-run
+results or timestamps because no result persistence exists. Learn cards open Arya with mechanism-only
+questions. All figures remain neutral ink; the streak is still the only behaviour-coloured number.
+
+Verified with `npx tsc --noEmit`, Expo web export, `git diff --check`, and in-app mobile QA at 390×844.
+All eight sections rendered, carousels scrolled horizontally, and an Insurance-grid tap opened the correct
+expanded Portfolio Health lever. The only console warning was Expo Notifications’ existing web limitation.
+The repository-recorded gstack skills were unavailable, so plan and review were performed manually.
+
 ## BQ-058 — Portfolio screen restructure — DONE 12-Aug-2026
 
 Decision D-106, with the store mechanism resolved by owner-confirmed D-110. Added a detailed Portfolio

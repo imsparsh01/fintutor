@@ -91,7 +91,7 @@ export function GoalsScreen() {
     Promise.all([
       fetchGoals(userId).catch((): GoalRecord[] | null => null),
       fetchHoldings(userId).catch((): Holding[] | null => null),
-      // Same two keys the Health Score screen writes — one answer, read in both places,
+      // Same two keys the Portfolio Health screen writes — one answer, read in both places,
       // rather than asking the user the same question twice.
       AsyncStorage.multiGet(['hs_emergency_months', 'hs_has_health_ins']),
     ]).then(([goals, holdings, stored]) => {
@@ -414,7 +414,7 @@ function InsuranceSummary({
       </View>
       <Text style={styles.caption}>
         Sum assured is what a policy pays out, not what it has cost you or what it is worth today.
-        Health cover is the yes/no you gave on the Health Score screen — the app does not hold a
+        Health cover is the yes/no you gave on the Portfolio Health screen — the app does not hold a
         policy amount for it.
       </Text>
       <Pressable style={styles.linkRow} onPress={onOpenInsurance}>
@@ -471,7 +471,7 @@ function EmergencyCard({
           <Text style={styles.emergencyValue}>{parsed % 1 === 0 ? parsed.toFixed(0) : parsed.toFixed(1)}</Text>
           <Text style={styles.emergencyUnit}>months of expenses covered</Text>
           <Text style={styles.emergencyBody}>
-            This is the figure you entered on the Health Score screen. It is stored on this device
+            This is the figure you entered on the Portfolio Health screen. It is stored on this device
             only.
           </Text>
         </>

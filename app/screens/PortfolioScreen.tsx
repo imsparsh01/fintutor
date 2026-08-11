@@ -13,7 +13,7 @@ import type { HealthScoreSnapshot } from '../lib/healthScoreSnapshot';
 import type { Holding } from '../lib/holdings';
 import type { MainTabsParamList } from '../navigation/types';
 
-// D-106: Portfolio tab — detailed holdings view. BQ-054 added the Health Score entry;
+// D-106: Portfolio tab — detailed holdings view. BQ-054 added the Portfolio Health entry;
 // BQ-061 added category concentration; BQ-058 adds allocation, sub-scores, and trend teaching.
 // Family section navigation rows (Investments, Loans, Insurance, Budgeting) give access to the
 // family holding screens that were previously their own tabs.
@@ -41,8 +41,8 @@ export function PortfolioScreen() {
       <Text style={styles.sectionLabel}>Allocation</Text>
       <AllocationCard allocation={allocation} onAdd={() => navigation.navigate('Investments')} />
 
-      <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Health coverage</Text>
-      <HealthSummary snapshot={snapshot} onOpen={() => navigation.navigate('HealthScore')} />
+      <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Portfolio health</Text>
+      <HealthSummary snapshot={snapshot} onOpen={() => navigation.navigate('HealthScore', { focus: undefined })} />
 
       <Text style={[styles.sectionLabel, { marginTop: spacing.xxl }]}>Holdings</Text>
       <View style={styles.card}>
@@ -145,7 +145,7 @@ function HealthSummary({ snapshot, onOpen }: { snapshot: HealthScoreSnapshot | n
     <Pressable style={styles.card} onPress={onOpen}>
       <View style={styles.healthHeader}>
         <View>
-          <Text style={styles.healthTitle}>Health Score</Text>
+          <Text style={styles.healthTitle}>Portfolio Health</Text>
           <Text style={styles.healthMeta}>{snapshot ? `${snapshot.measured} of 4 areas measured` : 'Loading your coverage'}</Text>
         </View>
         <Text style={styles.healthScore}>{snapshot?.score ?? '—'}</Text>

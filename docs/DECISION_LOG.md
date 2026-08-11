@@ -167,3 +167,10 @@
   from different fetches—without establishing a new app-wide state architecture for one feature."
   Full write-up: `docs/decisions/D-110-health-score-lightweight-shared-snapshot.md`.
 - **Date:** 12-Aug-2026
+
+### D-111 — Home shows a tappable Portfolio Health grid, and “Health Score” is renamed
+- **Tier:** 3, owner-decided. Interprets D-105/D-106. “Showing the sub-scores on Home makes the aggregate
+  legible: the user can see the four inputs and enter the exact mechanism behind any one of them rather
+  than treating the single number as an unexplained verdict.” Full write-up:
+  `docs/decisions/D-111-portfolio-health-home-grid-and-naming.md`.
+- **Date:** 12-Aug-2026

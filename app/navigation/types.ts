@@ -19,6 +19,8 @@ export type ScenarioType =
   | 'idle_cash' // S-07
   | 'corpus_target'; // S-01
 
+export type PortfolioHealthFocus = 'investmentRate' | 'insurance' | 'emergency' | 'taxUtil';
+
 export type MainTabsParamList = {
   Consolidated: undefined;
   Portfolio: undefined;
@@ -35,8 +37,8 @@ export type MainTabsParamList = {
   Loans: undefined;
   Insurance: undefined;
   Budgeting: undefined;
-  // BQ-054: Financial Health Score — entered from PortfolioScreen.
-  HealthScore: undefined;
+  // BQ-054/BQ-060: Portfolio Health — optionally opens one sub-score's mechanism detail.
+  HealthScore: { focus?: PortfolioHealthFocus } | undefined;
 };
 
 // BQ-022: each family tab (Investments/Loans/Insurance) is its own small stack —

@@ -23,11 +23,14 @@ NotConfiguredScreen     screens/ (38)              Supabase env vars absent
 LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
 OnboardingScreen        screens/ (127)             Chip-guided 4-track conversation (D-082/D-084)
-ConsolidatedScreen      screens/ (233)             "Home" tab — net totals + streak + reward surface
+ConsolidatedScreen      screens/ (~390)            Home — 8-section feed: financial picture, tappable
+                                                   Portfolio Health grid, Arya, calculators, scenarios,
+                                                   Learn, and streak/reward (BQ-060/D-111)
 PortfolioScreen         screens/ (~430)            Portfolio tab — allocation donut by record count,
                                                    shared Health Score sub-scores, family nav rows,
                                                    category concentration, trend mechanism panel (BQ-058/061)
-HealthScoreScreen       screens/ (260)             Hidden tab — 0-100 score + 4 sub-score rows; entered from PortfolioScreen
+HealthScoreScreen       screens/ (~260)            Hidden “Portfolio Health” screen — 0-100 score + 4
+                                                   expandable rows; accepts an optional focus route param
 GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
                                                    inline create form, insurance coverage summary,
                                                    emergency readiness CTA (BQ-059)

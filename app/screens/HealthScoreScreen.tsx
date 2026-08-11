@@ -7,8 +7,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { RouteProp } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TeachingBlock } from '../components/TeachingBlock';
 import { colors, font, radius, spacing } from '../design/tokens';
@@ -17,11 +18,12 @@ import { loadHealthScoreSnapshot, updateHealthScoreInputs } from '../lib/healthS
 import type { HealthScoreSnapshot } from '../lib/healthScoreSnapshot';
 import type { MainTabsParamList } from '../navigation/types';
 
-type ExpandedRow = 'emergency' | 'insurance' | null;
+type ExpandedRow = 'investmentRate' | 'insurance' | 'emergency' | 'taxUtil' | null;
 
 export function HealthScoreScreen() {
   const { userId } = useAuth();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
+  const route = useRoute<RouteProp<MainTabsParamList, 'HealthScore'>>();
   const [state, setState] = useState<HealthScoreSnapshot | null>(null);
   const [expanded, setExpanded] = useState<ExpandedRow>(null);
   const [draftMonths, setDraftMonths] = useState('');
@@ -32,6 +34,10 @@ export function HealthScoreScreen() {
   }, [userId]);
 
   useFocusEffect(loadData);
+
+  useFocusEffect(useCallback(() => {
+    setExpanded(route.params?.focus ?? null);
+  }, [route.params?.focus]));
 
   const subScores = state?.subScores ?? {
     investmentRate: null,
@@ -82,7 +88,7 @@ export function HealthScoreScreen() {
         <Text style={styles.backText}>‹ Portfolio</Text>
       </Pressable>
 
-      <Text style={styles.heading}>Health Score</Text>
+      <Text style={styles.heading}>Portfolio Health</Text>
 
       {/* Hero score */}
       <View style={styles.scoreBlock}>
@@ -104,8 +110,8 @@ export function HealthScoreScreen() {
           score={subScores.investmentRate}
           ctaLabel="Add income & SIP data in Budgeting"
           onFill={() => navigation.navigate('Budgeting')}
-          isExpanded={false}
-          onToggle={() => navigation.navigate('Budgeting')}
+          isExpanded={expanded === 'investmentRate'}
+          onToggle={() => toggleRow('investmentRate')}
           last={false}
         />
         <SubScoreRow
@@ -178,8 +184,8 @@ export function HealthScoreScreen() {
           score={subScores.taxUtil}
           ctaLabel="Add holdings to compute"
           onFill={() => navigation.navigate('Investments')}
-          isExpanded={false}
-          onToggle={() => navigation.navigate('Investments')}
+          isExpanded={expanded === 'taxUtil'}
+          onToggle={() => toggleRow('taxUtil')}
           last
         />
       </View>
