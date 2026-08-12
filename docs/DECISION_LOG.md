@@ -134,3 +134,12 @@
   grandfathered non-inference migration. Full write-up:
   `docs/features/onboarding/decisions/D-119-assessment-v2-persistence-privacy-package.md`.
 - **Date:** 12-Aug-2026
+
+### D-121 — Progression instrumentation, privacy, retention, and rebuild package approved
+- **Tier:** 3, owner-approved. “An event records *that a qualifying action happened*, not what it was
+  worth.” Approves an append-only event ledger with derived rollups and summary, essential first-party
+  consent posture with no new consent surface, 400-day raw retention, a never-decreasing displayed-points
+  floor, fixed Asia/Kolkata day boundaries, and D-119's onboarding credit as the only historical backfill.
+  Unblocks BQ-069. Full write-up:
+  `docs/features/progression/decisions/D-121-progression-instrumentation-privacy-package.md`.
+- **Date:** 12-Aug-2026

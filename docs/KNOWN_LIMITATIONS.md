@@ -83,6 +83,20 @@ because it relies on a user-supplied number we can't sanity-check, for a segment
 know their own bracket precisely. Not ruled out permanently.
 **Revisit if:** real usage shows the room-only figure isn't satisfying what users actually came for.
 
+### Progression day boundaries are fixed to India time for every user
+**Traces to:** D-121 (§3 of `docs/features/progression/BRIEF-progression-instrumentation-privacy.md`).
+Every day-based progression rule — the daily point cap, per-type per-day limits, the Arya cap, one revisit
+award per day, return-day counting, the 7-day revisit window, the rolling weekly recap — uses a fixed
+Asia/Kolkata boundary, materialized on the event row at write time. Correct for the entire intended
+audience (D-114: Indian students and early-career earners; the product is India-tax-shaped throughout), and
+deterministic in a way that keeps replay reproducible. A user who travels or emigrates keeps IST day
+boundaries: a late-night session abroad may land on the "wrong" day and share a cap with the previous one.
+Per-user timezones were considered and deferred — they add a column, a settings surface, and an unresolved
+question about whether changing the setting re-buckets existing history. Because the day is stored rather
+than computed on read, adding them later is a forward migration, not a rewrite of history.
+**Revisit if:** a meaningful share of users are outside IST, or anyone reports progress landing on the
+wrong day.
+
 ---
 
 ## Product-philosophy items — not a technical gap, worth a deliberate look later

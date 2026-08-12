@@ -1,6 +1,6 @@
 # Critical brief — progression instrumentation, privacy, and rebuild package
 
-**Status:** OPEN — blocks BQ-069, which blocks BQ-070. No other READY work exists.
+**Status:** RESOLVED (12-Aug-2026) — approved in full as **D-121**. BQ-069 is READY.
 **Why Tier 3:** new durable behavioral schema; retention/deletion; consent posture; and
 low-reversibility once users hold progression history (D-114's own reversibility note).
 
@@ -167,4 +167,6 @@ is currently empty; this is the only item standing between the project and build
 
 ## Owner response
 
-_Pending._
+**Approved in full, 12-Aug-2026.** All five questions answered A (see `DECISIONS_FOR_YOU.md`). Written up
+as **D-121** — `docs/features/progression/decisions/D-121-progression-instrumentation-privacy-package.md`.
+The §5 backup-retention flag is carried forward into D-010 rather than resolved here.
