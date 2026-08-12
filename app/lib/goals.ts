@@ -19,6 +19,7 @@ export interface GoalCreateInput {
   target_amount: number;
   target_date: string;
   category: string;
+  funded_by?: GoalFundingRecord[];
 }
 
 export async function fetchGoals(userId: string): Promise<GoalRecord[]> {
@@ -29,17 +30,28 @@ export async function fetchGoals(userId: string): Promise<GoalRecord[]> {
   return (await res.json()) as GoalRecord[];
 }
 
-// No funded_by picker in this pass — a goal is created unfunded and can be linked to
-// holdings later; scoped out the same way BQ-027 scoped characteristics editing out of
-// its first pass, not silently dropped.
 export async function createGoal(userId: string, input: GoalCreateInput): Promise<GoalRecord> {
   const res = await fetch(`${BACKEND_URL}/goals?user_id=${userId}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...input, funded_by: [] }),
+    body: JSON.stringify({ ...input, funded_by: input.funded_by ?? [] }),
   });
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }
+  return (await res.json()) as GoalRecord;
+}
+
+export async function updateGoalFunding(
+  userId: string,
+  goalId: string,
+  fundedBy: GoalFundingRecord[],
+): Promise<GoalRecord> {
+  const res = await fetch(`${BACKEND_URL}/goals/${goalId}/funding?user_id=${userId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ funded_by: fundedBy }),
+  });
+  if (!res.ok) throw new Error(`Backend responded ${res.status}`);
   return (await res.json()) as GoalRecord;
 }

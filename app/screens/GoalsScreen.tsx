@@ -13,12 +13,15 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TeachingBlock } from '../components/TeachingBlock';
+import { GoalFundingFields } from '../components/GoalFundingFields';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
-import { createGoal, fetchGoals } from '../lib/goals';
+import { createGoal, fetchGoals, updateGoalFunding } from '../lib/goals';
 import { fetchHoldings } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
 import type { GoalRecord } from '../lib/goals';
+import type { GoalFundingRecord } from '../lib/goals';
+import { fundingAmountsValid } from '../lib/goalFundingValidation';
 import type { Holding } from '../lib/holdings';
 import type { MainTabsParamList } from '../navigation/types';
 
@@ -71,6 +74,7 @@ const GOAL_TYPES: GoalType[] = [
 interface ScreenState {
   goals: GoalRecord[] | null;
   holdings: Holding[] | null;
+  holdingsError: boolean;
   emergencyMonths: string | null;
   hasHealthIns: 'yes' | 'no' | null;
 }
@@ -81,24 +85,29 @@ export function GoalsScreen() {
   const [state, setState] = useState<ScreenState>({
     goals: null,
     holdings: null,
+    holdingsError: false,
     emergencyMonths: null,
     hasHealthIns: null,
   });
   const [openType, setOpenType] = useState<string | null>(null);
+  const [editingGoal, setEditingGoal] = useState<GoalRecord | null>(null);
 
   const loadData = useCallback(() => {
     if (!userId) return;
     Promise.all([
       fetchGoals(userId).catch((): GoalRecord[] | null => null),
-      fetchHoldings(userId).catch((): Holding[] | null => null),
+      fetchHoldings(userId)
+        .then((data) => ({ data, error: false }))
+        .catch(() => ({ data: null, error: true })),
       // Same two keys the Portfolio Health screen writes — one answer, read in both places,
       // rather than asking the user the same question twice.
       AsyncStorage.multiGet(['hs_emergency_months', 'hs_has_health_ins']),
-    ]).then(([goals, holdings, stored]) => {
+    ]).then(([goals, holdingResult, stored]) => {
       const hi = stored[1][1];
       setState({
         goals,
-        holdings,
+        holdings: holdingResult.data,
+        holdingsError: holdingResult.error,
         emergencyMonths: stored[0][1],
         hasHealthIns: hi === 'yes' || hi === 'no' ? hi : null,
       });
@@ -120,9 +129,20 @@ export function GoalsScreen() {
             <Text style={styles.sectionLabel}>Your goals</Text>
             <View style={styles.card}>
               {goals.map((goal, idx) => (
-                <GoalProgressRow key={goal.id} goal={goal} last={idx === goals.length - 1} />
+                <GoalProgressRow key={goal.id} goal={goal} last={idx === goals.length - 1} onManage={() => setEditingGoal(goal)} />
               ))}
             </View>
+            {editingGoal && userId && (
+              <GoalFundingEditor
+                key={editingGoal.id}
+                goal={editingGoal}
+                holdings={state.holdings}
+                holdingsError={state.holdingsError}
+                userId={userId}
+                onDone={() => { setEditingGoal(null); loadData(); }}
+                onCancel={() => setEditingGoal(null)}
+              />
+            )}
             <Text style={styles.caption}>
               Progress counts only what you have earmarked against each goal. A holding you have
               not linked to a goal is still yours — it just is not counted here.
@@ -160,6 +180,8 @@ export function GoalsScreen() {
           <NewGoalForm
             type={GOAL_TYPES.find((t) => t.key === openType)!}
             userId={userId}
+            holdings={state.holdings}
+            holdingsError={state.holdingsError}
             onSaved={() => {
               setOpenType(null);
               loadData();
@@ -237,7 +259,7 @@ function GoalMark({ type }: { type: string }) {
 
 // ─── Goal progress ────────────────────────────────────────────────────────────
 
-function GoalProgressRow({ goal, last }: { goal: GoalRecord; last: boolean }) {
+function GoalProgressRow({ goal, last, onManage }: { goal: GoalRecord; last: boolean; onManage: () => void }) {
   const pct =
     goal.target_amount > 0
       ? Math.max(0, Math.min(100, (goal.progress / goal.target_amount) * 100))
@@ -256,6 +278,7 @@ function GoalProgressRow({ goal, last }: { goal: GoalRecord; last: boolean }) {
       <View style={styles.goalTrack}>
         <View style={[styles.goalFill, { width: `${pct}%` }]} />
       </View>
+      <Pressable onPress={onManage}><Text style={styles.manageLink}>Manage counted holdings</Text></Pressable>
     </View>
   );
 }
@@ -268,17 +291,21 @@ function formatTargetDate(raw: string): string {
 
 // ─── New goal form ────────────────────────────────────────────────────────────
 // Reuses the existing createGoal endpoint (D-038). Category comes from the card the user
-// tapped, so only the amount and the date are asked for. A goal is created unfunded —
-// linking holdings to it is BudgetingScreen's job, unchanged by this screen.
+// tapped, so only the amount and date are required. Existing holdings may optionally
+// be counted at creation; the same links remain editable from the goal row.
 
 function NewGoalForm({
   type,
   userId,
+  holdings,
+  holdingsError,
   onSaved,
   onCancel,
 }: {
   type: GoalType;
   userId: string;
+  holdings: Holding[] | null;
+  holdingsError: boolean;
   onSaved: () => void;
   onCancel: () => void;
 }) {
@@ -286,11 +313,16 @@ function NewGoalForm({
   const [date, setDate] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fundedBy, setFundedBy] = useState<GoalFundingRecord[]>([]);
 
   async function save() {
     const parsedAmount = Number(amount);
     if (!parsedAmount || parsedAmount <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       setError('An amount above zero and a date as YYYY-MM-DD are both needed.');
+      return;
+    }
+    if (!fundingAmountsValid(fundedBy)) {
+      setError('Use a positive amount with at most 12 whole digits and 2 decimal places for each selected holding.');
       return;
     }
     setSaving(true);
@@ -300,6 +332,7 @@ function NewGoalForm({
         category: type.category,
         target_amount: parsedAmount,
         target_date: date,
+        funded_by: fundedBy,
       });
       onSaved();
     } catch (err) {
@@ -336,6 +369,8 @@ function NewGoalForm({
         placeholderTextColor={colors.inkMuted}
       />
 
+      <GoalFundingFields holdings={holdings} loadFailed={holdingsError} value={fundedBy} onChange={setFundedBy} />
+
       {error !== null && <Text style={styles.errorText}>{error}</Text>}
 
       <View style={styles.formActions}>
@@ -345,6 +380,35 @@ function NewGoalForm({
         <Pressable style={styles.saveBtn} onPress={save} disabled={saving}>
           <Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save goal'}</Text>
         </Pressable>
+      </View>
+    </View>
+  );
+}
+
+function GoalFundingEditor({ goal, holdings, holdingsError, userId, onDone, onCancel }: {
+  goal: GoalRecord; holdings: Holding[] | null; holdingsError: boolean; userId: string; onDone: () => void; onCancel: () => void;
+}) {
+  const [fundedBy, setFundedBy] = useState<GoalFundingRecord[]>(goal.funded_by);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  async function save() {
+    if (!fundingAmountsValid(fundedBy)) {
+      setError('Use a positive amount with at most 12 whole digits and 2 decimal places for each selected holding.');
+      return;
+    }
+    setSaving(true); setError(null);
+    try { await updateGoalFunding(userId, goal.id, fundedBy); onDone(); }
+    catch (err) { setError(err instanceof Error ? err.message : 'Could not update goal funding.'); }
+    finally { setSaving(false); }
+  }
+  return (
+    <View style={styles.form}>
+      <Text style={styles.formTitle}>Count holdings toward {goal.category}</Text>
+      <GoalFundingFields holdings={holdings} loadFailed={holdingsError} value={fundedBy} onChange={setFundedBy} />
+      {error && <Text style={styles.errorText}>{error}</Text>}
+      <View style={styles.formActions}>
+        <Pressable style={styles.cancelBtn} onPress={onCancel}><Text style={styles.cancelBtnText}>Cancel</Text></Pressable>
+        <Pressable style={styles.saveBtn} onPress={save} disabled={saving}><Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save links'}</Text></Pressable>
       </View>
     </View>
   );
@@ -557,6 +621,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   goalFill: { height: '100%', backgroundColor: colors.ink },
+  manageLink: { fontFamily: font.uiMedium, fontSize: 12, color: colors.tutor, marginTop: spacing.sm },
 
   // ── Goal-type grid
   grid: {

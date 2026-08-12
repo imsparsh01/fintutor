@@ -20,7 +20,12 @@ from app.services.discretionary_categories import (
     create_discretionary_category,
     list_discretionary_categories,
 )
-from app.services.goals import create_goal, list_goals
+from app.services.goals import (
+    GoalFundingValidationError,
+    create_goal,
+    list_goals,
+    update_goal_funding,
+)
 from app.services.holding_capture_classifier import classify_holding_capture
 from app.services.holdings import (
     create_holding,
@@ -136,6 +141,10 @@ class GoalCreate(BaseModel):
     target_date: date
     category: str
     funded_by: list[GoalFundingIn] = []
+
+
+class GoalFundingUpdate(BaseModel):
+    funded_by: list[GoalFundingIn]
 
 
 class ProgressionEventIn(BaseModel):
@@ -370,12 +379,32 @@ def post_goal(user_id: uuid.UUID, body: GoalCreate, db: Session = Depends(get_db
             body.category,
             [f.model_dump() for f in body.funded_by],
         )
+    except GoalFundingValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=400,
             detail="One or more funded_by.holding_id values don't exist",
         )
+
+
+@app.put("/goals/{goal_id}/funding")
+def put_goal_funding(
+    goal_id: uuid.UUID,
+    user_id: uuid.UUID,
+    body: GoalFundingUpdate,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        updated = update_goal_funding(
+            db, user_id, goal_id, [item.model_dump() for item in body.funded_by]
+        )
+    except GoalFundingValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    return updated
 
 
 @app.get("/streak")

@@ -12,6 +12,17 @@
 
 ---
 
+## BQ-074 — Complete goal-to-holding funding flow — DONE 12-Aug-2026
+
+Completed D-038's approved goal funding model end to end. Both goal-creation paths can optionally link owned
+holdings and earmarked amounts; existing links can be edited or cleared; progress recomputes from persisted
+links. Ownership, duplicate, finite/positive and Numeric(14,2) validation return controlled errors. Optional
+holding-load failure does not break Budgeting, and the selector has labelled 44px checkbox targets and
+holding-specific input labels. Staff review findings were fixed. Verified: 96 backend tests including real
+API/SQLite persistence and cross-user cases, clean TypeScript, iOS production bundle, and diff check.
+
+---
+
 ## BQ-073 — Correct reversed holding reconciliation status — DONE 12-Aug-2026
 
 Traces to D-125 and the standing living-baseline contract in PROJECT_SPEC §2. Corrected the bounded defect:

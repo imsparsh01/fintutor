@@ -62,6 +62,8 @@ ChatThread                  components/ (~470) Core chat UI — Arya header (BQ-
                                                AryaHeader rendered when !onboarding (D-105).
 HoldingProposalCard         components/ (138)  Confirm/reject holding capture proposal (D-078 Fork 2)
 HoldingEditModal            components/ (326)  Add/edit holding — schema-driven form via characteristicsSchema
+GoalFundingFields           components/        Optional neutral holding picker + earmarked amounts;
+                                               reused by goal creation and existing-goal link editing
 ConsolidatedTotalsCard      components/ (94)   Home totals — uses metadata flags not numeric zero (D-097)
 TeachingWalkthrough         components/ (312)  Full-screen P9-guarded walkthrough (D-090). Four-part guard:
                                                skip on every step, nothing unlocks, no comprehension check,
@@ -86,7 +88,7 @@ holdings.ts             74      fetchHoldings / createHolding / updateHolding / 
 consolidated.ts         30      fetchConsolidated() → {families, totals, metadata}
 budget.ts               24      fetchBudget() → {income, provenance, goals, discretionary, taxRoom}
 income.ts               53      fetchIncome / saveIncome
-goals.ts                45      fetchGoals / createGoal
+goals.ts                        fetchGoals / createGoal / updateGoalFunding
 onboarding.ts           17      Legacy device-local completion helpers (retained for BQ-068 compatibility)
 onboardingAssessment.ts ~130    Dedicated v2 normalized API client + handled-state outage cache,
                                 legacy-presence compatibility read, and local invite dismissal

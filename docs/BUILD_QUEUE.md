@@ -16,19 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-074 — Complete goal-to-holding funding flow — READY
-
-Traces to D-038 and D-125. The approved `funded_by[{holding_id, earmarked_amount}]` model and goal-progress
-calculation are shipped, but every frontend-created goal sends an empty list and no UI can link or update
-funding. Add the bounded backend mutation and frontend holding-selection/earmarked-amount interaction needed
-to create and edit those already-approved links. Validate that every selected holding belongs to the same
-user; do not add schema, automatic recommendations, allocation verdicts, or new financial formulas.
-
-Acceptance: a user can create or update a goal with zero or more owned holdings and earmarked amounts;
-cross-user holding IDs are rejected; goal progress reflects the saved links; empty funding remains valid;
-loading/error/empty states and backend tests are present; native QA is attempted.
-
-### BQ-075 — Surface the approved loan-versus-invest scenario from Tools — READY AFTER BQ-074
+### BQ-075 — Surface the approved loan-versus-invest scenario from Tools — READY
 
 Traces to D-104/D-106 and D-125. S-02 already exists as `LoanVsInvestModal` but is discoverable only from
 an eligible loan detail. Add a Tools scenario entry that lets the user choose an eligible owned loan and
@@ -49,6 +37,23 @@ dependency, recommendation, or progression event is authorised.
 Acceptance: all five choices plus Home are visible and accessible; the suggested choice follows normalized
 immediate intent defensively; every route reaches an existing surface; choosing Home requires no disclosure;
 answer/skip/global-exit and legacy opt-in paths remain correct; TypeScript and native QA pass/best-effort.
+
+### BQ-077 — Implement user-confirmed holding reconciliation — READY AFTER BQ-076
+
+Traces to D-127. Extend conversational holding capture into a transient new/update/conflict proposal. Backend
+code, not the model, owns candidate identity; exact locally matched display names are redacted before Haiku,
+and ambiguous same-type candidates require the user to select a holding or “Add as new.” Resolve an
+authoritative field diff, show old/new values neutrally, and apply only explicitly confirmed fields after
+rechecking current state under a row lock. Preserve unstated fields. Reuse the current holdings table and
+D-099 response contract; no proposal/history persistence, schema, dependency, deletion, non-holding mutation,
+fuzzy matching, model-selected target, progression event, or financial-calculation change.
+
+Acceptance: no conversational write occurs before confirmation; real display names never reach reconciliation
+Haiku; zero/one/many same-type candidates follow D-127; owned-target checks prevent cross-user resolution or
+apply; added/unchanged/conflicting field diffs are accurate; stale same-field changes require re-confirmation;
+confirmed updates merge only shown fields; dismiss/classifier failure writes nothing; new/manual capture stays
+functional; focused API/service tests, full backend suite, TypeScript, codemap updates, and native QA pass or
+are attempted as applicable.
 
 ## BLOCKED — do not start
 

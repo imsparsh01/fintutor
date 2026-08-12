@@ -26,6 +26,7 @@ POST /discretionary-categories  → create_discretionary_category(…)
 
 GET  /goals                     → list_goals(db, user_id)
 POST /goals                     → create_goal(…, funded_by: list[{holding_id, earmarked}])
+PUT  /goals/{id}/funding        → replace owned funded_by links; empty list allowed
 
 GET  /consolidated              → compute_consolidated(db, user_id)
 GET  /budget                    → compute_budget(db, user_id)
@@ -73,7 +74,7 @@ services/consolidated.py (99)   compute_consolidated() — per-family totals wit
                                  holding/valued/excluded/status per family so client never infers from 0.
 services/holdings.py (137)      CRUD + serialisation. alias auto-generated (D-074) if not provided.
 services/income.py (44)         CRUD for income sources (floor + optional amount_high, D-073).
-services/goals.py (55)          CRUD + earmarked_amount linking to holdings.
+services/goals.py               Create/list + owned earmarked_amount link replacement.
 services/onboarding.py (242)    start_or_resume() / record_turn() / build_onboarding_instruction()
                                  Track: fresh_starter | reactive_dabbler | habit_former | unclassified
                                  Stage: intro → sequencing → mechanism → reflect → gapscan → complete

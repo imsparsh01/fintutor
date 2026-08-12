@@ -1,8 +1,38 @@
 import uuid
+from decimal import Decimal, InvalidOperation
 
 from sqlalchemy.orm import Session
 
-from app.models import Goal, GoalFunding
+from app.models import Goal, GoalFunding, Holding
+
+
+class GoalFundingValidationError(ValueError):
+    pass
+
+
+def _validate_funding(db: Session, user_id: uuid.UUID, funded_by: list[dict]) -> None:
+    for item in funded_by:
+        try:
+            amount = Decimal(str(item["earmarked_amount"]))
+        except (InvalidOperation, ValueError):
+            raise GoalFundingValidationError("Earmarked amounts must be valid numbers")
+        if not amount.is_finite() or amount <= 0:
+            raise GoalFundingValidationError("Each selected holding needs a finite earmarked amount above zero")
+        if amount > Decimal("999999999999.99") or amount.as_tuple().exponent < -2:
+            raise GoalFundingValidationError(
+                "Earmarked amounts must fit 12 whole digits and 2 decimal places"
+            )
+    ids = [item["holding_id"] for item in funded_by]
+    if len(ids) != len(set(ids)):
+        raise GoalFundingValidationError("Each holding can fund a goal only once")
+    owned = {
+        row[0]
+        for row in db.query(Holding.id)
+        .filter(Holding.user_id == user_id, Holding.id.in_(ids))
+        .all()
+    }
+    if owned != set(ids):
+        raise GoalFundingValidationError("Every funded holding must belong to this user")
 
 
 def _to_dict(goal: Goal) -> dict:
@@ -39,6 +69,7 @@ def create_goal(
     """`funded_by` is a list of {holding_id, earmarked_amount}. Raises
     sqlalchemy.exc.IntegrityError if a holding_id doesn't exist (FK constraint) — caller's
     job to turn that into a 4xx, same responsibility split as create_holding."""
+    _validate_funding(db, user_id, funded_by)
     goal = Goal(
         user_id=user_id,
         target_amount=target_amount,
@@ -50,6 +81,25 @@ def create_goal(
         ],
     )
     db.add(goal)
+    db.commit()
+    db.refresh(goal)
+    return _to_dict(goal)
+
+
+def update_goal_funding(
+    db: Session,
+    user_id: uuid.UUID,
+    goal_id: uuid.UUID,
+    funded_by: list[dict],
+) -> dict | None:
+    goal = db.query(Goal).filter(Goal.user_id == user_id, Goal.id == goal_id).first()
+    if goal is None:
+        return None
+    _validate_funding(db, user_id, funded_by)
+    goal.funded_by = [
+        GoalFunding(holding_id=item["holding_id"], earmarked_amount=item["earmarked_amount"])
+        for item in funded_by
+    ]
     db.commit()
     db.refresh(goal)
     return _to_dict(goal)

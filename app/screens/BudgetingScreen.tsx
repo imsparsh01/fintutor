@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { TaxSavingRoomModal } from '../components/TaxSavingRoomModal';
+import { GoalFundingFields } from '../components/GoalFundingFields';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
 import { useAuth } from '../lib/AuthContext';
@@ -12,6 +13,9 @@ import {
 } from '../lib/discretionaryCategories';
 import { formatRupees } from '../lib/format';
 import { createGoal, fetchGoals, type GoalRecord } from '../lib/goals';
+import type { GoalFundingRecord } from '../lib/goals';
+import { fundingAmountsValid } from '../lib/goalFundingValidation';
+import { fetchHoldings, type Holding } from '../lib/holdings';
 import { createIncome, fetchIncome, updateIncome, type IncomeRecord, type IncomeSource } from '../lib/income';
 import { humanizeProductType } from '../lib/taxonomy';
 
@@ -30,6 +34,8 @@ export function BudgetingScreen() {
   const [income, setIncome] = useState<IncomeRecord[]>([]);
   const [discretionaryCategories, setDiscretionaryCategories] = useState<DiscretionaryCategory[]>([]);
   const [goals, setGoals] = useState<GoalRecord[]>([]);
+  const [holdings, setHoldings] = useState<Holding[] | null>(null);
+  const [holdingsError, setHoldingsError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [checkingTaxSaving, setCheckingTaxSaving] = useState(false);
   const [addingDiscretionary, setAddingDiscretionary] = useState(false);
@@ -42,12 +48,17 @@ export function BudgetingScreen() {
       fetchIncome(userId),
       fetchDiscretionaryCategories(userId),
       fetchGoals(userId),
+      fetchHoldings(userId)
+        .then((data) => ({ data, error: false }))
+        .catch(() => ({ data: null, error: true })),
     ])
-      .then(([b, i, d, g]) => {
+      .then(([b, i, d, g, holdingResult]) => {
         setBudget(b);
         setIncome(i);
         setDiscretionaryCategories(d);
         setGoals(g);
+        setHoldings(holdingResult.data);
+        setHoldingsError(holdingResult.error);
       })
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load'));
   }, [userId]);
@@ -204,7 +215,7 @@ export function BudgetingScreen() {
           </Text>
         )}
       </View>
-      <AddGoalForm userId={userId} onAdded={load} />
+      <AddGoalForm userId={userId} holdings={holdings} holdingsError={holdingsError} onAdded={load} />
 
       {checkingTaxSaving && (
         <TaxSavingRoomModal userId={userId} onClose={() => setCheckingTaxSaving(false)} />
@@ -442,13 +453,14 @@ function DiscretionaryAddFields({
   );
 }
 
-function AddGoalForm({ userId, onAdded }: { userId: string; onAdded: () => void }) {
+function AddGoalForm({ userId, holdings, holdingsError, onAdded }: { userId: string; holdings: Holding[] | null; holdingsError: boolean; onAdded: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [category, setCategory] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [targetDate, setTargetDate] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fundedBy, setFundedBy] = useState<GoalFundingRecord[]>([]);
 
   const save = async () => {
     const parsedAmount = Number(targetAmount);
@@ -456,13 +468,18 @@ function AddGoalForm({ userId, onAdded }: { userId: string; onAdded: () => void 
       setError('Fill in a category, an amount, and a date as YYYY-MM-DD');
       return;
     }
+    if (!fundingAmountsValid(fundedBy)) {
+      setError('Use a positive amount with at most 12 whole digits and 2 decimal places for each selected holding.');
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
-      await createGoal(userId, { category: category.trim(), target_amount: parsedAmount, target_date: targetDate });
+      await createGoal(userId, { category: category.trim(), target_amount: parsedAmount, target_date: targetDate, funded_by: fundedBy });
       setCategory('');
       setTargetAmount('');
       setTargetDate('');
+      setFundedBy([]);
       setExpanded(false);
       onAdded();
     } catch (err) {
@@ -504,6 +521,7 @@ function AddGoalForm({ userId, onAdded }: { userId: string; onAdded: () => void 
         value={targetDate}
         onChangeText={setTargetDate}
       />
+      <GoalFundingFields holdings={holdings} loadFailed={holdingsError} value={fundedBy} onChange={setFundedBy} />
       {error && <Text style={styles.errorText}>{error}</Text>}
       <Pressable style={styles.saveButton} onPress={save} disabled={saving}>
         <Text style={styles.saveButtonText}>{saving ? 'Saving…' : 'Save'}</Text>

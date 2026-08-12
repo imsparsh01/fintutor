@@ -178,3 +178,10 @@
   Arya, an existing item, a goal, Tools, or Home without forced disclosure. Full write-up:
   `docs/decisions/D-126-optional-guided-onboarding-handoff.md`.
 - **Date:** 12-Aug-2026
+
+### D-127 — Conversational holding reconciliation uses a user-confirmed field diff
+- **Tier:** 3, owner-decided. “The AI extracts and compares; the user retains authority over the
+  financial-data write.” New, updated, and conflicting holding information shows its target and exact diff;
+  ambiguity requires user selection and nothing writes without confirmation. Full write-up:
+  `docs/decisions/D-127-user-confirmed-holding-reconciliation.md`.
+- **Date:** 12-Aug-2026

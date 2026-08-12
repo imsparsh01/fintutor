@@ -32,7 +32,8 @@ goals
   target_amount   float
   target_date     date
   category        string
-  funded_by       JSONB  — list of {holding_id: UUID, earmarked_amount: float}
+  funded_by       relationship via goal_fundings — owned holding links + earmarked amounts;
+                  replaced atomically by PUT /goals/{id}/funding
 
 discretionary_categories
   id              UUID PK
