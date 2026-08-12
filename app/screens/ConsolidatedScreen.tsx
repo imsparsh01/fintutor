@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { ConsolidatedTotalsCard } from '../components/ConsolidatedTotalsCard';
+import { ProgressBar } from '../components/ProgressBar';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { loadHealthScoreSnapshot } from '../lib/healthScoreSnapshot';
@@ -14,6 +15,7 @@ import {
   hasDismissedLegacyInvite,
 } from '../lib/onboardingAssessment';
 import { randomRewardFact } from '../lib/rewardFacts';
+import { fetchProgression, type ProgressionSummary } from '../lib/progression';
 import { recordAppOpen, type StreakOpenResult } from '../lib/streaks';
 import { fetchSurfacingCandidates, type SurfacingCandidate } from '../lib/surfacing';
 import { supabase } from '../lib/supabase';
@@ -65,6 +67,7 @@ export function ConsolidatedScreen() {
   const [rewardFact, setRewardFact] = useState<string | null>(null);
   const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
   const [showAssessmentInvite, setShowAssessmentInvite] = useState(false);
+  const [progression, setProgression] = useState<ProgressionSummary | null>(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -75,11 +78,17 @@ export function ConsolidatedScreen() {
   }, [userId]);
 
   const loadHome = useCallback(() => {
-    if (!userId) return;
+    let active = true;
+    setProgression(null);
+    if (!userId) return () => { active = false; };
     loadHealthScoreSnapshot(userId, true).then(setHealth);
     fetchSurfacingCandidates(userId)
       .then((items) => setCandidate(items[0] ?? null))
       .catch(() => setCandidate(null));
+    fetchProgression(userId)
+      .then((next) => { if (active) setProgression(next); })
+      .catch(() => { if (active) setProgression(null); });
+    return () => { active = false; };
   }, [userId]);
 
   useFocusEffect(loadHome);
@@ -201,6 +210,21 @@ export function ConsolidatedScreen() {
       </View>
 
       <SectionLabel>Keep learning</SectionLabel>
+      <Pressable style={styles.progressCard} onPress={() => navigation.navigate('Progress')}>
+        <View style={styles.progressHeader}>
+          <View style={styles.headerCopy}>
+            <Text style={styles.progressTitle}>{stageLabel(progression?.stage)} stage</Text>
+            <Text style={styles.progressMeta}>{progression ? `${progression.points} participation points` : 'Loading learning progress'}</Text>
+          </View>
+          <Text style={styles.toolOpen}>Details ›</Text>
+        </View>
+        <ProgressBar
+          fraction={progression?.stage_progress.fraction ?? 0}
+          min={progression?.stage_progress.start ?? 0}
+          max={progression?.stage_progress.end ?? 1}
+          value={progression?.stage_progress.value ?? 0}
+        />
+      </Pressable>
       {rewardFact ? (
         <View style={styles.rewardFact}>
           <Text style={styles.rewardLabel}>A fact worth knowing</Text>
@@ -292,6 +316,11 @@ function currentMonthLabel(): string {
   return new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 }
 
+function stageLabel(stage?: string): string {
+  if (!stage) return 'Learning';
+  return stage.charAt(0).toUpperCase() + stage.slice(1);
+}
+
 async function shouldOfferAssessment(userId: string): Promise<boolean> {
   try {
     if (await hasDismissedLegacyInvite(userId)) return false;
@@ -381,6 +410,10 @@ const styles = StyleSheet.create({
   learnLabel: { flex: 1, fontFamily: font.uiMedium, fontSize: 14, color: colors.ink },
   chevron: { fontFamily: font.ui, fontSize: 18, color: colors.inkMuted },
   streakCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, backgroundColor: colors.behaviourSoft, borderRadius: radius.lg, padding: spacing.lg },
+  progressCard: { backgroundColor: colors.canvas, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, padding: spacing.lg, marginBottom: spacing.md, gap: spacing.md },
+  progressHeader: { flexDirection: 'row', alignItems: 'center' },
+  progressTitle: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.ink },
+  progressMeta: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: 2 },
   streakCardNumber: { fontFamily: font.monoSemibold, fontSize: 30, color: colors.behaviour },
   streakCardTitle: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.ink },
   streakCardBody: { fontFamily: font.tutor, fontSize: 12, lineHeight: 17, color: colors.inkSecondary, marginTop: 2 },

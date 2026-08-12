@@ -157,3 +157,10 @@
   screen with stage, continuous progress, gate explanations, recent attribution, and factual Expanding
   milestones. Full write-up: `docs/features/progression/decisions/D-123-progression-completion-package.md`.
 - **Date:** 12-Aug-2026
+
+### D-124 — Activation test v1 and evidence thresholds
+- **Tier:** 2, REVIEW-FLAGGED. “Activation requires both value and comprehension.” Defines 12 moderated
+  sessions, a primary 8/12 personal-insight-within-five-minutes threshold, and independent continuation,
+  neutrality, trust, and subgroup gates. Full write-up:
+  `docs/features/activation/decisions/D-124-activation-test-v1.md`.
+- **Date:** 12-Aug-2026

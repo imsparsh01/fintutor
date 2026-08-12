@@ -12,6 +12,23 @@
 
 ---
 
+## BQ-070 — Approved learning-progression surfaces — DONE 12-Aug-2026
+
+Built D-123's compact Home summary and hidden Progress detail screen while retaining five visible tabs.
+The backend now supplies authoritative stage bounds and awarded-only attribution; the UI shows named stage,
+continuous progress, point/breadth/return gates, content-free recent actions, and factual Expanding
+milestones. Staff review fixed monotonic-stage gate consistency, cross-user stale-response races, range
+copy, and progress-bar accessibility. Verified: 85 backend tests, compileall, one Alembic head, and clean
+TypeScript. Browser QA was attempted but Expo did not bind the local preview port in offline mode.
+
+## BQ-071 — Progression emitters — DONE 12-Aug-2026
+
+Shipped every valid v1 emitter with IST idempotency, qualifying-event/capability coupling, and
+render-confirmed calculator/scenario completion. D-123 deliberately defers teaching and recap emitters
+because no meaningful non-gating interaction exists; they are not incomplete implementation. Verified as
+part of the 85-test progression suite and frontend type-check.
+
+
 ## BQ-069 — Progression event ledger and rebuildable summary — DONE 12-Aug-2026
 
 Built the backend data layer approved by D-121: an append-only `progression_events` ledger, a

@@ -41,6 +41,8 @@ export type MainTabsParamList = {
   HealthScore: { focus?: PortfolioHealthFocus } | undefined;
   // BQ-068: hidden voluntary route for grandfathered users; never a primary tab.
   Assessment: undefined;
+  // BQ-070: hidden detail route, opened by the compact Home summary.
+  Progress: undefined;
 };
 
 // BQ-022: each family tab (Investments/Loans/Insurance) is its own small stack —

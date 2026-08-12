@@ -45,8 +45,9 @@ POST /onboarding-assessment/handle      → global exit; fill unknowns neutrally
 PUT  /onboarding-assessment/context/{q} → post-handle normalized context correction
 POST /onboarding-assessment/clear       → clear context without reopening/completion loss
 
-GET  /progression               → summary; synthesizes a zero Discovering state if no row
-GET  /progression/history       → the user's own event records, newest first
+GET  /progression               → summary + authoritative current-stage progress bounds;
+                                  synthesizes a zero Discovering state if no row
+GET  /progression/history       → awarded-only user event records, newest first
 POST /progression/event         → record_event; body {event_type, subject_key?, idempotency_key?}
                                   occurred_at is NOT accepted from the client — server clock only,
                                   or a caller could backdate across the day boundary for a fresh cap

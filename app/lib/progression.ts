@@ -22,6 +22,15 @@ export interface ProgressionSummary {
   expanding_milestones: number;
   ruleset_version: number;
   last_event_at: string | null;
+  stage_progress: { start: number; end: number; value: number; fraction: number };
+}
+
+export interface ProgressionHistoryEvent {
+  event_type: string;
+  subject_key: string | null;
+  dimension: string;
+  occurred_at: string;
+  local_date: string;
 }
 
 export async function fetchProgression(userId: string): Promise<ProgressionSummary> {
@@ -30,6 +39,18 @@ export async function fetchProgression(userId: string): Promise<ProgressionSumma
     throw new Error(`Backend responded ${res.status}`);
   }
   return (await res.json()) as ProgressionSummary;
+}
+
+export async function fetchProgressionHistory(
+  userId: string,
+  limit = 12,
+): Promise<ProgressionHistoryEvent[]> {
+  const res = await fetch(
+    `${BACKEND_URL}/progression/history?user_id=${userId}&limit=${limit}`,
+  );
+  if (!res.ok) throw new Error(`Backend responded ${res.status}`);
+  const body = (await res.json()) as { events: ProgressionHistoryEvent[] };
+  return body.events;
 }
 
 // The one emitter primitive. Never throws, never blocks a render, and deliberately

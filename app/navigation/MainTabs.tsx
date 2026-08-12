@@ -11,6 +11,7 @@ import { InsuranceScreen } from '../screens/InsuranceScreen';
 import { InvestmentsScreen } from '../screens/InvestmentsScreen';
 import { LoansScreen } from '../screens/LoansScreen';
 import { PortfolioScreen } from '../screens/PortfolioScreen';
+import { ProgressScreen } from '../screens/ProgressScreen';
 import { ScenarioScreen } from '../screens/ScenarioScreen';
 import { ToolsScreen } from '../screens/ToolsScreen';
 import { VoluntaryAssessmentScreen } from '../screens/VoluntaryAssessmentScreen';
@@ -112,6 +113,15 @@ export function MainTabs({ initialRouteName = 'Consolidated' }: { initialRouteNa
       <Tab.Screen
         name="Assessment"
         component={VoluntaryAssessmentScreen}
+        options={{
+          tabBarButton: () => null,
+          tabBarItemStyle: { display: 'none' },
+          tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tab.Screen
+        name="Progress"
+        component={ProgressScreen}
         options={{
           tabBarButton: () => null,
           tabBarItemStyle: { display: 'none' },

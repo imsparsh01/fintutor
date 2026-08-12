@@ -47,6 +47,8 @@ LoansScreen             screens/ (290)             Hidden tab — holdings list 
 InsuranceScreen         screens/ (296)             Hidden tab — holdings list (term_insurance/endowment_ulip)
 BudgetingScreen         screens/ (659)             Hidden tab — income + goals + discretionary + tax room
 ChatScreen              screens/ (47)              Chat tab — thin wrapper rendering ChatThread
+ProgressScreen          screens/                   Hidden BQ-070 learning-progress detail: stage,
+                                                   backend-authored bar/gates, awarded-only attribution
 HoldingDetailScreen     screens/ (357)             Single holding — edit + ESOP/LoanVsInvest modals
 ```
 
@@ -97,6 +99,7 @@ progression.ts          ~95     BQ-071 emitters: recordCalculatorCompleted / rec
                                 each completion asks the backend to couple its first-capability award.
                                 ResultCard effects emit only after a valid result commits to the screen.
                                 These live in the app because calculators and scenarios compute client-side.
+                                BQ-070 also fetches the backend-authored summary/history projections.
 surfacing.ts            17      fetchSurfacingCandidates()
 characteristicsSchema.ts 94     CHARACTERISTICS_SCHEMA — per-product-type field definitions for HoldingEditModal
 walkthroughSteps.ts     42      Per-family static step arrays for TeachingWalkthrough (D-096)

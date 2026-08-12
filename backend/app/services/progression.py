@@ -25,6 +25,7 @@ from app.services.progression_ruleset import (
     BREADTH_DIMENSIONS,
     DAILY_REPEATABLE_CAP,
     DAY_BOUNDARY_TZ,
+    EXPANDING_MILESTONE_INTERVAL,
     EVENT_RULES,
     RECORDABLE_EVENT_TYPES,
     RETURN_QUALIFYING_DIMENSIONS,
@@ -32,7 +33,6 @@ from app.services.progression_ruleset import (
     STAGES,
     expanding_milestones,
     resolve_stage,
-    unmet_conditions,
 )
 
 # D-121 §5: raw events prune after this many days; rollups and summary persist for
@@ -97,6 +97,7 @@ class _DayResult:
     dimensions: set[str] = field(default_factory=set)
     once_keys: list[str] = field(default_factory=list)
     return_day_awarded: bool = False
+    awarded_event_ids: list[uuid.UUID] = field(default_factory=list)
 
 
 @dataclass
@@ -120,7 +121,9 @@ def _replay_day(
     type_counts: Counter[str] = Counter()
     subject_counts: Counter[tuple[str, str | None]] = Counter()
 
-    def try_award(event_type: str, subject_key: str | None) -> bool:
+    def try_award(
+        event_type: str, subject_key: str | None, event_id: uuid.UUID | None = None
+    ) -> bool:
         nonlocal remaining_cap
         rule = EVENT_RULES[event_type]
         key = once_key(event_type, subject_key)
@@ -161,11 +164,13 @@ def _replay_day(
         if rule.once_per_subject:
             consumed_once[key] = day
             result.once_keys.append(key)
+        if event_id is not None:
+            result.awarded_event_ids.append(event_id)
         return True
 
     # Deterministic order: the true instant, then the row id as a stable tiebreak.
     for event in sorted(events, key=_ledger_order):
-        try_award(event.event_type, event.subject_key)
+        try_award(event.event_type, event.subject_key, event.id)
 
     # D-117: a return day is earned once per day *after* at least one eligible
     # Explore/Model/Reflect event. Derived here rather than recorded, so it cannot be
@@ -542,15 +547,18 @@ def list_history(
     intentionally sticky; account deletion removes everything.
     """
     limit = max(1, min(limit, 200))
-    events = list(
-        db.execute(
-            select(ProgressionEvent)
-            .where(ProgressionEvent.user_id == user_id)
-            .order_by(ProgressionEvent.occurred_at.desc(), ProgressionEvent.id.desc())
-            .limit(limit)
-            .offset(max(0, offset))
-        ).scalars()
-    )
+    all_events = _load_events(db, user_id)
+    replayed = _replay(all_events, _load_rollups(db, user_id))
+    awarded_ids = {
+        event_id
+        for day_result in replayed.day_results.values()
+        for event_id in day_result.awarded_event_ids
+    }
+    events = sorted(
+        (event for event in all_events if event.id in awarded_ids),
+        key=_ledger_order,
+        reverse=True,
+    )[max(0, offset) : max(0, offset) + limit]
     return [
         {
             "event_type": e.event_type,
@@ -631,10 +639,11 @@ def to_api_summary(summary: ProgressionSummary | None) -> dict:
             "active_dimensions": [],
             "return_days": 0,
             "next_stage": STAGES[1].name,
-            "unmet_conditions": unmet_conditions(0, 0, 0),
+            "unmet_conditions": _unmet_for_stage(0, 0, 0, 0),
             "expanding_milestones": 0,
             "ruleset_version": RULESET_VERSION,
             "last_event_at": None,
+            "stage_progress": _stage_progress(0, 0),
         }
     return {
         "stage": summary.stage,
@@ -646,14 +655,56 @@ def to_api_summary(summary: ProgressionSummary | None) -> dict:
             if summary.stage_floor_index + 1 < len(STAGES)
             else None
         ),
-        "unmet_conditions": unmet_conditions(
+        "unmet_conditions": _unmet_for_stage(
             summary.displayed_points,
             len(summary.active_dimensions or []),
             summary.return_days,
+            summary.stage_floor_index,
         ),
         "expanding_milestones": expanding_milestones(summary.displayed_points),
         "ruleset_version": summary.ruleset_version,
         "last_event_at": (
             summary.last_event_at.isoformat() if summary.last_event_at else None
         ),
+        "stage_progress": _stage_progress(
+            summary.displayed_points, summary.stage_floor_index
+        ),
     }
+
+
+def _unmet_for_stage(
+    points: int, dimension_count: int, return_days: int, stage_index: int
+) -> dict[str, int]:
+    """Gaps from the durable displayed stage, not a freshly resolved lower stage."""
+    if stage_index + 1 >= len(STAGES):
+        return {}
+    nxt = STAGES[stage_index + 1]
+    gaps: dict[str, int] = {}
+    if points < nxt.min_points:
+        gaps["points"] = nxt.min_points - points
+    if dimension_count < nxt.min_dimensions:
+        gaps["dimensions"] = nxt.min_dimensions - dimension_count
+    if return_days < nxt.min_return_days:
+        gaps["return_days"] = nxt.min_return_days - return_days
+    return gaps
+
+
+def _stage_progress(points: int, stage_index: int) -> dict:
+    """Backend-authoritative bounds for the continuous Home/detail bar.
+
+    Before Expanding, the bar spans the current stage's point floor to the next
+    stage's floor. It may reach 100% while breadth or return-day gates remain unmet;
+    those gates are projected separately. Expanding repeats factual 250-point cycles
+    without inventing a sixth rank.
+    """
+    current = STAGES[stage_index]
+    if stage_index + 1 < len(STAGES):
+        start = current.min_points
+        end = STAGES[stage_index + 1].min_points
+    else:
+        completed = expanding_milestones(points)
+        start = current.min_points + completed * EXPANDING_MILESTONE_INTERVAL
+        end = start + EXPANDING_MILESTONE_INTERVAL
+    value = min(max(points, start), end)
+    fraction = (value - start) / (end - start)
+    return {"start": start, "end": end, "value": value, "fraction": fraction}

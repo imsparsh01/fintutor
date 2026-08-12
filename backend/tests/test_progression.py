@@ -362,6 +362,19 @@ class RebuildTests(ProgressionTestBase):
         rebuilt = rebuild(self.db, self.user_id)
         self.assertEqual(rebuilt.stage, "connecting")
 
+    def test_floored_stage_gates_target_the_stage_after_the_floor(self) -> None:
+        self.emit("onboarding_handled", subject_key="v2")
+        summary = get_progression(self.db, self.user_id)
+        summary.stage_floor_index = 2
+        summary.stage = "connecting"
+        self.db.commit()
+
+        payload = to_api_summary(summary)
+        self.assertEqual(payload["next_stage"], "deepening")
+        self.assertEqual(payload["unmet_conditions"]["points"], 610)
+        self.assertEqual(payload["unmet_conditions"]["dimensions"], 4)
+        self.assertEqual(payload["unmet_conditions"]["return_days"], 12)
+
     def test_api_summary_hides_raw_lifetime_points(self) -> None:
         self._busy_history()
         payload = to_api_summary(get_progression(self.db, self.user_id))
@@ -374,6 +387,18 @@ class RebuildTests(ProgressionTestBase):
         self.assertEqual(payload["points"], 0)
         self.assertEqual(payload["next_stage"], "exploring")
         self.assertIsNone(payload["last_event_at"])
+        self.assertEqual(
+            payload["stage_progress"],
+            {"start": 0, "end": 100, "value": 0, "fraction": 0.0},
+        )
+
+    def test_api_summary_owns_stage_progress_bounds(self) -> None:
+        self.emit("onboarding_handled", subject_key="v2")
+        payload = to_api_summary(get_progression(self.db, self.user_id))
+        self.assertEqual(payload["stage_progress"]["start"], 0)
+        self.assertEqual(payload["stage_progress"]["end"], 100)
+        self.assertEqual(payload["stage_progress"]["value"], 40)
+        self.assertEqual(payload["stage_progress"]["fraction"], 0.4)
 
 
 class OnboardingCreditTests(ProgressionTestBase):
@@ -453,6 +478,18 @@ class VisibilityAndDeletionTests(ProgressionTestBase):
         self.assertEqual(history[0]["event_type"], "calculator_completed")
         self.assertEqual(history[0]["dimension"], "model")
         self.assertEqual(history[1]["event_type"], "teaching_moment_explored")
+
+    def test_history_excludes_events_that_did_not_award(self) -> None:
+        for index in range(3):
+            self.emit(
+                "calculator_completed",
+                subject_key=f"calculator-{index}",
+                at=NOON_IST + timedelta(minutes=index),
+                key=f"calculator-{index}",
+            )
+        history = list_history(self.db, self.user_id)
+        self.assertEqual(len(history), 2)
+        self.assertNotIn("calculator-2", {event["subject_key"] for event in history})
 
     def test_account_deletion_removes_all_three_tiers(self) -> None:
         self.emit("teaching_moment_explored", subject_key="compounding")
