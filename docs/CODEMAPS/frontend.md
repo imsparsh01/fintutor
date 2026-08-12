@@ -39,9 +39,9 @@ HealthScoreScreen       screens/ (~260)            Hidden “Portfolio Health”
 GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
                                                    inline create form, insurance coverage summary,
                                                    emergency readiness CTA (BQ-059)
-ToolsScreen             screens/ (~310)            Tools tab — 6 calculators + scenarios; S-02 loads eligible
+ToolsScreen             screens/ (~310)            Tools tab — 7 calculators + scenarios; S-02 loads eligible
                                                    owned loans and reuses LoanVsInvestModal (BQ-075)
-CalculatorScreen        screens/ (~475)            Hidden tab — prior 5 calculators + D-128 Compound Growth;
+CalculatorScreen        screens/ (~580)            Hidden tab — prior 5 + Compound Growth + Credit-card Payoff;
                                                    primary ResultCard emits after a valid result renders
 ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
                                                    Prefills inputs from budget+holdings; every field editable.
@@ -116,6 +116,10 @@ holdingReconciliation.ts       Resolve owned candidate/new choice and apply conf
                                 exposes refreshed proposal on stale 409
 compoundGrowth.ts              Pure D-128/D-129 month-end contribution model with finite/safe bounds;
                                 typed validation/overflow reasons, zero-rate branch, arithmetic difference
+creditCardPayoff.ts            Pure fixed-payment month loop: interest then clamped month-end payment;
+                                paid/non-clearing/1200-cap/typed-invalid outcomes
+                                Calculator UI clears all card inputs/results on auth-user change; any
+                                manual edit invalidates the displayed outcome until recalculation.
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
@@ -163,8 +167,9 @@ CalculatorType (navigation/types.ts):
   'stepup_sip'     C-22 — Step-up SIP Corpus
   'cagr_backward'  C-24 — CAGR Calculator
   'compound_growth' D-128 — lump sum + month-end contributions at a user-entered rate
+  'credit_card_payoff' D-128 — optional recorded-card prefill + user-entered fixed payment model
 ```
-All 6 are pure frontend math. Tax/HRA remain blocked pending a separate rule-source contract.
+All 7 are pure frontend math. Tax/HRA remain blocked pending a separate rule-source contract.
 
 ## Scenario types (D-106, BQ-056)
 

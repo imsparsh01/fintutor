@@ -12,6 +12,17 @@
 
 ---
 
+## BQ-079 — Add Credit-card Payoff calculator — DONE 12-Aug-2026
+
+Added a pure fixed-payment Credit-card Payoff calculator: monthly interest then month-end payment, zero-rate
+and partial-final handling, explicit non-clearing result, disclosed 1,200-month cap, and no recommended/default
+payment. Owned cards are optional editable starting points with zero/many/error/manual paths. Only a rendered
+paid-off result emits progression. Staff review fixed cross-user financial-state clearing and stale outcomes
+after edits; record attribution clears when recorded balance/rate is changed. Verified: 14 combined formula
+tests, 122 backend tests, TypeScript, iOS production bundle, and clean diff check.
+
+---
+
 ## BQ-078 — Add Compound Growth calculator — DONE 12-Aug-2026
 
 Added a pure Compound Growth calculator with user-owned lump sum, monthly contribution, rate, and horizon;

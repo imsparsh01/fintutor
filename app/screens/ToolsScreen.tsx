@@ -60,6 +60,11 @@ const CALCULATORS: CalcEntry[] = [
     label: 'Compound Growth',
     description: 'Model a lump sum and monthly contributions at a rate you choose.',
   },
+  {
+    type: 'credit_card_payoff',
+    label: 'Credit-card Payoff',
+    description: 'Model a fixed monthly payment on a card balance and rate you enter.',
+  },
 ];
 
 const SCENARIOS: ScenarioEntry[] = [

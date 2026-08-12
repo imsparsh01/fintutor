@@ -16,6 +16,8 @@ import type { RouteProp } from '@react-navigation/native';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { calculateCompoundGrowth } from '../lib/compoundGrowth';
+import { calculateCreditCardPayoff, PAYOFF_MONTH_CAP } from '../lib/creditCardPayoff';
+import { fetchHoldings, type Holding } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
 import { recordCalculatorCompleted } from '../lib/progression';
 import type { CalculatorType, MainTabsParamList } from '../navigation/types';
@@ -49,6 +51,7 @@ export function CalculatorScreen() {
       {type === 'stepup_sip' && <StepUpSipCalc onComputed={onComputed} />}
       {type === 'cagr_backward' && <CagrCalc onComputed={onComputed} />}
       {type === 'compound_growth' && <CompoundGrowthCalc onComputed={onComputed} />}
+      {type === 'credit_card_payoff' && <CreditCardPayoffCalc userId={userId} onComputed={onComputed} />}
     </KeyboardAvoidingView>
   );
 }
@@ -418,6 +421,109 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
   );
 }
 
+// ─── D-128: Credit-card Payoff ────────────────────────────────────────────
+function CreditCardPayoffCalc({ userId, onComputed }: CalcProps & { userId: string | null }) {
+  const [cards, setCards] = useState<Holding[]>([]);
+  const [cardsLoading, setCardsLoading] = useState(Boolean(userId));
+  const [cardsFailed, setCardsFailed] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [balance, setBalance] = useState('');
+  const [rate, setRate] = useState('');
+  const [payment, setPayment] = useState('');
+  const [outcome, setOutcome] = useState<ReturnType<typeof calculateCreditCardPayoff> | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    // Auth identity is a hard data boundary: synchronously invalidate every
+    // prior-user prefill, manual input, and result before starting the new fetch.
+    setCards([]);
+    setCardsFailed(false);
+    setCardsLoading(Boolean(userId));
+    setSelectedCardId(null);
+    setBalance('');
+    setRate('');
+    setPayment('');
+    setOutcome(null);
+    if (!userId) return () => { active = false; };
+    fetchHoldings(userId)
+      .then((holdings) => {
+        if (active) setCards(holdings.filter((holding) => holding.product_type === 'credit_card_debt'));
+      })
+      .catch(() => { if (active) setCardsFailed(true); })
+      .finally(() => { if (active) setCardsLoading(false); });
+    return () => { active = false; };
+  }, [userId]);
+
+  const selectCard = (card: Holding) => {
+    setSelectedCardId(card.id);
+    const storedBalance = card.characteristics.outstanding_balance;
+    const storedRate = card.characteristics.interest_rate;
+    setBalance(typeof storedBalance === 'number' ? String(storedBalance) : '');
+    setRate(typeof storedRate === 'number' ? String(storedRate) : '');
+    setOutcome(null);
+  };
+
+  const editBalance = (value: string) => {
+    setBalance(value);
+    setSelectedCardId(null);
+    setOutcome(null);
+  };
+  const editRate = (value: string) => {
+    setRate(value);
+    setSelectedCardId(null);
+    setOutcome(null);
+  };
+  const editPayment = (value: string) => {
+    setPayment(value);
+    setOutcome(null);
+  };
+
+  const calculate = () => setOutcome(calculateCreditCardPayoff(Number(balance), Number(rate), Number(payment)));
+  const validResult = outcome?.kind === 'paid_off' ? outcome : null;
+  const errorCopy = outcome?.kind === 'invalid' ? {
+    non_finite: 'Enter ordinary finite numbers in every field.',
+    balance: 'Enter an outstanding balance above zero.',
+    rate: 'Enter an annual rate from 0% to 1,000%.',
+    payment: 'Enter a fixed monthly payment above zero.',
+    unsafe: 'Use a balance and payment no greater than ₹1 lakh crore.',
+  }[outcome.reason] : null;
+
+  return (
+    <CalcWrapper title="Credit-card Payoff">
+      <Text style={styles.prefillIntro}>Recorded cards are optional starting points. Selecting one fills only its recorded balance and rate; every field remains editable. Editing either prefilled value clears the selected-card marker because the numbers are then your manual inputs.</Text>
+      {cardsLoading ? <Text style={styles.prefillStatus} accessibilityLiveRegion="polite">Loading recorded cards…</Text> : null}
+      {cardsFailed ? <Text style={styles.prefillStatus} accessibilityLiveRegion="polite">Recorded cards could not be loaded. Manual entry is still available.</Text> : null}
+      {!cardsLoading && !cardsFailed && cards.length === 0 ? <Text style={styles.prefillStatus}>No recorded cards found. Enter values manually.</Text> : null}
+      {cards.length > 0 ? (
+        <View accessibilityRole="radiogroup" style={styles.cardChoices}>
+          {cards.map((card) => (
+            <Pressable key={card.id} accessibilityRole="radio" accessibilityState={{ checked: selectedCardId === card.id }} style={[styles.cardChoice, selectedCardId === card.id && styles.cardChoiceSelected]} onPress={() => selectCard(card)}>
+              <Text style={styles.cardChoiceLabel}>{card.display_name ?? card.alias}</Text>
+              <Text style={styles.cardChoiceHint}>Use recorded balance and rate</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+      <CalcInput label="Outstanding balance" prefix="₹" value={balance} onChange={editBalance} />
+      <CalcInput label="Annual interest rate" suffix="%" value={rate} onChange={editRate} />
+      <CalcInput label="Fixed monthly payment" prefix="₹" value={payment} onChange={editPayment} />
+      <CalcButton onPress={calculate} disabled={balance === '' || rate === '' || payment === ''} />
+      {errorCopy ? <Text accessibilityRole="alert" style={styles.calcError}>{errorCopy}</Text> : null}
+      {outcome?.kind === 'non_clearing' ? <Text accessibilityRole="alert" style={styles.calcError}>With these inputs, the first month’s interest is at least the fixed payment, so the modeled balance does not reach zero.</Text> : null}
+      {outcome?.kind === 'capped' ? <Text accessibilityRole="alert" style={styles.calcError}>This balance does not reach zero within the model’s {PAYOFF_MONTH_CAP.toLocaleString('en-IN')}-month safety limit, so no payoff result is shown.</Text> : null}
+      {validResult ? (
+        <>
+          <ResultCard unit="Modeled payoff time" value={`${validResult.months} months`} mechanismNote="Each month applies interest to the remaining balance first, then subtracts your fixed payment, clamped to the amount due in the final month." onRendered={onComputed} />
+          <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total paid</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.totalPaid)}</Text></View>
+          <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total interest</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.totalInterest)}</Text></View>
+          <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Final payment</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.finalPayment)}</Text></View>
+          <Text style={styles.disclosure}>This is a fixed-payment model, not a payment recommendation. It excludes new spending, fees, penalty interest, rate or payment changes, and issuer-specific daily interest and rounding.</Text>
+        </>
+      ) : null}
+    </CalcWrapper>
+  );
+}
+
 // ─── Styles ───────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
@@ -511,4 +617,11 @@ const styles = StyleSheet.create({
   secondaryValue: { fontFamily: font.mono, fontSize: 15, color: colors.ink },
   calcError: { color: colors.danger, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginBottom: spacing.lg },
   disclosure: { color: colors.inkSecondary, fontFamily: font.tutor, fontSize: 13, lineHeight: 19, marginTop: spacing.lg },
+  prefillIntro: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginBottom: spacing.md },
+  prefillStatus: { color: colors.inkMuted, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginBottom: spacing.md },
+  cardChoices: { gap: spacing.sm, marginBottom: spacing.lg },
+  cardChoice: { minHeight: 52, justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  cardChoiceSelected: { borderColor: colors.tutor, backgroundColor: colors.tutorSoft },
+  cardChoiceLabel: { color: colors.ink, fontFamily: font.uiSemibold, fontSize: 14 },
+  cardChoiceHint: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 12, marginTop: 2 },
 });

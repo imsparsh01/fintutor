@@ -16,26 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-079 — Add Credit-card Payoff calculator — READY
-
-Traces to D-128/D-129. Add a local month-by-month fixed-payment model with editable recorded-card prefills
-and no defaults: positive outstanding balance, non-negative annual rate, and positive fixed monthly payment.
-Each month applies `interest=balance*(APR/12/100)` then a month-end payment clamped to the amount due. Report
-months, total paid, total interest, and final payment. If the first month's interest is at least the payment,
-show that these inputs do not reach zero rather than recommending a payment. Stop computation at a disclosed
-1,200-month safety bound and report no result beyond it. Support zero rate and multiple/no-recorded-card paths;
-record-load failure must leave manual entry usable.
-
-Disclose that the model excludes new spending, fees, penalty interest, rate/payment changes, and issuer daily
-interest/rounding. Do not recommend a payment or payoff strategy. Reuse existing CalculatorScreen/ResultCard,
-neutral styling, and render-confirmed progression emission. No backend, schema, dependency, stored result, or
-automatic card selection is authorised.
-
-Acceptance: ordinary, zero-rate, exact/final-partial, non-clearing, cap, finite/overflow, editable-prefill,
-multiple-card chooser, error/manual-entry, accessibility, and disclosure cases are covered; TypeScript,
-focused pure tests where available, and native QA pass/best-effort.
-
-### BQ-080 — Align Emergency Runway and add Emergency Coverage — READY AFTER BQ-079
+### BQ-080 — Align Emergency Runway and add Emergency Coverage — READY
 
 Traces to D-128/D-130. Replace S-05's automatic full PPF/EPF inclusion with one shared liquidity-narrow pure
 calculation and prefill contract, then expose the same mechanism as the Emergency Coverage calculator. Count
