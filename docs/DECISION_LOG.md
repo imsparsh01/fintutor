@@ -150,3 +150,10 @@
   initial wedge, and distribution/business viability before external-user MVP readiness. Full write-up:
   `docs/decisions/D-122-customer-outcome-mvp-exit-gates.md`.
 - **Date:** 12-Aug-2026
+
+### D-123 — Progression completion package approved
+- **Tier:** 3, owner-approved. “Awarding progress never creates a completion state or new product surface
+  by itself.” Defers teaching/recap emitters, preserves P9, and approves a Home summary plus hidden detail
+  screen with stage, continuous progress, gate explanations, recent attribution, and factual Expanding
+  milestones. Full write-up: `docs/features/progression/decisions/D-123-progression-completion-package.md`.
+- **Date:** 12-Aug-2026

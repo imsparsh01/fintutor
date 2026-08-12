@@ -16,11 +16,18 @@ Rules for this file:
 
 ## READY — pick one of these
 
-None.
+### BQ-070 — Build the approved learning-progression surfaces
+
+Traces to D-114/D-116/D-121/D-123. Add a compact Home summary that opens a hidden Progress detail screen;
+keep five visible tabs. Show named stage, continuous progress, plain next-stage point/breadth/return gates,
+recent human-labelled event attribution with no financial content, and factual 250-point Expanding
+milestones. Do not build recap, profile coverage, teaching completion, a sixth rank, or a new reward system.
+
+Update frontend codemap and verify with `tsc`; `/qa` remains best-effort under D-107.
 
 ## BLOCKED — do not start
 
-### BQ-071 — Wire progression emitters into existing features — PARTIALLY SHIPPED, one emitter blocked
+### BQ-071 — Wire progression emitters into existing features — RESOLVED BY D-123; archive at session close
 
 Traces to D-117 (event rules) and D-121 (ledger approved). BQ-069 shipped the ledger and the four
 `/progression` routes, but nothing emits into it — progression is reachable and inert. This item makes it
@@ -78,7 +85,7 @@ through, but it is the owner's call, not this queue's.
   must supply one that is stable across a re-render or back-navigation but distinct per genuine repeat.
 - Do not send `occurred_at` — the route does not accept it.
 
-### BQ-070 — Progression surfaces and placement — TOP PRIORITY, BLOCKED
+### BQ-070 tracking note — now READY under D-123
 
 Traces to D-114/D-116. The data contract it was waiting on is now settled (D-121), but it remains blocked
 on its own placement decision for stage, continuous progress, attribution, recap, profile coverage, and

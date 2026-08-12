@@ -1,6 +1,6 @@
 # BRIEF — How should learning progression be completed without turning teaching into a lesson gate?
 
-**Status:** Awaiting owner decision.  
+**Status:** RESOLVED — both recommendations approved in D-123.
 **Date:** 12-Aug-2026  
 **Blocks:** BQ-071 remainder and BQ-070.
 
