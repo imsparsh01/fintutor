@@ -71,8 +71,11 @@ and tax context. See D-114, which supersedes D-053/D-054's narrower founding-seg
 > for the direction-vs-MVP-build split; only the MVP-build cut is listed here.
 
 1. Register / login
-2. Onboarding: the user's baseline profile (income, holdings, goals) is built through an AI-guided
-   conversation, not a static form — see D-012. (Exact onboarding mechanism still to be designed.)
+2. **Onboarding and first-action handoff (D-118/D-119/D-126).** A short five-axis orientation asks only
+   optional normalized context—no amounts, account details, holdings, or financial history—then offers an
+   entirely optional user-chosen first action: Arya, something they already manage, a goal, a calculator or
+   scenario, or Home. Income, holdings, and goals enter the living baseline progressively through explicit
+   confirmed/manual actions; financial disclosure is never required for app access.
 3. **Persistent category sections (MVP: three holding families).** Dedicated sections for **Investments,
    Loans, Insurance** (the D-013 taxonomy). Each holding is visible in its section with its details;
    per-item management (what the user can view/edit/act on) is a named open decision — see §8 "Decision 2".

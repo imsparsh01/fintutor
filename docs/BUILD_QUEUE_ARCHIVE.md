@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-073 — Correct reversed holding reconciliation status — DONE 12-Aug-2026
+
+Traces to D-125 and the standing living-baseline contract in PROJECT_SPEC §2. Corrected the bounded defect:
+`create_holding()` now reports `new`, while `update_holding()` reports `updated`. Added focused service
+regressions without changing contradiction detection, matching, merge behavior, persistence, or broader
+reconciliation semantics. Independent review passed; targeted tests 2/2 and full backend suite 87/87 pass.
+
+---
+
 ## BQ-070 — Approved learning-progression surfaces — DONE 12-Aug-2026
 
 Built D-123's compact Home summary and hidden Progress detail screen while retaining five visible tabs.

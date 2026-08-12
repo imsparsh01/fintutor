@@ -60,7 +60,7 @@ def update_holding(
     db.refresh(holding)
     result = _to_dict(holding)
     result["reconciliation"] = {
-        "status": "new",
+        "status": "updated",
         "product_type": product_type,
         "changed_fields": list((characteristics or {}).keys()),
     }
@@ -130,7 +130,7 @@ def create_holding(
     db.refresh(holding)
     result = _to_dict(holding)
     result["reconciliation"] = {
-        "status": "updated",
+        "status": "new",
         "product_type": holding.product_type,
         "changed_fields": list((characteristics or {}).keys()),
     }

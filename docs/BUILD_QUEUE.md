@@ -16,18 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-073 — Correct reversed holding reconciliation status — READY
-
-Traces to D-125 and the standing living-baseline contract in PROJECT_SPEC §2. This is a bounded defect:
-`create_holding()` currently reports `updated`, while `update_holding()` reports `new`. Swap those two
-response statuses and add focused regression coverage. Do not design contradiction detection, matching,
-merge behavior, or any broader reconciliation semantics under this item.
-
-Acceptance: a newly created holding projects `reconciliation.status = "new"`; an edited holding projects
-`"updated"`; existing holding persistence and response fields remain unchanged; targeted tests and the
-full backend suite pass.
-
-### BQ-074 — Complete goal-to-holding funding flow — READY AFTER BQ-073
+### BQ-074 — Complete goal-to-holding funding flow — READY
 
 Traces to D-038 and D-125. The approved `funded_by[{holding_id, earmarked_amount}]` model and goal-progress
 calculation are shipped, but every frontend-created goal sends an empty list and no UI can link or update
@@ -48,6 +37,18 @@ change money logic, add assumptions, or create a second calculator implementatio
 
 Acceptance: Tools exposes S-02; zero/one/multiple eligible-loan states are coherent; selection is neutral;
 the existing holding-detail route remains functional; TypeScript and native QA pass/best-effort.
+
+### BQ-076 — Complete the optional onboarding first-action handoff — READY AFTER BQ-075
+
+Traces to D-126. Rework the existing handled-state handoff so it presents the available existing routes
+clearly: Arya, add/understand something already managed, create/explore a goal, calculators/scenarios, or
+Home. The immediate-intent answer may highlight a starting choice but must not remove the others. All choices
+and skipping must finish onboarding identically; no extra financial question, persistence, route, schema,
+dependency, recommendation, or progression event is authorised.
+
+Acceptance: all five choices plus Home are visible and accessible; the suggested choice follows normalized
+immediate intent defensively; every route reaches an existing surface; choosing Home requires no disclosure;
+answer/skip/global-exit and legacy opt-in paths remain correct; TypeScript and native QA pass/best-effort.
 
 ## BLOCKED — do not start
 

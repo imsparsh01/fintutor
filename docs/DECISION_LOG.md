@@ -171,3 +171,10 @@
   owner-validates it, then external activation testing begins. Full write-up:
   `docs/decisions/D-125-internal-mvp-completion-before-external-testing.md`.
 - **Date:** 12-Aug-2026
+
+### D-126 — Onboarding ends with an optional, user-chosen first action
+- **Tier:** 3, owner-decided. “The user needs direction after orientation but does not owe FinTutor a
+  financial census before receiving value.” Preserves D-118/D-119's five-axis orientation, then offers
+  Arya, an existing item, a goal, Tools, or Home without forced disclosure. Full write-up:
+  `docs/decisions/D-126-optional-guided-onboarding-handoff.md`.
+- **Date:** 12-Aug-2026
