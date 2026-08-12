@@ -1,7 +1,8 @@
 # Decisions waiting on you
 
-**Last updated:** 12-Aug-2026 · **Waiting:** 4 questions · **Blocking:** nothing — the build queue is
-moving again
+**Last updated:** 12-Aug-2026 · **Waiting:** 4 questions below, plus 4 raised by the D-125 audit ·
+**Blocking:** the Part 1 questions block nothing. The D-125 audit questions do — see
+`docs/sessions/2026-08-12-D125-MVP-RECONCILIATION.md`, which is the live list. READY is empty.
 
 **How to answer:** type your answer on the `→ Your answer:` line under each question, then save. Or just
 tell me in the next session ("1 to 4: A, A, A, A"). Either works. "Let's discuss" is a valid answer to any
@@ -95,8 +96,8 @@ always off while you're at the desktop, so automated and live work never collide
 
 ## The five progress-tracking questions — answered 12-Aug-2026: A, A, A, A, A
 
-Written up as **D-121**. This unblocked BQ-069, which is now the top item in the build queue. What you
-decided:
+Written up as **D-121**. This unblocked BQ-069, which was built and archived on 12-Aug-2026 (along with
+BQ-070's surfaces and BQ-071's emitters). What you decided:
 
 1. **No permission popup** for recording learning activity — it's treated as part of the app working, with
    three standing protections: never sold, never sent to an outside analytics company, always visible to

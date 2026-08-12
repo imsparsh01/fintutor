@@ -12,6 +12,48 @@
 
 ---
 
+## BQ-084 — Correct the reminder recurrence (D-125 audit F-3) — DONE 12-Aug-2026
+
+Traces to D-125's step-1 audit. §4 item 7's reminders fired exactly once: `scheduleHoldingReminder` used a
+one-shot DATE trigger set only at create/update, so a monthly EMI reminded once and then went silent until the
+holding was next edited, and a credit card whose recorded due date had passed never reminded at all. Replaced
+with a MONTHLY repeating trigger keyed on day-of-month, which both fields already are (`emi_due_day` outright;
+a card's `payment_due_date` via its day). Due days past the 28th clamp to 28 so no month is skipped — early is
+harmless, skipped is not. Pure day arithmetic extracted to `reminderSchedule.ts` (no Expo imports) so it is
+testable under `node --test`. Verified: 7 new frontend tests (30 total), TypeScript.
+
+---
+
+## BQ-083 — Codemap and status-doc staleness (D-125 audit F-8…F-11) — DONE 12-Aug-2026
+
+Mechanical documentation correction, no behavior change. architecture.md claimed the progression ledger had no
+emitters and no readers (BQ-070/071 shipped both) and listed 1 of 9 hidden nav routes; backend.md named
+`claude-3-5-sonnet` for a service now on `claude-sonnet-5`, and described tax_saving_room as "80C/NPS" when no
+NPS/80CCD handling exists; DECISIONS_FOR_YOU.md claimed nothing was blocked and called an archived BQ-069 the
+top queue item. frontend.md updated for the reminder split.
+
+---
+
+## BQ-082 — Automated coverage for uncovered financial services (D-125 audit F-7) — DONE 12-Aug-2026
+
+Seven services carrying user-facing money figures had zero tests while newer features were well covered.
+Added 183 tests across loan_vs_invest, esop_exercise_cost, tax_saving_room, budget, consolidated, surfacing and
+streaks. Disclosed limitations from KNOWN_LIMITATIONS.md are pinned as intended behavior so a future change is
+caught deliberately. No file under `backend/app/` was modified — suspected defects were reported for owner
+escalation, not fixed, per the money-logic hard stop. Backend suite 122 → 311 tests.
+
+---
+
+## BQ-081 — Backend test invocation (D-125 audit F-2) — DONE 12-Aug-2026
+
+Smaller than scoped: the suite needs no pytest at all — every test is stdlib `unittest`, so
+`./.venv/bin/python -m unittest discover -s tests -t .` runs all 311. The apparent breakage was bare `python3`
+resolving to anaconda's SQLAlchemy 1.4.39 against the required 2.0.35. No dependency added; invocation
+documented instead. Also fixed a genuine intermittent failure this exposed — see the session log's
+privacy-masking note.
+
+---
+
 ## BQ-080 — Align Emergency Runway and add Emergency Coverage — DONE 12-Aug-2026
 
 Corrected S-05 and added C-14 on one shared D-130 liquidity-narrow contract: manual cash/bank, editable FD

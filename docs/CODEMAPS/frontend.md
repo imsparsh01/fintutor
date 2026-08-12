@@ -99,7 +99,13 @@ goals.ts                        fetchGoals / createGoal / updateGoalFunding
 onboarding.ts           17      Legacy device-local completion helpers (retained for BQ-068 compatibility)
 onboardingAssessment.ts ~130    Dedicated v2 normalized API client + handled-state outage cache,
                                 legacy-presence compatibility read, and local invite dismissal
-reminders.ts            50      scheduleReminder() — Expo Notifications; credit card due + EMI due day (D-101)
+reminderSchedule.ts     57      reminderScheduleFor(holding) → {day, body, clamped} | null. Pure day-of-month
+                                arithmetic, no Expo imports, so it is testable under `node --test`.
+                                Due days past the 28th clamp so no month is skipped.
+reminders.ts            36      scheduleHoldingReminder() / cancelHoldingReminder() — Expo Notifications;
+                                credit card due + EMI due day (D-101). Uses a MONTHLY repeating trigger:
+                                the original DATE trigger fired once and then went silent until the
+                                holding was next edited (fixed 12-Aug-2026, D-125 audit F-3).
 streaks.ts              32      fetchStreak / recordAppOpen
 progression.ts          ~95     BQ-071 emitters: recordCalculatorCompleted / recordScenarioCompleted,
                                 plus fetchProgression(). Every emitter is fire-and-forget and swallows

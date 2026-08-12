@@ -66,7 +66,10 @@ caller → POST /progression/event {event_type, subject_key?, idempotency_key?}
 
 Points live in progression_ruleset.py, never on an event row. Replay never reads the wall
 clock — every window comes from the event's materialized Asia/Kolkata `local_date`.
-BQ-069 is backend only: no existing service emits events yet, and no screen reads them.
+BQ-069 built this ledger backend-only. BQ-071 then added the emitters — record_context_prompt /
+record_onboarding_handled / record_arya_exchange, called from main.py after the host request's own
+writes commit — and BQ-070 added the reading surfaces (ProgressScreen, plus Consolidated, Calculator
+and Scenario). The loop is closed end to end.
 ```
 
 ## Navigation structure
@@ -80,12 +83,25 @@ RootNavigator
   └── AuthenticatedApp
         ├── OnboardingScreen   (v2 server state; five optional normalized questions)
         └── MainTabs (bottom tabs)
-              ├── Consolidated  → ConsolidatedScreen
+              │  -- 5 visible tabs (D-106) --
+              ├── Consolidated  → ConsolidatedScreen   (tabBarLabel "Home")
               ├── Portfolio     → PortfolioScreen
               ├── Goals         → GoalsScreen
               ├── Tools         → ToolsScreen
-              └── Chat          → ChatScreen
-              └── Assessment    → VoluntaryAssessmentScreen (hidden legacy opt-in route)
+              ├── Chat          → ChatScreen
+              │  -- hidden routes (tabBarButton: () => null), reachable via navigate() --
+              ├── Calculator    → CalculatorScreen
+              ├── Scenario      → ScenarioScreen
+              ├── Investments   → InvestmentsScreen
+              ├── Loans         → LoansScreen
+              ├── Insurance     → InsuranceScreen
+              ├── Budgeting     → BudgetingScreen
+              ├── HealthScore   → HealthScoreScreen
+              ├── Progress      → ProgressScreen
+              └── Assessment    → VoluntaryAssessmentScreen (legacy opt-in route)
+
+Investments / Loans / Insurance each own a local Stack: List → Detail (HoldingDetailScreen).
+HoldingDetailScreen is therefore NOT a MainTabs route — reach it by pushing "Detail" from a family screen.
 ```
 
 ## Key design constraints (affect every build task)

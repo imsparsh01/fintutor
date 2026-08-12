@@ -101,7 +101,8 @@ services/progression.py         record_event() / rebuild() / prune_raw_events() 
                                  emitter failure can never break the route that called it. Call them
                                  only AFTER the host request's own writes have committed — the guard
                                  rolls back, and it must have nothing of the caller's left to undo.
-services/teaching.py (48)       ask_teaching_engine() — single Anthropic API call (claude-3-5-sonnet).
+services/teaching.py (48)       ask_teaching_engine() — single Anthropic API call (claude-sonnet-5;
+                                 the Haiku-side classifiers use claude-haiku-4-5-20251001).
                                  Raises TeachingEngineNotConfigured if ANTHROPIC_API_KEY unset.
                                  Runtime D-119 addendum limits `learning_context` to presentation only.
 services/holding_capture_classifier.py  classify_holding_capture() — Haiku extracts product type +
@@ -124,7 +125,9 @@ services/rewards.py (22)        evaluate_reward(is_new_day) — returns reward s
 services/streaks.py (58)        record_app_open() / get_streak().
 services/loan_vs_invest.py (102) Math: prepayment vs invest decision; uses hurdle rate (D-014).
 services/esop_exercise_cost.py (115) ESOP exercise cost computation (D-066).
-services/tax_saving_room.py (~60) 80C/NPS room left under old/new regime (D-016). D-112 strict cadence:
+services/tax_saving_room.py (~60) 80C room left under old/new regime (D-016). No NPS/80CCD handling
+                                  exists — D-070's formula is ppf_epf annual_contribution plus annualised
+                                  insurance premiums only. D-112 strict cadence:
                                   blank/unknown premium frequency excluded; six-month variants count ×2/year.
 services/baseline.py (75)       Assembles prompt context dict (holdings, income, goals, gaps, deepen).
 services/discretionary_categories.py (32) CRUD for user-labelled discretionary spend buckets.

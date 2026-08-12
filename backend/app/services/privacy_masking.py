@@ -45,9 +45,36 @@ _GENERIC_FINANCE_PHRASES = re.compile(
 )
 
 
+_NONCE_ATTEMPTS = 100
+
+
+def _safe_nonce() -> str:
+    """A nonce that cannot be matched by our own structured-identifier patterns.
+
+    The namespace is embedded in every emitted token, and mask_text runs the structured
+    patterns over text that ALREADY contains those tokens. A plain hex nonce can therefore
+    carry a digit run that Phone (10 digits) or Card (15+) matches *inside* an existing
+    token — wrapping a token in a second token, which the deliberately single-pass
+    rehumanizer cannot restore. Those two are the live risk because they guard with
+    (?<!\d)/(?!\d), which letters satisfy; the \b-anchored patterns cannot match inside a
+    longer alphanumeric run at all. Underscore is not a valid separator in any of them, so
+    a match can never cross the namespace boundary — containing the guarantee to the nonce
+    itself is sufficient. We screen against every structured pattern regardless, so a
+    future pattern without \b guards is covered on the day it is added.
+    Same class of nested-token corruption the goal-label comment above guards against.
+    """
+    for _ in range(_NONCE_ATTEMPTS):
+        nonce = secrets.token_hex(12)
+        if not any(pattern.search(nonce) for _, pattern in _STRUCTURED):
+            return nonce
+    # Roughly a 1-in-10 rejection rate, so exhausting this is ~1e-100. Bounded rather than
+    # `while True` so a degenerate entropy source fails closed instead of hanging the request.
+    raise UnsafeUserTextError("Could not establish a safe privacy namespace. Please try again.")
+
+
 @dataclass
 class PrivacyEnvelope:
-    nonce: str = field(default_factory=lambda: secrets.token_hex(12))
+    nonce: str = field(default_factory=_safe_nonce)
     originals_to_tokens: dict[str, str] = field(default_factory=dict)
     tokens_to_originals: dict[str, str] = field(default_factory=dict)
     _counter: int = 0

@@ -13,6 +13,52 @@ from app.main import app
 from app.services.privacy_masking import PrivacyEnvelope, UnsafeUserTextError, mask_user_text
 
 
+class NonceSafetyTests(unittest.TestCase):
+    """A nonce must never be matchable by our own structured-identifier patterns.
+
+    Regression: secrets.token_hex could return a nonce containing a 10-digit run, which the
+    Phone pattern then matched INSIDE an already-emitted token during the structured pass.
+    That wrapped a token in a second token and defeated the single-pass rehumanizer, so the
+    user saw raw FTM_ tokens instead of their own labels. Intermittent (~1 run in 6) because
+    it depended entirely on the random nonce, so it survived several "all green" sessions.
+    """
+
+    def test_digit_heavy_nonce_cannot_corrupt_an_emitted_token(self):
+        # A real observed failing nonce. Its 16-digit run 9811106076130572 is matched by Card
+        # (Phone's trailing (?!\d) fails here); the other observed failure, cd3c7426338500...,
+        # tripped Phone instead. Both patterns are live risks, hence screening all of them.
+        # side_effect (not return_value) so the rejection can be followed by a usable nonce.
+        with patch(
+            "app.services.privacy_masking.secrets.token_hex",
+            side_effect=["9811106076130572c26632b3", "aaccee" * 4],
+        ):
+            envelope = PrivacyEnvelope.create(["safe question"])
+        self.assertNotIn("9811106076", envelope.nonce)
+
+        # Reproduces the real path: mask_text tokenizes the identity first, THEN runs the
+        # structured patterns over text that now contains the nonce. With the old hex nonce
+        # the Phone pattern matched inside that fresh token and wrapped it in a second one.
+        masked = envelope.mask_text(
+            "tell me about Visible Bank", [("Visible Bank", "Holding")], require_meaning=False
+        )
+        self.assertEqual(masked.count("FTM_"), 1)
+        self.assertEqual(envelope.rehumanize(masked), "tell me about Visible Bank")
+
+    def test_nonces_matching_a_structured_pattern_are_rejected(self):
+        # Phone and Card guard with (?<!\d)/(?!\d), which adjacent letters satisfy, so these
+        # can match inside a longer nonce. \b-anchored patterns (PAN, Aadhaar) cannot, which
+        # is why a PAN-shaped run inside a longer hex string is NOT a rejection case.
+        for bad in ("9811106076130572c26632b3", "ab7426338500cdefabcdefab", "a1234567890123456789abc"):
+            with patch("app.services.privacy_masking.secrets.token_hex", side_effect=[bad, "aaccee" * 4]):
+                envelope = PrivacyEnvelope.create(["safe question"])
+            self.assertEqual(envelope.nonce, "aaccee" * 4, f"{bad!r} should have been rejected")
+
+    def test_a_clean_nonce_is_accepted_on_the_first_attempt(self):
+        with patch("app.services.privacy_masking.secrets.token_hex", side_effect=["aaccee" * 4]):
+            envelope = PrivacyEnvelope.create(["safe question"])
+        self.assertEqual(envelope.nonce, "aaccee" * 4)
+
+
 class PrivacyMaskingTests(unittest.TestCase):
     def test_masks_stored_and_new_institution_and_exactly_rehumanizes(self):
         masked = mask_user_text(
