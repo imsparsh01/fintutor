@@ -81,6 +81,22 @@ Traces to D-114/D-116. The data contract it was waiting on is now settled (D-121
 on its own placement decision for stage, continuous progress, attribution, recap, profile coverage, and
 Expanding milestones.
 
+### BQ-072 — Customer-outcome MVP exit-gate programme — BLOCKED until current major build work closes
+
+Traces to D-122. This is the owner-directed programme that makes the customer outcome, rather than feature
+count, the MVP completion standard. It is deliberately **not READY**: the seven gates need to be converted
+one at a time into bounded decisions, research protocols, or implementation tasks. Do not treat this item
+as permission to add scope.
+
+Required gates: validated first-session activation; real-user evidence; a connected context → insight →
+baseline → return loop; visible learning progression and return value; production trust/safety (privacy,
+JWT ownership, QA, deployment posture, legal review); an evidence-backed initial wedge; and a credible
+initial distribution plus monetization hypothesis.
+
+**First work after unblock:** define the target-user activation test and its pass/fail threshold. This is
+the cheapest test of the main customer-value hypothesis, and it may change which implementation work is
+actually justified next.
+
 ---
 
 ## NOT IN THIS QUEUE — thinking-home only

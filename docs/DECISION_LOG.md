@@ -143,3 +143,10 @@
   Unblocks BQ-069. Full write-up:
   `docs/features/progression/decisions/D-121-progression-instrumentation-privacy-package.md`.
 - **Date:** 12-Aug-2026
+
+### D-122 — Customer-outcome gaps become MVP exit gates
+- **Tier:** 3, owner-directed. “Feature-complete is not MVP-complete.” Requires resolved activation,
+  real-user evidence, connected value loop, visible progression/return value, launch trust/safety,
+  initial wedge, and distribution/business viability before external-user MVP readiness. Full write-up:
+  `docs/decisions/D-122-customer-outcome-mvp-exit-gates.md`.
+- **Date:** 12-Aug-2026
