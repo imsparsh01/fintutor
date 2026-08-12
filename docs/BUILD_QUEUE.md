@@ -16,17 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-075 — Surface the approved loan-versus-invest scenario from Tools — READY
-
-Traces to D-104/D-106 and D-125. S-02 already exists as `LoanVsInvestModal` but is discoverable only from
-an eligible loan detail. Add a Tools scenario entry that lets the user choose an eligible owned loan and
-opens/navigates to the existing experience. Reuse the existing calculation and disclosure verbatim; do not
-change money logic, add assumptions, or create a second calculator implementation.
-
-Acceptance: Tools exposes S-02; zero/one/multiple eligible-loan states are coherent; selection is neutral;
-the existing holding-detail route remains functional; TypeScript and native QA pass/best-effort.
-
-### BQ-076 — Complete the optional onboarding first-action handoff — READY AFTER BQ-075
+### BQ-076 — Complete the optional onboarding first-action handoff — READY
 
 Traces to D-126. Rework the existing handled-state handoff so it presents the available existing routes
 clearly: Arya, add/understand something already managed, create/explore a goal, calculators/scenarios, or

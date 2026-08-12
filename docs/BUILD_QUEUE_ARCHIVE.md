@@ -12,6 +12,16 @@
 
 ---
 
+## BQ-075 — Surface the approved loan-versus-invest scenario from Tools — DONE 12-Aug-2026
+
+Tools now exposes the existing S-02 comparison without duplicating or changing money logic. Zero eligible
+loans gets an explanatory Loans route; one opens directly; multiple get a neutral unsorted chooser. Shared
+eligibility prevents drift with Holding Detail, request invalidation prevents stale cross-user results, and
+loading/error/result transitions are announced accessibly. Staff-review accessibility finding was fixed.
+Verified: 96 backend tests, TypeScript, iOS production bundle, and clean diff check.
+
+---
+
 ## BQ-074 — Complete goal-to-holding funding flow — DONE 12-Aug-2026
 
 Completed D-038's approved goal funding model end to end. Both goal-creation paths can optionally link owned

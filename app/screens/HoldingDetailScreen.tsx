@@ -12,14 +12,11 @@ import { useAuth } from '../lib/AuthContext';
 import { CHARACTERISTICS_SCHEMA, type FieldSpec } from '../lib/characteristicsSchema';
 import { formatRupees } from '../lib/format';
 import type { Holding } from '../lib/holdings';
+import { isLoanVsInvestEligible } from '../lib/loanVsInvest';
 import { humanizeProductType, INVESTMENT_TYPES, LOAN_TYPES } from '../lib/taxonomy';
 import type { HoldingsStackParamList, MainTabsParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<HoldingsStackParamList, 'Detail'>;
-
-// D-067's scope for the loan-vs-invest comparison: Home Loan / Personal Loan only,
-// matching backend/app/services/loan_vs_invest.py's own restriction.
-const LOAN_VS_INVEST_TYPES = new Set(['home_loan', 'personal_loan']);
 
 // D-091: the "what we won't say" block goes wherever a verdict is the natural next
 // thought. In the current taxonomy (lib/taxonomy.ts) that's specifically the mixed
@@ -239,7 +236,7 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
           <Text style={styles.askButtonText}>Ask about this</Text>
         </Pressable>
 
-        {LOAN_VS_INVEST_TYPES.has(holding.product_type) && userId && (
+        {isLoanVsInvestEligible(holding.product_type) && userId && (
           <Pressable style={styles.compareButton} onPress={() => setComparing(true)}>
             <Text style={styles.compareButtonText}>Compare: prepay vs. invest</Text>
           </Pressable>

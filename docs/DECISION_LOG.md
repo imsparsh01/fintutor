@@ -185,3 +185,10 @@
   ambiguity requires user selection and nothing writes without confirmation. Full write-up:
   `docs/decisions/D-127-user-confirmed-holding-reconciliation.md`.
 - **Date:** 12-Aug-2026
+
+### D-128 — MVP adds a focused five-calculator second batch
+- **Tier:** 3, owner-decided. “The focused batch covers debt, resilience, growth, goals, and protection
+  without turning FinTutor into an unbounded calculator catalogue.” Adds credit-card payoff, emergency-fund
+  coverage, compound growth, goal affordability, and term-insurance coverage; tax/HRA stay blocked. Full
+  write-up: `docs/decisions/D-128-focused-second-calculator-batch.md`.
+- **Date:** 12-Aug-2026

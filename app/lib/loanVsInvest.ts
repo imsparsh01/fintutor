@@ -1,5 +1,13 @@
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
 
+// D-068 scopes this comparison to fixed-EMI Home and Personal Loans. Keep the
+// predicate shared by every launcher so Tools and holding detail cannot drift.
+const ELIGIBLE_LOAN_TYPES = new Set(['home_loan', 'personal_loan']);
+
+export function isLoanVsInvestEligible(productType: string): boolean {
+  return ELIGIBLE_LOAN_TYPES.has(productType);
+}
+
 export interface LoanVsInvestResult {
   holding_id: string;
   prepay_amount: number;

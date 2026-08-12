@@ -1,7 +1,21 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import {
+  AccessibilityInfo,
+  findNodeHandle,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { LoanVsInvestModal } from '../components/LoanVsInvestModal';
+import { useAuth } from '../lib/AuthContext';
+import { fetchHoldings, type Holding } from '../lib/holdings';
+import { isLoanVsInvestEligible } from '../lib/loanVsInvest';
 import type { CalculatorType, MainTabsParamList, ScenarioType } from '../navigation/types';
 
 // BQ-057 (D-105): Tools tab — calculator entry point list.
@@ -73,9 +87,74 @@ const SCENARIOS: ScenarioEntry[] = [
 
 export function ToolsScreen() {
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
+  const { userId } = useAuth();
+  const requestId = useRef(0);
+  const pickerHeadingRef = useRef<Text>(null);
+  const [eligibleLoans, setEligibleLoans] = useState<Holding[]>([]);
+  const [selectedLoan, setSelectedLoan] = useState<Holding | null>(null);
+  const [loanPickerOpen, setLoanPickerOpen] = useState(false);
+  const [loanPickerLoading, setLoanPickerLoading] = useState(false);
+  const [loanPickerError, setLoanPickerError] = useState<string | null>(null);
+
+  useEffect(() => {
+    requestId.current += 1;
+    setLoanPickerOpen(false);
+    setSelectedLoan(null);
+  }, [userId]);
+
+  useEffect(() => {
+    if (!loanPickerOpen) return;
+    const announcement = loanPickerLoading
+      ? 'Loading your recorded loans.'
+      : loanPickerError
+        ? loanPickerError
+        : eligibleLoans.length === 0
+          ? 'No eligible loans found. Add a home loan or personal loan to use this comparison.'
+          : `${eligibleLoans.length} eligible loans found. Choose the loan you want to model.`;
+    AccessibilityInfo.announceForAccessibility(announcement);
+  }, [eligibleLoans.length, loanPickerError, loanPickerLoading, loanPickerOpen]);
+
+  const openLoanComparison = async () => {
+    const activeRequest = ++requestId.current;
+    setLoanPickerOpen(true);
+    setLoanPickerLoading(true);
+    setLoanPickerError(null);
+    setEligibleLoans([]);
+
+    if (!userId) {
+      setLoanPickerLoading(false);
+      setLoanPickerError('Sign in to compare one of your recorded loans.');
+      return;
+    }
+
+    try {
+      const holdings = await fetchHoldings(userId);
+      if (activeRequest !== requestId.current) return;
+      const eligible = holdings.filter((holding) => isLoanVsInvestEligible(holding.product_type));
+      if (eligible.length === 1) {
+        setLoanPickerOpen(false);
+        setSelectedLoan(eligible[0]);
+      } else {
+        setEligibleLoans(eligible);
+      }
+    } catch {
+      if (activeRequest === requestId.current) {
+        setLoanPickerError('Your loans could not be loaded. Try again.');
+      }
+    } finally {
+      if (activeRequest === requestId.current) setLoanPickerLoading(false);
+    }
+  };
+
+  const closeLoanPicker = () => {
+    requestId.current += 1;
+    setLoanPickerOpen(false);
+    setLoanPickerLoading(false);
+  };
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <>
+      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.heading}>Tools</Text>
 
       <Text style={styles.sectionLabel}>Calculators</Text>
@@ -101,6 +180,18 @@ export function ToolsScreen() {
         stays editable.
       </Text>
       <View style={styles.card}>
+        <Pressable
+          style={[styles.row, styles.rowBorder]}
+          onPress={openLoanComparison}
+          accessibilityRole="button"
+          accessibilityLabel="Prepay versus invest"
+        >
+          <View style={styles.rowBody}>
+            <Text style={styles.rowLabel}>Prepay vs. invest</Text>
+            <Text style={styles.rowDesc}>Compare two ways to prepay one of your recorded loans.</Text>
+          </View>
+          <Text style={styles.chevron}>›</Text>
+        </Pressable>
         {SCENARIOS.map((s, idx) => (
           <Pressable
             key={s.type}
@@ -115,7 +206,94 @@ export function ToolsScreen() {
           </Pressable>
         ))}
       </View>
-    </ScrollView>
+      </ScrollView>
+
+      <Modal
+        visible={loanPickerOpen}
+        animationType="slide"
+        onRequestClose={closeLoanPicker}
+        onShow={() => {
+          const headingHandle = findNodeHandle(pickerHeadingRef.current);
+          if (headingHandle) AccessibilityInfo.setAccessibilityFocus(headingHandle);
+        }}
+      >
+        <ScrollView contentContainerStyle={styles.pickerContent} accessibilityViewIsModal>
+          <Text ref={pickerHeadingRef} style={styles.pickerTitle} accessibilityRole="header">
+            Prepay vs. invest
+          </Text>
+          {loanPickerLoading ? (
+            <Text style={styles.pickerBody} accessibilityLiveRegion="polite">
+              Loading your recorded loans…
+            </Text>
+          ) : loanPickerError ? (
+            <>
+              <Text style={styles.pickerBody} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+                {loanPickerError}
+              </Text>
+              {userId && (
+                <Pressable style={styles.primaryButton} onPress={openLoanComparison}>
+                  <Text style={styles.primaryButtonText}>Try again</Text>
+                </Pressable>
+              )}
+            </>
+          ) : eligibleLoans.length === 0 ? (
+            <>
+              <Text style={styles.pickerBody} accessibilityLiveRegion="polite">
+                Add a home loan or personal loan to use this comparison. Credit-card balances do not use the same fixed-EMI maths.
+              </Text>
+              <Pressable
+                style={styles.primaryButton}
+                onPress={() => {
+                  closeLoanPicker();
+                  navigation.navigate('Loans');
+                }}
+              >
+                <Text style={styles.primaryButtonText}>View loans</Text>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <Text style={styles.pickerBody} accessibilityLiveRegion="polite">
+                {eligibleLoans.length} eligible loans found. Choose the loan you want to model.
+              </Text>
+              <View style={styles.card}>
+                {eligibleLoans.map((loan, idx) => (
+                  <Pressable
+                    key={loan.id}
+                    style={[styles.row, idx < eligibleLoans.length - 1 && styles.rowBorder]}
+                    onPress={() => {
+                      setLoanPickerOpen(false);
+                      setSelectedLoan(loan);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Compare ${loan.display_name ?? loan.alias}`}
+                  >
+                    <View style={styles.rowBody}>
+                      <Text style={styles.rowLabel}>{loan.display_name ?? loan.alias}</Text>
+                      <Text style={styles.rowDesc}>
+                        {loan.product_type === 'home_loan' ? 'Home loan' : 'Personal loan'}
+                      </Text>
+                    </View>
+                    <Text style={styles.chevron}>›</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </>
+          )}
+          <Pressable style={styles.closeButton} onPress={closeLoanPicker}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </Pressable>
+        </ScrollView>
+      </Modal>
+
+      {selectedLoan && userId && (
+        <LoanVsInvestModal
+          userId={userId}
+          holdingId={selectedLoan.id}
+          onClose={() => setSelectedLoan(null)}
+        />
+      )}
+    </>
   );
 }
 
@@ -165,4 +343,16 @@ const styles = StyleSheet.create({
   rowLabel: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.ink },
   rowDesc: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary, marginTop: 2, lineHeight: 17 },
   chevron: { fontFamily: font.ui, fontSize: 18, color: colors.inkMuted, marginLeft: spacing.sm },
+  pickerContent: {
+    flexGrow: 1,
+    padding: spacing.xl,
+    paddingTop: spacing.xxxl,
+    backgroundColor: colors.screen,
+  },
+  pickerTitle: { fontFamily: font.uiSemibold, fontSize: 24, color: colors.ink, marginBottom: spacing.md },
+  pickerBody: { fontFamily: font.tutor, fontSize: 15, lineHeight: 22, color: colors.inkSecondary, marginBottom: spacing.lg },
+  primaryButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: radius.md, backgroundColor: colors.ink, paddingHorizontal: spacing.lg, marginBottom: spacing.md },
+  primaryButtonText: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.canvas },
+  closeButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl },
+  closeButtonText: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.inkSecondary },
 });

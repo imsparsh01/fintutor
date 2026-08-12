@@ -38,7 +38,8 @@ HealthScoreScreen       screens/ (~260)            Hidden “Portfolio Health”
 GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
                                                    inline create form, insurance coverage summary,
                                                    emergency readiness CTA (BQ-059)
-ToolsScreen             screens/ (80)              Tools tab — calculator list grid (5 items, batch 1)
+ToolsScreen             screens/ (~310)            Tools tab — 5 calculators + scenarios; S-02 loads eligible
+                                                   owned loans and reuses LoanVsInvestModal (BQ-075)
 CalculatorScreen        screens/ (420)             Hidden tab — 5 calculators: C-04/C-10/C-17/C-22/C-24
 ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
                                                    Prefills inputs from budget+holdings; every field editable.
@@ -167,7 +168,8 @@ ScenarioType (navigation/types.ts):
   'idle_cash'         S-07 — a cash balance compounded at two user-set rates
   'corpus_target'     S-01 — years until the corpus reaches a user-set target
 ```
-S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is LoanVsInvestModal (D-014).
+S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is LoanVsInvestModal (D-014),
+launched from Tools with direct-open for one eligible loan or a neutral owned-loan chooser for many.
 
 ## Key patterns
 
