@@ -19,7 +19,7 @@ import { isLoanVsInvestEligible } from '../lib/loanVsInvest';
 import type { CalculatorType, MainTabsParamList, ScenarioType } from '../navigation/types';
 
 // BQ-057 (D-105): Tools tab — calculator entry point list.
-// Batch 1: C-04, C-10, C-17, C-22, C-24.
+// C-04, C-10, C-17, C-22, C-24 plus D-128 Compound Growth (BQ-078).
 // Navigates to CalculatorScreen (hidden tab) with { type, label }.
 //
 // BQ-056 (D-106): the "What if…" scenarios sit below the calculators, same row pattern,
@@ -54,6 +54,11 @@ const CALCULATORS: CalcEntry[] = [
     type: 'cagr_backward',
     label: 'CAGR Calculator',
     description: 'Measure the annualised return on any investment you hold.',
+  },
+  {
+    type: 'compound_growth',
+    label: 'Compound Growth',
+    description: 'Model a lump sum and monthly contributions at a rate you choose.',
   },
 ];
 

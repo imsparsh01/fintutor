@@ -16,23 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-078 — Add Compound Growth calculator — READY
-
-Traces to D-128/D-129. Add a local pure calculator with user-entered starting lump sum, monthly contribution
-(zero allowed), annual rate (no default), and years. Use monthly compounding and end-of-month contributions:
-`L(1+r)^n + M((1+r)^n-1)/r`, with `L + M*n` when rate is zero; `r=annual_rate/12/100`, `n=round(12*years)`.
-Require a positive lump sum or contribution, non-negative finite rate, positive finite horizon, bounded safe
-inputs/exponents, and no invented prefill. Show ending amount, total contributed, and neutral arithmetic
-difference. Disclose fixed rate/monthly compounding/month-end contributions and exclusions for volatility,
-fees, tax, missed contributions, and changing rates; call it a model, never a forecast. Reuse existing
-CalculatorScreen/ResultCard/progression patterns; no backend, schema, dependency, stored result, recommendation,
-or additional calculator is authorised.
-
-Acceptance: zero-rate and month-end boundary cases are tested; unsafe/non-finite input cannot render a result;
-copy passes P2/P10/D-091; Tools route and existing calculators remain intact; completion emits only after a
-valid result renders; TypeScript, pure-function tests where available, and native QA pass/best-effort.
-
-### BQ-079 — Add Credit-card Payoff calculator — READY AFTER BQ-078
+### BQ-079 — Add Credit-card Payoff calculator — READY
 
 Traces to D-128/D-129. Add a local month-by-month fixed-payment model with editable recorded-card prefills
 and no defaults: positive outstanding balance, non-negative annual rate, and positive fixed monthly payment.

@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  AccessibilityInfo,
+  findNodeHandle,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,11 +15,12 @@ import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
+import { calculateCompoundGrowth } from '../lib/compoundGrowth';
 import { formatRupees } from '../lib/format';
 import { recordCalculatorCompleted } from '../lib/progression';
 import type { CalculatorType, MainTabsParamList } from '../navigation/types';
 
-// BQ-057 (D-105/D-106): 5 calculator screens — all free-form input, pure frontend math.
+// BQ-057 + BQ-078: calculator screens — all free-form input, pure frontend math.
 // Outputs render in font.mono / colors.ink (P10 — no valence colour). Each result card
 // includes a mechanism explanation (D-088 tutor voice) so the user understands what the
 // number IS, not just what it says.
@@ -45,6 +48,7 @@ export function CalculatorScreen() {
       {type === 'inflation' && <InflationCalc onComputed={onComputed} />}
       {type === 'stepup_sip' && <StepUpSipCalc onComputed={onComputed} />}
       {type === 'cagr_backward' && <CagrCalc onComputed={onComputed} />}
+      {type === 'compound_growth' && <CompoundGrowthCalc onComputed={onComputed} />}
     </KeyboardAvoidingView>
   );
 }
@@ -82,6 +86,8 @@ function CalcInput({
           keyboardType="decimal-pad"
           placeholder={hint ?? '0'}
           placeholderTextColor={colors.inkMuted}
+          accessibilityLabel={label}
+          accessibilityHint={hint ? `Example: ${hint.replace(/^e\.g\.\s*/, '')}` : undefined}
         />
         {suffix && <Text style={styles.inputAdorn}>{suffix}</Text>}
       </View>
@@ -95,6 +101,8 @@ function CalcButton({ onPress, disabled }: { onPress: () => void; disabled?: boo
       style={[styles.calcBtn, disabled && styles.calcBtnDisabled]}
       onPress={onPress}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: Boolean(disabled) }}
     >
       <Text style={[styles.calcBtnText, disabled && styles.calcBtnTextDisabled]}>
         Calculate
@@ -114,12 +122,16 @@ function ResultCard({
   mechanismNote: string;
   onRendered?: () => void;
 }) {
+  const headingRef = useRef<Text>(null);
   useEffect(() => {
+    AccessibilityInfo.announceForAccessibility(`${unit}: ${value}`);
+    const handle = findNodeHandle(headingRef.current);
+    if (handle) AccessibilityInfo.setAccessibilityFocus(handle);
     onRendered?.();
-  }, [onRendered]);
+  }, [onRendered, unit, value]);
   return (
-    <View style={styles.resultCard}>
-      <Text style={styles.resultUnit}>{unit}</Text>
+    <View style={styles.resultCard} accessibilityLiveRegion="polite">
+      <Text ref={headingRef} style={styles.resultUnit} accessibilityRole="header">{unit}</Text>
       <Text style={styles.resultValue}>{value}</Text>
       <Text style={styles.resultNote}>{mechanismNote}</Text>
     </View>
@@ -350,6 +362,62 @@ function CagrCalc({ onComputed }: CalcProps) {
   );
 }
 
+// ─── D-128: Compound Growth ───────────────────────────────────────────────
+function CompoundGrowthCalc({ onComputed }: CalcProps) {
+  const [lumpSum, setLumpSum] = useState('');
+  const [monthly, setMonthly] = useState('');
+  const [rate, setRate] = useState('');
+  const [years, setYears] = useState('');
+  const [result, setResult] = useState<Extract<ReturnType<typeof calculateCompoundGrowth>, { ok: true }>['result'] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  function calculate() {
+    const next = calculateCompoundGrowth(Number(lumpSum), Number(monthly), Number(rate), Number(years));
+    if (!next.ok) {
+      setResult(null);
+      const messages = {
+        non_finite: 'Enter ordinary finite numbers in every field.',
+        amount_required: 'Enter a positive starting amount or monthly contribution.',
+        negative_value: 'Amounts, rate, and horizon cannot be negative.',
+        amount_too_large: 'Each amount must be no more than ₹1 lakh crore.',
+        rate_out_of_range: 'Enter an annual rate from 0% to 1,000%.',
+        horizon_out_of_range: 'Enter a horizon no greater than 200 years.',
+        horizon_rounds_to_zero: 'Enter a horizon that rounds to at least one modeled month—about 0.042 years or more.',
+        numeric_overflow: 'This combination grows beyond the calculator’s safe numeric range. Reduce an amount, rate, or horizon.',
+      } as const;
+      setError(messages[next.error]);
+      return;
+    }
+    setError(null);
+    setResult(next.result);
+  }
+
+  const ready = lumpSum !== '' && monthly !== '' && rate !== '' && years !== '';
+  return (
+    <CalcWrapper title="Compound Growth">
+      <CalcInput label="Starting lump sum" prefix="₹" value={lumpSum} onChange={setLumpSum} />
+      <CalcInput label="Monthly contribution" prefix="₹" value={monthly} onChange={setMonthly} />
+      <CalcInput label="Annual rate" suffix="%" value={rate} onChange={setRate} />
+      <CalcInput label="Time horizon" suffix="years" value={years} onChange={setYears} />
+      <CalcButton onPress={calculate} disabled={!ready} />
+      {error ? <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text> : null}
+      {result ? (
+        <>
+          <ResultCard
+            unit="Modeled amount at end"
+            value={formatRupees(result.endingAmount)}
+            mechanismNote={`This is a conditional model using your fixed ${rate}% annual rate, compounded monthly. Contributions are added at each month end and begin compounding in the following month.`}
+            onRendered={onComputed}
+          />
+          <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total contributed</Text><Text style={styles.secondaryValue}>{formatRupees(result.totalContributed)}</Text></View>
+          <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Arithmetic difference</Text><Text style={styles.secondaryValue}>{formatRupees(result.arithmeticDifference)}</Text></View>
+          <Text style={styles.disclosure}>This model holds your rate and contribution constant. It excludes volatility, fees, tax, missed contributions, and changing rates. It is not a forecast or recommendation.</Text>
+        </>
+      ) : null}
+    </CalcWrapper>
+  );
+}
+
 // ─── Styles ───────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
@@ -441,4 +509,6 @@ const styles = StyleSheet.create({
   },
   secondaryLabel: { fontFamily: font.ui, fontSize: 13, color: colors.inkSecondary },
   secondaryValue: { fontFamily: font.mono, fontSize: 15, color: colors.ink },
+  calcError: { color: colors.danger, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginBottom: spacing.lg },
+  disclosure: { color: colors.inkSecondary, fontFamily: font.tutor, fontSize: 13, lineHeight: 19, marginTop: spacing.lg },
 });

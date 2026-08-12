@@ -8,7 +8,7 @@ export type AuthStackParamList = {
 // D-106: 5-tab nav (Home · Portfolio · Goals · Tools · Chat).
 // Family screens (Investments/Loans/Insurance/Budgeting) stay in the navigator as hidden
 // screens (tabBarButton: () => null) so existing navigation.navigate calls keep working.
-export type CalculatorType = 'sip_goal' | 'emi' | 'inflation' | 'stepup_sip' | 'cagr_backward';
+export type CalculatorType = 'sip_goal' | 'emi' | 'inflation' | 'stepup_sip' | 'cagr_backward' | 'compound_growth';
 
 // BQ-056 (D-106): scenario batch 1. S-04 (rent vs buy) is parked — it needs input fields the
 // schema doesn't have. S-02 (prepay vs invest) is already the LoanVsInvest modal (D-014).

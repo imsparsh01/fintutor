@@ -12,6 +12,17 @@
 
 ---
 
+## BQ-078 — Add Compound Growth calculator — DONE 12-Aug-2026
+
+Added a pure Compound Growth calculator with user-owned lump sum, monthly contribution, rate, and horizon;
+D-129 monthly compounding/month-end contributions; zero-rate handling; ending amount, total contributed and
+neutral arithmetic difference; no default rate or forecast framing. Typed validation distinguishes ordinary
+input errors, sub-month rounded horizons, and unsafe combined overflow. Shared calculator inputs/buttons/results
+now have screen-reader labels, state, announcements and result focus. Staff-review findings were fixed.
+Verified: 8 focused formula tests, 122 backend tests, TypeScript, iOS production bundle, and clean diff check.
+
+---
+
 ## BQ-077 — Implement user-confirmed holding reconciliation — DONE 12-Aug-2026
 
 Conversational holding capture now supports transient new/update/conflict proposals with deterministic local

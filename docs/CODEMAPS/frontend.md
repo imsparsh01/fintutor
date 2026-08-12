@@ -39,9 +39,10 @@ HealthScoreScreen       screens/ (~260)            Hidden “Portfolio Health”
 GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
                                                    inline create form, insurance coverage summary,
                                                    emergency readiness CTA (BQ-059)
-ToolsScreen             screens/ (~310)            Tools tab — 5 calculators + scenarios; S-02 loads eligible
+ToolsScreen             screens/ (~310)            Tools tab — 6 calculators + scenarios; S-02 loads eligible
                                                    owned loans and reuses LoanVsInvestModal (BQ-075)
-CalculatorScreen        screens/ (420)             Hidden tab — 5 calculators: C-04/C-10/C-17/C-22/C-24
+CalculatorScreen        screens/ (~475)            Hidden tab — prior 5 calculators + D-128 Compound Growth;
+                                                   primary ResultCard emits after a valid result renders
 ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
                                                    Prefills inputs from budget+holdings; every field editable.
 InvestmentsScreen       screens/ (338)             Hidden tab — holdings list (equity/debt/fd/ppf/stocks)
@@ -113,6 +114,8 @@ taxSavingRoom.ts        24      fetchTaxSavingRoom()
 loanVsInvest.ts         30      fetchLoanVsInvest()
 holdingReconciliation.ts       Resolve owned candidate/new choice and apply confirmed transient diff;
                                 exposes refreshed proposal on stale 409
+compoundGrowth.ts              Pure D-128/D-129 month-end contribution model with finite/safe bounds;
+                                typed validation/overflow reasons, zero-rate branch, arithmetic difference
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
@@ -159,8 +162,9 @@ CalculatorType (navigation/types.ts):
   'inflation'      C-17 — Inflation Impact
   'stepup_sip'     C-22 — Step-up SIP Corpus
   'cagr_backward'  C-24 — CAGR Calculator
+  'compound_growth' D-128 — lump sum + month-end contributions at a user-entered rate
 ```
-All 5 are pure frontend math. Batch 2 (C-16 income tax, C-23 HRA) approved but not yet built.
+All 6 are pure frontend math. Tax/HRA remain blocked pending a separate rule-source contract.
 
 ## Scenario types (D-106, BQ-056)
 
@@ -187,7 +191,9 @@ launched from Tools with direct-open for one eligible loan or a neutral owned-lo
   old legacy row is read only for presence: any row grants cross-device access without inferring v2 axes.
   Home offers those users one locally dismissible opt-in route to `VoluntaryAssessmentScreen`.
 - `CalculatorScreen` receives `{ type: CalculatorType; label: string }` as route params and renders the
-  appropriate calculator. ToolsScreen is the only entry point (hidden tab pattern).
+  appropriate calculator. ToolsScreen is the only entry point (hidden tab pattern). Shared calculator
+  inputs/buttons expose labels, hints, roles and disabled state; a valid ResultCard announces and receives
+  accessibility focus after render, which is also the completion-emission boundary.
 - **AsyncStorage keys `hs_emergency_months` / `hs_has_health_ins`** are written by HealthScoreScreen and
   read by both HealthScoreScreen and GoalsScreen. One answer, two surfaces — do not add a second prompt
   for either question. No vector-icon library is installed: GoalsScreen's goal-type marks are drawn from
