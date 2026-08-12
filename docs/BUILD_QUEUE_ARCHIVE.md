@@ -12,6 +12,17 @@
 
 ---
 
+## BQ-076 — Complete the optional onboarding first-action handoff — DONE 12-Aug-2026
+
+After the five-axis orientation, users now choose among five existing destinations: Arya, something they
+manage, a goal, calculators/scenarios, or Home without financial disclosure. A defensive normalized-intent
+mapping adds only a modest suggestion label without hiding/reordering choices. A synchronous one-shot guard
+prevents destination races; backend completion remains authoritative and cache failure cannot trap entry.
+Legacy voluntary assessment remains intact. Staff-review findings were fixed. Verified: 96 backend tests,
+TypeScript, iOS production bundle, and clean diff check.
+
+---
+
 ## BQ-075 — Surface the approved loan-versus-invest scenario from Tools — DONE 12-Aug-2026
 
 Tools now exposes the existing S-02 comparison without duplicating or changing money logic. Zero eligible

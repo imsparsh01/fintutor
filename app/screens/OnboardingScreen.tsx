@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -99,18 +99,26 @@ const QUESTIONS: Record<AssessmentQuestion, QuestionContent> = {
 
 const EXCLUSIVE_EXPOSURE = new Set(['none', 'unsure', 'undisclosed']);
 
-function destinationFor(intent: string | null): OnboardingDestination {
-  if (intent === 'understand_existing') return 'Portfolio';
-  if (intent === 'model_future') return 'Tools';
-  if (intent === 'ask_arya' || intent === 'learn_basics') return 'Chat';
-  return 'Consolidated';
-}
+const HANDOFF_CHOICES: Array<{
+  destination: OnboardingDestination;
+  label: string;
+  description: string;
+}> = [
+  { destination: 'Chat', label: 'Ask Arya', description: 'Start with a question or teaching moment.' },
+  { destination: 'Portfolio', label: 'Something I manage', description: 'Add or understand a holding you already manage.' },
+  { destination: 'Goals', label: 'A goal', description: 'Create a goal or explore how goal planning works.' },
+  { destination: 'Tools', label: 'Calculators and scenarios', description: 'Try a calculator or model a what-if scenario.' },
+  { destination: 'Consolidated', label: 'Home', description: 'Look around without adding any financial details.' },
+];
 
-function handoffCopy(destination: OnboardingDestination) {
-  if (destination === 'Portfolio') return ['See the whole picture', 'Open Portfolio'];
-  if (destination === 'Tools') return ['Try a scenario without changing real money', 'Open Tools'];
-  if (destination === 'Chat') return ['Start with a question or teaching moment', 'Open Arya'];
-  return ['See your starting point and explore at your pace', 'Go to Home'];
+function suggestedDestination(intent: unknown): OnboardingDestination | null {
+  if (intent === 'ask_arya' || intent === 'learn_basics') return 'Chat';
+  if (intent === 'connect_picture' || intent === 'understand_existing') return 'Portfolio';
+  if (intent === 'model_future') return 'Tools';
+  if (intent === 'build_routine') return 'Consolidated';
+  // Skipped, unknown, explore, and undisclosed answers deliberately produce no
+  // suggestion. Home remains equally visible without pretending an inference.
+  return null;
 }
 
 export function OnboardingScreen({
@@ -129,14 +137,12 @@ export function OnboardingScreen({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [closing, setClosing] = useState<AssessmentState | null>(null);
-  const [showWhy, setShowWhy] = useState(false);
+  const [choiceMade, setChoiceMade] = useState(false);
+  const choiceMadeRef = useRef(false);
 
   const question = assessment?.current_question ?? 'immediate_intent';
   const content = QUESTIONS[question];
   const index = assessmentQuestions.indexOf(question);
-  const immediateIntent = (closing ?? assessment)?.answers.immediate_intent;
-  const destination = destinationFor(typeof immediateIntent === 'string' ? immediateIntent : null);
-  const closingCopy = useMemo(() => handoffCopy(destination), [destination]);
 
   async function run(action: () => Promise<AssessmentState | null>, finish = false) {
     setSaving(true);
@@ -169,29 +175,48 @@ export function OnboardingScreen({
   }
 
   if (closing) {
+    const suggestion = suggestedDestination(closing.answers.immediate_intent);
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.closing}>
+        <ScrollView contentContainerStyle={styles.closing}>
           <Text style={styles.kicker}>YOUR FINTUTOR JOURNEY</Text>
           <Text style={styles.closingTitle}>You’re starting at Discovering.</Text>
           <Text style={styles.closingBody}>
             That only means your FinTutor journey is beginning—not that you’re a beginner with money.
             You can change how Arya explains things at any time.
           </Text>
-          <View style={styles.handoff}>
-            <Text style={styles.handoffLabel}>A PLACE TO BEGIN</Text>
-            <Text style={styles.handoffText}>{closingCopy[0]}</Text>
-            <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setShowWhy((value) => !value)}>
-              <Text style={styles.whyLink}>{showWhy ? 'Hide explanation' : 'Why am I seeing this?'}</Text>
-            </Pressable>
-            {showWhy ? (
-              <Text style={styles.whyText}>
-                This suggestion comes only from what you chose to explore first. Every part of FinTutor remains available.
-              </Text>
-            ) : null}
+          <Text style={styles.handoffLabel}>CHOOSE A PLACE TO BEGIN</Text>
+          <Text style={styles.handoffIntro}>
+            Pick any starting point. Every part of FinTutor stays available, and Home requires no financial details.
+          </Text>
+          <View style={styles.handoffChoices}>
+            {HANDOFF_CHOICES.map((choice) => (
+              <Pressable
+                key={choice.destination}
+                accessibilityRole="button"
+                accessibilityLabel={`${choice.label}. ${choice.description}${suggestion === choice.destination ? ' Suggested from what you chose.' : ''}`}
+                accessibilityState={{ disabled: choiceMade }}
+                disabled={choiceMade}
+                onPress={() => {
+                  if (choiceMadeRef.current) return;
+                  choiceMadeRef.current = true;
+                  setChoiceMade(true);
+                  onDone(choice.destination);
+                }}
+                style={({ pressed }) => [styles.handoffChoice, pressed && styles.pressed]}
+              >
+                <View style={styles.handoffChoiceBody}>
+                  <Text style={styles.handoffChoiceLabel}>{choice.label}</Text>
+                  <Text style={styles.handoffChoiceDescription}>{choice.description}</Text>
+                  {suggestion === choice.destination ? (
+                    <Text style={styles.suggestedLabel}>Suggested from what you chose</Text>
+                  ) : null}
+                </View>
+                <Text style={styles.handoffChevron}>›</Text>
+              </Pressable>
+            ))}
           </View>
-          <PrimaryButton label={closingCopy[1]} busy={false} onPress={() => onDone(destination)} />
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -342,12 +367,16 @@ const styles = StyleSheet.create({
   error: { color: colors.danger, fontFamily: font.ui, fontSize: 14, lineHeight: 20, marginBottom: spacing.md },
   loader: { marginVertical: spacing.md },
   pressed: { opacity: 0.7 },
-  closing: { flex: 1, justifyContent: 'center', padding: spacing.xl, maxWidth: 620, width: '100%', alignSelf: 'center' },
+  closing: { flexGrow: 1, justifyContent: 'center', padding: spacing.xl, paddingBottom: spacing.xxxl, maxWidth: 620, width: '100%', alignSelf: 'center' },
   closingTitle: { color: colors.ink, fontFamily: font.uiSemibold, fontSize: 34, lineHeight: 41, marginBottom: spacing.lg },
   closingBody: { color: colors.inkSecondary, fontFamily: font.tutor, fontSize: 19, lineHeight: 28, marginBottom: spacing.xxl },
-  handoff: { borderLeftWidth: 2, borderLeftColor: colors.tutor, paddingLeft: spacing.lg, paddingVertical: spacing.sm, marginBottom: spacing.xxl },
   handoffLabel: { color: colors.inkMuted, fontFamily: font.monoMedium, fontSize: 10, letterSpacing: 0.8, marginBottom: spacing.sm },
-  handoffText: { color: colors.ink, fontFamily: font.uiMedium, fontSize: 16, lineHeight: 23 },
-  whyLink: { color: colors.tutor, fontFamily: font.uiMedium, fontSize: 13, marginTop: spacing.lg, textDecorationLine: 'underline' },
-  whyText: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 13, lineHeight: 20, marginTop: spacing.sm },
+  handoffIntro: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 14, lineHeight: 21, marginBottom: spacing.lg },
+  handoffChoices: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.lg, overflow: 'hidden' },
+  handoffChoice: { minHeight: 64, flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line, backgroundColor: colors.canvas },
+  handoffChoiceBody: { flex: 1 },
+  handoffChoiceLabel: { color: colors.ink, fontFamily: font.uiSemibold, fontSize: 15 },
+  handoffChoiceDescription: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginTop: 2 },
+  suggestedLabel: { color: colors.tutor, fontFamily: font.uiMedium, fontSize: 11, lineHeight: 16, marginTop: spacing.xs },
+  handoffChevron: { color: colors.inkMuted, fontFamily: font.ui, fontSize: 20, marginLeft: spacing.md },
 });

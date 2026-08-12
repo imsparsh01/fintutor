@@ -192,3 +192,10 @@
   coverage, compound growth, goal affordability, and term-insurance coverage; tax/HRA stay blocked. Full
   write-up: `docs/decisions/D-128-focused-second-calculator-batch.md`.
 - **Date:** 12-Aug-2026
+
+### D-129 — Users own consequential calculator assumptions; recurring contributions use month-end timing
+- **Tier:** 3, owner-decided. “The user should control the uncertain financial inputs; the app should own
+  only transparent arithmetic.” No typical/default assumptions; disclosed conditional conventions only;
+  monthly contributions use consistent end-of-month timing. Full write-up:
+  `docs/decisions/D-129-user-owned-assumptions-and-end-month-convention.md`.
+- **Date:** 12-Aug-2026

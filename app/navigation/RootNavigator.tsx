@@ -53,7 +53,11 @@ function AuthenticatedApp({ userId }: { userId: string }) {
         if (!active) return;
         setAssessmentState(state);
         setOnboardingDone(state.status === 'handled');
-        if (state.status === 'handled') await cacheHandledAssessment(userId);
+        if (state.status === 'handled') {
+          // Backend state already grants access. A device-cache failure must not
+          // reverse that authoritative result or strand the app on its loader.
+          cacheHandledAssessment(userId).catch(() => undefined);
+        }
       } catch (error) {
         if (!active) return;
         if (error instanceof AssessmentApiError && error.status === 404) {
@@ -98,8 +102,10 @@ function AuthenticatedApp({ userId }: { userId: string }) {
       <OnboardingScreen
         userId={userId}
         initialState={assessmentState}
-        onDone={async (nextDestination) => {
-          await cacheHandledAssessment(userId);
+        onDone={(nextDestination) => {
+          // The handle/answer response has already authoritatively completed
+          // onboarding. Cache is outage fallback only, so write it best-effort.
+          cacheHandledAssessment(userId).catch(() => undefined);
           setDestination(nextDestination);
           setOnboardingDone(true);
         }}

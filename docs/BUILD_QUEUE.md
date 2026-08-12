@@ -16,19 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-076 — Complete the optional onboarding first-action handoff — READY
-
-Traces to D-126. Rework the existing handled-state handoff so it presents the available existing routes
-clearly: Arya, add/understand something already managed, create/explore a goal, calculators/scenarios, or
-Home. The immediate-intent answer may highlight a starting choice but must not remove the others. All choices
-and skipping must finish onboarding identically; no extra financial question, persistence, route, schema,
-dependency, recommendation, or progression event is authorised.
-
-Acceptance: all five choices plus Home are visible and accessible; the suggested choice follows normalized
-immediate intent defensively; every route reaches an existing surface; choosing Home requires no disclosure;
-answer/skip/global-exit and legacy opt-in paths remain correct; TypeScript and native QA pass/best-effort.
-
-### BQ-077 — Implement user-confirmed holding reconciliation — READY AFTER BQ-076
+### BQ-077 — Implement user-confirmed holding reconciliation — READY
 
 Traces to D-127. Extend conversational holding capture into a transient new/update/conflict proposal. Backend
 code, not the model, owns candidate identity; exact locally matched display names are redacted before Haiku,
@@ -44,6 +32,41 @@ apply; added/unchanged/conflicting field diffs are accurate; stale same-field ch
 confirmed updates merge only shown fields; dismiss/classifier failure writes nothing; new/manual capture stays
 functional; focused API/service tests, full backend suite, TypeScript, codemap updates, and native QA pass or
 are attempted as applicable.
+
+### BQ-078 — Add Compound Growth calculator — READY AFTER BQ-077
+
+Traces to D-128/D-129. Add a local pure calculator with user-entered starting lump sum, monthly contribution
+(zero allowed), annual rate (no default), and years. Use monthly compounding and end-of-month contributions:
+`L(1+r)^n + M((1+r)^n-1)/r`, with `L + M*n` when rate is zero; `r=annual_rate/12/100`, `n=round(12*years)`.
+Require a positive lump sum or contribution, non-negative finite rate, positive finite horizon, bounded safe
+inputs/exponents, and no invented prefill. Show ending amount, total contributed, and neutral arithmetic
+difference. Disclose fixed rate/monthly compounding/month-end contributions and exclusions for volatility,
+fees, tax, missed contributions, and changing rates; call it a model, never a forecast. Reuse existing
+CalculatorScreen/ResultCard/progression patterns; no backend, schema, dependency, stored result, recommendation,
+or additional calculator is authorised.
+
+Acceptance: zero-rate and month-end boundary cases are tested; unsafe/non-finite input cannot render a result;
+copy passes P2/P10/D-091; Tools route and existing calculators remain intact; completion emits only after a
+valid result renders; TypeScript, pure-function tests where available, and native QA pass/best-effort.
+
+### BQ-079 — Add Credit-card Payoff calculator — READY AFTER BQ-078
+
+Traces to D-128/D-129. Add a local month-by-month fixed-payment model with editable recorded-card prefills
+and no defaults: positive outstanding balance, non-negative annual rate, and positive fixed monthly payment.
+Each month applies `interest=balance*(APR/12/100)` then a month-end payment clamped to the amount due. Report
+months, total paid, total interest, and final payment. If the first month's interest is at least the payment,
+show that these inputs do not reach zero rather than recommending a payment. Stop computation at a disclosed
+1,200-month safety bound and report no result beyond it. Support zero rate and multiple/no-recorded-card paths;
+record-load failure must leave manual entry usable.
+
+Disclose that the model excludes new spending, fees, penalty interest, rate/payment changes, and issuer daily
+interest/rounding. Do not recommend a payment or payoff strategy. Reuse existing CalculatorScreen/ResultCard,
+neutral styling, and render-confirmed progression emission. No backend, schema, dependency, stored result, or
+automatic card selection is authorised.
+
+Acceptance: ordinary, zero-rate, exact/final-partial, non-clearing, cap, finite/overflow, editable-prefill,
+multiple-card chooser, error/manual-entry, accessibility, and disclosure cases are covered; TypeScript,
+focused pure tests where available, and native QA pass/best-effort.
 
 ## BLOCKED — do not start
 

@@ -23,8 +23,9 @@ Screen                  File (lines)               Purpose
 NotConfiguredScreen     screens/ (38)              Supabase env vars absent
 LoginScreen             screens/ (116)             Email+password auth
 RegisterScreen          screens/ (123)             New account
-OnboardingScreen        screens/ (~340)            Five-axis normalized assessment v2: 18+ acknowledgement,
-                                                   deterministic chips, skip/exit, progress, and intent handoff
+OnboardingScreen        screens/ (~360)            Five-axis normalized assessment v2: 18+ acknowledgement,
+                                                   deterministic chips, skip/exit, progress, and neutral optional
+                                                   handoff to Arya/Portfolio/Goals/Tools/Home (BQ-076)
 VoluntaryAssessmentScreen screens/ (~55)            Hidden BQ-068 wrapper: loads/resumes v2 for a legacy opt-in,
                                                    permits cancel before eligibility, then reuses OnboardingScreen
 ConsolidatedScreen      screens/ (~390)            Home — 8-section feed: financial picture, tappable
@@ -179,6 +180,7 @@ launched from Tools with direct-open for one eligible loan or a neutral owned-lo
 - `TeachingWalkthrough` is reused by all three family screens; steps come from `walkthroughSteps.ts`.
 - New-user onboarding v2 never uses `ChatThread` or `/chat`. `RootNavigator` reads backend-authoritative
   assessment state and only falls back to a locally cached handled state during a backend outage. The
+  handled-state handoff offers equal existing-route choices; cache writes are best-effort and never gate access.
   old legacy row is read only for presence: any row grants cross-device access without inferring v2 axes.
   Home offers those users one locally dismissible opt-in route to `VoluntaryAssessmentScreen`.
 - `CalculatorScreen` receives `{ type: CalculatorType; label: string }` as route params and renders the
