@@ -16,11 +16,42 @@ Rules for this file:
 
 ## READY — pick one of these
 
-None.
+### BQ-073 — Correct reversed holding reconciliation status — READY
+
+Traces to D-125 and the standing living-baseline contract in PROJECT_SPEC §2. This is a bounded defect:
+`create_holding()` currently reports `updated`, while `update_holding()` reports `new`. Swap those two
+response statuses and add focused regression coverage. Do not design contradiction detection, matching,
+merge behavior, or any broader reconciliation semantics under this item.
+
+Acceptance: a newly created holding projects `reconciliation.status = "new"`; an edited holding projects
+`"updated"`; existing holding persistence and response fields remain unchanged; targeted tests and the
+full backend suite pass.
+
+### BQ-074 — Complete goal-to-holding funding flow — READY AFTER BQ-073
+
+Traces to D-038 and D-125. The approved `funded_by[{holding_id, earmarked_amount}]` model and goal-progress
+calculation are shipped, but every frontend-created goal sends an empty list and no UI can link or update
+funding. Add the bounded backend mutation and frontend holding-selection/earmarked-amount interaction needed
+to create and edit those already-approved links. Validate that every selected holding belongs to the same
+user; do not add schema, automatic recommendations, allocation verdicts, or new financial formulas.
+
+Acceptance: a user can create or update a goal with zero or more owned holdings and earmarked amounts;
+cross-user holding IDs are rejected; goal progress reflects the saved links; empty funding remains valid;
+loading/error/empty states and backend tests are present; native QA is attempted.
+
+### BQ-075 — Surface the approved loan-versus-invest scenario from Tools — READY AFTER BQ-074
+
+Traces to D-104/D-106 and D-125. S-02 already exists as `LoanVsInvestModal` but is discoverable only from
+an eligible loan detail. Add a Tools scenario entry that lets the user choose an eligible owned loan and
+opens/navigates to the existing experience. Reuse the existing calculation and disclosure verbatim; do not
+change money logic, add assumptions, or create a second calculator implementation.
+
+Acceptance: Tools exposes S-02; zero/one/multiple eligible-loan states are coherent; selection is neutral;
+the existing holding-detail route remains functional; TypeScript and native QA pass/best-effort.
 
 ## BLOCKED — do not start
 
-### BQ-072 — Customer-outcome MVP exit-gate programme — ACTIVATION PROTOCOL COMPLETE; BLOCKED ON PARTICIPANTS
+### BQ-072 — Customer-outcome MVP exit-gate programme — DEFERRED UNTIL INTERNAL MVP VALIDATION
 
 Traces to D-122. This is the owner-directed programme that makes the customer outcome, rather than feature
 count, the MVP completion standard. It is deliberately **not READY**: the seven gates need to be converted
@@ -33,8 +64,9 @@ JWT ownership, QA, deployment posture, legal review); an evidence-backed initial
 initial distribution plus monetization hypothesis.
 
 **Completed autonomously:** D-124 / `docs/features/activation/ACTIVATION_TEST_V1.md` defines the target-user
-activation test and pass/fail thresholds. **Next:** owner recruits/schedules 12 qualifying participants and
-provides access to moderated sessions. Do not infer results or start product changes before evidence exists.
+activation test and pass/fail thresholds. D-125 changes the sequence: first reconcile and build the complete
+approved MVP, then the owner live-validates it, and only then recruit/schedule 12 qualifying participants.
+Do not recruit, infer results, or start evidence-dependent product changes before that internal gate passes.
 
 ---
 

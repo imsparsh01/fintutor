@@ -164,3 +164,10 @@
   neutrality, trust, and subgroup gates. Full write-up:
   `docs/features/activation/decisions/D-124-activation-test-v1.md`.
 - **Date:** 12-Aug-2026
+
+### D-125 — Complete and internally validate the approved MVP before external testing
+- **Tier:** 3, owner-decided. “The immediate bottleneck is therefore implementation fidelity and integration,
+  not participant recruitment.” Supersedes D-122/D-124 sequencing only: audit and build the approved MVP,
+  owner-validates it, then external activation testing begins. Full write-up:
+  `docs/decisions/D-125-internal-mvp-completion-before-external-testing.md`.
+- **Date:** 12-Aug-2026
