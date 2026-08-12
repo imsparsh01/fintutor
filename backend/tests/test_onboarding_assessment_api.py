@@ -9,7 +9,13 @@ from sqlalchemy.pool import StaticPool
 
 from app.db.session import Base, get_db
 from app.main import app
-from app.models import OnboardingAssessment, OnboardingState
+from app.models import (
+    OnboardingAssessment,
+    OnboardingState,
+    ProgressionDailyRollup,
+    ProgressionEvent,
+    ProgressionSummary,
+)
 from app.services.onboarding_assessment import (
     QUESTION_ORDER,
     answer_current_question,
@@ -27,7 +33,15 @@ class OnboardingAssessmentApiTests(unittest.TestCase):
         )
         Base.metadata.create_all(
             self.engine,
-            tables=[OnboardingState.__table__, OnboardingAssessment.__table__],
+            tables=[
+                OnboardingState.__table__,
+                OnboardingAssessment.__table__,
+                # BQ-071: these routes now emit progression. Created here so the
+                # emitters are actually exercised rather than silently swallowed.
+                ProgressionEvent.__table__,
+                ProgressionDailyRollup.__table__,
+                ProgressionSummary.__table__,
+            ],
         )
         self.Session = sessionmaker(bind=self.engine)
         self.db = self.Session()
@@ -101,6 +115,68 @@ class OnboardingAssessmentApiTests(unittest.TestCase):
         )
         self.assertEqual(stale.status_code, 409)
         self.assertNotIn("student", stale.text)
+
+    def test_answering_the_assessment_awards_progression(self) -> None:
+        # BQ-071 integration: the wired routes really do feed the ledger.
+        self.client.post(self._path("/start"), json={"eligibility_confirmed": True})
+        self.client.post(
+            self._path("/answer"),
+            json={"question": "immediate_intent", "value": "learn_basics"},
+        )
+        summary = self.client.get(f"/progression?user_id={self.user_id}").json()
+        self.assertGreater(summary["points"], 0)
+
+        events = self.client.get(f"/progression/history?user_id={self.user_id}").json()
+        self.assertEqual(
+            [e["event_type"] for e in events["events"]], ["context_prompt_handled"]
+        )
+
+    def test_skipping_earns_exactly_what_answering_earns(self) -> None:
+        # D-117: disclosure is never rewarded over declining to disclose.
+        self.client.post(self._path("/start"), json={"eligibility_confirmed": True})
+        self.client.post(
+            self._path("/skip"), json={"question": "immediate_intent"}
+        )
+        skipped = self.client.get(f"/progression?user_id={self.user_id}").json()
+
+        other = uuid.uuid4()
+        self.client.post(
+            f"/onboarding-assessment/start?user_id={other}",
+            json={"eligibility_confirmed": True},
+        )
+        self.client.post(
+            f"/onboarding-assessment/answer?user_id={other}",
+            json={"question": "immediate_intent", "value": "learn_basics"},
+        )
+        answered = self.client.get(f"/progression?user_id={other}").json()
+
+        self.assertEqual(skipped["points"], answered["points"])
+
+    def test_global_exit_still_earns_the_onboarding_milestone(self) -> None:
+        # D-117: onboarding is handled whether prompts are answered, individually
+        # skipped, or globally skipped.
+        self.client.post(self._path("/start"), json={"eligibility_confirmed": True})
+        self.client.post(self._path("/handle"))
+        events = self.client.get(f"/progression/history?user_id={self.user_id}").json()
+        self.assertIn(
+            "onboarding_handled", [e["event_type"] for e in events["events"]]
+        )
+
+    def test_a_broken_ledger_never_breaks_the_assessment(self) -> None:
+        # The fire-and-forget contract, at the route level.
+        with patch(
+            "app.services.progression.record_event",
+            side_effect=RuntimeError("ledger down"),
+        ):
+            self.client.post(
+                self._path("/start"), json={"eligibility_confirmed": True}
+            )
+            answered = self.client.post(
+                self._path("/answer"),
+                json={"question": "immediate_intent", "value": "learn_basics"},
+            )
+        self.assertEqual(answered.status_code, 200)
+        self.assertEqual(answered.json()["answers"]["immediate_intent"], "learn_basics")
 
     @patch("app.main.classify_holding_capture")
     @patch("app.main.record_turn")

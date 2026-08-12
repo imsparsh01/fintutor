@@ -43,7 +43,10 @@ from app.services.progression import (
     delete_progression,
     get_progression,
     list_history,
+    record_arya_exchange,
+    record_context_prompt,
     record_event,
+    record_onboarding_handled,
     to_api_summary,
 )
 from app.services.onboarding_assessment import (
@@ -396,6 +399,25 @@ def _assessment_error(exc: Exception) -> HTTPException:
     return HTTPException(status_code=422, detail="Unsupported onboarding assessment action")
 
 
+def _assessment_progress(
+    db: Session, user_id: uuid.UUID, state: dict, prompt_key: str | None = None
+) -> dict:
+    """Emit BQ-071 progression for an assessment step, then project the state.
+
+    `state` is already a plain dict by the time it reaches here, so an emitter rollback
+    cannot take the caller's response down with it. Answer and skip earn identically —
+    D-117 requires that disclosure never earn more than declining to disclose.
+    """
+    version = state.get("flow_version", 2)
+    if prompt_key:
+        record_context_prompt(db, user_id, f"assessment_v{version}:{prompt_key}")
+    if state.get("status") == "handled":
+        # Fires however onboarding got here — completing the last question, or a global
+        # exit. Once-ever per flow version, so the repeats absorb into the constraint.
+        record_onboarding_handled(db, user_id, version)
+    return to_api_state(state)
+
+
 @app.get("/onboarding-assessment")
 def get_onboarding_assessment(
     user_id: uuid.UUID, db: Session = Depends(get_db)
@@ -433,11 +455,10 @@ def post_onboarding_assessment_answer(
     user_id: uuid.UUID, body: AssessmentAnswer, db: Session = Depends(get_db)
 ) -> dict:
     try:
-        return to_api_state(
-            answer_current_question(db, user_id, body.question, body.value)
-        )
+        state = answer_current_question(db, user_id, body.question, body.value)
     except (LookupError, AssessmentConflictError, AssessmentValidationError) as exc:
         raise _assessment_error(exc) from exc
+    return _assessment_progress(db, user_id, state, prompt_key=body.question)
 
 
 @app.post("/onboarding-assessment/skip")
@@ -445,9 +466,10 @@ def post_onboarding_assessment_skip(
     user_id: uuid.UUID, body: AssessmentSkip, db: Session = Depends(get_db)
 ) -> dict:
     try:
-        return to_api_state(skip_current_question(db, user_id, body.question))
+        state = skip_current_question(db, user_id, body.question)
     except (LookupError, AssessmentConflictError, AssessmentValidationError) as exc:
         raise _assessment_error(exc) from exc
+    return _assessment_progress(db, user_id, state, prompt_key=body.question)
 
 
 @app.post("/onboarding-assessment/handle")
@@ -455,9 +477,10 @@ def post_onboarding_assessment_handle(
     user_id: uuid.UUID, db: Session = Depends(get_db)
 ) -> dict:
     try:
-        return to_api_state(handle_assessment(db, user_id))
+        state = handle_assessment(db, user_id)
     except LookupError as exc:
         raise _assessment_error(exc) from exc
+    return _assessment_progress(db, user_id, state)
 
 
 @app.put("/onboarding-assessment/context/{question}")
@@ -564,6 +587,11 @@ def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_d
     if onboarding_state is not None:
         updated = record_turn(db, onboarding_state, body.question, answer)
         result["onboarding_state"] = {"track": updated["track"], "stage": updated["stage"]}
+    # BQ-071: last, after every write above has committed, and non-fatal by construction.
+    # Legacy onboarding turns are not Arya exchanges — onboarding earns its own one-time
+    # milestone instead, and counting its turns here would double-reward the same flow.
+    if onboarding_state is None:
+        record_arya_exchange(db, user_id, body.question)
     return result
 
 

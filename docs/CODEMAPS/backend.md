@@ -90,6 +90,11 @@ services/progression.py         record_event() / rebuild() / prune_raw_events() 
                                  than recomputed. meaningful_return_day is DERIVED during replay, not
                                  recordable by a caller. grant_onboarding_credit() is the only
                                  historical backfill D-121 authorises.
+                                 BQ-071 emitters: record_arya_exchange() / record_context_prompt() /
+                                 record_onboarding_handled(), each wrapped in @_never_raises so an
+                                 emitter failure can never break the route that called it. Call them
+                                 only AFTER the host request's own writes have committed — the guard
+                                 rolls back, and it must have nothing of the caller's left to undo.
 services/teaching.py (48)       ask_teaching_engine() — single Anthropic API call (claude-3-5-sonnet).
                                  Raises TeachingEngineNotConfigured if ANTHROPIC_API_KEY unset.
                                  Runtime D-119 addendum limits `learning_context` to presentation only.

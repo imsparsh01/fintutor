@@ -8,6 +8,9 @@ computed from ``local_date``, never from ``now()``.
 
 from __future__ import annotations
 
+import functools
+import hashlib
+import logging
 import uuid
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -38,6 +41,8 @@ from app.services.progression_ruleset import (
 RAW_EVENT_RETENTION_DAYS = 400
 
 RETURN_EVENT_TYPE = "meaningful_return_day"
+
+logger = logging.getLogger(__name__)
 
 
 class ProgressionValidationError(ValueError):
@@ -415,6 +420,108 @@ def grant_onboarding_credit(
         user_id,
         "onboarding_handled",
         subject_key=f"v{flow_version}",
+    )
+
+
+# --------------------------------------------------------------------------------
+# Emitters — BQ-071
+# --------------------------------------------------------------------------------
+
+
+def emit_safely(db: Session, user_id: uuid.UUID, event_type: str, **kwargs) -> bool:
+    """Record an event without ever letting it break the feature that triggered it.
+
+    Progression is a side effect of using FinTutor, never a precondition for it. A
+    failure here must not turn a working calculator or a good Arya answer into an error
+    the user sees, so everything is swallowed and logged.
+
+    Call this only *after* the host request's own writes are committed — the rollback
+    below is what keeps a broken emit from poisoning the session, and it must have
+    nothing of the caller's left to undo.
+    """
+    try:
+        record_event(db, user_id, event_type, **kwargs)
+        return True
+    except Exception:
+        logger.exception("Progression emit failed for %s; continuing", event_type)
+        try:
+            db.rollback()
+        except Exception:
+            logger.exception("Progression rollback failed")
+        return False
+
+
+def _never_raises(fn):
+    """Make an emitter total.
+
+    `emit_safely` only guards the `record_event` call itself, but emitters do real work
+    around it — hashing a question, deriving a key, reading the clock. A failure there
+    would propagate into whatever route called it, which is exactly what the emitters
+    exist to avoid. Everything an emitter does is inside the guard, not just the write.
+    """
+
+    @functools.wraps(fn)
+    def wrapper(db: Session, user_id: uuid.UUID, *args, **kwargs):
+        try:
+            return fn(db, user_id, *args, **kwargs)
+        except Exception:
+            logger.exception("Progression emitter %s failed; continuing", fn.__name__)
+            try:
+                db.rollback()
+            except Exception:
+                logger.exception("Progression rollback failed")
+            return None
+
+    return wrapper
+
+
+@_never_raises
+def _capability(db: Session, user_id: uuid.UUID, family: str) -> None:
+    """First use of a capability family. Once ever, and cap-exempt, so it is safe to
+    fire alongside every qualifying completion — the unique constraint absorbs the rest.
+    """
+    emit_safely(db, user_id, "capability_first_used", subject_key=family)
+
+
+@_never_raises
+def record_arya_exchange(db: Session, user_id: uuid.UUID, question: str) -> None:
+    """A non-empty question that received a successful response (D-117).
+
+    /chat is stateless and carries no turn id, so the key is the question itself for
+    the day. That is exactly D-117's rule: identical payloads and retries do not create
+    new events, while a reworded prompt may still qualify inside the three-per-day cap.
+    No semantic judgement of the question happens here — v1 deliberately avoids that.
+    """
+    if not question or not question.strip():
+        return
+    digest = hashlib.sha256(question.strip().lower().encode()).hexdigest()[:32]
+    today = local_date_for(datetime.now(timezone.utc))
+    emit_safely(
+        db,
+        user_id,
+        "arya_exchange_completed",
+        idempotency_key=f"arya:{today.isoformat()}:{digest}",
+    )
+    _capability(db, user_id, "arya")
+
+
+@_never_raises
+def record_context_prompt(db: Session, user_id: uuid.UUID, prompt_key: str) -> None:
+    """A context prompt was handled — answered, skipped, or deferred, all equal.
+
+    D-117 is explicit that disclosure is never rewarded by amount, completeness,
+    financial value, or sensitivity, so the caller must not vary this by what the user
+    actually said.
+    """
+    emit_safely(db, user_id, "context_prompt_handled", subject_key=prompt_key)
+
+
+@_never_raises
+def record_onboarding_handled(db: Session, user_id: uuid.UUID, flow_version: int = 2) -> None:
+    """Onboarding reached a handled state, however it got there — answered, individually
+    skipped, or globally skipped all earn the same (D-117)."""
+    emit_safely(
+        db, user_id, "onboarding_handled", subject_key=f"v{flow_version}"
     )
 
 

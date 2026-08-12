@@ -18,6 +18,7 @@ import { useAuth } from '../lib/AuthContext';
 import { fetchBudget } from '../lib/budget';
 import { fetchHoldings } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
+import { recordScenarioCompleted } from '../lib/progression';
 import {
   debtCost,
   derivePrefills,
@@ -59,16 +60,32 @@ export function ScenarioScreen() {
 
   useFocusEffect(loadData);
 
+  // BQ-071: fires only when a scenario produced an honest number. Every compute function
+  // in app/lib/scenarios.ts returns null when it cannot, and those cases must not earn
+  // progress — D-117 awards a rendered result, not a screen visit.
+  const onComputed = useCallback(() => {
+    if (!userId) return;
+    recordScenarioCompleted(userId, type);
+  }, [userId, type]);
+
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      {type === 'emergency_runway' && <EmergencyRunwayScenario prefills={prefills} />}
-      {type === 'sip_increase' && <SipIncreaseScenario prefills={prefills} />}
-      {type === 'debt_cost' && <DebtCostScenario prefills={prefills} />}
-      {type === 'idle_cash' && <IdleCashScenario />}
-      {type === 'corpus_target' && <CorpusTargetScenario prefills={prefills} />}
+      {type === 'emergency_runway' && (
+        <EmergencyRunwayScenario prefills={prefills} onComputed={onComputed} />
+      )}
+      {type === 'sip_increase' && (
+        <SipIncreaseScenario prefills={prefills} onComputed={onComputed} />
+      )}
+      {type === 'debt_cost' && <DebtCostScenario prefills={prefills} onComputed={onComputed} />}
+      {type === 'idle_cash' && <IdleCashScenario onComputed={onComputed} />}
+      {type === 'corpus_target' && (
+        <CorpusTargetScenario prefills={prefills} onComputed={onComputed} />
+      )}
     </KeyboardAvoidingView>
   );
 }
+
+type ScenarioProps = { prefills: ScenarioPrefills | null; onComputed: () => void };
 
 // ─── Shared sub-components ────────────────────────────────────────────────────
 
@@ -211,7 +228,7 @@ function usePrefilledField(prefill: number | null | undefined) {
 
 // ─── S-05: Emergency fund runway ─────────────────────────────────────────────
 
-function EmergencyRunwayScenario({ prefills }: { prefills: ScenarioPrefills | null }) {
+function EmergencyRunwayScenario({ prefills, onComputed }: ScenarioProps) {
   const [cash, setCash] = useState('');
   const [deposits, setDeposits] = usePrefilledField(prefills?.depositBalance);
   const [retirement, setRetirement] = usePrefilledField(prefills?.retirementBalance);
@@ -233,6 +250,7 @@ function EmergencyRunwayScenario({ prefills }: { prefills: ScenarioPrefills | nu
     }
     setNotice(null);
     setResult({ months, liquid });
+    onComputed();
   }
 
   const ready = outgoings !== '' && (cash !== '' || deposits !== '' || retirement !== '');
@@ -303,7 +321,7 @@ function EmergencyRunwayScenario({ prefills }: { prefills: ScenarioPrefills | nu
 
 // ─── S-03: What if I increase my SIP? ────────────────────────────────────────
 
-function SipIncreaseScenario({ prefills }: { prefills: ScenarioPrefills | null }) {
+function SipIncreaseScenario({ prefills, onComputed }: ScenarioProps) {
   const [currentSip, setCurrentSip] = usePrefilledField(prefills?.monthlySip);
   const [extra, setExtra] = useState('');
   const [rate, setRate] = useState('');
@@ -319,6 +337,7 @@ function SipIncreaseScenario({ prefills }: { prefills: ScenarioPrefills | null }
       parseFloat(years)
     );
     setResult(computed);
+    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'The extra amount and the horizon both need to be more than zero, and the rate cannot be negative.'
@@ -380,7 +399,7 @@ function SipIncreaseScenario({ prefills }: { prefills: ScenarioPrefills | null }
 
 // ─── S-06: What does my debt cost? ───────────────────────────────────────────
 
-function DebtCostScenario({ prefills }: { prefills: ScenarioPrefills | null }) {
+function DebtCostScenario({ prefills, onComputed }: ScenarioProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [outstanding, setOutstanding] = useState('');
   const [rate, setRate] = useState('');
@@ -403,6 +422,7 @@ function DebtCostScenario({ prefills }: { prefills: ScenarioPrefills | null }) {
   function run() {
     const computed = debtCost(parseFloat(outstanding), parseFloat(rate), parseFloat(months));
     setResult(computed);
+    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'A balance and a number of months remaining, both above zero, are needed to amortise this. Credit card entries in particular have no tenure recorded — enter one above.'
@@ -471,7 +491,7 @@ function DebtCostScenario({ prefills }: { prefills: ScenarioPrefills | null }) {
 // No prefill: the app has no cash/bank product type (D-079 — the Cash & bank family is
 // deferred), so this amount is always the user's to enter.
 
-function IdleCashScenario() {
+function IdleCashScenario({ onComputed }: { onComputed: () => void }) {
   const [cash, setCash] = useState('');
   const [savingsRate, setSavingsRate] = useState('');
   const [altRate, setAltRate] = useState('');
@@ -487,6 +507,7 @@ function IdleCashScenario() {
       parseFloat(years)
     );
     setResult(computed);
+    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'An amount above zero and a period above zero are needed, and neither rate can be negative.'
@@ -554,7 +575,7 @@ function IdleCashScenario() {
 
 // ─── S-01: When does my corpus reach my target? ──────────────────────────────
 
-function CorpusTargetScenario({ prefills }: { prefills: ScenarioPrefills | null }) {
+function CorpusTargetScenario({ prefills, onComputed }: ScenarioProps) {
   const [corpus, setCorpus] = usePrefilledField(prefills?.investedCorpus);
   const [sip, setSip] = usePrefilledField(prefills?.monthlySip);
   const [rate, setRate] = useState('');
@@ -571,6 +592,7 @@ function CorpusTargetScenario({ prefills }: { prefills: ScenarioPrefills | null 
       parseFloat(target)
     );
     setResult(computed);
+    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'A target above zero is needed, and neither the monthly amount nor the rate can be negative.'

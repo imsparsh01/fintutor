@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -12,7 +12,9 @@ import {
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { useAuth } from '../lib/AuthContext';
 import { formatRupees } from '../lib/format';
+import { recordCalculatorCompleted } from '../lib/progression';
 import type { CalculatorType, MainTabsParamList } from '../navigation/types';
 
 // BQ-057 (D-105/D-106): 5 calculator screens — all free-form input, pure frontend math.
@@ -23,20 +25,33 @@ import type { CalculatorType, MainTabsParamList } from '../navigation/types';
 export function CalculatorScreen() {
   const route = useRoute<RouteProp<MainTabsParamList, 'Calculator'>>();
   const { type } = route.params;
+  const { userId } = useAuth();
+
+  // BQ-071: fires only when a calculator actually produced a result, never on screen
+  // entry — D-117 awards the result, not the visit. Fire-and-forget: nothing below
+  // branches on it, and no calculator output changes because of it.
+  const onComputed = useCallback(() => {
+    if (!userId) return;
+    recordCalculatorCompleted(userId, type);
+  }, [userId, type]);
 
   return (
     <KeyboardAvoidingView
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {type === 'sip_goal' && <SipGoalCalc />}
-      {type === 'emi' && <EmiCalc />}
-      {type === 'inflation' && <InflationCalc />}
-      {type === 'stepup_sip' && <StepUpSipCalc />}
-      {type === 'cagr_backward' && <CagrCalc />}
+      {type === 'sip_goal' && <SipGoalCalc onComputed={onComputed} />}
+      {type === 'emi' && <EmiCalc onComputed={onComputed} />}
+      {type === 'inflation' && <InflationCalc onComputed={onComputed} />}
+      {type === 'stepup_sip' && <StepUpSipCalc onComputed={onComputed} />}
+      {type === 'cagr_backward' && <CagrCalc onComputed={onComputed} />}
     </KeyboardAvoidingView>
   );
 }
+
+// Every calculator below takes this same prop and calls it immediately after it sets a
+// result — after the early-return guards, so an invalid input never earns progress.
+type CalcProps = { onComputed: () => void };
 
 // ─── Shared sub-components ────────────────────────────────────────────────────
 
@@ -119,7 +134,7 @@ function CalcWrapper({ title, children }: { title: string; children: React.React
 // Formula: monthly SIP = FV × r / ((1+r)^n − 1)
 // where r = annual_rate / 12 / 100, n = years × 12
 
-function SipGoalCalc() {
+function SipGoalCalc({ onComputed }: CalcProps) {
   const [target, setTarget] = useState('');
   const [years, setYears] = useState('');
   const [rate, setRate] = useState('');
@@ -132,6 +147,7 @@ function SipGoalCalc() {
     if (!fv || !n || !r || r <= 0) return;
     const sip = (fv * r) / (Math.pow(1 + r, n) - 1);
     setResult(sip);
+    onComputed();
   }
 
   const ready = target !== '' && years !== '' && rate !== '';
@@ -156,7 +172,7 @@ function SipGoalCalc() {
 // ─── C-10: Home Loan EMI ──────────────────────────────────────────────────
 // Formula: EMI = P × r × (1+r)^n / ((1+r)^n − 1)
 
-function EmiCalc() {
+function EmiCalc({ onComputed }: CalcProps) {
   const [principal, setPrincipal] = useState('');
   const [rate, setRate] = useState('');
   const [tenure, setTenure] = useState('');
@@ -170,6 +186,7 @@ function EmiCalc() {
     const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
     const totalInterest = emi * n - p;
     setResult({ emi, totalInterest });
+    onComputed();
   }
 
   const ready = principal !== '' && rate !== '' && tenure !== '';
@@ -200,7 +217,7 @@ function EmiCalc() {
 // ─── C-17: Inflation Impact ────────────────────────────────────────────────
 // Formula: future = present × (1 + inflation/100)^years
 
-function InflationCalc() {
+function InflationCalc({ onComputed }: CalcProps) {
   const [present, setPresent] = useState('');
   const [inflationRate, setInflationRate] = useState('');
   const [years, setYears] = useState('');
@@ -212,6 +229,7 @@ function InflationCalc() {
     const n = parseFloat(years);
     if (!p || !i || !n) return;
     setResult(p * Math.pow(1 + i, n));
+    onComputed();
   }
 
   const ready = present !== '' && inflationRate !== '' && years !== '';
@@ -236,7 +254,7 @@ function InflationCalc() {
 // ─── C-22: Step-up SIP Corpus ─────────────────────────────────────────────
 // Year-by-year iteration: SIP increases by step-up% each year, compounding monthly.
 
-function StepUpSipCalc() {
+function StepUpSipCalc({ onComputed }: CalcProps) {
   const [sip, setSip] = useState('');
   const [stepup, setStepup] = useState('');
   const [rate, setRate] = useState('');
@@ -261,6 +279,7 @@ function StepUpSipCalc() {
       currentSip = currentSip * (1 + su);
     }
     setResult({ corpus, invested: totalInvested });
+    onComputed();
   }
 
   const ready = sip !== '' && stepup !== '' && rate !== '' && years !== '';
@@ -292,7 +311,7 @@ function StepUpSipCalc() {
 // ─── C-24: CAGR Backward ──────────────────────────────────────────────────
 // Formula: CAGR = (final / initial)^(1/years) − 1
 
-function CagrCalc() {
+function CagrCalc({ onComputed }: CalcProps) {
   const [initial, setInitial] = useState('');
   const [final, setFinal] = useState('');
   const [years, setYears] = useState('');
@@ -304,6 +323,7 @@ function CagrCalc() {
     const n = parseFloat(years);
     if (!iv || !fv || !n || iv <= 0 || n <= 0) return;
     setResult((Math.pow(fv / iv, 1 / n) - 1) * 100);
+    onComputed();
   }
 
   const ready = initial !== '' && final !== '' && years !== '';

@@ -16,11 +16,17 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-071 — Wire progression emitters into existing features
+### BQ-071 — Wire progression emitters into existing features — PARTIALLY SHIPPED, one emitter blocked
 
 Traces to D-117 (event rules) and D-121 (ledger approved). BQ-069 shipped the ledger and the four
 `/progression` routes, but nothing emits into it — progression is reachable and inert. This item makes it
 live. Added 12-Aug-2026 at the owner's explicit request after BQ-069.
+
+**Shipped 12-Aug-2026:** Arya exchanges, context prompts, onboarding handled, calculators, scenarios, and
+the capability-first-use milestone for each of those four families. 79 backend tests pass; `tsc` clean.
+
+**Remaining: the teaching emitter only — BLOCKED on a decision, see below.** Do not close this item, and do
+not build the teaching emitter, until that decision exists.
 
 **Mostly a frontend task.** Verified during BQ-069's close: `CalculatorScreen` and `app/lib/scenarios.ts`
 both compute client-side with no backend call, so those results are only observable in `app/`.
@@ -32,15 +38,28 @@ both compute client-side with no backend call, so those results are only observa
 | `context_prompt_handled` | backend, assessment answer/skip | Answer, skip and defer all earn the same — D-117 is explicit that disclosure never earns more. |
 | `calculator_completed` | frontend, `CalculatorScreen` | On a rendered valid result, not on screen entry. `subject_key` = calculator type. |
 | `scenario_completed` | frontend, `ScenarioScreen` | Same rule. `subject_key` = scenario type. |
-| `teaching_moment_explored` | frontend, `TeachingBlock` / `TeachingWalkthrough` | **Blocked on a threshold decision — see below.** |
-| `capability_first_used` | wherever its family's qualifying event fires | May accompany that event. Families: teaching, calculator, scenario, Arya. |
+| `teaching_moment_explored` | frontend, `TeachingBlock` / `TeachingWalkthrough` | **BLOCKED — collides with D-090's P9 guard. See below.** |
+| `capability_first_used` | wherever its family's qualifying event fires | Shipped for calculator, scenario and Arya. The *teaching* family is blocked with the event above. |
 | `recap_completed` | — | **Not buildable: no recap feature exists.** Leave unwired, including its capability family. |
 | `meaningful_return_day` | — | Derived during replay. Nothing to wire, and it is not recordable. |
 
-**Escalate before building the teaching emitter.** D-117 says "opening and immediately leaving does not
-qualify" but sets no threshold, and it does not define what a teaching *subject* is in a codebase where
-teaching renders as blocks inside topic screens. Both are product judgment calls, not implementation
-details. Build every other emitter and stop at this one.
+**The teaching emitter collides with D-090's P9 guard — this is a hard stop, not a threshold question.**
+
+D-117 requires `teaching_moment_explored` to distinguish engaging with a teaching moment from opening and
+immediately leaving. `TeachingWalkthrough` is built so that distinction cannot be made: D-090's P9 guard
+names "no `onComplete` prop, no 'finished'/'completed' state, and no value this component reports that
+differs from calling `onDismiss` early," and D-090 states that an implementation missing any of its four
+guards "is not a permitted variant of `1f` — it is the lesson tree `PROJECT_SPEC.md` §2 and P9 forbid."
+The component's own header adds that a feature wanting such a signal "needs its own new decision record,
+not a prop added here."
+
+So the two decisions are in direct conflict on this one event, and it cannot be resolved in a build
+session. Separately, D-117 also never defines what a teaching *subject* is where teaching renders as
+`TeachingBlock` callouts inside topic screens.
+
+Note the static `TeachingBlock` surface is a *different* question from the walkthrough — a viewport-dwell
+signal there gates nothing and unlocks nothing, so it may not engage P9 at all. That is the likely way
+through, but it is the owner's call, not this queue's.
 
 **Hard constraints:**
 
