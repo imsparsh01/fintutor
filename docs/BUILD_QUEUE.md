@@ -16,7 +16,41 @@ Rules for this file:
 
 ## READY — pick one of these
 
-_(empty — BQ-069 shipped 12-Aug-2026; see `docs/BUILD_QUEUE_ARCHIVE.md`)_
+### BQ-071 — Wire progression emitters into existing features
+
+Traces to D-117 (event rules) and D-121 (ledger approved). BQ-069 shipped the ledger and the four
+`/progression` routes, but nothing emits into it — progression is reachable and inert. This item makes it
+live. Added 12-Aug-2026 at the owner's explicit request after BQ-069.
+
+**Mostly a frontend task.** Verified during BQ-069's close: `CalculatorScreen` and `app/lib/scenarios.ts`
+both compute client-side with no backend call, so those results are only observable in `app/`.
+
+| Event | Where it fires | Notes |
+|---|---|---|
+| `arya_exchange_completed` | backend, `POST /chat` | Non-empty question + successful response. Key off the turn. |
+| `onboarding_handled` | backend, `onboarding_assessment` handle | Use the existing `grant_onboarding_credit()`. |
+| `context_prompt_handled` | backend, assessment answer/skip | Answer, skip and defer all earn the same — D-117 is explicit that disclosure never earns more. |
+| `calculator_completed` | frontend, `CalculatorScreen` | On a rendered valid result, not on screen entry. `subject_key` = calculator type. |
+| `scenario_completed` | frontend, `ScenarioScreen` | Same rule. `subject_key` = scenario type. |
+| `teaching_moment_explored` | frontend, `TeachingBlock` / `TeachingWalkthrough` | **Blocked on a threshold decision — see below.** |
+| `capability_first_used` | wherever its family's qualifying event fires | May accompany that event. Families: teaching, calculator, scenario, Arya. |
+| `recap_completed` | — | **Not buildable: no recap feature exists.** Leave unwired, including its capability family. |
+| `meaningful_return_day` | — | Derived during replay. Nothing to wire, and it is not recordable. |
+
+**Escalate before building the teaching emitter.** D-117 says "opening and immediately leaving does not
+qualify" but sets no threshold, and it does not define what a teaching *subject* is in a codebase where
+teaching renders as blocks inside topic screens. Both are product judgment calls, not implementation
+details. Build every other emitter and stop at this one.
+
+**Hard constraints:**
+
+- Recording must never change a computed figure. This item touches screens that display money math; it
+  adds emission only, and no calculator or scenario output may move.
+- Emission must be fire-and-forget. A failed or slow `POST /progression/event` must never block, delay, or
+  error a user's actual result.
+- `record_event` rejects a repeatable event with no `idempotency_key`, by design. Every frontend emitter
+  must supply one that is stable across a re-render or back-navigation but distinct per genuine repeat.
+- Do not send `occurred_at` — the route does not accept it.
 
 ---
 
