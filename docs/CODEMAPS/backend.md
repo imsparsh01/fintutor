@@ -1,4 +1,4 @@
-<!-- Updated: 2026-08-12 | BQ-066 onboarding assessment API -->
+<!-- Updated: 2026-08-12 | BQ-069 progression ledger -->
 
 # FinTutor — Backend Codemap
 
@@ -45,6 +45,13 @@ POST /onboarding-assessment/handle      → global exit; fill unknowns neutrally
 PUT  /onboarding-assessment/context/{q} → post-handle normalized context correction
 POST /onboarding-assessment/clear       → clear context without reopening/completion loss
 
+GET  /progression               → summary; synthesizes a zero Discovering state if no row
+GET  /progression/history       → the user's own event records, newest first
+POST /progression/event         → record_event; body {event_type, subject_key?, idempotency_key?}
+                                  occurred_at is NOT accepted from the client — server clock only,
+                                  or a caller could backdate across the day boundary for a fresh cap
+DELETE /progression             → hard delete across all three tiers (account deletion)
+
 POST /chat                      → assemble_baseline → ask_teaching_engine → classify_holding_capture
                                   body: {question, deepen_alias?, onboarding?, onboarding_track_hint?,
                                          onboarding_last_ai_message?, learning_topic?}
@@ -72,6 +79,17 @@ services/onboarding_assessment.py
                                  global handle, clear-context, idempotent retry, row locking/concurrent start.
                                  API-safe response projection, post-handle correction, and minimum derived
                                  Arya presentation context. No raw text and no legacy-track inference.
+services/progression_ruleset.py D-117's ruleset v1 as versioned constants: ten event rules (points,
+                                 dimension, repeat limits), the 60/day repeatable cap, the fixed
+                                 Asia/Kolkata day boundary, five stage floors, Expanding milestones.
+                                 Nothing here is ever written to a row. To retune, add a version.
+services/progression.py         record_event() / rebuild() / prune_raw_events() / delete_progression().
+                                 rebuild() is the replay engine: deterministic and idempotent, replays
+                                 the whole ledger, never reads the wall clock (all windows come from
+                                 local_date). Frozen days (events_pruned) are reused as stored rather
+                                 than recomputed. meaningful_return_day is DERIVED during replay, not
+                                 recordable by a caller. grant_onboarding_credit() is the only
+                                 historical backfill D-121 authorises.
 services/teaching.py (48)       ask_teaching_engine() — single Anthropic API call (claude-3-5-sonnet).
                                  Raises TeachingEngineNotConfigured if ANTHROPIC_API_KEY unset.
                                  Runtime D-119 addendum limits `learning_context` to presentation only.
@@ -101,6 +119,10 @@ StreakState       streak_states     — current_streak, longest_streak, last_act
 OnboardingState   onboarding_states — track, stage, turns_in_stage (one row per user)
 OnboardingAssessment onboarding_assessments — versioned normalized five-axis context, structural
                                       question/status state, eligibility/handled/clear timestamps
+ProgressionEvent     progression_events — append-only ledger; no points/dimension columns
+                                      UniqueConstraint(user_id, idempotency_key)
+ProgressionDailyRollup progression_daily_rollups — per-user-day aggregate; frozen record once pruned
+ProgressionSummary   progression_summaries — current state + the durable monotonicity floors
 ```
 
 No FK to a Users table (D-043 — Supabase auth handles identity; the DB is data-only).
@@ -110,6 +132,6 @@ No FK to a Users table (D-043 — Supabase auth handles identity; the DB is data
 ```
 backend/app/core/config.py (15)  Reads DATABASE_URL, ANTHROPIC_API_KEY from env.
 backend/app/db/session.py (27)   SQLAlchemy engine + session factory + Base.
-backend/alembic/                 Linear Postgres migration chain; BQ-065 head is `b8f25a9d4c31`.
+backend/alembic/                 Linear Postgres migration chain; BQ-069 head is `c4e71b93a5d2`.
 backend/app/main.py:53           CORSMiddleware — localhost only (D-095, dev-only, tighten before deploy).
 ```

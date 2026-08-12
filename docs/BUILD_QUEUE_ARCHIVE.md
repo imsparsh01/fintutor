@@ -12,6 +12,29 @@
 
 ---
 
+## BQ-069 — Progression event ledger and rebuildable summary — DONE 12-Aug-2026
+
+Built the backend data layer approved by D-121: an append-only `progression_events` ledger, a
+`progression_daily_rollups` per-user-day aggregate, and a single `progression_summaries` row per user,
+plus the deterministic replay engine. Points, dimensions, repeat limits, caps, and stage floors live in
+`progression_ruleset.py` as versioned constants and are applied at computation time — no event row ever
+stores a point value, which is what keeps pre-launch retuning possible.
+
+Replay never reads the wall clock: every window computes from the event's materialized Asia/Kolkata
+`local_date`. Dedup is a database unique constraint on `(user_id, idempotency_key)`. `meaningful_return_day`
+is derived during replay rather than accepted from a caller, so it cannot be minted. The summary carries
+`displayed_points_floor` and `stage_floor_index`, making "progress never decreases" hold through a
+downward retune. `prune_raw_events()` folds days past 400 into their rollups and marks them frozen, so
+return-day counts, dimension breadth, and consumed once-ever awards survive the retention window.
+
+Four endpoints shipped: `GET /progression`, `GET /progression/history`, `POST /progression/event`,
+`DELETE /progression`. `occurred_at` is deliberately not accepted from clients — a caller could otherwise
+backdate across the day boundary for a fresh 60-point cap. 63 backend tests pass, covering day boundaries,
+every repeat limit, cap behaviour, replay idempotence, the monotonicity floors, pruning, and deletion.
+
+Scope was backend-only by explicit owner choice: no existing service emits events yet, and no screen reads
+them. Wiring the emitters and building the surfaces are separate items (BQ-070 and its own follow-on).
+
 ## BQ-068 — Onboarding v2 legacy compatibility and voluntary reassessment — DONE 12-Aug-2026
 
 Added a presence-only compatibility endpoint so any legacy onboarding row—complete or incomplete—grants

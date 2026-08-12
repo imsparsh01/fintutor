@@ -4,6 +4,11 @@ from app.models.holding import Holding
 from app.models.income import Income
 from app.models.onboarding_assessment import OnboardingAssessment
 from app.models.onboarding_state import OnboardingState
+from app.models.progression import (
+    ProgressionDailyRollup,
+    ProgressionEvent,
+    ProgressionSummary,
+)
 from app.models.streak_state import StreakState
 
 __all__ = [
@@ -14,5 +19,8 @@ __all__ = [
     "Income",
     "OnboardingAssessment",
     "OnboardingState",
+    "ProgressionDailyRollup",
+    "ProgressionEvent",
+    "ProgressionSummary",
     "StreakState",
 ]

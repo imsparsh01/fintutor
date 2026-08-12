@@ -1,4 +1,4 @@
-<!-- Updated: 2026-08-12 | BQ-067 onboarding assessment frontend -->
+<!-- Updated: 2026-08-12 | BQ-069 progression ledger -->
 
 # FinTutor — Architecture Overview
 
@@ -46,6 +46,22 @@ app access across devices without exposing, translating, or changing its old tra
 into v2 from one dismissible Home invitation; an interrupted v2 row then resumes normally.
 ```
 
+## Data flow: Learning progression (BQ-069)
+
+```
+caller → POST /progression/event {event_type, subject_key?, idempotency_key?}
+    progression_events        ← append-only; INSERT deduped by DB unique constraint
+    rebuild()                 ← replays the WHOLE ledger under ruleset v1
+        per-day: repeat limits → 60-point daily cap → derived return day
+    progression_daily_rollups ← upserted per active day
+    progression_summaries     ← stage, displayed points, durable floors
+  ← {recorded, summary}
+
+Points live in progression_ruleset.py, never on an event row. Replay never reads the wall
+clock — every window comes from the event's materialized Asia/Kolkata `local_date`.
+BQ-069 is backend only: no existing service emits events yet, and no screen reads them.
+```
+
 ## Navigation structure
 
 ```
@@ -74,3 +90,6 @@ RootNavigator
 - **D-078**: holding proposals are never auto-saved; user must confirm via POST /holdings.
 - **D-119**: onboarding v2 persists normalized category codes only in a separate versioned table;
   legacy four-track rows keep their original meaning. API shipped in BQ-066; frontend is BQ-067.
+- **D-121**: progression records learning participation, never financial outcomes (D-114's Path A
+  boundary). Progress never visibly decreases; stage never regresses. Consent is essential first-party
+  with no toggle — the user gets visibility into their own records, not an opt-out.

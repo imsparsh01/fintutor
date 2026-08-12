@@ -16,29 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-069 — Progression event ledger and rebuildable summary — TOP PRIORITY
-
-Traces to D-114/D-116/D-117; data contract approved by **D-121** (12-Aug-2026). Build the append-only
-event ledger, the per-user-per-day rollup, and the single current summary row, plus the deterministic
-replay/rebuild path.
-
-Scope is fixed by D-121's approved implementation boundary — read it before starting. Load-bearing points:
-
-- Points are **never** stored on an event row. Point values, dimension mapping, caps, and stage floors live
-  in the ruleset version and are applied at computation time.
-- `local_date` is materialized at write time on a fixed Asia/Kolkata boundary. Replay must never read the
-  wall clock — all windows compute from `local_date`, never from `now()`.
-- Dedup is a database guarantee: `UniqueConstraint(user_id, idempotency_key)`, not service logic.
-- The summary carries `ruleset_version` and `displayed_points_floor`. Rebuild is deterministic and
-  idempotent; a replay producing a lower total leaves the displayed figure at the floor, and stage never
-  regresses.
-- Raw events prune at 400 days; rollups and summary persist for account life; account deletion hard-deletes
-  all three tiers.
-- The only historical backfill is D-119's one-time onboarding credit, keyed
-  `onboarding_handled:v{flow_version}`. Infer nothing else.
-
-Out of scope: progression *surfaces* and placement (BQ-070), per-user timezones, and any selective
-"clear my progression" control — D-121 deliberately does not offer one.
+_(empty — BQ-069 shipped 12-Aug-2026; see `docs/BUILD_QUEUE_ARCHIVE.md`)_
 
 ---
 

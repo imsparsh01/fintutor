@@ -38,6 +38,14 @@ from app.services.onboarding import (
     record_turn,
     start_or_resume,
 )
+from app.services.progression import (
+    ProgressionValidationError,
+    delete_progression,
+    get_progression,
+    list_history,
+    record_event,
+    to_api_summary,
+)
 from app.services.onboarding_assessment import (
     AssessmentConflictError,
     AssessmentValidationError,
@@ -125,6 +133,19 @@ class GoalCreate(BaseModel):
     target_date: date
     category: str
     funded_by: list[GoalFundingIn] = []
+
+
+class ProgressionEventIn(BaseModel):
+    event_type: str
+    # The repeat-limit discriminator — teaching subject, calculator type, capability
+    # family, prompt/version. Required for event types with a per-subject rule.
+    subject_key: str | None = None
+    # Required for repeatable events, so retries and refreshes collapse onto the same
+    # row. Derived automatically for once-per-subject events.
+    idempotency_key: str | None = None
+    # `occurred_at` is deliberately not accepted from the client: the server clock sets
+    # it. A client-supplied instant would let a caller backdate events across the
+    # Asia/Kolkata boundary and mint a fresh 60-point daily cap on demand.
 
 
 class ChatRequest(BaseModel):
@@ -460,6 +481,46 @@ def post_onboarding_assessment_clear(
         return to_api_state(clear_assessment(db, user_id))
     except LookupError as exc:
         raise _assessment_error(exc) from exc
+
+
+@app.get("/progression")
+def get_progression_summary(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return to_api_summary(get_progression(db, user_id))
+
+
+@app.get("/progression/history")
+def get_progression_history(
+    user_id: uuid.UUID,
+    limit: int = 50,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+) -> dict:
+    # D-121: the user gets visibility into their own records. There is deliberately no
+    # selective delete beside it — progress is intentionally sticky.
+    return {"events": list_history(db, user_id, limit=limit, offset=offset)}
+
+
+@app.post("/progression/event")
+def post_progression_event(
+    user_id: uuid.UUID, body: ProgressionEventIn, db: Session = Depends(get_db)
+) -> dict:
+    try:
+        return record_event(
+            db,
+            user_id,
+            body.event_type,
+            subject_key=body.subject_key,
+            idempotency_key=body.idempotency_key,
+        )
+    except ProgressionValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.delete("/progression")
+def delete_progression_data(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    # The account-deletion path D-119 committed to: hard delete across all three tiers.
+    delete_progression(db, user_id)
+    return {"deleted": True}
 
 
 @app.post("/chat")
