@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -49,8 +49,8 @@ export function CalculatorScreen() {
   );
 }
 
-// Every calculator below takes this same prop and calls it immediately after it sets a
-// result — after the early-return guards, so an invalid input never earns progress.
+// Every calculator passes this to its primary ResultCard. The card emits from an effect,
+// after React has committed the valid result to the screen.
 type CalcProps = { onComputed: () => void };
 
 // ─── Shared sub-components ────────────────────────────────────────────────────
@@ -107,11 +107,16 @@ function ResultCard({
   value,
   unit,
   mechanismNote,
+  onRendered,
 }: {
   value: string;
   unit: string;
   mechanismNote: string;
+  onRendered?: () => void;
 }) {
+  useEffect(() => {
+    onRendered?.();
+  }, [onRendered]);
   return (
     <View style={styles.resultCard}>
       <Text style={styles.resultUnit}>{unit}</Text>
@@ -147,7 +152,6 @@ function SipGoalCalc({ onComputed }: CalcProps) {
     if (!fv || !n || !r || r <= 0) return;
     const sip = (fv * r) / (Math.pow(1 + r, n) - 1);
     setResult(sip);
-    onComputed();
   }
 
   const ready = target !== '' && years !== '' && rate !== '';
@@ -163,6 +167,7 @@ function SipGoalCalc({ onComputed }: CalcProps) {
           unit="Monthly SIP needed"
           value={formatRupees(result)}
           mechanismNote={`At ${rate}% annual return over ${years} years, this monthly SIP compounds to your target. The formula is the inverse of the standard SIP corpus formula — it works backwards from your goal.`}
+          onRendered={onComputed}
         />
       )}
     </CalcWrapper>
@@ -186,7 +191,6 @@ function EmiCalc({ onComputed }: CalcProps) {
     const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
     const totalInterest = emi * n - p;
     setResult({ emi, totalInterest });
-    onComputed();
   }
 
   const ready = principal !== '' && rate !== '' && tenure !== '';
@@ -203,6 +207,7 @@ function EmiCalc({ onComputed }: CalcProps) {
             unit="Monthly EMI"
             value={formatRupees(result.emi)}
             mechanismNote={`Each EMI pays the interest accrued that month first; the remainder reduces the principal. Early in the tenure most of each payment goes toward interest.`}
+            onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
             <Text style={styles.secondaryLabel}>Total interest paid</Text>
@@ -229,7 +234,6 @@ function InflationCalc({ onComputed }: CalcProps) {
     const n = parseFloat(years);
     if (!p || !i || !n) return;
     setResult(p * Math.pow(1 + i, n));
-    onComputed();
   }
 
   const ready = present !== '' && inflationRate !== '' && years !== '';
@@ -245,6 +249,7 @@ function InflationCalc({ onComputed }: CalcProps) {
           unit={`Equivalent cost in ${years} years`}
           value={formatRupees(result)}
           mechanismNote={`At ${inflationRate}% annual inflation, purchasing power falls by roughly ${inflationRate}% a year. This is the same amount of money's worth, not the same rupee amount.`}
+          onRendered={onComputed}
         />
       )}
     </CalcWrapper>
@@ -279,7 +284,6 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
       currentSip = currentSip * (1 + su);
     }
     setResult({ corpus, invested: totalInvested });
-    onComputed();
   }
 
   const ready = sip !== '' && stepup !== '' && rate !== '' && years !== '';
@@ -297,6 +301,7 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
             unit="Corpus at end of period"
             value={formatRupees(result.corpus)}
             mechanismNote={`Your SIP starts at ${formatRupees(parseFloat(sip))}/month and increases by ${stepup}% each year. The step-up means later years contribute proportionally more to the final corpus than early years.`}
+            onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
             <Text style={styles.secondaryLabel}>Total amount invested</Text>
@@ -323,7 +328,6 @@ function CagrCalc({ onComputed }: CalcProps) {
     const n = parseFloat(years);
     if (!iv || !fv || !n || iv <= 0 || n <= 0) return;
     setResult((Math.pow(fv / iv, 1 / n) - 1) * 100);
-    onComputed();
   }
 
   const ready = initial !== '' && final !== '' && years !== '';
@@ -339,6 +343,7 @@ function CagrCalc({ onComputed }: CalcProps) {
           unit="Annualised return (CAGR)"
           value={`${result.toFixed(2)}%`}
           mechanismNote={`CAGR (Compound Annual Growth Rate) is the year-on-year rate at which an investment grew as if it compounded smoothly. It describes what happened, not what will happen next.`}
+          onRendered={onComputed}
         />
       )}
     </CalcWrapper>

@@ -146,6 +146,7 @@ class ProgressionEventIn(BaseModel):
     # Required for repeatable events, so retries and refreshes collapse onto the same
     # row. Derived automatically for once-per-subject events.
     idempotency_key: str | None = None
+    capability_family: Literal["calculator", "scenario"] | None = None
     # `occurred_at` is deliberately not accepted from the client: the server clock sets
     # it. A client-supplied instant would let a caller backdate events across the
     # Asia/Kolkata boundary and mint a fresh 60-point daily cap on demand.
@@ -528,13 +529,36 @@ def post_progression_event(
     user_id: uuid.UUID, body: ProgressionEventIn, db: Session = Depends(get_db)
 ) -> dict:
     try:
-        return record_event(
+        expected_family = {
+            "calculator_completed": "calculator",
+            "scenario_completed": "scenario",
+        }.get(body.event_type)
+        if (
+            body.capability_family is not None
+            and body.capability_family != expected_family
+        ):
+            raise ProgressionValidationError(
+                "capability_family does not match the qualifying event"
+            )
+        result = record_event(
             db,
             user_id,
             body.event_type,
             subject_key=body.subject_key,
             idempotency_key=body.idempotency_key,
         )
+        if body.capability_family is not None:
+            # Keep capability credit behind an accepted qualifying completion. If the
+            # milestone write fails, retrying this same request safely retries it because
+            # the completion key is idempotent and the capability is once-ever.
+            capability_result = record_event(
+                db,
+                user_id,
+                "capability_first_used",
+                subject_key=body.capability_family,
+            )
+            result["summary"] = capability_result["summary"]
+        return result
     except ProgressionValidationError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

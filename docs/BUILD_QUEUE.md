@@ -16,6 +16,10 @@ Rules for this file:
 
 ## READY — pick one of these
 
+None.
+
+## BLOCKED — do not start
+
 ### BQ-071 — Wire progression emitters into existing features — PARTIALLY SHIPPED, one emitter blocked
 
 Traces to D-117 (event rules) and D-121 (ledger approved). BQ-069 shipped the ledger and the four
@@ -23,7 +27,10 @@ Traces to D-117 (event rules) and D-121 (ledger approved). BQ-069 shipped the le
 live. Added 12-Aug-2026 at the owner's explicit request after BQ-069.
 
 **Shipped 12-Aug-2026:** Arya exchanges, context prompts, onboarding handled, calculators, scenarios, and
-the capability-first-use milestone for each of those four families. 79 backend tests pass; `tsc` clean.
+the capability-first-use milestone for each of those four families. Staff review then fixed three
+progression-integrity defects: client completion keys now use the fixed Asia/Kolkata day; capability credit
+is recorded only after its qualifying completion is accepted; and calculator/scenario completion emits
+only after the valid result UI commits. 82 backend tests pass; `tsc` clean.
 
 **Remaining: the teaching emitter only — BLOCKED on a decision, see below.** Do not close this item, and do
 not build the teaching emitter, until that decision exists.
@@ -70,10 +77,6 @@ through, but it is the owner's call, not this queue's.
 - `record_event` rejects a repeatable event with no `idempotency_key`, by design. Every frontend emitter
   must supply one that is stable across a re-render or back-navigation but distinct per genuine repeat.
 - Do not send `occurred_at` — the route does not accept it.
-
----
-
-## BLOCKED — do not start
 
 ### BQ-070 — Progression surfaces and placement — TOP PRIORITY, BLOCKED
 

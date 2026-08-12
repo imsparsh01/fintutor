@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -175,11 +175,16 @@ function ResultCard({
   unit,
   value,
   mechanismNote,
+  onRendered,
 }: {
   unit: string;
   value: string;
   mechanismNote: string;
+  onRendered?: () => void;
 }) {
+  useEffect(() => {
+    onRendered?.();
+  }, [onRendered]);
   return (
     <View style={styles.resultCard}>
       <Text style={styles.resultUnit}>{unit}</Text>
@@ -250,7 +255,6 @@ function EmergencyRunwayScenario({ prefills, onComputed }: ScenarioProps) {
     }
     setNotice(null);
     setResult({ months, liquid });
-    onComputed();
   }
 
   const ready = outgoings !== '' && (cash !== '' || deposits !== '' || retirement !== '');
@@ -311,6 +315,7 @@ function EmergencyRunwayScenario({ prefills, onComputed }: ScenarioProps) {
             mechanismNote={`${formatRupees(result.liquid)} divided by ${formatRupees(
               parseFloat(outgoings) || 0
             )} a month. This assumes the balances sit still — it does not add returns they might earn or subtract the tax and penalties some withdrawals carry.`}
+            onRendered={onComputed}
           />
           <SecondaryRow label="Total balance counted" value={formatRupees(result.liquid)} />
         </>
@@ -337,7 +342,6 @@ function SipIncreaseScenario({ prefills, onComputed }: ScenarioProps) {
       parseFloat(years)
     );
     setResult(computed);
-    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'The extra amount and the horizon both need to be more than zero, and the rate cannot be negative.'
@@ -388,6 +392,7 @@ function SipIncreaseScenario({ prefills, onComputed }: ScenarioProps) {
             mechanismNote={`The extra ₹${extra} a month puts in ${formatRupees(
               result.extraInvested
             )} of your own money over ${years} years. The rest of the difference is compounding on those contributions at ${rate}%.`}
+            onRendered={onComputed}
           />
           <SecondaryRow label="Corpus at current SIP" value={formatRupees(result.base)} />
           <SecondaryRow label="Corpus with the extra" value={formatRupees(result.raised)} />
@@ -422,7 +427,6 @@ function DebtCostScenario({ prefills, onComputed }: ScenarioProps) {
   function run() {
     const computed = debtCost(parseFloat(outstanding), parseFloat(rate), parseFloat(months));
     setResult(computed);
-    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'A balance and a number of months remaining, both above zero, are needed to amortise this. Credit card entries in particular have no tenure recorded — enter one above.'
@@ -477,6 +481,7 @@ function DebtCostScenario({ prefills, onComputed }: ScenarioProps) {
             unit="Interest over the next 12 months"
             value={formatRupees(result.nextYearInterest)}
             mechanismNote={`Interest accrues on the balance that is still outstanding, so it falls as the balance falls. This is the sum of the next twelve months of it, not a flat ${rate}% of the balance.`}
+            onRendered={onComputed}
           />
           <SecondaryRow label="Interest over the full remaining tenure" value={formatRupees(result.totalInterest)} />
           <SecondaryRow label="Monthly EMI at this balance" value={formatRupees(result.emi)} />
@@ -507,7 +512,6 @@ function IdleCashScenario({ onComputed }: { onComputed: () => void }) {
       parseFloat(years)
     );
     setResult(computed);
-    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'An amount above zero and a period above zero are needed, and neither rate can be negative.'
@@ -564,6 +568,7 @@ function IdleCashScenario({ onComputed }: { onComputed: () => void }) {
                   )} years; a ${savingsRate}% rate takes about ${(72 / savingsPct).toFixed(1)}.`
                 : '')
             }
+            onRendered={onComputed}
           />
           <SecondaryRow label={`At ${savingsRate}%`} value={formatRupees(result.atSavingsRate)} />
           <SecondaryRow label={`At ${altRate}%`} value={formatRupees(result.atAlternateRate)} />
@@ -592,7 +597,6 @@ function CorpusTargetScenario({ prefills, onComputed }: ScenarioProps) {
       parseFloat(target)
     );
     setResult(computed);
-    if (computed !== null) onComputed();
     setNotice(
       computed === null
         ? 'A target above zero is needed, and neither the monthly amount nor the rate can be negative.'
@@ -639,6 +643,7 @@ function CorpusTargetScenario({ prefills, onComputed }: ScenarioProps) {
           unit="Already there"
           value="0 years"
           mechanismNote="The corpus you entered already meets the target you set. Raise the target to model further out."
+          onRendered={onComputed}
         />
       )}
       {result !== null && !result.alreadyReached && result.years === null && (
@@ -646,6 +651,7 @@ function CorpusTargetScenario({ prefills, onComputed }: ScenarioProps) {
           unit="Not reached within 60 years"
           value="—"
           mechanismNote="At this monthly amount and this rate, the balance does not reach your target inside the 60 years this screen models. Changing any of the three inputs changes that."
+          onRendered={onComputed}
         />
       )}
       {result !== null && result.years !== null && !result.alreadyReached && (
@@ -654,6 +660,7 @@ function CorpusTargetScenario({ prefills, onComputed }: ScenarioProps) {
             unit="Years to your target"
             value={result.years.toFixed(1)}
             mechanismNote={`Each month the balance grows by one month of return at ${rate}% and then your contribution lands on top. The later years move fastest, because the return is being earned on a larger balance.`}
+            onRendered={onComputed}
           />
           {!isNaN(currentAge) && currentAge > 0 && (
             <SecondaryRow

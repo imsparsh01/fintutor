@@ -496,13 +496,14 @@ def record_arya_exchange(db: Session, user_id: uuid.UUID, question: str) -> None
         return
     digest = hashlib.sha256(question.strip().lower().encode()).hexdigest()[:32]
     today = local_date_for(datetime.now(timezone.utc))
-    emit_safely(
+    accepted = emit_safely(
         db,
         user_id,
         "arya_exchange_completed",
         idempotency_key=f"arya:{today.isoformat()}:{digest}",
     )
-    _capability(db, user_id, "arya")
+    if accepted:
+        _capability(db, user_id, "arya")
 
 
 @_never_raises

@@ -93,8 +93,10 @@ streaks.ts              32      fetchStreak / recordAppOpen
 progression.ts          ~95     BQ-071 emitters: recordCalculatorCompleted / recordScenarioCompleted,
                                 plus fetchProgression(). Every emitter is fire-and-forget and swallows
                                 its own failures — a ledger outage must never surface on a screen the
-                                user came to for an answer. These live in the app because calculators
-                                and scenarios compute client-side, so no route can observe them.
+                                user came to for an answer. Keys use the fixed Asia/Kolkata ledger day;
+                                each completion asks the backend to couple its first-capability award.
+                                ResultCard effects emit only after a valid result commits to the screen.
+                                These live in the app because calculators and scenarios compute client-side.
 surfacing.ts            17      fetchSurfacingCandidates()
 characteristicsSchema.ts 94     CHARACTERISTICS_SCHEMA — per-product-type field definitions for HoldingEditModal
 walkthroughSteps.ts     42      Per-family static step arrays for TeachingWalkthrough (D-096)

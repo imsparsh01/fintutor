@@ -50,6 +50,8 @@ GET  /progression/history       → the user's own event records, newest first
 POST /progression/event         → record_event; body {event_type, subject_key?, idempotency_key?}
                                   occurred_at is NOT accepted from the client — server clock only,
                                   or a caller could backdate across the day boundary for a fresh cap
+                                  Calculator/scenario callers may include matching capability_family;
+                                  the route accepts the completion before awarding first capability use
 DELETE /progression             → hard delete across all three tiers (account deletion)
 
 POST /chat                      → assemble_baseline → ask_teaching_engine → classify_holding_capture

@@ -162,6 +162,37 @@ class OnboardingAssessmentApiTests(unittest.TestCase):
             "onboarding_handled", [e["event_type"] for e in events["events"]]
         )
 
+    def test_client_completion_and_capability_are_coupled(self) -> None:
+        response = self.client.post(
+            f"/progression/event?user_id={self.user_id}",
+            json={
+                "event_type": "calculator_completed",
+                "subject_key": "emi",
+                "idempotency_key": "calculator:emi:2026-08-12",
+                "capability_family": "calculator",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        events = self.client.get(f"/progression/history?user_id={self.user_id}").json()
+        self.assertEqual(
+            {event["event_type"] for event in events["events"]},
+            {"calculator_completed", "capability_first_used"},
+        )
+
+    def test_mismatched_capability_is_rejected_before_any_event(self) -> None:
+        response = self.client.post(
+            f"/progression/event?user_id={self.user_id}",
+            json={
+                "event_type": "calculator_completed",
+                "subject_key": "emi",
+                "idempotency_key": "calculator:emi:2026-08-12",
+                "capability_family": "scenario",
+            },
+        )
+        self.assertEqual(response.status_code, 422)
+        events = self.client.get(f"/progression/history?user_id={self.user_id}").json()
+        self.assertEqual(events["events"], [])
+
     def test_a_broken_ledger_never_breaks_the_assessment(self) -> None:
         # The fire-and-forget contract, at the route level.
         with patch(

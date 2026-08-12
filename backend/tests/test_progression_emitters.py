@@ -104,6 +104,13 @@ class AssessmentEmitterTests(EmitterTests):
 
 
 class ResilienceTests(EmitterTests):
+    def test_failed_arya_completion_does_not_fabricate_capability_credit(self) -> None:
+        with patch(
+            "app.services.progression.record_event", side_effect=RuntimeError("boom")
+        ) as record:
+            record_arya_exchange(self.db, self.user_id, "What is compounding?")
+        self.assertEqual(record.call_count, 1)
+
     def test_a_failing_emit_is_swallowed_not_raised(self) -> None:
         # The whole contract of emit_safely: a broken ledger must not become a broken
         # feature. A caller mid-request should never see this.

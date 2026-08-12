@@ -10,8 +10,7 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:800
 
 export type ProgressionEventType =
   | 'calculator_completed'
-  | 'scenario_completed'
-  | 'capability_first_used';
+  | 'scenario_completed';
 
 export interface ProgressionSummary {
   stage: string;
@@ -41,7 +40,8 @@ async function emit(
   userId: string,
   eventType: ProgressionEventType,
   subjectKey: string,
-  idempotencyKey?: string,
+  idempotencyKey: string,
+  capabilityFamily: 'calculator' | 'scenario',
 ): Promise<void> {
   try {
     await fetch(`${BACKEND_URL}/progression/event?user_id=${userId}`, {
@@ -52,7 +52,8 @@ async function emit(
         subject_key: subjectKey,
         // `occurred_at` is intentionally absent — the route does not accept it, so the
         // server clock decides which day this lands on.
-        ...(idempotencyKey ? { idempotency_key: idempotencyKey } : {}),
+        idempotency_key: idempotencyKey,
+        capability_family: capabilityFamily,
       }),
     });
   } catch {
@@ -61,11 +62,18 @@ async function emit(
   }
 }
 
-// A local day-stamp for idempotency keys. This only has to be stable across a
-// re-render or a back-navigation within the session; the authoritative Asia/Kolkata day
-// boundary is applied server-side, and this string never reaches the ledger's day logic.
+// Match D-121's fixed Asia/Kolkata ledger day. Build the ISO-shaped stamp from parts
+// rather than relying on a locale's punctuation or field ordering.
 function todayStamp(): string {
-  return new Date().toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat('en', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((candidate) => candidate.type === type)?.value ?? '';
+  return `${part('year')}-${part('month')}-${part('day')}`;
 }
 
 /**
@@ -83,8 +91,8 @@ export function recordCalculatorCompleted(userId: string, calculatorType: string
     'calculator_completed',
     calculatorType,
     `calculator:${calculatorType}:${todayStamp()}`,
+    'calculator',
   );
-  void emit(userId, 'capability_first_used', 'calculator');
 }
 
 /** A scenario produced a valid, rendered result. Same rules as calculators. */
@@ -94,6 +102,6 @@ export function recordScenarioCompleted(userId: string, scenarioType: string): v
     'scenario_completed',
     scenarioType,
     `scenario:${scenarioType}:${todayStamp()}`,
+    'scenario',
   );
-  void emit(userId, 'capability_first_used', 'scenario');
 }
