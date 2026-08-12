@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-077 — Implement user-confirmed holding reconciliation — DONE 12-Aug-2026
+
+Conversational holding capture now supports transient new/update/conflict proposals with deterministic local
+identity, neutral ambiguity choice, authoritative field diffs, explicit confirmation, owned row-locked apply,
+stale reconfirmation, and merge-only updates. D-133's single random-nonce privacy envelope masks the complete
+question/baseline/prior context across every Sonnet/Haiku path and exact-token restores user-visible names;
+unsafe names/identifiers, collisions, injected/unknown tokens, and masking failures fail closed before provider
+calls. Provider logs use controlled metadata. Multiple staff/privacy review rounds fixed identity, validation,
+cross-user async, accessibility, tokenization, open-world and error-boundary defects. Final review passed.
+Verified: 40 focused tests, 122 full backend tests, TypeScript, iOS production bundle, and clean diff check.
+
+---
+
 ## BQ-076 — Complete the optional onboarding first-action handoff — DONE 12-Aug-2026
 
 After the five-axis orientation, users now choose among five existing destinations: Arya, something they

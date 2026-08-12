@@ -16,6 +16,8 @@ GET  /holdings/{id}             → get_holding(db, user_id, id)
 POST /holdings                  → create_holding(…, characteristics: dict)
 PATCH /holdings/{id}            → update_holding(…)
 DELETE /holdings/{id}           → delete_holding(…)
+POST /holding-reconciliation/resolve → validate owned target/new choice; authoritative transient diff
+POST /holding-reconciliation/apply   → row-lock, stale recheck, merge shown fields or create new
 
 GET  /income                    → list_income(db, user_id)
 POST /income                    → create_income(db, user_id, sources: list)
@@ -102,8 +104,20 @@ services/progression.py         record_event() / rebuild() / prune_raw_events() 
 services/teaching.py (48)       ask_teaching_engine() — single Anthropic API call (claude-3-5-sonnet).
                                  Raises TeachingEngineNotConfigured if ANTHROPIC_API_KEY unset.
                                  Runtime D-119 addendum limits `learning_context` to presentation only.
-services/holding_capture_classifier.py (139)  classify_holding_capture() — keyword-match heuristic;
-                                 returns {product_type, alias, characteristics} proposal or None.
+services/holding_capture_classifier.py  classify_holding_capture() — Haiku extracts product type +
+                                 supplied characteristics from locally display-name-redacted text;
+                                 never selects a record and never writes.
+services/holding_reconciliation.py  Deterministic same-type candidate resolution, user-facing field diff,
+                                 owned-target validation, row-locked stale check, confirmed merge/create.
+                                 Proposals are transient; no history/proposal table.
+services/privacy_masking.py      Random-nonce request envelope across question/prior context/full baseline
+                                 and every model call. Masks local identities/UUID refs/goal labels, Indian
+                                 institution dictionary, PAN/account/policy/card/email/phone/UPI/CIF/customer
+                                 ID/Aadhaar-like shapes. One-pass restoration rejects unknown/partial tokens.
+                                 Open-world limit: generic phrases deliberately pass; reviewed names mask,
+                                 and name-shaped unknown institutions fail closed, but the local dictionary
+                                 requires ongoing review because no finite list can enumerate every brand.
+services/holding_fields.py       Shared reconciliation product/characteristic allowlist + scalar validation.
 services/deepen_classifier.py (59)   classify_deepen() — picks alias from baseline to surface in depth.
 services/surfacing.py (44)      compute_surfacing_candidates() — known_gaps list for /chat baseline.
 services/rewards.py (22)        evaluate_reward(is_new_day) — returns reward signal on new-day open.

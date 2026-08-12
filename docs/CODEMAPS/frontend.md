@@ -62,7 +62,8 @@ Component                   File (lines)       Purpose
 ChatThread                  components/ (~470) Core chat UI — Arya header (BQ-055), message list, input,
                                                proposal card rendering, reconciliation status (D-099).
                                                AryaHeader rendered when !onboarding (D-105).
-HoldingProposalCard         components/ (138)  Confirm/reject holding capture proposal (D-078 Fork 2)
+HoldingProposalCard         components/ (~175) Transient reconciliation: zero/one/many candidate UX,
+                                               stored/proposed field diff, explicit apply/dismiss (BQ-077)
 HoldingEditModal            components/ (326)  Add/edit holding — schema-driven form via characteristicsSchema
 GoalFundingFields           components/        Optional neutral holding picker + earmarked amounts;
                                                reused by goal creation and existing-goal link editing
@@ -110,6 +111,8 @@ walkthroughSteps.ts     42      Per-family static step arrays for TeachingWalkth
 rewardFacts.ts          9       Curated mechanism-fact array for app-open reward surface (D-100)
 taxSavingRoom.ts        24      fetchTaxSavingRoom()
 loanVsInvest.ts         30      fetchLoanVsInvest()
+holdingReconciliation.ts       Resolve owned candidate/new choice and apply confirmed transient diff;
+                                exposes refreshed proposal on stale 409
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects

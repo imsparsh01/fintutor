@@ -27,6 +27,13 @@ from app.services.goals import (
     update_goal_funding,
 )
 from app.services.holding_capture_classifier import classify_holding_capture
+from app.services.holding_reconciliation import (
+    ReconciliationStaleError,
+    ReconciliationValidationError,
+    apply_reconciliation,
+    build_reconciliation_proposal,
+    resolve_reconciliation,
+)
 from app.services.holdings import (
     create_holding,
     delete_holding,
@@ -54,6 +61,7 @@ from app.services.progression import (
     record_onboarding_handled,
     to_api_summary,
 )
+from app.services.privacy_masking import PrivacyEnvelope, UnsafeUserTextError
 from app.services.onboarding_assessment import (
     AssessmentConflictError,
     AssessmentValidationError,
@@ -104,6 +112,20 @@ class HoldingUpdate(BaseModel):
     alias: str | None = None
     display_name: str | None = None
     characteristics: dict | None = None
+
+
+class HoldingReconciliationResolve(BaseModel):
+    product_type: str
+    characteristics: dict
+    target_id: uuid.UUID | None = None
+    add_as_new: bool = False
+
+
+class HoldingReconciliationApply(BaseModel):
+    product_type: str
+    characteristics: dict
+    target_id: uuid.UUID | None = None
+    expected_diff: list[dict] = []
 
 
 class IncomeSource(BaseModel):
@@ -285,6 +307,42 @@ def patch_holding(
 def remove_holding(holding_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)) -> None:
     if not delete_holding(db, user_id, holding_id):
         raise HTTPException(status_code=404, detail="Holding not found")
+
+
+@app.post("/holding-reconciliation/resolve")
+def post_holding_reconciliation_resolve(
+    user_id: uuid.UUID,
+    body: HoldingReconciliationResolve,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        return resolve_reconciliation(
+            db, user_id, body.product_type, body.characteristics, body.target_id, body.add_as_new
+        )
+    except ReconciliationValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/holding-reconciliation/apply")
+def post_holding_reconciliation_apply(
+    user_id: uuid.UUID,
+    body: HoldingReconciliationApply,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        return apply_reconciliation(
+            db, user_id, body.product_type, body.characteristics, body.target_id, body.expected_diff
+        )
+    except ReconciliationStaleError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={"message": "This holding changed. Review the refreshed comparison.", "proposal": exc.proposal},
+        ) from exc
+    except ReconciliationValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="The holding could not be created due to a conflict")
 
 
 @app.get("/income")
@@ -601,7 +659,47 @@ def delete_progression_data(user_id: uuid.UUID, db: Session = Depends(get_db)) -
 
 @app.post("/chat")
 def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_db)) -> dict:
-    baseline = assemble_baseline(db, user_id, body.deepen_alias)
+    local_holdings = list_holdings(db, user_id)
+    try:
+        envelope_inputs = [body.question, body.onboarding_last_ai_message or ""]
+        for holding in local_holdings:
+            envelope_inputs.extend(str(value) for value in holding.values() if isinstance(value, (str, uuid.UUID)))
+        envelope = PrivacyEnvelope.create(envelope_inputs)
+        display_counts = {
+            name: sum(1 for h in local_holdings if h.get("display_name") == name)
+            for name in {h.get("display_name") for h in local_holdings if h.get("display_name")}
+        }
+        for holding in local_holdings:
+            identifiers = [
+                str(value) for value in (holding.get("alias"), holding.get("id")) if value
+            ]
+            if holding.get("display_name") and display_counts.get(holding["display_name"]) == 1:
+                identifiers.append(holding["display_name"])
+            envelope.register_entity(
+                identifiers,
+                str(holding.get("display_name") or holding.get("alias") or holding.get("id")),
+                "Holding",
+            )
+        identities = [
+            (str(value), kind)
+            for holding in local_holdings
+            for value, kind in (
+                (holding.get("alias"), "Holding"),
+                (holding.get("display_name"), "HoldingName"),
+                (holding.get("id"), "HoldingId"),
+            )
+            if value
+        ]
+        masked_question = envelope.mask_text(body.question, identities)
+        safe_last_ai_message = (
+            envelope.mask_text(body.onboarding_last_ai_message, identities)
+            if body.onboarding_last_ai_message
+            else None
+        )
+        baseline = assemble_baseline(db, user_id, body.deepen_alias)
+        baseline = envelope.mask_baseline(baseline, local_holdings)
+    except UnsafeUserTextError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     # Legacy onboarding keeps its one existing context contract. V2 assessment itself is
     # non-LLM; only ordinary chat may receive the new presentation abstraction.
     if not body.onboarding:
@@ -612,39 +710,54 @@ def post_chat(user_id: uuid.UUID, body: ChatRequest, db: Session = Depends(get_d
             baseline["learning_context"] = learning_context
     # D-072: only when D-071's deterministic UI-signal path didn't already set deepen.
     if "deepen" not in baseline:
-        classified = classify_deepen(body.question, baseline["holdings"])
+        classified = classify_deepen(masked_question, baseline["holdings"])
         if classified is not None:
             baseline["deepen"] = classified
     onboarding_state = None
     if body.onboarding:
-        onboarding_state = start_or_resume(db, user_id, body.onboarding_track_hint, body.question)
+        onboarding_state = start_or_resume(db, user_id, body.onboarding_track_hint, masked_question)
         baseline["onboarding"] = build_onboarding_instruction(
-            onboarding_state, body.onboarding_last_ai_message
+            onboarding_state, safe_last_ai_message
         )
     try:
-        answer = ask_teaching_engine(baseline, body.question)
+        masked_answer = ask_teaching_engine(baseline, masked_question)
     except TeachingEngineNotConfigured as exc:
         raise HTTPException(status_code=503, detail=str(exc))
     except anthropic.APIError as exc:
         # Never echo the raw exception back to the caller — same posture as
         # /health/db's DB-error handling (it can embed request/response detail).
-        logger.exception("Teaching engine call failed")
+        logger.error("Teaching engine provider failure", extra={"model": "claude-sonnet-5"})
         raise HTTPException(
             status_code=502,
             detail=f"Teaching engine call failed: {type(exc).__name__} (see server logs for detail)",
         ) from exc
     # D-078: a proposal is never written here — Fork 2 requires an explicit user confirm via a
     # separate POST /holdings call (existing create_holding path) before anything is saved.
-    holding_proposal = classify_holding_capture(body.question, baseline["holdings"])
+    try:
+        answer = envelope.rehumanize(masked_answer)
+    except UnsafeUserTextError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    model_holdings = baseline["holdings"]
+    extracted = classify_holding_capture(masked_question, model_holdings)
+    holding_proposal = (
+        build_reconciliation_proposal(
+            body.question,
+            local_holdings,
+            extracted["product_type"],
+            extracted["characteristics"],
+        )
+        if extracted is not None
+        else None
+    )
     result: dict = {"response": answer, "holding_proposal": holding_proposal}
     if onboarding_state is not None:
-        updated = record_turn(db, onboarding_state, body.question, answer)
+        updated = record_turn(db, onboarding_state, masked_question, masked_answer)
         result["onboarding_state"] = {"track": updated["track"], "stage": updated["stage"]}
     # BQ-071: last, after every write above has committed, and non-fatal by construction.
     # Legacy onboarding turns are not Arya exchanges — onboarding earns its own one-time
     # milestone instead, and counting its turns here would double-reward the same flow.
     if onboarding_state is None:
-        record_arya_exchange(db, user_id, body.question)
+        record_arya_exchange(db, user_id, masked_question)
     return result
 
 

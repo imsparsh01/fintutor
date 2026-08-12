@@ -18,6 +18,8 @@ holdings
   alias           string   — LLM-visible name e.g. "Fund-A". UniqueConstraint(user_id, alias)
   display_name    string?  — real institution/product name. NEVER sent to LLM (D-011)
   characteristics JSONB    — per-type fields (see characteristicsSchema.ts for field definitions)
+  BQ-077 reconciliation uses this existing row only: transient proposals are never stored;
+                  confirmed updates row-lock and merge supplied fields without deleting unstated fields
 
 income
   id      UUID PK
@@ -125,6 +127,8 @@ Never sent to LLM:
   complete onboarding assessment, immediate intent, earning/responsibility context, eligibility,
     lifecycle/timestamps, unanswered/undisclosed/cleared context
   conversation history (D-022 — stateless calls; D-085 narrow exception for onboarding last AI turn)
+  raw user-text institution/product names and structured identifiers (PAN/account/policy/card/email/phone):
+    request-local opaque tokens only; mapping is never persisted
 ```
 
 ## Key invariants

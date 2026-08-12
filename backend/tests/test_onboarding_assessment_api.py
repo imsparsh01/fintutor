@@ -4,18 +4,26 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.db.session import Base, get_db
 from app.main import app
 from app.models import (
+    Holding,
     OnboardingAssessment,
     OnboardingState,
     ProgressionDailyRollup,
     ProgressionEvent,
     ProgressionSummary,
 )
+
+
+@compiles(JSONB, "sqlite")
+def _compile_jsonb_as_json(_type, _compiler, **_kw):
+    return "JSON"
 from app.services.onboarding_assessment import (
     QUESTION_ORDER,
     answer_current_question,
@@ -36,6 +44,7 @@ class OnboardingAssessmentApiTests(unittest.TestCase):
             tables=[
                 OnboardingState.__table__,
                 OnboardingAssessment.__table__,
+                Holding.__table__,
                 # BQ-071: these routes now emit progression. Created here so the
                 # emitters are actually exercised rather than silently swallowed.
                 ProgressionEvent.__table__,

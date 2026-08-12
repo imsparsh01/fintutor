@@ -16,24 +16,7 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-077 — Implement user-confirmed holding reconciliation — READY
-
-Traces to D-127. Extend conversational holding capture into a transient new/update/conflict proposal. Backend
-code, not the model, owns candidate identity; exact locally matched display names are redacted before Haiku,
-and ambiguous same-type candidates require the user to select a holding or “Add as new.” Resolve an
-authoritative field diff, show old/new values neutrally, and apply only explicitly confirmed fields after
-rechecking current state under a row lock. Preserve unstated fields. Reuse the current holdings table and
-D-099 response contract; no proposal/history persistence, schema, dependency, deletion, non-holding mutation,
-fuzzy matching, model-selected target, progression event, or financial-calculation change.
-
-Acceptance: no conversational write occurs before confirmation; real display names never reach reconciliation
-Haiku; zero/one/many same-type candidates follow D-127; owned-target checks prevent cross-user resolution or
-apply; added/unchanged/conflicting field diffs are accurate; stale same-field changes require re-confirmation;
-confirmed updates merge only shown fields; dismiss/classifier failure writes nothing; new/manual capture stays
-functional; focused API/service tests, full backend suite, TypeScript, codemap updates, and native QA pass or
-are attempted as applicable.
-
-### BQ-078 — Add Compound Growth calculator — READY AFTER BQ-077
+### BQ-078 — Add Compound Growth calculator — READY
 
 Traces to D-128/D-129. Add a local pure calculator with user-entered starting lump sum, monthly contribution
 (zero allowed), annual rate (no default), and years. Use monthly compounding and end-of-month contributions:

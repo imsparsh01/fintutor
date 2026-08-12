@@ -1,138 +1,161 @@
-import { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, ActivityIndicator, findNodeHandle, Pressable, StyleSheet, Text, View } from 'react-native';
 import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
-import type { HoldingProposal } from '../lib/chat';
+import type { HoldingProposal } from '../lib/holdingReconciliation';
 import { humanizeProductType } from '../lib/taxonomy';
 import { colors, font, radius, spacing } from '../design/tokens';
-import { typography } from '../design/typography';
 
-// D-078 Fork 2: a read-only preview of what the classifier extracted. Nothing is written to the
-// database until Save is tapped — Not now just dismisses, same weight as declining. No in-card
-// field editing in v1 (scoped out in D-078); corrections happen via the existing edit UI
-// (BQ-028) after saving, same simplicity precedent the manual-add flow (BQ-036) set.
+function display(value: unknown): string {
+  return value === null || value === undefined || value === '' ? 'not stated' : String(value);
+}
+
 export function HoldingProposalCard({
   proposal,
+  announcement,
+  onResolve,
   onSave,
   onDismiss,
 }: {
   proposal: HoldingProposal;
+  announcement?: string;
+  onResolve: (targetId: string | null) => Promise<void>;
   onSave: () => Promise<void>;
   onDismiss: () => void;
 }) {
-  const [saving, setSaving] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fieldLabels = CHARACTERISTICS_SCHEMA[proposal.product_type] ?? [];
+  const actionStarted = useRef(false);
+  const headingRef = useRef<Text>(null);
+  const labels = new Map(
+    (CHARACTERISTICS_SCHEMA[proposal.product_type] ?? []).map((field) => [field.key, field.label]),
+  );
 
-  const handleSave = async () => {
+  useEffect(() => {
+    if (!announcement) return;
+    AccessibilityInfo.announceForAccessibility(announcement);
+    const heading = findNodeHandle(headingRef.current);
+    if (heading) AccessibilityInfo.setAccessibilityFocus(heading);
+  }, [announcement, proposal]);
+
+  const run = async (action: () => Promise<void>) => {
+    if (actionStarted.current) return;
+    actionStarted.current = true;
+    setBusy(true);
     setError(null);
-    setSaving(true);
     try {
-      await onSave();
-    } catch {
-      setError("Couldn't save this holding — try again in a moment.");
-    } finally {
-      setSaving(false);
+      await action();
+      actionStarted.current = false;
+      setBusy(false);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Couldn't update this holding — try again.");
+      actionStarted.current = false;
+      setBusy(false);
     }
   };
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Save this as a new holding?</Text>
+      <Text ref={headingRef} style={styles.title} accessibilityRole="header">
+        {proposal.kind === 'select' ? 'Which holding did you mean?' : proposal.kind === 'new' ? 'Add as a new holding?' : 'Review this change'}
+      </Text>
       <Text style={styles.productType}>{humanizeProductType(proposal.product_type)}</Text>
-      {/* Every known field for this product type gets a row, present or not — an unset
-          field renders the literal text "not stated" rather than being silently omitted,
-          so the preview never implies more (or less) than the classifier actually found. */}
-      {fieldLabels.map((field) => {
-        const value = proposal.characteristics[field.key];
-        const hasValue = value !== undefined && value !== null && value !== '';
-        return (
-          <View key={field.key} style={styles.fieldRow}>
-            <Text style={styles.fieldLabel}>{field.label}</Text>
-            <Text style={hasValue ? styles.fieldValue : styles.fieldValueUnset}>
-              {hasValue ? String(value) : 'not stated'}
-            </Text>
-          </View>
-        );
-      })}
-      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {proposal.kind === 'select' ? (
+        <View style={styles.candidates}>
+          {proposal.candidates.map((candidate) => (
+            <Pressable
+              key={candidate.id}
+              style={styles.candidateButton}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: busy }}
+              disabled={busy}
+              onPress={() => run(() => onResolve(candidate.id))}
+            >
+              <Text style={styles.candidateName}>{candidate.display_name ?? candidate.alias}</Text>
+              <Text style={styles.candidateType}>{humanizeProductType(candidate.product_type)}</Text>
+            </Pressable>
+          ))}
+          <Pressable
+            style={styles.candidateButton}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: busy }}
+            disabled={busy}
+            onPress={() => run(() => onResolve(null))}
+          >
+            <Text style={styles.candidateName}>Add as new</Text>
+            <Text style={styles.candidateType}>Keep existing holdings unchanged</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <>
+          {proposal.target ? (
+            <Text style={styles.targetName}>For {proposal.target.display_name ?? proposal.target.alias}</Text>
+          ) : null}
+          {proposal.diff.map((row) => (
+            <View key={row.field} style={styles.diffRow}>
+              <View style={styles.diffHeading}>
+                <Text style={styles.fieldLabel}>{labels.get(row.field) ?? row.field}</Text>
+                <Text style={styles.statusLabel}>{row.status}</Text>
+              </View>
+              {proposal.kind === 'update' ? (
+                <>
+                  <Text style={styles.valueLabel}>Stored</Text>
+                  <Text style={styles.fieldValue}>{display(row.stored_value)}</Text>
+                  <Text style={styles.valueLabel}>Proposed</Text>
+                </>
+              ) : null}
+              <Text style={styles.fieldValue}>{display(row.proposed_value)}</Text>
+            </View>
+          ))}
+        </>
+      )}
+
+      {busy ? <ActivityIndicator color={colors.tutor} style={styles.spinner} /> : null}
+      {error ? <Text accessibilityRole="alert" style={styles.errorText}>{error}</Text> : null}
       <View style={styles.actions}>
-        {/* Declining carries the same visual weight as accepting — equal size, equal
-            padding, equal border — never a de-emphasised afterthought. */}
-        <Pressable style={styles.dismissButton} onPress={onDismiss} disabled={saving}>
+        <Pressable
+          style={styles.dismissButton}
+          onPress={onDismiss}
+          disabled={busy}
+          accessibilityState={{ disabled: busy }}
+        >
           <Text style={styles.dismissButtonText}>Not now</Text>
         </Pressable>
-        <Pressable style={styles.saveButton} onPress={handleSave} disabled={saving}>
-          {saving ? (
-            <ActivityIndicator color={colors.screen} />
-          ) : (
-            <Text style={styles.saveButtonText}>Save</Text>
-          )}
-        </Pressable>
+        {proposal.kind !== 'select' ? (
+          <Pressable
+            style={styles.saveButton}
+            onPress={() => run(onSave)}
+            disabled={busy}
+            accessibilityState={{ disabled: busy }}
+          >
+            <Text style={styles.saveButtonText}>{proposal.kind === 'new' ? 'Add holding' : 'Apply changes'}</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.screen,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.line,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.sm,
-    maxWidth: '90%',
-    alignSelf: 'flex-start',
-  },
-  title: {
-    fontSize: 12,
-    color: colors.inkMuted,
-    marginBottom: spacing.sm,
-    fontFamily: font.monoSemibold,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  productType: { fontSize: 16, color: colors.ink, marginBottom: spacing.sm, fontFamily: font.uiSemibold },
-  // Hairline-separated label/value field rows, mono throughout — the ledger register.
-  fieldRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.lineSoft,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    color: colors.inkMuted,
-    fontFamily: font.mono,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  fieldValue: { color: colors.ink, fontFamily: font.monoMedium, fontSize: 13 },
-  fieldValueUnset: { color: colors.inkMuted, fontStyle: 'italic', fontFamily: font.mono, fontSize: 13 },
+  card: { backgroundColor: colors.screen, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.sm, maxWidth: '94%', alignSelf: 'flex-start' },
+  title: { fontSize: 12, color: colors.inkMuted, marginBottom: spacing.sm, fontFamily: font.monoSemibold, textTransform: 'uppercase', letterSpacing: 0.5 },
+  productType: { fontSize: 16, color: colors.ink, marginBottom: spacing.md, fontFamily: font.uiSemibold },
+  targetName: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 13, marginBottom: spacing.md },
+  candidates: { gap: spacing.sm },
+  candidateButton: { minHeight: 52, justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  candidateName: { color: colors.ink, fontFamily: font.uiSemibold, fontSize: 14 },
+  candidateType: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 12, marginTop: 2 },
+  diffRow: { paddingVertical: spacing.sm, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.lineSoft },
+  diffHeading: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md },
+  fieldLabel: { flex: 1, color: colors.inkMuted, fontFamily: font.mono, fontSize: 11, textTransform: 'uppercase' },
+  statusLabel: { color: colors.inkSecondary, fontFamily: font.mono, fontSize: 10, textTransform: 'uppercase' },
+  valueLabel: { color: colors.inkMuted, fontFamily: font.mono, fontSize: 10, marginTop: spacing.xs },
+  fieldValue: { color: colors.ink, fontFamily: font.monoMedium, fontSize: 13, marginTop: 2 },
+  spinner: { marginTop: spacing.md },
   errorText: { color: colors.danger, fontSize: 12, marginTop: spacing.sm, fontFamily: font.ui },
   actions: { flexDirection: 'row', marginTop: spacing.md, gap: spacing.sm },
-  // Equally-weighted buttons: same padding, same border, same radius — only fill differs.
-  // Primary spec (1C) applied to saveButton; dismissButton's geometry matches it exactly
-  // to preserve that equal weighting.
-  dismissButton: {
-    flex: 1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  dismissButtonText: { fontSize: 15, color: colors.ink, fontFamily: font.uiSemibold },
-  saveButton: {
-    flex: 1,
-    backgroundColor: colors.tutor,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  saveButtonText: typography.primaryButtonText,
+  dismissButton: { flex: 1, minHeight: 48, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: spacing.md, justifyContent: 'center', alignItems: 'center' },
+  dismissButtonText: { fontSize: 14, color: colors.ink, fontFamily: font.uiSemibold },
+  saveButton: { flex: 1, minHeight: 48, backgroundColor: colors.tutor, borderRadius: radius.md, paddingHorizontal: spacing.md, justifyContent: 'center', alignItems: 'center' },
+  saveButtonText: { color: colors.screen, fontFamily: font.uiSemibold, fontSize: 14 },
 });

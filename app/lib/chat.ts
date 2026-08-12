@@ -10,13 +10,8 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:800
 // posture of not leaking exception detail to the caller (main.py's /chat handler).
 const GENERIC_ERROR = "Couldn't reach the teaching engine — try again in a moment.";
 
-// D-078: a proposal is a read-only extraction from the user's own message — never written to
-// the database by the backend. The caller must route Save through the existing createHolding
-// (D-074/BQ-036) on an explicit user tap; there is no auto-create path anywhere in this type.
-export interface HoldingProposal {
-  product_type: string;
-  characteristics: Record<string, unknown>;
-}
+export type { HoldingProposal } from './holdingReconciliation';
+import type { HoldingProposal } from './holdingReconciliation';
 
 // BQ-042/D-084: present only on a call OnboardingScreen's ChatThread makes. `trackHint` mirrors
 // D-071's deepenAlias pattern — a deterministic signal only the chip UI can supply with
@@ -63,6 +58,10 @@ export async function askQuestion(
     throw new Error(GENERIC_ERROR);
   }
   if (!res.ok) {
+    if (res.status === 422) {
+      const payload = (await res.json().catch(() => null)) as { detail?: string } | null;
+      if (payload?.detail) throw new Error(payload.detail);
+    }
     throw new Error(GENERIC_ERROR);
   }
   const data = (await res.json()) as {

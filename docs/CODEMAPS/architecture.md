@@ -23,10 +23,17 @@ ChatScreen / OnboardingScreen
       classify_deepen()            ← picks one alias to "deepen" on
       [onboarding: start_or_resume() + build_onboarding_instruction()]
       ask_teaching_engine()        ← Anthropic API call (claude-3-5-sonnet)
-      classify_holding_capture()   ← detects if user mentioned a new holding
+      classify_holding_capture()   ← extracts type/fields from locally name-redacted text
+      build_reconciliation_proposal() ← backend selects zero/one/many owned candidates
       record_turn()                ← updates OnboardingState.turns_in_stage
-  ← {response, holding_proposal, onboarding_state}
-ChatThread.tsx renders response; HoldingProposalCard renders proposal (D-078 Fork 2)
+  ← {response, transient holding_proposal, onboarding_state}
+ChatThread renders the response; HoldingProposalCard resolves ambiguity and shows the field diff.
+Explicit apply re-locks the owned row and merges only confirmed fields; stale fields return a refreshed diff.
+
+Before every model call in `/chat`, one random-nonce `PrivacyEnvelope` converts the question, prior AI
+context, complete baseline identities/references/goal labels, locally-known Indian institutions, and structured
+identifiers to collision-safe request-local tokens. All Haiku/Sonnet calls share that envelope. Output restores
+known complete tokens in one pass; injected, unknown, old-namespace, malformed, or partial tokens fail closed.
 ```
 
 ## Data flow: Onboarding assessment v2

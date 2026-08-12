@@ -4,6 +4,8 @@ import logging
 import anthropic
 
 from app.core.config import settings
+from app.services.holding_fields import CHARACTERISTIC_FIELDS, validate_reconciliation_fields
+from app.services.holding_reconciliation import redact_display_names
 
 logger = logging.getLogger("fintutor.holding_capture_classifier")
 
@@ -17,70 +19,34 @@ _NONE_TOKEN = "NONE"
 # D-013 + D-066 taxonomy, mirrored here (no shared schema file with app/lib/characteristicsSchema.ts
 # — same convention already used by budget.py/surfacing.py/taxonomy.ts, each independently mirroring
 # the same product-type literals with a comment rather than importing a shared source).
-_CHARACTERISTIC_FIELDS: dict[str, list[str]] = {
-    "equity_mutual_fund": [
-        "expense_ratio", "lock_in_period", "investment_mode", "invested_amount", "sip_frequency",
-        "current_value", "start_date", "risk_bucket",
-    ],
-    "debt_mutual_fund": [
-        "expense_ratio", "lock_in_period", "investment_mode", "invested_amount", "sip_frequency",
-        "current_value", "start_date", "risk_bucket",
-    ],
-    "stocks": ["sector", "invested_amount", "current_value", "purchase_date", "risk_bucket"],
-    "fd_rd": [
-        "deposit_mode", "principal_or_monthly_amount", "interest_rate", "tenure", "maturity_date",
-    ],
-    "ppf_epf": ["retirement_fund_type", "current_balance", "annual_contribution", "interest_rate"],
-    "home_loan": [
-        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "emi_due_day", "start_date",
-        "outstanding_balance",
-    ],
-    "personal_loan": [
-        "principal", "interest_rate", "tenure_months", "emi_amount", "emi_frequency", "emi_due_day", "start_date",
-        "outstanding_balance",
-    ],
-    "credit_card_debt": [
-        "credit_limit", "outstanding_balance", "interest_rate", "minimum_due",
-        "payment_due_date", "billing_cycle_date",
-    ],
-    "term_insurance": ["sum_assured", "premium", "premium_frequency", "policy_term", "start_date"],
-    "endowment_ulip": [
-        "sum_assured", "premium", "premium_frequency", "policy_term", "current_fund_value",
-        "maturity_value_estimate", "start_date",
-    ],
-    "esop": [
-        "grant_type", "grant_date", "total_units_granted", "vesting_cliff_months",
-        "vesting_period_months", "strike_price", "current_fmv", "exercise_window_months",
-    ],
-}
-
 _TAXONOMY_TEXT = "\n".join(
     f"- {product_type}: {', '.join(fields)}"
-    for product_type, fields in _CHARACTERISTIC_FIELDS.items()
+    for product_type, fields in CHARACTERISTIC_FIELDS.items()
 )
 
 _SYSTEM_PROMPT = (
     "You read a user's message in a personal finance app and decide whether it describes a "
-    "financial holding (a loan, investment, or insurance policy) that is not already in their "
-    "tracked list, with enough detail to extract at least one characteristic field. You are given "
-    "their existing holdings as alias + product type only (never a real product or institution "
-    "name) so you know what is already tracked.\n\n"
+    "financial holding (a loan, investment, or insurance policy), with enough detail to extract "
+    "at least one characteristic field. Existing holdings are context only: never decide which "
+    "record to update and never suppress extraction because a matching type already exists. "
+    "Backend code and the user resolve record identity. You are given aliases only, never a real "
+    "product or institution name.\n\n"
     "The only valid product types, each with its known characteristic fields, are:\n"
     f"{_TAXONOMY_TEXT}\n\n"
-    "If the message describes a new, not-yet-tracked holding with extractable detail, reply with "
+    "If the message describes a holding with extractable detail, reply with "
     "ONLY a single-line JSON object: "
     '{"product_type": "<one of the types above>", "characteristics": {"<field>": <value>, ...}} '
     "using only field names from that type's list above, and only fields you can confidently "
-    "support from the message. If the message does not describe a capturable new holding — it is "
-    "general, ambiguous, about an already-tracked holding, or has no extractable detail — reply "
+    "support from the message. If the message is general, ambiguous, or has no extractable detail, reply "
     f'with exactly the word "{_NONE_TOKEN}". Reply with nothing else: no explanation, no markdown, '
     "no extra text before or after."
 )
 
 
 def classify_holding_capture(message: str, holdings: list[dict]) -> dict | None:
-    """D-078: narrow, non-teaching Haiku call. Returns {"product_type", "characteristics"} when the
-    message confidently describes a new, not-yet-tracked holding, else None — never raises. Any
+    """D-078/D-127: narrow, non-teaching Haiku call. Returns type + supplied fields when the
+    message confidently describes a holding, else None — never raises. Record identity is resolved
+    deterministically after this call; exact local display names are redacted before this call. Any
     failure (unconfigured key, API error, malformed JSON, unrecognized product_type) degrades to
     "nothing proposed", same discipline as classify_deepen (D-072). Never writes to the database —
     the caller (POST /chat) only ever surfaces this as a proposal; D-078 Fork 2 requires an explicit
@@ -94,7 +60,8 @@ def classify_holding_capture(message: str, holdings: list[dict]) -> dict | None:
         if holdings
         else "(none yet)"
     )
-    user_text = f"Existing holdings:\n{holdings_text}\n\nMessage: {message}"
+    safe_message = redact_display_names(message, holdings)
+    user_text = f"Existing holdings:\n{holdings_text}\n\nMessage: {safe_message}"
 
     try:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
@@ -106,7 +73,7 @@ def classify_holding_capture(message: str, holdings: list[dict]) -> dict | None:
         )
         reply = "".join(block.text for block in response.content if block.type == "text").strip()
     except anthropic.APIError:
-        logger.exception("Holding capture classifier call failed")
+        logger.error("Holding capture classifier provider failure", extra={"model": _MODEL})
         return None
 
     if reply == _NONE_TOKEN or not reply:
@@ -122,7 +89,7 @@ def classify_holding_capture(message: str, holdings: list[dict]) -> dict | None:
         return None
 
     product_type = parsed.get("product_type")
-    known_fields = _CHARACTERISTIC_FIELDS.get(product_type)
+    known_fields = CHARACTERISTIC_FIELDS.get(product_type)
     if known_fields is None:
         return None
 
@@ -134,6 +101,10 @@ def classify_holding_capture(message: str, holdings: list[dict]) -> dict | None:
     # unrecognized keys rather than reject the whole proposal.
     characteristics = {k: v for k, v in raw_characteristics.items() if k in known_fields}
     if not characteristics:
+        return None
+    try:
+        validate_reconciliation_fields(product_type, characteristics)
+    except ValueError:
         return None
 
     return {"product_type": product_type, "characteristics": characteristics}

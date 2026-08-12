@@ -127,7 +127,7 @@ def _classify_track(message: str) -> str:
         )
         reply = "".join(b.text for b in response.content if b.type == "text").strip()
     except anthropic.APIError:
-        logger.exception("Onboarding track classifier call failed")
+        logger.error("Onboarding track classifier provider failure", extra={"model": _MODEL})
         return "unclassified"
     return reply if reply in _TRACKS else "unclassified"
 
@@ -156,7 +156,7 @@ def _classify_stage_advance(track: str, stage: str, question: str, answer: str) 
         )
         reply = "".join(b.text for b in response.content if b.type == "text").strip().upper()
     except anthropic.APIError:
-        logger.exception("Onboarding stage-transition classifier call failed")
+        logger.error("Onboarding stage-transition provider failure", extra={"model": _MODEL})
         return False
     return reply == "YES"
 

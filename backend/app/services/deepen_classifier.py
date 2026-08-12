@@ -50,7 +50,7 @@ def classify_deepen(question: str, holdings: list[dict]) -> dict | None:
         )
         reply = "".join(block.text for block in response.content if block.type == "text").strip()
     except anthropic.APIError:
-        logger.exception("Deepen classifier call failed")
+        logger.error("Deepen classifier provider failure", extra={"model": _MODEL})
         return None
 
     if reply not in known_aliases:

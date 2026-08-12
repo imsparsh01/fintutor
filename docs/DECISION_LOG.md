@@ -220,3 +220,10 @@
   and offset; FinTutor shows transparent scenarios without a suitability verdict. Full write-up:
   `docs/decisions/D-132-user-controlled-household-support-scenarios.md`.
 - **Date:** 12-Aug-2026
+
+### D-133 — Sensitive names and identifiers are masked locally before every model call and re-humanized for users
+- **Tier:** 3, owner-decided. “Users may see recognisable names, while external models never do.” Stored and
+  newly typed names plus high-confidence identifiers are locally aliased for every Sonnet/Haiku request, then
+  exact-token re-humanized for the app; unsafe masking fails closed. Full write-up:
+  `docs/decisions/D-133-local-pre-model-masking-and-user-facing-rehumanization.md`.
+- **Date:** 12-Aug-2026

@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState, type ReactNode } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,7 +12,11 @@ import {
 } from 'react-native';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { askQuestion, type HoldingProposal } from '../lib/chat';
-import { createHolding } from '../lib/holdings';
+import {
+  applyHoldingProposal,
+  refreshedProposalFrom,
+  resolveHoldingProposal,
+} from '../lib/holdingReconciliation';
 import { HoldingProposalCard } from './HoldingProposalCard';
 import { scheduleHoldingReminder } from '../lib/reminders';
 
@@ -34,6 +38,7 @@ interface Message {
     product_type: string;
     changed_fields: string[];
   };
+  proposalAnnouncement?: string;
 }
 
 // Flow 03.1 (D-029): a figure the tutor states is either the user's own (from the profile) or
@@ -105,10 +110,23 @@ export const ChatThread = forwardRef<
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const generationRef = useRef(0);
+
+  useEffect(() => {
+    generationRef.current += 1;
+    setMessages([]);
+    setInput('');
+    setSending(false);
+    setError(null);
+    return () => {
+      generationRef.current += 1;
+    };
+  }, [userId]);
 
   const sendText = async (raw: string, deepenAlias?: string, onboardingTrackHint?: string) => {
     const question = raw.trim();
     if (!question || sending) return;
+    const generation = generationRef.current;
 
     // D-085: read before this turn's user message is added below, so this is the AI's own
     // last reply — the one narrow exception to D-022, computed from state this component
@@ -131,6 +149,7 @@ export const ChatThread = forwardRef<
         deepenAlias,
         onboarding ? { trackHint: onboardingTrackHint, lastAiMessage } : undefined
       );
+      if (generation !== generationRef.current) return;
       setMessages((prev) => [
         ...prev,
         {
@@ -141,9 +160,10 @@ export const ChatThread = forwardRef<
         },
       ]);
     } catch (err) {
+      if (generation !== generationRef.current) return;
       setError(err instanceof Error ? err.message : 'Failed to reach the teaching engine');
     } finally {
-      setSending(false);
+      if (generation === generationRef.current) setSending(false);
     }
   };
 
@@ -154,13 +174,39 @@ export const ChatThread = forwardRef<
   };
 
   const handleSaveProposal = async (messageId: string, proposal: HoldingProposal) => {
-    const savedHolding = await createHolding(userId, {
-      product_type: proposal.product_type,
-      characteristics: proposal.characteristics,
-    });
-    await scheduleHoldingReminder(savedHolding);
+    const generation = generationRef.current;
+    try {
+      const savedHolding = await applyHoldingProposal(userId, proposal);
+      // The holding write is already authoritative. Optional local reminder
+      // scheduling must not make a successful confirmation look retryable.
+      await scheduleHoldingReminder(savedHolding).catch(() => undefined);
+      if (generation !== generationRef.current) return;
+      setMessages((prev) => prev.map((m) => (m.id === messageId
+        ? { ...m, proposalResolved: true, proposalSaved: true, reconciliation: savedHolding.reconciliation }
+        : m)));
+    } catch (caught) {
+      const refreshed = refreshedProposalFrom(caught);
+      if (refreshed) {
+        if (generation !== generationRef.current) return;
+        setMessages((prev) => prev.map((m) => (m.id === messageId
+          ? { ...m, holdingProposal: refreshed, proposalAnnouncement: 'This holding changed. Review the refreshed comparison.' }
+          : m)));
+        throw new Error('This holding changed. Review the refreshed comparison before applying it.');
+      }
+      throw caught;
+    }
+  };
+
+  const handleResolveProposal = async (
+    messageId: string,
+    proposal: HoldingProposal,
+    targetId: string | null,
+  ) => {
+    const generation = generationRef.current;
+    const resolved = await resolveHoldingProposal(userId, proposal, targetId);
+    if (generation !== generationRef.current) return;
     setMessages((prev) => prev.map((m) => (m.id === messageId
-      ? { ...m, proposalResolved: true, proposalSaved: true, reconciliation: savedHolding.reconciliation }
+      ? { ...m, holdingProposal: resolved, proposalAnnouncement: 'Comparison ready. Review the stored and proposed values.' }
       : m)));
   };
 
@@ -200,6 +246,8 @@ export const ChatThread = forwardRef<
               {item.holdingProposal && !item.proposalResolved && (
                 <HoldingProposalCard
                   proposal={item.holdingProposal}
+                  announcement={item.proposalAnnouncement}
+                  onResolve={(targetId) => handleResolveProposal(item.id, item.holdingProposal!, targetId)}
                   onSave={() => handleSaveProposal(item.id, item.holdingProposal!)}
                   onDismiss={() => resolveProposal(item.id, false)}
                 />
