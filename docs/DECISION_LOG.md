@@ -199,3 +199,24 @@
   monthly contributions use consistent end-of-month timing. Full write-up:
   `docs/decisions/D-129-user-owned-assumptions-and-end-month-convention.md`.
 - **Date:** 12-Aug-2026
+
+### D-130 — Emergency runway counts accessible amounts, not total recorded wealth
+- **Tier:** 3, owner-decided. “Emergency runway measures accessible funding time, not ownership or net
+  worth.” Counts entered cash, editable fixed-deposit principal, and only additional amounts the user says
+  are accessible; full PPF/EPF is no longer automatic. Full write-up:
+  `docs/decisions/D-130-emergency-runway-counts-accessible-amounts.md`.
+- **Date:** 12-Aug-2026
+
+### D-131 — Term insurance uses a full-picture needs exploration, not a simple income multiple
+- **Tier:** 3, owner-decided. “Term-insurance need is a household resilience question, not merely an income
+  multiplication.” Approves the full-picture educational direction; exact output, formula, sensitive inputs,
+  and inclusion rules remain decision-gated. Full write-up:
+  `docs/decisions/D-131-full-picture-term-insurance-needs-exploration-direction.md`.
+- **Date:** 12-Aug-2026
+
+### D-132 — Term-insurance exploration uses user-controlled household-support scenarios
+- **Tier:** 3, owner-decided. “The baseline contains financial facts, but facts alone do not determine which
+  future household obligations should be insured.” Users explicitly choose every inclusion, horizon, rate,
+  and offset; FinTutor shows transparent scenarios without a suitability verdict. Full write-up:
+  `docs/decisions/D-132-user-controlled-household-support-scenarios.md`.
+- **Date:** 12-Aug-2026
