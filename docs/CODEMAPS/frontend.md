@@ -39,9 +39,10 @@ HealthScoreScreen       screens/ (~260)            Hidden “Portfolio Health”
 GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
                                                    inline create form, insurance coverage summary,
                                                    emergency readiness CTA (BQ-059)
-ToolsScreen             screens/ (~310)            Tools tab — 7 calculators + scenarios; S-02 loads eligible
+ToolsScreen             screens/ (~310)            Tools tab — 8 calculators + scenarios; S-02 loads eligible
                                                    owned loans and reuses LoanVsInvestModal (BQ-075)
-CalculatorScreen        screens/ (~580)            Hidden tab — prior 5 + Compound Growth + Credit-card Payoff;
+CalculatorScreen        screens/ (~580)            Hidden tab — prior 5 + Compound Growth + Credit-card Payoff
+                                                   + shared Emergency Coverage;
                                                    primary ResultCard emits after a valid result renders
 ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
                                                    Prefills inputs from budget+holdings; every field editable.
@@ -74,6 +75,8 @@ TeachingWalkthrough         components/ (312)  Full-screen P9-guarded walkthroug
                                                freely navigable. Receives steps[] + family name as props.
 TeachingBlock               components/ (46)   Inline teaching paragraph (used inside family screens)
 LoanVsInvestModal           components/ (335)  Prepayment vs invest calculator (D-014)
+EmergencyCoverageTool      components/          Shared S-05/C-14 editable form, independent fail-open
+                                               budget/FD prefills, disclosures, result and accessibility
 EsopExerciseCostModal       components/ (166)  ESOP exercise cost today (D-066)
 TaxSavingRoomModal          components/ (260)  80C/NPS headroom calculator (D-016)
 StreakBadge                 components/ (32)   Streak counter — behaviour color only (P7)
@@ -120,6 +123,8 @@ creditCardPayoff.ts            Pure fixed-payment month loop: interest then clam
                                 paid/non-clearing/1200-cap/typed-invalid outcomes
                                 Calculator UI clears all card inputs/results on auth-user change; any
                                 manual edit invalidates the displayed outcome until recalculation.
+emergencyCoverage.ts           Shared D-130 pure accessible-balances / monthly-outgoings calculation and
+                               liquidity-narrow budget/fixed-deposit prefill helpers; retirement excluded
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
@@ -168,14 +173,15 @@ CalculatorType (navigation/types.ts):
   'cagr_backward'  C-24 — CAGR Calculator
   'compound_growth' D-128 — lump sum + month-end contributions at a user-entered rate
   'credit_card_payoff' D-128 — optional recorded-card prefill + user-entered fixed payment model
+  'emergency_coverage' D-128/D-130 — shared accessible-balances runway mechanism (C-14)
 ```
-All 7 are pure frontend math. Tax/HRA remain blocked pending a separate rule-source contract.
+All 8 are pure frontend math. Tax/HRA remain blocked pending a separate rule-source contract.
 
 ## Scenario types (D-106, BQ-056)
 
 ```
 ScenarioType (navigation/types.ts):
-  'emergency_runway'  S-05 — months your balances cover with no income
+  'emergency_runway'  S-05 — shared D-130 accessible-balances coverage mechanism
   'sip_increase'      S-03 — corpus difference from an extra monthly amount
   'debt_cost'         S-06 — interest inside the remaining repayments
   'idle_cash'         S-07 — a cash balance compounded at two user-set rates

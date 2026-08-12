@@ -13,6 +13,7 @@ import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/nativ
 import type { RouteProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { TeachingBlock } from '../components/TeachingBlock';
+import { EmergencyCoverageTool } from '../components/EmergencyCoverageTool';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { fetchBudget } from '../lib/budget';
@@ -22,7 +23,6 @@ import { recordScenarioCompleted } from '../lib/progression';
 import {
   debtCost,
   derivePrefills,
-  emergencyRunway,
   idleCashOpportunity,
   monthsToTarget,
   sipIncrease,
@@ -49,14 +49,14 @@ export function ScenarioScreen() {
   const [prefills, setPrefills] = useState<ScenarioPrefills | null>(null);
 
   const loadData = useCallback(() => {
-    if (!userId) return;
+    if (!userId || type === 'emergency_runway') return;
     Promise.all([
       fetchBudget(userId).catch(() => null),
       fetchHoldings(userId).catch((): Holding[] | null => null),
     ]).then(([budget, holdings]) => {
       setPrefills(derivePrefills(budget, holdings));
     });
-  }, [userId]);
+  }, [type, userId]);
 
   useFocusEffect(loadData);
 
@@ -71,7 +71,7 @@ export function ScenarioScreen() {
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {type === 'emergency_runway' && (
-        <EmergencyRunwayScenario prefills={prefills} onComputed={onComputed} />
+        <EmergencyCoverageTool key={userId ?? 'signed-out'} userId={userId} surface="scenario" onComputed={onComputed} />
       )}
       {type === 'sip_increase' && (
         <SipIncreaseScenario prefills={prefills} onComputed={onComputed} />
@@ -229,99 +229,6 @@ function usePrefilledField(prefill: number | null | undefined) {
     setValue(v);
   };
   return [shown, onChange] as const;
-}
-
-// ─── S-05: Emergency fund runway ─────────────────────────────────────────────
-
-function EmergencyRunwayScenario({ prefills, onComputed }: ScenarioProps) {
-  const [cash, setCash] = useState('');
-  const [deposits, setDeposits] = usePrefilledField(prefills?.depositBalance);
-  const [retirement, setRetirement] = usePrefilledField(prefills?.retirementBalance);
-  const [outgoings, setOutgoings] = usePrefilledField(prefills?.monthlyOutgoings);
-  const [result, setResult] = useState<{ months: number; liquid: number } | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  function run() {
-    const liquid =
-      (parseFloat(cash) || 0) + (parseFloat(deposits) || 0) + (parseFloat(retirement) || 0);
-    const monthly = parseFloat(outgoings);
-    const months = emergencyRunway(liquid, monthly);
-    if (months === null) {
-      setResult(null);
-      setNotice(
-        'Monthly outgoings need to be more than zero for a runway to mean anything. Add your recurring commitments in Budgeting, or enter a figure above.'
-      );
-      return;
-    }
-    setNotice(null);
-    setResult({ months, liquid });
-  }
-
-  const ready = outgoings !== '' && (cash !== '' || deposits !== '' || retirement !== '');
-
-  return (
-    <ScenarioWrapper
-      title="Emergency runway"
-      question="If your income stopped today, how many months could your existing balances cover?"
-      wontSay="How many months of runway you ought to have. What this screen does: divides the balances you list by what leaves your account each month, so you can see the number that comes out."
-    >
-      <ScenarioInput
-        label="Cash & bank balance"
-        prefix="₹"
-        value={cash}
-        onChange={setCash}
-        hint="e.g. 150000"
-      />
-      <ScenarioInput
-        label="Fixed deposits"
-        prefix="₹"
-        value={deposits}
-        onChange={setDeposits}
-        prefilled={prefills?.depositBalance !== null && prefills?.depositBalance !== undefined}
-        hint="0"
-      />
-      <ScenarioInput
-        label="PPF / EPF balance"
-        prefix="₹"
-        value={retirement}
-        onChange={setRetirement}
-        prefilled={prefills?.retirementBalance !== null && prefills?.retirementBalance !== undefined}
-        hint="0"
-      />
-      <PrefillNote>
-        PPF and EPF balances are included because you hold them, not because they are easy to
-        reach — both have withdrawal rules and waiting periods. Clear the field to see the runway
-        without them.
-      </PrefillNote>
-      <ScenarioInput
-        label="Monthly outgoings"
-        prefix="₹"
-        value={outgoings}
-        onChange={setOutgoings}
-        prefilled={prefills?.monthlyOutgoings !== null && prefills?.monthlyOutgoings !== undefined}
-        hint="e.g. 60000"
-      />
-      <PrefillNote>
-        Prefilled from your recurring commitments plus planned discretionary spending in
-        Budgeting.
-      </PrefillNote>
-      <RunButton onPress={run} disabled={!ready} />
-      {notice !== null && <Notice>{notice}</Notice>}
-      {result !== null && (
-        <>
-          <ResultCard
-            unit="Months of runway"
-            value={result.months.toFixed(1)}
-            mechanismNote={`${formatRupees(result.liquid)} divided by ${formatRupees(
-              parseFloat(outgoings) || 0
-            )} a month. This assumes the balances sit still — it does not add returns they might earn or subtract the tax and penalties some withdrawals carry.`}
-            onRendered={onComputed}
-          />
-          <SecondaryRow label="Total balance counted" value={formatRupees(result.liquid)} />
-        </>
-      )}
-    </ScenarioWrapper>
-  );
 }
 
 // ─── S-03: What if I increase my SIP? ────────────────────────────────────────

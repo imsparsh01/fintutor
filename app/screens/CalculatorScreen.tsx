@@ -14,6 +14,7 @@ import {
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { EmergencyCoverageTool } from '../components/EmergencyCoverageTool';
 import { useAuth } from '../lib/AuthContext';
 import { calculateCompoundGrowth } from '../lib/compoundGrowth';
 import { calculateCreditCardPayoff, PAYOFF_MONTH_CAP } from '../lib/creditCardPayoff';
@@ -52,6 +53,7 @@ export function CalculatorScreen() {
       {type === 'cagr_backward' && <CagrCalc onComputed={onComputed} />}
       {type === 'compound_growth' && <CompoundGrowthCalc onComputed={onComputed} />}
       {type === 'credit_card_payoff' && <CreditCardPayoffCalc userId={userId} onComputed={onComputed} />}
+      {type === 'emergency_coverage' && <EmergencyCoverageTool key={userId ?? 'signed-out'} userId={userId} surface="calculator" onComputed={onComputed} />}
     </KeyboardAvoidingView>
   );
 }

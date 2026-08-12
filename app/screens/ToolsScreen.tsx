@@ -65,6 +65,11 @@ const CALCULATORS: CalcEntry[] = [
     label: 'Credit-card Payoff',
     description: 'Model a fixed monthly payment on a card balance and rate you enter.',
   },
+  {
+    type: 'emergency_coverage',
+    label: 'Emergency Coverage',
+    description: 'See how many months the accessible balances you enter would cover.',
+  },
 ];
 
 const SCENARIOS: ScenarioEntry[] = [

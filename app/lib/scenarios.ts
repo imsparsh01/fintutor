@@ -117,15 +117,6 @@ export function derivePrefills(
   return { monthlySip, monthlyOutgoings, retirementBalance, depositBalance, investedCorpus, loans };
 }
 
-// ─── S-05: Emergency fund runway ─────────────────────────────────────────────
-// Months of outgoings the liquid balance covers. Returns null when outgoings are unknown or
-// zero — a runway against a zero denominator is not "infinite", it's unmeasured.
-
-export function emergencyRunway(liquidBalance: number, monthlyOutgoings: number): number | null {
-  if (!(monthlyOutgoings > 0) || !(liquidBalance >= 0)) return null;
-  return liquidBalance / monthlyOutgoings;
-}
-
 // ─── Shared: future value of a monthly contribution ──────────────────────────
 // FV = P × ((1+r)^n − 1) / r, with r = annual/12/100 and n = months. Ordinary annuity.
 

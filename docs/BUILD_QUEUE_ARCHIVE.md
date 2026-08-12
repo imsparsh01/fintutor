@@ -12,6 +12,17 @@
 
 ---
 
+## BQ-080 — Align Emergency Runway and add Emergency Coverage — DONE 12-Aug-2026
+
+Corrected S-05 and added C-14 on one shared D-130 liquidity-narrow contract: manual cash/bank, editable FD
+principal, optional user-known accessible amount, and editable outgoings; PPF/EPF is never automatic and RD is
+excluded. Independent Budget/holdings fetches fail open, touched fields resist late prefills, and applied late
+prefills invalidate stale results. Both surfaces share formula, disclosures and accessibility while emitting
+their own render-confirmed completion once per committed input signature. Staff-review P1 findings were fixed.
+Verified: 23 frontend tests, 122 backend tests, TypeScript, iOS production bundle, and clean diff check.
+
+---
+
 ## BQ-079 — Add Credit-card Payoff calculator — DONE 12-Aug-2026
 
 Added a pure fixed-payment Credit-card Payoff calculator: monthly interest then month-end payment, zero-rate

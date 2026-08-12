@@ -16,23 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-080 — Align Emergency Runway and add Emergency Coverage — READY
-
-Traces to D-128/D-130. Replace S-05's automatic full PPF/EPF inclusion with one shared liquidity-narrow pure
-calculation and prefill contract, then expose the same mechanism as the Emergency Coverage calculator. Count
-user-entered cash/bank, editable recorded fixed-deposit principal, optional user-entered “other amount you
-know you could access,” and editable monthly outgoings. Do not persist the optional amount or add a cash/bank
-schema. Result is balances divided by outgoings; never label it enough/safe/adequate or set a target.
-
-Disclose counted categories, fixed-deposit premature-closure limitations, and exclusions for tax, penalties,
-access delays, returns, and changing expenses. Share helpers rather than duplicate formula/prefill logic;
-existing scenario and new calculator must produce identical results from identical inputs. Preserve scenario
-and calculator render-confirmed progression semantics without double-awarding a single render.
-
-Acceptance: full retirement balance never changes the default result; explicit optional accessible amount
-does; cash-only, FD-only, combined, zero/invalid outgoings, edited prefills, missing-record and load-error paths
-are coherent; equality between S-05/C-14 is tested; P2/P10/D-091 copy passes; TypeScript and native QA pass.
-
 ## BLOCKED — do not start
 
 ### BQ-072 — Customer-outcome MVP exit-gate programme — DEFERRED UNTIL INTERNAL MVP VALIDATION
