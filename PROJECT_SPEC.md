@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.4, 14-Aug-2026)
+# FinTutor — Project Spec (v4.5, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -212,8 +212,9 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       using it.
 - [ ] Write the data privacy policy (D-010): model-boundary masking is settled by D-133 and MVP at-rest
       protection by D-138 (Supabase-managed encryption plus strict access/transport/network controls; no
-      application-managed field encryption for MVP). Still needs backup retention, account deletion,
-      disclosure/export/provider treatment, and legal review.
+      application-managed field encryption for MVP). D-139 caps recovery-only backup retention after active
+      deletion at seven days. Still needs the whole-account deletion contract, disclosure/export/provider
+      treatment, and legal review.
 - [x] Write DECISION_PROTOCOL.md (D-017) — **COMPLETE at v1.0.** All six sections written: §1 taxonomy
       (retroactive classification of D-001–D-016, five categories), §2 tiers + six-trigger checklist +
       routing sequence, §3 four evaluation lenses, §4 conflict/precedence + supersession marker + the
@@ -303,6 +304,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.5 (14-Aug-2026) — **D-139 seven-day recovery-backup boundary approved.** Account deletion removes
+  active data immediately; encrypted recovery-only copies expire within seven days and cannot be used for
+  ordinary purposes. Any restore must reapply later deletions before serving users, and the privacy notice
+  must state the delay plainly.
 - v4.4 (14-Aug-2026) — **D-138 MVP at-rest protection approved.** Supabase-managed database and backup
   encryption will be paired with JWT ownership, TLS, production SSL enforcement, applicable network
   restrictions, secret isolation and security tests. FinTutor will not manage separate field-encryption keys
@@ -361,12 +366,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   checked off as resolved (D-071/D-072, already built 04-Aug-2026 but never marked here), and the
   second-fixture item checked off with its `savings_balance` sub-question split out as its own still-open
   line (unchanged status, just no longer buried inside a resolved item).
-- v3.5 (05-Aug-2026) — **§8 UX-principles item RESOLVED (D-075, D-076, D-077).** The corrected UX
-  principles section D-031 anticipated is now fully extracted in `PRODUCT_PRINCIPLES.md`: P1's provenance
-  note patched to reflect D-031's manual/browse secondary path (D-075); new P8, a holding family's section
-  is always reachable, never gated behind having data in it (D-076); new P9, no comprehension gates —
-  teaching content is never locked behind a quiz or prior lesson, with an explicit boundary against P7's
-  gamification toolkit being read as licensing a gate (D-077). Done live, one item at a time, owner-
-  confirmed before each write, per session 2026-08-05a. Not a new product decision — this closes an
-  already-decided backlog item; §8 checkbox applied on owner confirmation per this section's own edit
-  rule.

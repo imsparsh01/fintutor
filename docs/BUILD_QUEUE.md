@@ -60,11 +60,12 @@ design that preserves the actual due day in longer months.
 Traces to D-105/D-128. Both were approved, but require a supported financial year, authoritative rule source,
 verification/update ownership, stale behavior and legal review before build.
 
-### BQ-099 — Whole-account deletion integration — BLOCKED ON D3 + D-010
+### BQ-099 — Whole-account deletion integration — BLOCKED ON D-010
 
-Traces to D-119/D-121. Service-level deletion exists in parts, but no authenticated whole-account deletion
-entry point invokes all required erasure. Define ownership, confirmation, failure, backup and provider
-deletion behavior first.
+Traces to D-119/D-121/D-137/D-139. Service-level deletion exists in parts and authenticated ownership is
+settled, but no whole-account deletion entry point invokes all required erasure. Define confirmation,
+failure and provider/Auth deletion sequencing first. The build must delete active data immediately, disclose
+the seven-day encrypted-backup window, and prevent a restoration from resurrecting deleted accounts.
 
 ### BQ-100 — Schedule progression retention pruning — BLOCKED ON DEPLOYMENT ARCHITECTURE
 

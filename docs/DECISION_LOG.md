@@ -154,3 +154,10 @@
   network restrictions once hosting is known, secret isolation, and security tests. Full write-up:
   `docs/decisions/D-138-supabase-managed-at-rest-protection-for-mvp.md`.
 - **Date:** 14-Aug-2026
+
+### D-139 — Deleted account data may remain only in encrypted recovery backups for seven days
+- **Tier:** 3, owner-decided. “Deletion removes active data immediately.” Recovery-only encrypted copies
+  expire within seven days, cannot be used normally, and a restore must reapply later deletions before the
+  system serves users. Full write-up:
+  `docs/decisions/D-139-seven-day-backup-retention-after-deletion.md`.
+- **Date:** 14-Aug-2026

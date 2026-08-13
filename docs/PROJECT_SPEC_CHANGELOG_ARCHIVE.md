@@ -10,6 +10,16 @@
 
 ---
 
+- v3.5 (05-Aug-2026) — **§8 UX-principles item RESOLVED (D-075, D-076, D-077).** The corrected UX
+  principles section D-031 anticipated is now fully extracted in `PRODUCT_PRINCIPLES.md`: P1's provenance
+  note patched to reflect D-031's manual/browse secondary path (D-075); new P8, a holding family's section
+  is always reachable, never gated behind having data in it (D-076); new P9, no comprehension gates —
+  teaching content is never locked behind a quiz or prior lesson, with an explicit boundary against P7's
+  gamification toolkit being read as licensing a gate (D-077). Done live, one item at a time, owner-
+  confirmed before each write, per session 2026-08-05a. Not a new product decision — this closes an
+  already-decided backlog item; §8 checkbox applied on owner confirmation per this section's own edit
+  rule.
+
 - v3.4 (04-Aug-2026) — **§6 note only — no scope change.** ESOP's characteristics field schema note
   updated from "not yet designed" to resolved, reflecting D-066 (applies D-013's split-vs-merge test to
   the field-list gap D-055 left open — single type, `grant_type` distinguishes options from RSUs). Not a
