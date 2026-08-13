@@ -29,6 +29,19 @@ Traces to D-062/D-135. Update the existing session-close skill so it performs th
 disposition check before archiving/commit/push. This is maintenance of an already-adopted skill, not a new
 tool or workflow. Verify its instructions match the live `CLAUDE.md` close sequence.
 
+### BQ-094 — Repair standalone decision-file evidence gaps
+
+Traces to D-046/D-081. D-021, D-022, D-050, D-057 and D-064 are preserved in archived indexes and other
+authoritative artifacts but lack standalone decision files. Create compact faithful files from preserved
+historical text without editing the append-only archive or inventing reasoning; verify every D-001–D-136 ID
+resolves to one primary decision artifact.
+
+### BQ-101 — Add month-end timing disclosures to recurring-contribution calculators
+
+Traces to D-129. SIP Goal Planner and Step-up SIP omit the required disclosure that contributions occur at
+month end and compound from the following month; Step-up begins each new 12-month block at its first
+contribution. Add copy and focused tests without changing formulas or assumptions.
+
 ## BLOCKED — do not start
 
 ### BQ-089 — Enforce Supabase JWT ownership across backend routes — BLOCKED ON D3
@@ -49,6 +62,58 @@ Traces to D-005/D-008/D-041. Supabase database and frontend auth are present, bu
 proves where FastAPI is hosted. Confirm whether the old “Supabase hosting” wording still governs the backend
 or must be superseded, then create the bounded deployment implementation. Before any non-development deploy,
 also close D-095's CORS/dev-bypass cleanup.
+
+### BQ-093 — Complete in-context AI surfacing coverage — BLOCKED ON PAIRING CONTENT
+
+Traces to D-012/D-051. Generic capture supports the taxonomy, but deterministic surfacing has only the
+loan→missing-term-insurance rule. Define owner-reviewed, on-topic pairings and precedence for remaining MVP
+types, then implement them under D-080's verified WHEN constraint. Cold surfacing remains out of MVP.
+
+### BQ-095 — Complete or narrow the Hook Loop trigger layer — BLOCKED ON PRODUCT DESIGN
+
+Traces to D-060/D-061. Streaks and variable rewards shipped, but the adopted Hook Loop described a trigger/
+notification layer without a concrete contract. Decide trigger shape, frequency and control without tying
+engagement to financial outcomes, or explicitly narrow the full-adoption wording.
+
+### BQ-096 — Consolidated valuation metadata defects — BLOCKED ON OWNER APPROVAL
+
+Traces to D-065/D-097 and the D-125 audit. Unmapped product types can disappear from metadata and malformed
+JSONB can fail the response. Approve neutral status/error semantics before changing financial aggregation.
+
+### BQ-097 — Reconcile reminder due-day behavior — BLOCKED ON D4
+
+Traces to D-101/BQ-084. D-101 approved days 1–31 with shorter months clamped to month end. Current recurring
+triggers map 29–31 permanently to 28. Confirm that simplification as a supersession or approve a scheduling
+design that preserves the actual due day in longer months.
+
+### BQ-098 — Income-tax and HRA calculators — BLOCKED ON RULE CONTRACT
+
+Traces to D-105/D-128. Both were approved, but require a supported financial year, authoritative rule source,
+verification/update ownership, stale behavior and legal review before build.
+
+### BQ-099 — Whole-account deletion integration — BLOCKED ON D3 + D-010
+
+Traces to D-119/D-121. Service-level deletion exists in parts, but no authenticated whole-account deletion
+entry point invokes all required erasure. Define ownership, confirmation, failure, backup and provider
+deletion behavior first.
+
+### BQ-100 — Schedule progression retention pruning — BLOCKED ON DEPLOYMENT ARCHITECTURE
+
+Traces to D-121. Tested `prune_raw_events()` exists, but no periodic job invokes it. Choose the scheduler
+after BQ-092 settles deployment; verify pruning, replay, failure alerting and the 400-day boundary end to end.
+
+### BQ-102 — Reconcile empty-state personalized walkthrough promise — BLOCKED
+
+Traces to D-089. Empty sections ship generic mechanism walkthroughs and send own-number application to Chat,
+while D-089 literally promises an offered walkthrough using the user's own numbers. Owner must confirm the
+two-stage handoff satisfies the decision or approve a bounded personalized walkthrough contract.
+
+### BQ-103 — Remaining D-125 conformance defects — BLOCKED ON OWNER APPROVAL
+
+Traces to D-048/D-069/D-070 and the D-125 audit. Decide exact fixes for strict income cadence; 80C cap and
+negative inputs; ESOP equal-FMV wording, month-end vesting and zero-unit wording; and future-dated streak
+state. BQ-096 separately owns the two consolidated defects. Pinning current behavior in tests is not approval
+to preserve it; each correction remains money/tax/state gated.
 
 ### BQ-085 — Goal Affordability calculator — BLOCKED ON FORMULA CONTRACT
 
