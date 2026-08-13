@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-101 — Align recurring-contribution timing and disclosures — DONE 14-Aug-2026
+
+Corrected Step-up SIP to D-129's confirmed Option A: each month's existing corpus grows first, then the
+month-end contribution is added and begins compounding in the following month. The annual step-up still starts
+with the first contribution of each new 12-month block. SIP Goal and Step-up SIP now both disclose the timing
+beside results. Extracted pure arithmetic and added 3 focused regressions. Verified: 36 frontend tests,
+TypeScript, Expo web export, and clean diff check.
+
 ## BQ-094 — Repair standalone decision-file evidence gaps — DONE 14-Aug-2026
 
 Created faithful compact primary artifacts for D-021, D-022, D-050, D-057 and D-064 from preserved

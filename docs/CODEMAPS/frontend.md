@@ -133,6 +133,8 @@ creditCardPayoff.ts            Pure fixed-payment month loop: interest then clam
                                 paid/non-clearing/1200-cap/typed-invalid outcomes
                                 Calculator UI clears all card inputs/results on auth-user change; any
                                 manual edit invalidates the displayed outcome until recalculation.
+stepUpSip.ts                   D-129 pure month-end contribution loop; annual step-up starts with the
+                                first contribution of each new 12-month block
 emergencyCoverage.ts           Shared D-130 pure accessible-balances / monthly-outgoings calculation and
                                liquidity-narrow budget/fixed-deposit prefill helpers; retirement excluded
 esopExerciseCost.ts     26      fetchEsopExerciseCost()

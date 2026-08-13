@@ -18,6 +18,7 @@ import { EmergencyCoverageTool } from '../components/EmergencyCoverageTool';
 import { useAuth } from '../lib/AuthContext';
 import { calculateCompoundGrowth } from '../lib/compoundGrowth';
 import { calculateCreditCardPayoff, PAYOFF_MONTH_CAP } from '../lib/creditCardPayoff';
+import { calculateStepUpSip } from '../lib/stepUpSip';
 import { fetchHoldings, type Holding } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
 import { recordCalculatorCompleted } from '../lib/progression';
@@ -286,21 +287,9 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
   function calculate() {
     const sipAmt = parseFloat(sip);
     const su = parseFloat(stepup) / 100;
-    const r = parseFloat(rate) / 12 / 100;
     const yrs = parseInt(years, 10);
-    if (!sipAmt || !r || !yrs || su < 0) return;
-
-    let corpus = 0;
-    let currentSip = sipAmt;
-    let totalInvested = 0;
-    for (let y = 0; y < yrs; y++) {
-      for (let m = 0; m < 12; m++) {
-        corpus = (corpus + currentSip) * (1 + r);
-        totalInvested += currentSip;
-      }
-      currentSip = currentSip * (1 + su);
-    }
-    setResult({ corpus, invested: totalInvested });
+    const modeled = calculateStepUpSip(sipAmt, su * 100, parseFloat(rate), yrs);
+    if (modeled) setResult(modeled);
   }
 
   const ready = sip !== '' && stepup !== '' && rate !== '' && years !== '';
@@ -317,7 +306,7 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
           <ResultCard
             unit="Corpus at end of period"
             value={formatRupees(result.corpus)}
-            mechanismNote={`Your SIP starts at ${formatRupees(parseFloat(sip))}/month and increases by ${stepup}% each year. The step-up means later years contribute proportionally more to the final corpus than early years.`}
+            mechanismNote={`Your SIP starts at ${formatRupees(parseFloat(sip))}/month and increases by ${stepup}% each year. Contributions are modeled at each month end and begin compounding in the following month; each annual step-up starts with the first contribution of the new 12-month block.`}
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>

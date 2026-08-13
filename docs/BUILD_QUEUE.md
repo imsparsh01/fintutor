@@ -18,13 +18,6 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-### BQ-101 — Align recurring-contribution timing and disclosures — BLOCKED ON OWNER APPROVAL
-
-Traces to D-129. SIP Goal Planner is conformant and now truthfully discloses month-end/following-month
-timing. Step-up SIP instead applies growth immediately after adding each monthly contribution, giving every
-payment one extra compounding period. Correcting that user-facing formula is money-shaped and requires owner
-approval; only after correction may the matching disclosure be added and this item completed.
-
 ### BQ-089 — Enforce Supabase JWT ownership across backend routes — BLOCKED ON D3
 
 Traces to D-005/D-008/D-052. Frontend authentication exists, but backend routes trust caller-supplied UUIDs.
