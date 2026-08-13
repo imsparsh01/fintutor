@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 export interface TaxSavingRoomResult {
   applicable: boolean;
@@ -14,8 +14,8 @@ export async function fetchTaxSavingRoom(
   userId: string,
   taxRegime: 'old' | 'new'
 ): Promise<TaxSavingRoomResult> {
-  const params = new URLSearchParams({ user_id: userId, tax_regime: taxRegime });
-  const res = await fetch(`${BACKEND_URL}/tax-saving-room?${params.toString()}`);
+  const params = new URLSearchParams({ tax_regime: taxRegime });
+  const res = await authenticatedFetch(`${BACKEND_URL}/tax-saving-room?${params.toString()}`);
   if (!res.ok) {
     const body = await res.json().catch(() => null);
     throw new Error(body?.detail ?? `Backend responded ${res.status}`);

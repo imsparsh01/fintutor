@@ -10,9 +10,11 @@ Expo (React Native / Web)          FastAPI (Python)         Supabase (Postgres)
   RootNavigator                        port 8000
 ```
 
-Single-user auth: Supabase Auth (JWT). All backend endpoints take `user_id: UUID` as a
-query param — no middleware auth layer yet (D-043). No Users table; holdings/income/goals
-have a loose `user_id` FK by convention.
+Authentication: Supabase Auth (JWT). The app attaches its current access token to every protected
+request. D-137/BQ-089 middleware validates it through Supabase Auth and replaces any incoming `user_id`
+with the verified token subject before route parsing; callers cannot select ownership. Health/schema
+documentation routes contain no user data and remain public. No local Users table; owned records retain
+their Supabase subject UUID as `user_id`.
 
 ## Data flow: Chat (the core teaching loop)
 

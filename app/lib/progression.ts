@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 // BQ-071 / D-121. Progression is a side effect of using FinTutor, never a precondition
 // for it: every function here is fire-and-forget and swallows its own failures. A
@@ -34,7 +34,7 @@ export interface ProgressionHistoryEvent {
 }
 
 export async function fetchProgression(userId: string): Promise<ProgressionSummary> {
-  const res = await fetch(`${BACKEND_URL}/progression?user_id=${userId}`);
+  const res = await authenticatedFetch(`${BACKEND_URL}/progression`);
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }
@@ -45,8 +45,8 @@ export async function fetchProgressionHistory(
   userId: string,
   limit = 12,
 ): Promise<ProgressionHistoryEvent[]> {
-  const res = await fetch(
-    `${BACKEND_URL}/progression/history?user_id=${userId}&limit=${limit}`,
+  const res = await authenticatedFetch(
+    `${BACKEND_URL}/progression/history?limit=${limit}`,
   );
   if (!res.ok) throw new Error(`Backend responded ${res.status}`);
   const body = (await res.json()) as { events: ProgressionHistoryEvent[] };
@@ -65,7 +65,7 @@ async function emit(
   capabilityFamily: 'calculator' | 'scenario',
 ): Promise<void> {
   try {
-    await fetch(`${BACKEND_URL}/progression/event?user_id=${userId}`, {
+    await authenticatedFetch(`${BACKEND_URL}/progression/event`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

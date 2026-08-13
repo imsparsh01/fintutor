@@ -2,6 +2,13 @@
 
 # FinTutor — Frontend Codemap
 
+## Authenticated backend calls
+
+`lib/backend.ts` owns `authenticatedFetch()`: it reads the current Supabase session and attaches its access
+token as a bearer token. Every user-data API wrapper uses it and no longer sends `user_id` over HTTP. A
+`userId` may remain in UI/helper signatures where it keys installation-local state, but it has no backend
+ownership authority.
+
 ## Entry: `app/App.tsx` → `app/navigation/RootNavigator.tsx`
 
 ## Navigation: `app/navigation/MainTabs.tsx`

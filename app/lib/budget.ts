@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 export interface BudgetSummary {
   income_total: number;
@@ -16,7 +16,7 @@ export interface BudgetSummary {
 }
 
 export async function fetchBudget(userId: string): Promise<BudgetSummary> {
-  const res = await fetch(`${BACKEND_URL}/budget?user_id=${userId}`);
+  const res = await authenticatedFetch(`${BACKEND_URL}/budget`);
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }

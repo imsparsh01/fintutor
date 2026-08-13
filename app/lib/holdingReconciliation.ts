@@ -1,4 +1,4 @@
-import { BACKEND_URL } from './backend';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 import type { Holding } from './holdings';
 
 export type ReconciliationField = {
@@ -25,7 +25,7 @@ export type HoldingProposal = {
 };
 
 async function post<T>(path: string, userId: string, body: object): Promise<T> {
-  const response = await fetch(`${BACKEND_URL}${path}?user_id=${encodeURIComponent(userId)}`, {
+  const response = await authenticatedFetch(`${BACKEND_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

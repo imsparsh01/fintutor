@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 // D-065: per-family totals, not a single net-worth figure — see BQ-018/D-065's write-up
 // for why (FD/RD has no accrued-value field; a signed net figure would overstate
@@ -22,7 +22,7 @@ export interface ConsolidatedTotals {
 }
 
 export async function fetchConsolidated(userId: string): Promise<ConsolidatedTotals> {
-  const res = await fetch(`${BACKEND_URL}/consolidated?user_id=${userId}`);
+  const res = await authenticatedFetch(`${BACKEND_URL}/consolidated`);
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }

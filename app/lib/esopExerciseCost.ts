@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 export interface EsopExerciseCostResult {
   holding_id: string;
@@ -16,8 +16,8 @@ export async function fetchEsopExerciseCost(
   userId: string,
   holdingId: string
 ): Promise<EsopExerciseCostResult> {
-  const params = new URLSearchParams({ user_id: userId, holding_id: holdingId });
-  const res = await fetch(`${BACKEND_URL}/esop-exercise-cost?${params.toString()}`);
+  const params = new URLSearchParams({ holding_id: holdingId });
+  const res = await authenticatedFetch(`${BACKEND_URL}/esop-exercise-cost?${params.toString()}`);
   if (!res.ok) {
     const body = await res.json().catch(() => null);
     throw new Error(body?.detail ?? `Backend responded ${res.status}`);

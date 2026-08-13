@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 export interface StreakState {
   user_id: string;
@@ -13,7 +13,7 @@ export interface StreakOpenResult extends StreakState {
 }
 
 export async function fetchStreak(userId: string): Promise<StreakState> {
-  const res = await fetch(`${BACKEND_URL}/streak?user_id=${userId}`);
+  const res = await authenticatedFetch(`${BACKEND_URL}/streak`);
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }
@@ -24,7 +24,7 @@ export async function fetchStreak(userId: string): Promise<StreakState> {
 // the source of truth for whether today counts as a new streak day and whether a reward
 // fires; this just reports the event and reflects the result.
 export async function recordAppOpen(userId: string): Promise<StreakOpenResult> {
-  const res = await fetch(`${BACKEND_URL}/streak/open?user_id=${userId}`, { method: 'POST' });
+  const res = await authenticatedFetch(`${BACKEND_URL}/streak/open`, { method: 'POST' });
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }

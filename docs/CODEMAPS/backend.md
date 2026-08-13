@@ -5,6 +5,10 @@
 ## Entry point: `backend/app/main.py` (380 lines)
 All routes live here. No router modules — single-file FastAPI app.
 
+`authenticated_ownership` protects every user-data route. It validates the bearer token through
+`app/auth.py` and injects the verified Supabase subject as `user_id`; a query-string UUID is discarded.
+Only health and API-schema documentation routes are public.
+
 ## API Routes
 
 ```

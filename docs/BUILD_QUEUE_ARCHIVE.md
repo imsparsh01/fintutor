@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-089 — Enforce Supabase JWT ownership across backend routes — DONE 14-Aug-2026
+
+Added a fail-closed authentication middleware that validates Supabase bearer tokens through Auth and replaces
+every caller-supplied `user_id` with the verified token subject before route parsing. All frontend user-data
+wrappers now attach the current session token and no longer send a user ID over HTTP. Public health/schema
+routes remain public. Tests cover missing, invalid and expired tokens, subject derivation, spoofed query IDs,
+two-user cross-account read/write/delete denial, and token-owned creation. Verified with 318 backend tests,
+36 frontend tests, TypeScript and Expo web export.
+
 ## BQ-101 — Align recurring-contribution timing and disclosures — DONE 14-Aug-2026
 
 Corrected Step-up SIP to D-129's confirmed Option A: each month's existing corpus grows first, then the

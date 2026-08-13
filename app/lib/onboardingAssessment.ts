@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BACKEND_URL } from './backend';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 import { ASSESSMENT_QUESTION_ORDER, type AssessmentQuestion } from './assessmentVocabulary';
 
 const HANDLED_CACHE_PREFIX = 'fintutor:onboarding_v2_handled:';
@@ -32,8 +32,8 @@ export class AssessmentApiError extends Error {
 async function request(path: string, userId: string, init?: RequestInit): Promise<AssessmentState> {
   let response: Response;
   try {
-    response = await fetch(
-      `${BACKEND_URL}${path}?user_id=${encodeURIComponent(userId)}`,
+    response = await authenticatedFetch(
+      `${BACKEND_URL}${path}`,
       {
         ...init,
         headers: { 'Content-Type': 'application/json', ...init?.headers },
@@ -63,8 +63,8 @@ export function getAssessment(userId: string): Promise<AssessmentState> {
 export async function getLegacyCompatibility(userId: string): Promise<boolean> {
   let response: Response;
   try {
-    response = await fetch(
-      `${BACKEND_URL}/onboarding-assessment/compatibility?user_id=${encodeURIComponent(userId)}`,
+    response = await authenticatedFetch(
+      `${BACKEND_URL}/onboarding-assessment/compatibility`,
     );
   } catch {
     throw new AssessmentApiError('FinTutor could not reach the server.', null);

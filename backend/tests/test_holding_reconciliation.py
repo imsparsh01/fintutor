@@ -3,10 +3,10 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from fastapi.testclient import TestClient
 
 from app.db.session import get_db
 from app.main import app
+from tests.auth_helpers import authenticated_client
 from app.models import Holding
 from app.services.holding_capture_classifier import classify_holding_capture
 from app.services.holding_reconciliation import (
@@ -152,8 +152,8 @@ class HoldingReconciliationApiTests(unittest.TestCase):
     def setUp(self):
         self.db = MagicMock()
         app.dependency_overrides[get_db] = lambda: self.db
-        self.client = TestClient(app)
         self.user_id = uuid.uuid4()
+        self.client = authenticated_client(app, self.user_id)
 
     def tearDown(self):
         app.dependency_overrides.clear()

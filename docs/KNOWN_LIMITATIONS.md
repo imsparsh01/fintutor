@@ -48,15 +48,6 @@ approved assessment schema; BQ-068 does not silently expand D-119's storage pack
 **Revisit:** before external launch if “dismiss everywhere” is required. This needs an explicit persistence,
 retention, and deletion decision—not a drive-by column or mutation of preserved legacy rows.
 
-### Backend endpoints trust a caller-supplied `user_id`; JWT ownership is not enforced
-**Traces to:** `docs/CODEMAPS/architecture.md`, `backend/app/main.py`. Supabase authenticates the app, but
-the FastAPI routes accept `user_id` as a query parameter and do not validate a Supabase JWT or prove that
-the caller owns that UUID. A caller who can reach the API could request another user's records if they
-know or obtain the UUID. This is acceptable only for the current private development environment, not for
-real-user deployment.
-**Revisit:** before any external/private-beta user can reach the backend. Requires an explicit auth-boundary
-decision and implementation plan; it touches sensitive financial data and cannot be added as a drive-by.
-
 ### `baseline.dependents` / `baseline.emergency_fund_months` missing from the teaching engine
 **Traces to:** BQ-023, `backend/app/services/baseline.py`. `SYSTEM_PROMPT_v0_8_runnable.md` §4 documents
 both fields as part of `baseline`; neither has a backing field anywhere in the schema, so both are omitted

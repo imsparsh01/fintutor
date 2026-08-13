@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 export interface Holding {
   id: string;
@@ -29,7 +29,7 @@ export interface HoldingCreate {
 }
 
 export async function fetchHoldings(userId: string): Promise<Holding[]> {
-  const res = await fetch(`${BACKEND_URL}/holdings?user_id=${userId}`);
+  const res = await authenticatedFetch(`${BACKEND_URL}/holdings`);
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }
@@ -37,7 +37,7 @@ export async function fetchHoldings(userId: string): Promise<Holding[]> {
 }
 
 export async function createHolding(userId: string, data: HoldingCreate): Promise<Holding> {
-  const res = await fetch(`${BACKEND_URL}/holdings?user_id=${userId}`, {
+  const res = await authenticatedFetch(`${BACKEND_URL}/holdings`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -53,7 +53,7 @@ export async function updateHolding(
   holdingId: string,
   updates: HoldingUpdate
 ): Promise<Holding> {
-  const res = await fetch(`${BACKEND_URL}/holdings/${holdingId}?user_id=${userId}`, {
+  const res = await authenticatedFetch(`${BACKEND_URL}/holdings/${holdingId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updates),
@@ -65,7 +65,7 @@ export async function updateHolding(
 }
 
 export async function deleteHolding(userId: string, holdingId: string): Promise<void> {
-  const res = await fetch(`${BACKEND_URL}/holdings/${holdingId}?user_id=${userId}`, {
+  const res = await authenticatedFetch(`${BACKEND_URL}/holdings/${holdingId}`, {
     method: 'DELETE',
   });
   if (!res.ok) {

@@ -2,7 +2,6 @@ import unittest
 import uuid
 from unittest.mock import patch
 
-from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.dialects.postgresql import JSONB
@@ -11,6 +10,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.db.session import Base, get_db
 from app.main import app
+from tests.auth_helpers import authenticated_client
 from app.models import (
     Holding,
     OnboardingAssessment,
@@ -60,7 +60,7 @@ class OnboardingAssessmentApiTests(unittest.TestCase):
             yield self.db
 
         app.dependency_overrides[get_db] = override_db
-        self.client = TestClient(app)
+        self.client = authenticated_client(app, self.user_id)
 
     def tearDown(self) -> None:
         app.dependency_overrides.clear()

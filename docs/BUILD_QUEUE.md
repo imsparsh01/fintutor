@@ -16,14 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-089 — Enforce Supabase JWT ownership across backend routes — READY
-
-Traces to D-005/D-008/D-052/D-137. Validate the Supabase bearer token on every protected backend request,
-derive the authoritative user identity from its verified subject, remove caller authority over `user_id`,
-and update every frontend API wrapper. Preserve intentionally public non-user-data routes. Verify with two
-distinct authenticated identities, including cross-account read/write/delete denial and invalid/expired-token
-failures.
-
 ## BLOCKED — do not start
 
 ### BQ-091 — Restore or supersede mandatory gstack plan/review gates — BLOCKED

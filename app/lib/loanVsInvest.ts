@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 // D-068 scopes this comparison to fixed-EMI Home and Personal Loans. Keep the
 // predicate shared by every launcher so Tools and holding detail cannot drift.
@@ -25,11 +25,10 @@ export async function fetchLoanVsInvest(
   prepayAmount: number
 ): Promise<LoanVsInvestResult> {
   const params = new URLSearchParams({
-    user_id: userId,
     holding_id: holdingId,
     prepay_amount: String(prepayAmount),
   });
-  const res = await fetch(`${BACKEND_URL}/loan-vs-invest?${params.toString()}`);
+  const res = await authenticatedFetch(`${BACKEND_URL}/loan-vs-invest?${params.toString()}`);
   if (!res.ok) {
     const body = await res.json().catch(() => null);
     throw new Error(body?.detail ?? `Backend responded ${res.status}`);

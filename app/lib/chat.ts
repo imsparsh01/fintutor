@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 // D-022: no conversation memory — each call is independent, carrying only the current
 // question. The backend re-assembles the live baseline every time (D-001) but never
@@ -43,7 +43,7 @@ export async function askQuestion(
 ): Promise<AskQuestionResult> {
   let res: Response;
   try {
-    res = await fetch(`${BACKEND_URL}/chat?user_id=${userId}`, {
+    res = await authenticatedFetch(`${BACKEND_URL}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

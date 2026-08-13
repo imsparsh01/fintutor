@@ -2,9 +2,11 @@ import logging
 import uuid
 from datetime import date
 from typing import Literal
+from urllib.parse import parse_qsl, urlencode
 
 import anthropic
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, StrictBool
 from sqlalchemy import text
@@ -12,6 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.session import engine, get_db
+from app.auth import verify_supabase_access_token
 from app.services.baseline import assemble_baseline
 from app.services.budget import compute_budget
 from app.services.consolidated import compute_consolidated
@@ -84,6 +87,32 @@ from app.services.teaching import TeachingEngineNotConfigured, ask_teaching_engi
 logger = logging.getLogger("fintutor.health")
 
 app = FastAPI(title="FinTutor API")
+
+PUBLIC_PATHS = {"/health", "/health/db", "/docs", "/docs/oauth2-redirect", "/openapi.json"}
+app.state.token_verifier = verify_supabase_access_token
+
+
+@app.middleware("http")
+async def authenticated_ownership(request: Request, call_next):
+    """Verify Supabase identity and make it authoritative for every protected route."""
+    if request.method == "OPTIONS" or request.url.path in PUBLIC_PATHS:
+        return await call_next(request)
+
+    authorization = request.headers.get("authorization", "")
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        return JSONResponse(status_code=401, content={"detail": "Authentication required"})
+    try:
+        user_id = await request.app.state.token_verifier(token)
+    except HTTPException as exc:
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+    # Existing route/service signatures remain stable, but any caller-selected user_id
+    # is discarded and replaced before FastAPI parses parameters.
+    query = [(key, value) for key, value in parse_qsl(request.scope["query_string"].decode()) if key != "user_id"]
+    query.append(("user_id", str(user_id)))
+    request.scope["query_string"] = urlencode(query).encode()
+    return await call_next(request)
 
 # D-095: CORS for local web-preview dev only. The app was built for native RN (no CORS),
 # but the mockup-match rebuild is being verified in a browser (localhost:8081 -> :8000),

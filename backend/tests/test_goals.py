@@ -3,7 +3,6 @@ import uuid
 from datetime import date
 from unittest.mock import MagicMock
 
-from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -14,6 +13,7 @@ from app.db.session import Base, get_db
 from app.main import app
 from app.models import Goal, GoalFunding, Holding
 from app.services.goals import GoalFundingValidationError, _validate_funding, update_goal_funding
+from tests.auth_helpers import authenticated_client
 
 
 @compiles(JSONB, "sqlite")
@@ -89,7 +89,7 @@ class GoalFundingApiTests(unittest.TestCase):
             yield self.db
 
         app.dependency_overrides[get_db] = override_db
-        self.client = TestClient(app)
+        self.client = authenticated_client(app, self.user_id)
 
     def tearDown(self) -> None:
         app.dependency_overrides.clear()

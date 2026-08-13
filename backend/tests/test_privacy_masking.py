@@ -5,7 +5,7 @@ import uuid
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from fastapi.testclient import TestClient
+from tests.auth_helpers import authenticated_client
 
 from app.db.session import get_db
 from app.main import app
@@ -180,7 +180,7 @@ class PrivacyMaskingTests(unittest.TestCase):
         handler = logging.StreamHandler(log_stream)
         logging.getLogger().addHandler(handler)
         try:
-            response = TestClient(app).post(
+            response = authenticated_client(app, uuid.UUID(int=1)).post(
                 f"/chat?user_id={user_id}",
                 json={"question": f"Tell me about {display}", "onboarding": True, "onboarding_last_ai_message": f"Earlier {display}"},
             )
@@ -211,7 +211,7 @@ class PrivacyMaskingTests(unittest.TestCase):
         teaching.side_effect = lambda baseline, _question: f"{baseline['holdings'][0]['alias']} for {baseline['goals'][0]['goal']}"
         app.dependency_overrides[get_db] = lambda: MagicMock()
         try:
-            response = TestClient(app).post(f"/chat?user_id={uuid.uuid4()}", json={"question": "Explain Loan-A"})
+            response = authenticated_client(app, uuid.UUID(int=1)).post(f"/chat?user_id={uuid.uuid4()}", json={"question": "Explain Loan-A"})
         finally:
             app.dependency_overrides.clear()
         self.assertEqual(response.status_code, 200)
@@ -235,7 +235,7 @@ class PrivacyMaskingTests(unittest.TestCase):
         teaching.side_effect = lambda baseline, _question: baseline["goals"][0]["goal"]
         app.dependency_overrides[get_db] = lambda: MagicMock()
         try:
-            response = TestClient(app).post(
+            response = authenticated_client(app, uuid.UUID(int=1)).post(
                 f"/chat?user_id={uuid.uuid4()}", json={"question": "Explain my goal"}
             )
         finally:
@@ -265,7 +265,7 @@ class PrivacyMaskingTests(unittest.TestCase):
             for holdings, baseline in cases:
                 list_holdings.return_value = holdings
                 assemble.return_value = baseline
-                response = TestClient(app).post(f"/chat?user_id={uuid.uuid4()}", json={"question": "safe question"})
+                response = authenticated_client(app, uuid.UUID(int=1)).post(f"/chat?user_id={uuid.uuid4()}", json={"question": "safe question"})
                 self.assertEqual(response.status_code, 422)
         finally:
             app.dependency_overrides.clear()
@@ -279,7 +279,7 @@ class PrivacyMaskingTests(unittest.TestCase):
         list_holdings.return_value = [{"id": str(uuid.uuid4()), "alias": "FTM_injected", "display_name": None, "product_type": "home_loan", "characteristics": {}}]
         app.dependency_overrides[get_db] = lambda: MagicMock()
         try:
-            response = TestClient(app).post(f"/chat?user_id={uuid.uuid4()}", json={"question": "safe question"})
+            response = authenticated_client(app, uuid.UUID(int=1)).post(f"/chat?user_id={uuid.uuid4()}", json={"question": "safe question"})
         finally:
             app.dependency_overrides.clear()
         self.assertEqual(response.status_code, 422)

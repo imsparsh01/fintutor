@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? 'http://localhost:8000';
+import { authenticatedFetch, BACKEND_URL } from './backend';
 
 export interface IncomeSource {
   label: string;
@@ -17,7 +17,7 @@ export interface IncomeRecord {
 }
 
 export async function fetchIncome(userId: string): Promise<IncomeRecord[]> {
-  const res = await fetch(`${BACKEND_URL}/income?user_id=${userId}`);
+  const res = await authenticatedFetch(`${BACKEND_URL}/income`);
   if (!res.ok) {
     throw new Error(`Backend responded ${res.status}`);
   }
@@ -25,7 +25,7 @@ export async function fetchIncome(userId: string): Promise<IncomeRecord[]> {
 }
 
 export async function createIncome(userId: string, sources: IncomeSource[]): Promise<IncomeRecord> {
-  const res = await fetch(`${BACKEND_URL}/income?user_id=${userId}`, {
+  const res = await authenticatedFetch(`${BACKEND_URL}/income`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ sources }),
@@ -41,7 +41,7 @@ export async function updateIncome(
   incomeId: string,
   sources: IncomeSource[]
 ): Promise<IncomeRecord> {
-  const res = await fetch(`${BACKEND_URL}/income/${incomeId}?user_id=${userId}`, {
+  const res = await authenticatedFetch(`${BACKEND_URL}/income/${incomeId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ sources }),
