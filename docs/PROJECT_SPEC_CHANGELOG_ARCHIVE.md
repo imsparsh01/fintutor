@@ -10,6 +10,15 @@
 
 ---
 
+- v3.6 (05-Aug-2026) — **D-078: AI-surfaced holding-capture mechanism confirmed, queued as BQ-039.** Owner
+  confirmed both forks: extraction via a second narrow Haiku call (same shape as D-072's `deepen_classifier`,
+  not a new architectural pattern) and an explicit confirm-card UI gate before any write (never auto-create
+  from free text). Builds D-002's never-implemented "Haiku for reconciliation" half and D-012's still-missing
+  primary capture path. Also two §8 housekeeping fixes (no new decisions): the `deepen` selection-logic item
+  checked off as resolved (D-071/D-072, already built 04-Aug-2026 but never marked here), and the
+  second-fixture item checked off with its `savings_balance` sub-question split out as its own still-open
+  line (unchanged status, just no longer buried inside a resolved item).
+
 - v3.5 (05-Aug-2026) — **§8 UX-principles item RESOLVED (D-075, D-076, D-077).** The corrected UX
   principles section D-031 anticipated is now fully extracted in `PRODUCT_PRINCIPLES.md`: P1's provenance
   note patched to reflect D-031's manual/browse secondary path (D-075); new P8, a holding family's section

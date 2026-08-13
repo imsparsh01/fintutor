@@ -16,6 +16,15 @@ Rules for this file:
 
 ## READY — pick one of these
 
+### BQ-099 — Whole-account deletion integration — READY
+
+Traces to D-119/D-121/D-137/D-139/D-140. Add a user-controlled deletion surface with fresh authentication,
+scope/backup disclosure, and a separate final confirmation. Implement an authenticated, idempotent backend
+operation that deletes every active per-user record before deleting the Supabase Auth account, succeeds only
+when both stages finish, and safely retries an empty-account/Auth-failure state. Clear account-scoped local
+state and sign out on success. Verify complete table coverage, cross-account denial, repeated requests,
+failures at each stage, the seven-day backup wording, and the restore-safety runbook.
+
 ## BLOCKED — do not start
 
 ### BQ-091 — Restore or supersede mandatory gstack plan/review gates — BLOCKED
@@ -59,13 +68,6 @@ design that preserves the actual due day in longer months.
 
 Traces to D-105/D-128. Both were approved, but require a supported financial year, authoritative rule source,
 verification/update ownership, stale behavior and legal review before build.
-
-### BQ-099 — Whole-account deletion integration — BLOCKED ON D-010
-
-Traces to D-119/D-121/D-137/D-139. Service-level deletion exists in parts and authenticated ownership is
-settled, but no whole-account deletion entry point invokes all required erasure. Define confirmation,
-failure and provider/Auth deletion sequencing first. The build must delete active data immediately, disclose
-the seven-day encrypted-backup window, and prevent a restoration from resurrecting deleted accounts.
 
 ### BQ-100 — Schedule progression retention pruning — BLOCKED ON DEPLOYMENT ARCHITECTURE
 

@@ -18,51 +18,6 @@
 ---
 
 
-### D-119 — Assessment v2 persistence, privacy, eligibility, and migration package approved
-- **Tier:** 3, owner-approved. “Store only normalized category codes and structural completion state—never
-  raw answers or dialogue.” Approves 18+ initial release, a separate versioned assessment table,
-  minimum-context Arya exposure, backend-authoritative completion, user control/deletion, and
-  grandfathered non-inference migration. Full write-up:
-  `docs/features/onboarding/decisions/D-119-assessment-v2-persistence-privacy-package.md`.
-- **Date:** 12-Aug-2026
-
-### D-121 — Progression instrumentation, privacy, retention, and rebuild package approved
-- **Tier:** 3, owner-approved. “An event records *that a qualifying action happened*, not what it was
-  worth.” Approves an append-only event ledger with derived rollups and summary, essential first-party
-  consent posture with no new consent surface, 400-day raw retention, a never-decreasing displayed-points
-  floor, fixed Asia/Kolkata day boundaries, and D-119's onboarding credit as the only historical backfill.
-  Unblocks BQ-069. Full write-up:
-  `docs/features/progression/decisions/D-121-progression-instrumentation-privacy-package.md`.
-- **Date:** 12-Aug-2026
-
-### D-122 — Customer-outcome gaps become MVP exit gates
-- **Tier:** 3, owner-directed. “Feature-complete is not MVP-complete.” Requires resolved activation,
-  real-user evidence, connected value loop, visible progression/return value, launch trust/safety,
-  initial wedge, and distribution/business viability before external-user MVP readiness. Full write-up:
-  `docs/decisions/D-122-customer-outcome-mvp-exit-gates.md`.
-- **Date:** 12-Aug-2026
-
-### D-123 — Progression completion package approved
-- **Tier:** 3, owner-approved. “Awarding progress never creates a completion state or new product surface
-  by itself.” Defers teaching/recap emitters, preserves P9, and approves a Home summary plus hidden detail
-  screen with stage, continuous progress, gate explanations, recent attribution, and factual Expanding
-  milestones. Full write-up: `docs/features/progression/decisions/D-123-progression-completion-package.md`.
-- **Date:** 12-Aug-2026
-
-### D-124 — Activation test v1 and evidence thresholds
-- **Tier:** 2, REVIEW-FLAGGED. “Activation requires both value and comprehension.” Defines 12 moderated
-  sessions, a primary 8/12 personal-insight-within-five-minutes threshold, and independent continuation,
-  neutrality, trust, and subgroup gates. Full write-up:
-  `docs/features/activation/decisions/D-124-activation-test-v1.md`.
-- **Date:** 12-Aug-2026
-
-### D-125 — Complete and internally validate the approved MVP before external testing
-- **Tier:** 3, owner-decided. “The immediate bottleneck is therefore implementation fidelity and integration,
-  not participant recruitment.” Supersedes D-122/D-124 sequencing only: audit and build the approved MVP,
-  owner-validates it, then external activation testing begins. Full write-up:
-  `docs/decisions/D-125-internal-mvp-completion-before-external-testing.md`.
-- **Date:** 12-Aug-2026
-
 ### D-126 — Onboarding ends with an optional, user-chosen first action
 - **Tier:** 3, owner-decided. “The user needs direction after orientation but does not owe FinTutor a
   financial census before receiving value.” Preserves D-118/D-119's five-axis orientation, then offers
@@ -160,4 +115,11 @@
   expire within seven days, cannot be used normally, and a restore must reapply later deletions before the
   system serves users. Full write-up:
   `docs/decisions/D-139-seven-day-backup-retention-after-deletion.md`.
+- **Date:** 14-Aug-2026
+
+### D-140 — Whole-account deletion requires re-authentication and is retry-safe
+- **Tier:** 3, owner-decided. “Repeated requests must converge on the same fully deleted state.” A fresh
+  login and separate confirmation precede data-first erasure, backend-only Auth deletion, and success only
+  after both stages complete. Full write-up:
+  `docs/decisions/D-140-reauthenticated-retry-safe-whole-account-deletion.md`.
 - **Date:** 14-Aug-2026

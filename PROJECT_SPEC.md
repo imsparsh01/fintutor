@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.5, 14-Aug-2026)
+# FinTutor — Project Spec (v4.6, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -213,8 +213,8 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - [ ] Write the data privacy policy (D-010): model-boundary masking is settled by D-133 and MVP at-rest
       protection by D-138 (Supabase-managed encryption plus strict access/transport/network controls; no
       application-managed field encryption for MVP). D-139 caps recovery-only backup retention after active
-      deletion at seven days. Still needs the whole-account deletion contract, disclosure/export/provider
-      treatment, and legal review.
+      deletion at seven days. D-140 settles reauthenticated, data-first, retry-safe whole-account deletion.
+      Still needs disclosure/export, remaining provider treatment, and legal review.
 - [x] Write DECISION_PROTOCOL.md (D-017) — **COMPLETE at v1.0.** All six sections written: §1 taxonomy
       (retroactive classification of D-001–D-016, five categories), §2 tiers + six-trigger checklist +
       routing sequence, §3 four evaluation lenses, §4 conflict/precedence + supersession marker + the
@@ -304,6 +304,9 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.6 (14-Aug-2026) — **D-140 whole-account deletion contract approved.** Deletion requires fresh
+  authentication and a separate final confirmation, removes active application data before the Auth account,
+  is idempotent and retry-safe, and reports success only after both stages finish. BQ-099 is READY.
 - v4.5 (14-Aug-2026) — **D-139 seven-day recovery-backup boundary approved.** Account deletion removes
   active data immediately; encrypted recovery-only copies expire within seven days and cannot be used for
   ordinary purposes. Any restore must reapply later deletions before serving users, and the privacy notice
@@ -358,11 +361,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   idle cash need a formal 9th D-013 type?) is closed: it's schema-exempt, being an instance of D-031's
   already-deferred "Cash & bank" family rather than a gap inside D-013's three-MVP-family taxonomy. No new
   type, no build work, no fixture change — owner-confirmed.
-- v3.6 (05-Aug-2026) — **D-078: AI-surfaced holding-capture mechanism confirmed, queued as BQ-039.** Owner
-  confirmed both forks: extraction via a second narrow Haiku call (same shape as D-072's `deepen_classifier`,
-  not a new architectural pattern) and an explicit confirm-card UI gate before any write (never auto-create
-  from free text). Builds D-002's never-implemented "Haiku for reconciliation" half and D-012's still-missing
-  primary capture path. Also two §8 housekeeping fixes (no new decisions): the `deepen` selection-logic item
-  checked off as resolved (D-071/D-072, already built 04-Aug-2026 but never marked here), and the
-  second-fixture item checked off with its `savings_balance` sub-question split out as its own still-open
-  line (unchanged status, just no longer buried inside a resolved item).
