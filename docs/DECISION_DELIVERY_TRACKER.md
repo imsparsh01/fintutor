@@ -45,7 +45,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-134 | BLOCKED → BQ-087 | Dedicated minimal financial-context record | D3 authenticated ownership and D-010 privacy/deletion/backup contract |
 | D-129 | SHIPPED → BQ-101 | Align recurring-contribution timing and disclosures | Owner reconfirmed Option A; completed 14-Aug-2026 |
 | D-005/D-008 | BLOCKED → BQ-092 | Confirm and implement the production hosting/deployment target | Owner confirms whether Supabase “hosting” still governs FastAPI or is superseded |
-| D-005/D-008/D-052 | BLOCKED → BQ-089 | Validate Supabase JWT and derive request ownership | Owner settles D3 auth boundary |
+| D-005/D-008/D-052/D-137 | READY → BQ-089 | Validate Supabase JWT and derive request ownership | Owner approved token-derived ownership on 14-Aug-2026 |
 | D-062/D-135 | SHIPPED → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Completed 14-Aug-2026 |
 
 ## Current-session decisions

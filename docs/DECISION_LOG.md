@@ -139,3 +139,11 @@
   only suspicious traces, and persist only open exceptions. Full write-up:
   `docs/decisions/D-136-token-lean-historical-delivery-audit.md`.
 - **Date:** 14-Aug-2026
+
+### D-137 — Backend ownership is derived from a verified Supabase JWT
+- **Tier:** 3, owner-decided. “For every user-owned backend resource, identity comes from verified
+  authentication context, never from a caller-selected user identifier.” The backend verifies each
+  protected request's Supabase token and uses its subject as the sole ownership identity; multiple test
+  accounts remain supported. Full write-up:
+  `docs/decisions/D-137-supabase-jwt-derived-backend-ownership.md`.
+- **Date:** 14-Aug-2026

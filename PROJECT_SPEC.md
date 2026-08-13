@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.1, 12-Aug-2026)
+# FinTutor — Project Spec (v4.3, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -123,6 +123,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
               NEVER sent to the LLM; LLM only ever sees alias + characteristics)
 ```
 - Backend holds the API key; phone NEVER calls Anthropic directly.
+- **Authenticated ownership (D-137).** Every protected backend request carries the Supabase access token;
+  the backend verifies it and derives the authoritative user identity from the token subject. A
+  caller-supplied `user_id` never grants or selects ownership. Intentionally public routes containing no
+  user data may remain unauthenticated.
 - LLM is stateless: relevant profile slice is re-sent as context on every call.
 - Teaching = context engineering (system prompt + user profile), NOT fine-tuning.
 - Cost levers designed in from day 1: prompt caching on system prompt + static rules; Haiku for reconciliation.
@@ -298,6 +302,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.3 (14-Aug-2026) — **D-137 authenticated backend ownership approved.** Protected backend requests will
+  carry a Supabase access token; the backend verifies it and derives ownership solely from the verified
+  subject rather than a client-selected `user_id`. Multiple test accounts remain supported, with
+  cross-account isolation required in BQ-089.
 - v4.2 (12-Aug-2026) — **D-118/D-119 onboarding v2 contract and privacy/persistence boundary approved.**
   Initial release is 18+; the five optional axes store only normalized categories in a separate versioned
   assessment table; raw dialogue is not persisted; backend completion is cross-device authoritative; and

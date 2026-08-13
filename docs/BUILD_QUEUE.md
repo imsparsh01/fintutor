@@ -16,13 +16,15 @@ Rules for this file:
 
 ## READY — pick one of these
 
+### BQ-089 — Enforce Supabase JWT ownership across backend routes — READY
+
+Traces to D-005/D-008/D-052/D-137. Validate the Supabase bearer token on every protected backend request,
+derive the authoritative user identity from its verified subject, remove caller authority over `user_id`,
+and update every frontend API wrapper. Preserve intentionally public non-user-data routes. Verify with two
+distinct authenticated identities, including cross-account read/write/delete denial and invalid/expired-token
+failures.
+
 ## BLOCKED — do not start
-
-### BQ-089 — Enforce Supabase JWT ownership across backend routes — BLOCKED ON D3
-
-Traces to D-005/D-008/D-052. Frontend authentication exists, but backend routes trust caller-supplied UUIDs.
-After the owner approves D3, validate the Supabase access token, derive the subject server-side, remove
-caller authority over ownership, and update every client wrapper. Do not infer the exact boundary here.
 
 ### BQ-091 — Restore or supersede mandatory gstack plan/review gates — BLOCKED
 
