@@ -19,17 +19,26 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-010 | BLOCKED | Final data privacy policy | Owner decisions on at-rest protection, account deletion and backup retention; legal review |
 | D-022 | DEFERRED | Conversation memory | Storage, retrieval, retention and deletion policy approved; explicitly post-MVP |
 | D-067 | DEFERRED | Automatic comparison-trigger detection | Real usage shows users ask decision-shaped questions without the explicit trigger |
+| D-095 | DEFERRED | Tighten localhost CORS and verify the dev-auth bypass is absent | Before first non-development deployment |
+| D-107 | BLOCKED → BQ-091 | Restore or supersede mandatory gstack plan/review gates | Prove compatible plan + review invocations, or owner approves a manual fallback |
+| D-119 | READY → BQ-088 | Assessment context view/change/clear UI | Backend endpoints already exist; bounded frontend delivery |
 | D-120 | NO_BUILD | Draft autonomous-pipeline design is not an approved decision | Four owner choices remain; create a new decision if approved |
+| D-123 | DEFERRED | Meaningful non-gating recap interaction and `recap_completed` emitter | Approve a recap interaction/completion contract consistent with P9 |
+| D-123 | DEFERRED | Progression profile-coverage dimension | Approve an evidence-backed denominator |
 | D-122/D-124/D-125 | BLOCKED → BQ-072 | Customer-outcome MVP exit-gate programme | Complete approved MVP, owner simulator validation, then external activation testing |
 | D-128 | BLOCKED → BQ-085 | Goal Affordability calculator | Exact input/formula/disclosure/edge-case contract |
 | D-131/D-132 | BLOCKED → BQ-086 | Term-insurance Coverage scenarios | Exact component formula/source/validation/disclosure contract; counsel before external launch |
 | D-134 | BLOCKED → BQ-087 | Dedicated minimal financial-context record | D3 authenticated ownership and D-010 privacy/deletion/backup contract |
+| D-005/D-008 | BLOCKED → BQ-092 | Confirm and implement the production hosting/deployment target | Owner confirms whether Supabase “hosting” still governs FastAPI or is superseded |
+| D-005/D-008/D-052 | BLOCKED → BQ-089 | Validate Supabase JWT and derive request ownership | Owner settles D3 auth boundary |
+| D-062/D-135 | READY → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Mechanical skill-maintenance task |
 
 ## Current-session decisions
 
 | Decision | Disposition | Evidence |
 |---|---|---|
 | D-135 | SHIPPED → governance artifact | This tracker plus the D-135 session-close rule in `CLAUDE.md` |
+| D-136 | SHIPPED → governance artifact | Exception-only historical audit method and recovered obligations in this tracker |
 
 ## Historical reconciliation
 

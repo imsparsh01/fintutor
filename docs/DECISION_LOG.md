@@ -132,3 +132,10 @@
   SUPERSEDED before the session closes. Full write-up:
   `docs/decisions/D-135-mandatory-decision-delivery-disposition.md`.
 - **Date:** 14-Aug-2026
+
+### D-136 — Historical delivery audits remain exception-only and token-lean
+- **Tier:** 3, owner-confirmed. “Coverage is established by searchable traces plus explicit exceptions; it
+  does not require duplicating closed history into the live context window.” Audits index first, inspect
+  only suspicious traces, and persist only open exceptions. Full write-up:
+  `docs/decisions/D-136-token-lean-historical-delivery-audit.md`.
+- **Date:** 14-Aug-2026

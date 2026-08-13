@@ -16,7 +16,39 @@ Rules for this file:
 
 ## READY — pick one of these
 
+### BQ-088 — Assessment context view/change/clear UI
+
+Traces to D-119. The backend already provides post-handle update and clear-context routes, but the app has
+no completed-assessment management surface. Add a bounded user-facing route to view the normalized context,
+change approved normalized answers, and clear it without exposing internal IDs/timestamps or raw data. Use
+the existing endpoints and approved vocabularies; do not add schema or change onboarding progression rules.
+
+### BQ-090 — Synchronize the session-close skill with D-135
+
+Traces to D-062/D-135. Update the existing session-close skill so it performs the mandatory decision-delivery
+disposition check before archiving/commit/push. This is maintenance of an already-adopted skill, not a new
+tool or workflow. Verify its instructions match the live `CLAUDE.md` close sequence.
+
 ## BLOCKED — do not start
+
+### BQ-089 — Enforce Supabase JWT ownership across backend routes — BLOCKED ON D3
+
+Traces to D-005/D-008/D-052. Frontend authentication exists, but backend routes trust caller-supplied UUIDs.
+After the owner approves D3, validate the Supabase access token, derive the subject server-side, remove
+caller authority over ownership, and update every client wrapper. Do not infer the exact boundary here.
+
+### BQ-091 — Restore or supersede mandatory gstack plan/review gates — BLOCKED
+
+Traces to D-107. The operating rules call the gates mandatory, while several sessions report the installed
+commands absent or failing. Unblock by either proving one compatible plan and review invocation, or by an
+owner decision superseding the tool-specific mandate with an explicit manual fallback.
+
+### BQ-092 — Production hosting/deployment target — BLOCKED ON OWNER CONFIRMATION
+
+Traces to D-005/D-008/D-041. Supabase database and frontend auth are present, but no repository artifact
+proves where FastAPI is hosted. Confirm whether the old “Supabase hosting” wording still governs the backend
+or must be superseded, then create the bounded deployment implementation. Before any non-development deploy,
+also close D-095's CORS/dev-bypass cleanup.
 
 ### BQ-085 — Goal Affordability calculator — BLOCKED ON FORMULA CONTRACT
 
