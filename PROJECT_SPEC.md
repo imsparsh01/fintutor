@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.3, 14-Aug-2026)
+# FinTutor — Project Spec (v4.4, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -210,9 +210,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       available as design-philosophy inspiration for `app/`'s real UI work — explicit-ask only, not
       auto-triggered; see its `PROVENANCE.md` for the applicability caveat and invocation policy before
       using it.
-- [ ] Write the data privacy policy (D-010): what's masked before reaching the LLM (product names, and
-      likely PII like full name/PAN/phone), vs. what's encrypted/protected at rest in Postgres. Needs a
-      decision on retention and account-deletion behavior too.
+- [ ] Write the data privacy policy (D-010): model-boundary masking is settled by D-133 and MVP at-rest
+      protection by D-138 (Supabase-managed encryption plus strict access/transport/network controls; no
+      application-managed field encryption for MVP). Still needs backup retention, account deletion,
+      disclosure/export/provider treatment, and legal review.
 - [x] Write DECISION_PROTOCOL.md (D-017) — **COMPLETE at v1.0.** All six sections written: §1 taxonomy
       (retroactive classification of D-001–D-016, five categories), §2 tiers + six-trigger checklist +
       routing sequence, §3 four evaluation lenses, §4 conflict/precedence + supersession marker + the
@@ -302,6 +303,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.4 (14-Aug-2026) — **D-138 MVP at-rest protection approved.** Supabase-managed database and backup
+  encryption will be paired with JWT ownership, TLS, production SSL enforcement, applicable network
+  restrictions, secret isolation and security tests. FinTutor will not manage separate field-encryption keys
+  for the MVP; backup duration, deletion, disclosure/export and legal review remain open under D-010.
 - v4.3 (14-Aug-2026) — **D-137 authenticated backend ownership approved.** Protected backend requests will
   carry a Supabase access token; the backend verifies it and derives ownership solely from the verified
   subject rather than a client-selected `user_id`. Multiple test accounts remain supported, with
@@ -365,12 +370,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   confirmed before each write, per session 2026-08-05a. Not a new product decision — this closes an
   already-decided backlog item; §8 checkbox applied on owner confirmation per this section's own edit
   rule.
-- v3.4 (04-Aug-2026) — **§6 note only — no scope change.** ESOP's characteristics field schema note
-  updated from "not yet designed" to resolved, reflecting D-066 (applies D-013's split-vs-merge test to
-  the field-list gap D-055 left open — single type, `grant_type` distinguishes options from RSUs). Not a
-  new product decision on top of D-055/D-066 — owner-confirmed before applying, per §8's own edit rule.
-- v3.3 (04-Aug-2026) — **§8 note only — no scope change.** Pointer added to the UX-principles §8 item
-  flagging `.claude/skills/design-taste-frontend/` (D-062/D-063/D-064: Claude Code Skills adopted this
-  session, self-authored and vendored categories, this one a vendored frontend design-taste skill,
-  explicit-ask only) as available inspiration for when the aesthetic layer is actually designed. Not a
-  product decision — proposed and owner-confirmed before applying, per §8's own edit rule.

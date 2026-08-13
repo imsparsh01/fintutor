@@ -10,6 +10,16 @@
 
 ---
 
+- v3.4 (04-Aug-2026) — **§6 note only — no scope change.** ESOP's characteristics field schema note
+  updated from "not yet designed" to resolved, reflecting D-066 (applies D-013's split-vs-merge test to
+  the field-list gap D-055 left open — single type, `grant_type` distinguishes options from RSUs). Not a
+  new product decision on top of D-055/D-066 — owner-confirmed before applying, per §8's own edit rule.
+- v3.3 (04-Aug-2026) — **§8 note only — no scope change.** Pointer added to the UX-principles §8 item
+  flagging `.claude/skills/design-taste-frontend/` (D-062/D-063/D-064: Claude Code Skills adopted this
+  session, self-authored and vendored categories, this one a vendored frontend design-taste skill,
+  explicit-ask only) as available inspiration for when the aesthetic layer is actually designed. Not a
+  product decision — proposed and owner-confirmed before applying, per §8's own edit rule.
+
 - v3.1 (04-Aug-2026) — **Decision 2 resolved (D-059).** Per-item management depth: Path C adopted — full
   per-field edit, delete, and `product_type` recategorization via a standard UI, not routed exclusively
   through AI conversation. Chosen over view-only/delete-only alternatives because the chat surface

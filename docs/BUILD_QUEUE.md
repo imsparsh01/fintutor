@@ -26,10 +26,11 @@ owner decision superseding the tool-specific mandate with an explicit manual fal
 
 ### BQ-092 — Production hosting/deployment target — BLOCKED ON OWNER CONFIRMATION
 
-Traces to D-005/D-008/D-041. Supabase database and frontend auth are present, but no repository artifact
+Traces to D-005/D-008/D-041/D-138. Supabase database and frontend auth are present, but no repository artifact
 proves where FastAPI is hosted. Confirm whether the old “Supabase hosting” wording still governs the backend
 or must be superseded, then create the bounded deployment implementation. Before any non-development deploy,
-also close D-095's CORS/dev-bypass cleanup.
+also close D-095's CORS/dev-bypass cleanup and verify database SSL enforcement plus applicable network
+restrictions.
 
 ### BQ-093 — Complete in-context AI surfacing coverage — BLOCKED ON PAIRING CONTENT
 

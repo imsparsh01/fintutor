@@ -147,3 +147,10 @@
   accounts remain supported. Full write-up:
   `docs/decisions/D-137-supabase-jwt-derived-backend-ownership.md`.
 - **Date:** 14-Aug-2026
+
+### D-138 — MVP uses Supabase-managed at-rest protection with strict access controls
+- **Tier:** 3, owner-decided. “FinTutor will not introduce its own field-encryption keys for the MVP.”
+  Supabase-managed database/backup encryption is paired with JWT ownership, TLS, production SSL enforcement,
+  network restrictions once hosting is known, secret isolation, and security tests. Full write-up:
+  `docs/decisions/D-138-supabase-managed-at-rest-protection-for-mvp.md`.
+- **Date:** 14-Aug-2026

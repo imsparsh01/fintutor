@@ -16,7 +16,8 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | Decision | Disposition | Deliverable | Blocker / transition |
 |---|---|---|---|
 | D-009 | DEFERRED | India securities/fintech legal review | Before public launch |
-| D-010 | BLOCKED | Final data privacy policy | Owner decisions on at-rest protection, account deletion and backup retention; legal review |
+| D-010 | BLOCKED | Final data privacy policy | At-rest protection settled by D-138; owner decisions on account deletion, backup retention, disclosure/export, provider treatment; legal review |
+| D-138 | BLOCKED → BQ-092 | Verify production SSL enforcement and applicable database network restrictions | Production backend hosting target must be settled first; JWT ownership already shipped in BQ-089 |
 | D-012/D-051 | BLOCKED → BQ-093 | Complete in-context AI surfacing coverage across the MVP taxonomy | Owner-approved pairing content/precedence beyond loan→term insurance; cold surfacing stays out |
 | D-022 | DEFERRED | Conversation memory | Storage, retrieval, retention and deletion policy approved; explicitly post-MVP |
 | D-031/D-079 | DEFERRED | Real estate, Cash & bank, and Alternatives holding families | Explicit post-MVP unpark/priority decision |
