@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { ConsolidatedTotalsCard } from '../components/ConsolidatedTotalsCard';
+import { AccountDeletionModal } from '../components/AccountDeletionModal';
 import { ProgressBar } from '../components/ProgressBar';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
@@ -68,6 +69,7 @@ export function ConsolidatedScreen() {
   const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
   const [showAssessmentInvite, setShowAssessmentInvite] = useState(false);
   const [progression, setProgression] = useState<ProgressionSummary | null>(null);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -253,6 +255,10 @@ export function ConsolidatedScreen() {
       <Pressable style={styles.signOut} onPress={() => supabase?.auth.signOut()}>
         <Text style={styles.signOutText}>Sign out</Text>
       </Pressable>
+      <Pressable style={styles.deleteAccount} onPress={() => setDeletingAccount(true)}>
+        <Text style={styles.deleteAccountText}>Delete my account</Text>
+      </Pressable>
+      <AccountDeletionModal visible={deletingAccount} onClose={() => setDeletingAccount(false)} />
     </ScrollView>
   );
 }
@@ -434,4 +440,6 @@ const styles = StyleSheet.create({
   personalizationLinkText: { fontFamily: font.uiMedium, fontSize: 13, color: colors.tutor },
   signOut: { paddingVertical: spacing.md, marginTop: spacing.xxl, alignItems: 'center' },
   signOutText: { fontFamily: font.ui, fontSize: 13, color: colors.inkMuted },
+  deleteAccount: { paddingVertical: spacing.md, alignItems: 'center' },
+  deleteAccountText: { fontFamily: font.ui, fontSize: 13, color: '#8B2E2E' },
 });

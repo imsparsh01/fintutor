@@ -66,6 +66,8 @@ POST /chat                      → assemble_baseline → ask_teaching_engine �
                                   body: {question, deepen_alias?, onboarding?, onboarding_track_hint?,
                                          onboarding_last_ai_message?, learning_topic?}
                                   ordinary chat may add derived `learning_context`; legacy onboarding never does
+POST /account/delete            → password reauthentication → delete every active user row → permanently
+                                  delete Supabase Auth user; idempotent data-first sequencing
 ```
 
 ## Services → what each computes
@@ -136,6 +138,8 @@ services/tax_saving_room.py (~60) 80C room left under old/new regime (D-016). No
                                   blank/unknown premium frequency excluded; six-month variants count ×2/year.
 services/baseline.py (75)       Assembles prompt context dict (holdings, income, goals, gaps, deepen).
 services/discretionary_categories.py (32) CRUD for user-labelled discretionary spend buckets.
+services/account_deletion.py    Reauthenticates against Supabase, deletes the complete owned-model registry
+                                 in one DB transaction, then calls the server-only Auth Admin deletion API.
 ```
 
 ## DB Models (all in `backend/app/models/`)

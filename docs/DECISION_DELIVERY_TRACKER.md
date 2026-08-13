@@ -18,7 +18,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-009 | DEFERRED | India securities/fintech legal review | Before public launch |
 | D-010 | BLOCKED | Final data privacy policy | At-rest, backup retention and account deletion settled by D-138–D-140; owner decisions on disclosure/export and remaining provider treatment; legal review |
 | D-138 | BLOCKED → BQ-092 | Verify production SSL enforcement and applicable database network restrictions | Production backend hosting target must be settled first; JWT ownership already shipped in BQ-089 |
-| D-139/D-140 | READY → BQ-099 | Reauthenticated, retry-safe whole-account deletion with seven-day backup treatment | Contract approved 14-Aug-2026 |
+| D-139/D-140 | SHIPPED → BQ-099 | Reauthenticated, retry-safe whole-account deletion with seven-day backup treatment | Completed 14-Aug-2026 |
 | D-012/D-051 | BLOCKED → BQ-093 | Complete in-context AI surfacing coverage across the MVP taxonomy | Owner-approved pairing content/precedence beyond loan→term insurance; cold surfacing stays out |
 | D-022 | DEFERRED | Conversation memory | Storage, retrieval, retention and deletion policy approved; explicitly post-MVP |
 | D-031/D-079 | DEFERRED | Real estate, Cash & bank, and Alternatives holding families | Explicit post-MVP unpark/priority decision |
@@ -35,7 +35,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-107 | BLOCKED → BQ-091 | Restore or supersede mandatory gstack plan/review gates | Prove compatible plan + review invocations, or owner approves a manual fallback |
 | D-117 | DEFERRED | Progression pacing simulation | Before external launch; test light/frequent paths and single-feature dominance |
 | D-119 | SHIPPED → BQ-088 | Assessment context view/change/clear UI | Completed 14-Aug-2026 |
-| D-119/D-121 | READY → BQ-099 | Whole-account deletion integration for assessment/progression | D-137/D-139/D-140 contracts approved |
+| D-119/D-121 | SHIPPED → BQ-099 | Whole-account deletion integration for assessment/progression | Completed 14-Aug-2026 |
 | D-120 | NO_BUILD | Draft autonomous-pipeline design is not an approved decision | Four owner choices remain; create a new decision if approved |
 | D-123 | DEFERRED | Meaningful non-gating recap interaction and `recap_completed` emitter | Approve a recap interaction/completion contract consistent with P9 |
 | D-123 | DEFERRED | Progression profile-coverage dimension | Approve an evidence-backed denominator |

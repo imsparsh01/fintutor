@@ -16,6 +16,11 @@ from sqlalchemy.orm import Session
 from app.db.session import engine, get_db
 from app.auth import verify_supabase_access_token
 from app.services.baseline import assemble_baseline
+from app.services.account_deletion import (
+    delete_active_user_data,
+    delete_supabase_auth_user,
+    reauthenticate_password,
+)
 from app.services.budget import compute_budget
 from app.services.consolidated import compute_consolidated
 from app.services.deepen_classifier import classify_deepen
@@ -261,9 +266,27 @@ class AssessmentContextUpdate(BaseModel):
     value: str | list[str]
 
 
+class AccountDeletionRequest(BaseModel):
+    email: str
+    password: str
+    confirmation: Literal["DELETE MY ACCOUNT"]
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.post("/account/delete")
+async def delete_account(
+    body: AccountDeletionRequest,
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+) -> dict:
+    await reauthenticate_password(body.email, body.password, user_id)
+    delete_active_user_data(db, user_id)
+    await delete_supabase_auth_user(user_id)
+    return {"deleted": True}
 
 
 @app.get("/budget")

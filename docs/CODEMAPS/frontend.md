@@ -9,6 +9,11 @@ token as a bearer token. Every user-data API wrapper uses it and no longer sends
 `userId` may remain in UI/helper signatures where it keys installation-local state, but it has no backend
 ownership authority.
 
+`components/AccountDeletionModal.tsx` is the Home account-control surface: scope and seven-day backup
+disclosure → password reauthentication → separate irreversible confirmation. `lib/accountDeletion.ts`
+calls the protected deletion endpoint, signs out locally, and clears installation-local account state only
+after backend success.
+
 ## Entry: `app/App.tsx` → `app/navigation/RootNavigator.tsx`
 
 ## Navigation: `app/navigation/MainTabs.tsx`

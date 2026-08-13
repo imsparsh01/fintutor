@@ -12,6 +12,16 @@
 
 ---
 
+## BQ-099 — Whole-account deletion integration — DONE 14-Aug-2026
+
+Added a Home deletion surface with scope and seven-day backup disclosure, password reauthentication, and a
+separate final irreversible action. The authenticated backend deletes every current per-user table in a
+data-first transaction, then permanently deletes the same verified Supabase Auth subject through the
+server-only Admin API. Failure ordering and repeated empty-account retries are tested; frontend success signs
+out and clears local account state. Added a quarantine-only restore runbook that reconciles current active
+Auth IDs before cutover. Requires `SUPABASE_SERVICE_ROLE_KEY` in backend `.env`; it is never exposed to Expo.
+Verified with 326 backend tests, 36 frontend tests, TypeScript, Expo web export, and clean diff review.
+
 ## BQ-089 — Enforce Supabase JWT ownership across backend routes — DONE 14-Aug-2026
 
 Added a fail-closed authentication middleware that validates Supabase bearer tokens through Auth and replaces

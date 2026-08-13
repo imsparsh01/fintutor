@@ -23,6 +23,7 @@ class Settings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("SUPABASE_ANON_KEY", "EXPO_PUBLIC_SUPABASE_ANON_KEY"),
     )
+    supabase_service_role_key: str | None = None
 
 
 settings = Settings()

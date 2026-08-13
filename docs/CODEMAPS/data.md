@@ -148,3 +148,7 @@ Never sent to LLM:
 - Progression retention: raw events prune at 400 days; rollups and summary persist for account life;
   account deletion hard-deletes all three. The 400-day figure is only meaningful once D-010 settles backup
   retention.
+- BQ-099 whole-account deletion explicitly registers every current `user_id` model plus `goal_fundings`
+  before deleting the Supabase Auth user. Adding any per-user table requires adding it to this registry and
+  its coverage test. Recovery follows `docs/operations/ACCOUNT_DELETION_RESTORE_RUNBOOK.md`; never restore a
+  deleted identity directly into a serving environment.
