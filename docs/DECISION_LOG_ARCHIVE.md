@@ -796,3 +796,113 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   two numbers that bound your decision regardless of the valuation call." Full write-up:
   `docs/decisions/D-103-esop-wont-say-offer-half.md`.
 - **Date:** 11-Aug-2026
+
+### D-102 — Token-lean codemaps added; session-start protocol updated to use them
+- **Tier:** 1. Generates `docs/CODEMAPS/{architecture,backend,frontend,data}.md` covering all 48
+  source files in ~2K tokens total; `CLAUDE.md` step 2c now reads `architecture.md` always plus the
+  relevant layer maps per task, replacing cold source-file reads for orientation. Full write-up:
+  `docs/decisions/D-102-codemaps-session-orientation.md`.
+- **Date:** 11-Aug-2026
+
+### D-093 — D-014 unparked: execution subagents authorised, scoped to the D-086..D-092 reskin
+- **Tier:** 3, owner-decided. **Interprets D-014** by satisfying its unpark condition, not overriding it:
+  Phase 1 is validated (D-080) and the design decisions now exist (D-086..D-092), honouring D-014's own
+  "user decides; agents execute." Authorises presentation-layer work only. Explicitly NOT authorised for
+  any agent: backend/schema changes (verified unnecessary — every drawn data shape already has a service),
+  new dependencies (`react-native-reanimated`, `expo-font`, `@expo-google-fonts/*`), new screens beyond
+  the reskin, or deliberate-only files. Records the model-tiering pattern (Haiku/Sonnet/Opus by nature of
+  work). D-014's broader standing-capability ambition stays parked. Full write-up:
+  `docs/decisions/D-093-d014-unparked-execution-subagents.md`.
+- **Date:** 10-Aug-2026
+
+### D-108 — Scenario build conventions: the app never asserts a rate, and prefills are always editable
+- **Tier:** 1 — records existing precedent from CalculatorScreen, does not create a new principle.
+  "A return figure the app hands the user is a forecast the app then has to defend. Asking for it is
+  not." Applied across BQ-056's five scenarios: every rate is a user input (S-07 asks for two);
+  every prefill from real data is editable and labelled; RDs excluded from the deposit total because
+  their stored figure is an instalment, not a balance. S-01 follows D-106's wording (years/age to a
+  user-set target) over BUILD_QUEUE's compressed "shows SIP needed", which would have duplicated
+  C-04. Flags two things for the owner rather than deciding them: the "Inaction tax" label's P2
+  tension, and whether to elevate the no-asserted-rate rule to a named principle. Full write-up:
+  `docs/decisions/D-108-scenario-build-conventions.md`.
+- **Date:** 12-Aug-2026
+
+### D-107 — gstack sprint methodology adopted for all FinTutor build sessions
+- **Tier:** 3, owner-decided directly in conversation. "Plan and Review were the structural gaps — ad-hoc
+  rather than mandatory. D-107 closes both." garrytan/gstack cloned to `~/.claude/skills/gstack/`; text-based
+  skills (planning, review, retro) are live. Browser skills (/qa, /browse) pending `bun` install. Adapted
+  sprint: Plan (`/plan-eng-review`) mandatory before non-trivial code; Review (`/review`) mandatory before
+  committing; Test (`/qa`) best-effort for UI changes; Ship stays D-056 direct-merge (no PR). GBrain and
+  gstack team mode not adopted. Full write-up: `docs/decisions/D-107-gstack-sprint-methodology.md`.
+- **Date:** 11-Aug-2026
+
+### D-109 — The Health Score's 80C figure excludes a premium with no stated cadence
+- **Tier:** 2, owner-confirmed (escalated under the "calculations users rely on" hard stop). Resolves the
+  BQ-054 `taxUtil`-always-0 defect. The real question was not how to normalise free text — `_to_monthly`
+  already exists — but which of two *disagreeing* precedents to follow when `premium_frequency` is missing:
+  `tax_saving_room.py`'s lenient read-as-monthly, or `budget.py`'s strict Option C. Chose strict, because
+  "the failure modes are not symmetric ... A score that is too low invites the user to look; a score that is
+  falsely maxed tells them to stop looking." Accepted cost, logged in `docs/KNOWN_LIMITATIONS.md`: the Health
+  Score's 80C total and the "Check my 80C room" figure can disagree for a holding with no stated cadence.
+  Full write-up: `docs/decisions/D-109-80c-premium-annualisation-in-health-score.md`.
+- **Date:** 12-Aug-2026
+
+### D-110 — Portfolio and Health Score share a lightweight computed snapshot
+- **Tier:** 2, owner-confirmed. Interprets D-106. "It solves the actual risk—two surfaces calculating
+  from different fetches—without establishing a new app-wide state architecture for one feature."
+  Full write-up: `docs/decisions/D-110-health-score-lightweight-shared-snapshot.md`.
+- **Date:** 12-Aug-2026
+
+### D-111 — Home shows a tappable Portfolio Health grid, and “Health Score” is renamed
+- **Tier:** 3, owner-decided. Interprets D-105/D-106. “Showing the sub-scores on Home makes the aggregate
+  legible: the user can see the four inputs and enter the exact mechanism behind any one of them rather
+  than treating the single number as an unexplained verdict.” Full write-up:
+  `docs/decisions/D-111-portfolio-health-home-grid-and-naming.md`.
+- **Date:** 12-Aug-2026
+
+### D-112 — Both 80C calculations use strict cadence handling and recognise six-month premiums
+- **Tier:** 2, owner-confirmed. “Missing or unrecognised cadence is excluded; it is never silently treated
+  as monthly.” Both frontend and backend recognise an explicit six-month cadence as two payments per year.
+  Full write-up: `docs/decisions/D-112-80c-cadence-consistency-and-six-month-conversion.md`.
+- **Date:** 12-Aug-2026
+
+### D-113 — Primary navigation uses five named icons with full-width mobile layout
+- **Tier:** 1, owner-directed. “Hidden navigator destinations occupy no tab-bar layout width.” Adds a
+  coherent code-native icon set without a new dependency. Full write-up:
+  `docs/decisions/D-113-primary-navigation-iconography.md`.
+- **Date:** 12-Aug-2026
+
+### D-114 — Learning progression strategy adopted; real financial change is never game progress
+- **Tier:** 3, owner-decided. “Actual financial changes remain visible and factual, but never affect XP,
+  levels, streaks, rewards, celebrations, or cosmetic status.” Expands the target direction to students
+  through ~10-year working professionals and establishes learning/activity progression as a top priority.
+  Full write-up: `docs/features/progression/decisions/D-114-learning-progression-strategy-and-path-a-boundary.md`.
+- **Date:** 12-Aug-2026
+
+### D-115 — Standing execution-agent authorisation for already-decided work
+- **Tier:** 3, owner-decided. “This is standing mechanical authority, not delegated product judgment.”
+  Supersedes D-093’s reskin-only scope and fully unparks D-014, while preserving every hard stop and the
+  primary agent’s integration/review responsibility. Full write-up:
+  `docs/decisions/D-115-standing-execution-agent-authorisation.md`.
+- **Date:** 12-Aug-2026
+
+### D-116 — Five-stage learning journey adopted
+- **Tier:** 3, owner-decided. “You have meaningfully explored more of FinTutor, across more kinds of
+  learning activity and over time.” Adopts Discovering → Exploring → Connecting → Deepening → Expanding,
+  with continuous progress backed by Explore/Model/Reflect/Return behavior. Full write-up:
+  `docs/features/progression/decisions/D-116-five-stage-learning-journey.md`.
+- **Date:** 12-Aug-2026
+
+### D-117 — Learning progression event rules v1
+- **Tier:** 2, REVIEW-FLAGGED; decided autonomously while pre-build and reversible. “Context disclosure is
+  never rewarded by amount, completeness, financial value, or sensitivity.” Sets deterministic event
+  weights, a 60-point repeatable daily cap, breadth/return-day gates, and open-ended Expanding milestones.
+  Full write-up: `docs/features/progression/decisions/D-117-learning-progression-event-rules-v1.md`.
+- **Date:** 12-Aug-2026
+
+### D-118 — Five-axis onboarding assessment product contract
+- **Tier:** 2, REVIEW-FLAGGED. “Every user starts at Discovering.” Replaces the four-track product flow
+  with five optional self-reported axes, no amounts or public persona, equal progress for answer/skip, and
+  no inferred migration. Implementation awaits the Tier-3 persistence/privacy package. Full write-up:
+  `docs/features/onboarding/decisions/D-118-five-axis-onboarding-assessment-contract.md`.
+- **Date:** 12-Aug-2026
