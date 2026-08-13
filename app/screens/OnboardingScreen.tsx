@@ -18,86 +18,8 @@ import {
   type AssessmentQuestion,
   type AssessmentState,
 } from '../lib/onboardingAssessment';
+import { ASSESSMENT_QUESTIONS, EXCLUSIVE_EXPOSURE_VALUES } from '../lib/assessmentVocabulary';
 import type { OnboardingDestination } from '../navigation/MainTabs';
-
-type Option = { label: string; value: string };
-type QuestionContent = { eyebrow: string; title: string; helper: string; options: Option[]; multi?: boolean };
-
-const QUESTIONS: Record<AssessmentQuestion, QuestionContent> = {
-  immediate_intent: {
-    eyebrow: 'A useful starting point',
-    title: 'What would you like FinTutor to help you do first?',
-    helper: 'This only shapes where we begin. It is not a recommendation.',
-    options: [
-      { label: 'Understand the basics', value: 'learn_basics' },
-      { label: 'See how my financial picture fits together', value: 'connect_picture' },
-      { label: 'Understand something I already have', value: 'understand_existing' },
-      { label: 'Explore a goal or scenario', value: 'model_future' },
-      { label: 'Build a learning routine', value: 'build_routine' },
-      { label: 'Ask Arya a question', value: 'ask_arya' },
-      { label: 'Just look around', value: 'explore' },
-      { label: 'Prefer not to choose', value: 'undisclosed' },
-    ],
-  },
-  earning_context: {
-    eyebrow: 'Your current context',
-    title: 'Which description is closest to where you are today?',
-    helper: 'No income amount is needed.',
-    options: [
-      { label: 'Studying', value: 'student' },
-      { label: 'Preparing to start earning', value: 'pre_earning' },
-      { label: 'Started earning recently', value: 'early_earner' },
-      { label: 'Working for a few years', value: 'established_earner' },
-      { label: 'My situation or income varies', value: 'variable_or_transitioning' },
-      { label: 'Prefer not to say', value: 'undisclosed' },
-    ],
-  },
-  responsibility_context: {
-    eyebrow: 'The people money supports',
-    title: 'How are day-to-day financial responsibilities arranged?',
-    helper: 'Choose the closest fit—you can change this later.',
-    options: [
-      { label: 'Mostly just me', value: 'self' },
-      { label: 'Shared or family expenses', value: 'shared' },
-      { label: 'Others depend on me', value: 'dependents' },
-      { label: 'It changes month to month', value: 'variable' },
-      { label: 'Prefer not to say', value: 'undisclosed' },
-    ],
-  },
-  exposure_flags: {
-    eyebrow: 'What you have encountered',
-    title: 'Which money topics are already part of your life?',
-    helper: 'Choose any that fit. We still do not need amounts or account details.',
-    multi: true,
-    options: [
-      { label: 'Spending', value: 'spending' },
-      { label: 'Saving', value: 'saving' },
-      { label: 'Investing', value: 'investing' },
-      { label: 'Borrowing or EMIs', value: 'borrowing' },
-      { label: 'Insurance', value: 'insurance' },
-      { label: 'Financial goals', value: 'goals' },
-      { label: 'Workplace benefits or tax', value: 'workplace_and_tax' },
-      { label: 'None of these yet', value: 'none' },
-      { label: 'Not sure', value: 'unsure' },
-      { label: 'Prefer not to say', value: 'undisclosed' },
-    ],
-  },
-  familiarity: {
-    eyebrow: 'How explanations should begin',
-    title: 'How familiar do these topics generally feel?',
-    helper: 'This changes explanation depth, not what you are allowed to explore.',
-    options: [
-      { label: 'Start from the foundations', value: 'foundations' },
-      { label: 'I know the working basics', value: 'working_basics' },
-      { label: 'I am connecting the pieces', value: 'connecting' },
-      { label: 'I want deeper context', value: 'deeper_context' },
-      { label: 'It varies by topic', value: 'variable' },
-      { label: 'Prefer not to say', value: 'undisclosed' },
-    ],
-  },
-};
-
-const EXCLUSIVE_EXPOSURE = new Set(['none', 'unsure', 'undisclosed']);
 
 const HANDOFF_CHOICES: Array<{
   destination: OnboardingDestination;
@@ -141,7 +63,7 @@ export function OnboardingScreen({
   const choiceMadeRef = useRef(false);
 
   const question = assessment?.current_question ?? 'immediate_intent';
-  const content = QUESTIONS[question];
+  const content = ASSESSMENT_QUESTIONS[question];
   const index = assessmentQuestions.indexOf(question);
 
   async function run(action: () => Promise<AssessmentState | null>, finish = false) {
@@ -169,8 +91,8 @@ export function OnboardingScreen({
   function toggleExposure(value: string) {
     setSelected((current) => {
       if (current.includes(value)) return current.filter((item) => item !== value);
-      if (EXCLUSIVE_EXPOSURE.has(value)) return [value];
-      return [...current.filter((item) => !EXCLUSIVE_EXPOSURE.has(item)), value];
+      if (EXCLUSIVE_EXPOSURE_VALUES.has(value)) return [value];
+      return [...current.filter((item) => !EXCLUSIVE_EXPOSURE_VALUES.has(item)), value];
     });
   }
 

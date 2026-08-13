@@ -241,6 +241,15 @@ export function ConsolidatedScreen() {
         </View>
       )}
 
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Manage personalization context"
+        style={styles.personalizationLink}
+        onPress={() => navigation.navigate('Assessment')}
+      >
+        <Text style={styles.personalizationLinkText}>Manage personalization</Text>
+      </Pressable>
+
       <Pressable style={styles.signOut} onPress={() => supabase?.auth.signOut()}>
         <Text style={styles.signOutText}>Sign out</Text>
       </Pressable>
@@ -421,6 +430,8 @@ const styles = StyleSheet.create({
   rewardLabel: { fontFamily: font.mono, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: colors.behaviour },
   rewardBody: { fontFamily: font.tutor, fontSize: 16, lineHeight: 24, color: colors.ink, marginTop: spacing.sm },
   rewardDismiss: { fontFamily: font.uiMedium, fontSize: 13, color: colors.inkSecondary, marginTop: spacing.md },
+  personalizationLink: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl },
+  personalizationLinkText: { fontFamily: font.uiMedium, fontSize: 13, color: colors.tutor },
   signOut: { paddingVertical: spacing.md, marginTop: spacing.xxl, alignItems: 'center' },
   signOutText: { fontFamily: font.ui, fontSize: 13, color: colors.inkMuted },
 });

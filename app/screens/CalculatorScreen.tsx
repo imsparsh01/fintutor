@@ -183,7 +183,7 @@ function SipGoalCalc({ onComputed }: CalcProps) {
         <ResultCard
           unit="Monthly SIP needed"
           value={formatRupees(result)}
-          mechanismNote={`At ${rate}% annual return over ${years} years, this monthly SIP compounds to your target. The formula is the inverse of the standard SIP corpus formula — it works backwards from your goal.`}
+          mechanismNote={`At ${rate}% annual return over ${years} years, this monthly SIP compounds to your target. Contributions are modeled at each month end and begin compounding in the following month. The formula is the inverse of the standard SIP corpus formula — it works backwards from your goal.`}
           onRendered={onComputed}
         />
       )}

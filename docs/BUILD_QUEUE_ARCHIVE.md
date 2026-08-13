@@ -12,6 +12,25 @@
 
 ---
 
+## BQ-094 — Repair standalone decision-file evidence gaps — DONE 14-Aug-2026
+
+Created faithful compact primary artifacts for D-021, D-022, D-050, D-057 and D-064 from preserved
+authoritative text without editing the append-only archive or inventing rationale. A recursive verification
+now resolves every D-001–D-136 ID to exactly one primary decision artifact.
+
+## BQ-090 — Synchronize the session-close skill with D-135 — DONE 14-Aug-2026
+
+Updated the existing session-close skill with D-135's mandatory disposition check, including valid statuses,
+BQ linkage, deferred unpark conditions, and missing/duplicate failure behavior. Renumbered and corrected all
+later steps to match the live `CLAUDE.md` close sequence.
+
+## BQ-088 — Assessment context view/change/clear UI — DONE 14-Aug-2026
+
+Added a persistent Home entry and handled-assessment management UI using the existing normalized update and
+clear endpoints. Users can view labels, change any approved axis, or clear all context without seeing raw
+values or internal metadata. Shared vocabulary prevents capture/management drift; focus reload prevents stale
+mounted-route state. Verified: TypeScript, 33 frontend tests, Expo web export, and clean diff check.
+
 ## BQ-084 — Correct the reminder recurrence (D-125 audit F-3) — DONE 12-Aug-2026
 
 Traces to D-125's step-1 audit. §4 item 7's reminders fired exactly once: `scheduleHoldingReminder` used a

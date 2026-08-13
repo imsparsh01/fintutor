@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, font, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
 import { AssessmentApiError, getAssessment, type AssessmentState } from '../lib/onboardingAssessment';
 import type { MainTabsParamList } from '../navigation/types';
 import { OnboardingScreen } from './OnboardingScreen';
+import { AssessmentContextScreen } from './AssessmentContextScreen';
 
 type Props = BottomTabScreenProps<MainTabsParamList, 'Assessment'>;
 
@@ -16,7 +18,7 @@ export function VoluntaryAssessmentScreen({ navigation }: Props) {
   const [state, setState] = useState<AssessmentState | null | undefined>(undefined);
   const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     if (!userId) return;
     let active = true;
     setState(undefined);
@@ -24,8 +26,7 @@ export function VoluntaryAssessmentScreen({ navigation }: Props) {
     getAssessment(userId)
       .then((assessment) => {
         if (!active) return;
-        if (assessment.status === 'handled') navigation.navigate('Consolidated');
-        else setState(assessment);
+        setState(assessment);
       })
       .catch((error) => {
         if (!active) return;
@@ -35,7 +36,7 @@ export function VoluntaryAssessmentScreen({ navigation }: Props) {
     return () => {
       active = false;
     };
-  }, [navigation, userId]);
+  }, [userId]));
 
   if (!userId) return null;
   if (failed) {
@@ -50,6 +51,10 @@ export function VoluntaryAssessmentScreen({ navigation }: Props) {
   }
   if (state === undefined) {
     return <View style={styles.centered}><ActivityIndicator color={colors.tutor} /></View>;
+  }
+
+  if (state?.status === 'handled') {
+    return <AssessmentContextScreen userId={userId} initialState={state} onBack={() => navigation.navigate('Consolidated')} />;
   }
 
   return (

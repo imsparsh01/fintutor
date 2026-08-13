@@ -20,7 +20,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-012/D-051 | BLOCKED → BQ-093 | Complete in-context AI surfacing coverage across the MVP taxonomy | Owner-approved pairing content/precedence beyond loan→term insurance; cold surfacing stays out |
 | D-022 | DEFERRED | Conversation memory | Storage, retrieval, retention and deletion policy approved; explicitly post-MVP |
 | D-031/D-079 | DEFERRED | Real estate, Cash & bank, and Alternatives holding families | Explicit post-MVP unpark/priority decision |
-| D-046 | READY → BQ-094 | Repair standalone-file evidence for five historical IDs | Preserve historical text and archive immutability |
+| D-046 | SHIPPED → BQ-094 | Repair standalone-file evidence for five historical IDs | Completed 14-Aug-2026; every D-001–D-136 ID resolves to one primary artifact |
 | D-060 | BLOCKED → BQ-095 | Complete or narrow the Hook Loop trigger layer | Owner-approved engagement-trigger design under P2/D-061 |
 | D-089 | BLOCKED → BQ-102 | Reconcile empty-state walkthrough with “using the user's own numbers” | Owner confirms current Chat handoff or approves personalized walkthrough contract |
 | D-067 | DEFERRED | Automatic comparison-trigger detection | Real usage shows users ask decision-shaped questions without the explicit trigger |
@@ -32,7 +32,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-106 | DEFERRED | Rent-vs-buy scenario (S-04) | Explicit schema/input and money-calculation approval |
 | D-107 | BLOCKED → BQ-091 | Restore or supersede mandatory gstack plan/review gates | Prove compatible plan + review invocations, or owner approves a manual fallback |
 | D-117 | DEFERRED | Progression pacing simulation | Before external launch; test light/frequent paths and single-feature dominance |
-| D-119 | READY → BQ-088 | Assessment context view/change/clear UI | Backend endpoints already exist; bounded frontend delivery |
+| D-119 | SHIPPED → BQ-088 | Assessment context view/change/clear UI | Completed 14-Aug-2026 |
 | D-119/D-121 | BLOCKED → BQ-099 | Whole-account deletion integration for assessment/progression | D3 ownership plus D-010 deletion/backup contract |
 | D-120 | NO_BUILD | Draft autonomous-pipeline design is not an approved decision | Four owner choices remain; create a new decision if approved |
 | D-123 | DEFERRED | Meaningful non-gating recap interaction and `recap_completed` emitter | Approve a recap interaction/completion contract consistent with P9 |
@@ -43,10 +43,10 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-128 | BLOCKED → BQ-085 | Goal Affordability calculator | Exact input/formula/disclosure/edge-case contract |
 | D-131/D-132 | BLOCKED → BQ-086 | Term-insurance Coverage scenarios | Exact component formula/source/validation/disclosure contract; counsel before external launch |
 | D-134 | BLOCKED → BQ-087 | Dedicated minimal financial-context record | D3 authenticated ownership and D-010 privacy/deletion/backup contract |
-| D-129 | READY → BQ-101 | Add month-end timing disclosures to SIP Goal and Step-up SIP | Bounded presentation correction; formulas unchanged |
+| D-129 | BLOCKED → BQ-101 | Align recurring-contribution timing and disclosures | SIP Goal fixed; Step-up formula contradicts D-129 and needs owner approval |
 | D-005/D-008 | BLOCKED → BQ-092 | Confirm and implement the production hosting/deployment target | Owner confirms whether Supabase “hosting” still governs FastAPI or is superseded |
 | D-005/D-008/D-052 | BLOCKED → BQ-089 | Validate Supabase JWT and derive request ownership | Owner settles D3 auth boundary |
-| D-062/D-135 | READY → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Mechanical skill-maintenance task |
+| D-062/D-135 | SHIPPED → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Completed 14-Aug-2026 |
 
 ## Current-session decisions
 

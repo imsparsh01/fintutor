@@ -1,18 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BACKEND_URL } from './backend';
+import { ASSESSMENT_QUESTION_ORDER, type AssessmentQuestion } from './assessmentVocabulary';
 
 const HANDLED_CACHE_PREFIX = 'fintutor:onboarding_v2_handled:';
 const LEGACY_INVITE_DISMISSED_PREFIX = 'fintutor:onboarding_v2_invite_dismissed:';
 
-export const assessmentQuestions = [
-  'immediate_intent',
-  'earning_context',
-  'responsibility_context',
-  'exposure_flags',
-  'familiarity',
-] as const;
-
-export type AssessmentQuestion = (typeof assessmentQuestions)[number];
+export const assessmentQuestions = ASSESSMENT_QUESTION_ORDER;
+export type { AssessmentQuestion } from './assessmentVocabulary';
 
 export type AssessmentValue = string | string[];
 
@@ -110,6 +104,21 @@ export function skipAssessmentQuestion(
 
 export function handleAssessment(userId: string): Promise<AssessmentState> {
   return request('/onboarding-assessment/handle', userId, { method: 'POST' });
+}
+
+export function updateAssessmentContext(
+  userId: string,
+  question: AssessmentQuestion,
+  value: AssessmentValue,
+): Promise<AssessmentState> {
+  return request(`/onboarding-assessment/context/${question}`, userId, {
+    method: 'PUT',
+    body: JSON.stringify({ value }),
+  });
+}
+
+export function clearAssessmentContext(userId: string): Promise<AssessmentState> {
+  return request('/onboarding-assessment/clear', userId, { method: 'POST' });
 }
 
 export async function hasHandledAssessmentCache(userId: string): Promise<boolean> {

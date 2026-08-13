@@ -16,33 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-088 — Assessment context view/change/clear UI
-
-Traces to D-119. The backend already provides post-handle update and clear-context routes, but the app has
-no completed-assessment management surface. Add a bounded user-facing route to view the normalized context,
-change approved normalized answers, and clear it without exposing internal IDs/timestamps or raw data. Use
-the existing endpoints and approved vocabularies; do not add schema or change onboarding progression rules.
-
-### BQ-090 — Synchronize the session-close skill with D-135
-
-Traces to D-062/D-135. Update the existing session-close skill so it performs the mandatory decision-delivery
-disposition check before archiving/commit/push. This is maintenance of an already-adopted skill, not a new
-tool or workflow. Verify its instructions match the live `CLAUDE.md` close sequence.
-
-### BQ-094 — Repair standalone decision-file evidence gaps
-
-Traces to D-046/D-081. D-021, D-022, D-050, D-057 and D-064 are preserved in archived indexes and other
-authoritative artifacts but lack standalone decision files. Create compact faithful files from preserved
-historical text without editing the append-only archive or inventing reasoning; verify every D-001–D-136 ID
-resolves to one primary decision artifact.
-
-### BQ-101 — Add month-end timing disclosures to recurring-contribution calculators
-
-Traces to D-129. SIP Goal Planner and Step-up SIP omit the required disclosure that contributions occur at
-month end and compound from the following month; Step-up begins each new 12-month block at its first
-contribution. Add copy and focused tests without changing formulas or assumptions.
-
 ## BLOCKED — do not start
+
+### BQ-101 — Align recurring-contribution timing and disclosures — BLOCKED ON OWNER APPROVAL
+
+Traces to D-129. SIP Goal Planner is conformant and now truthfully discloses month-end/following-month
+timing. Step-up SIP instead applies growth immediately after adding each monthly contribution, giving every
+payment one extra compounding period. Correcting that user-facing formula is money-shaped and requires owner
+approval; only after correction may the matching disclosure be added and this item completed.
 
 ### BQ-089 — Enforce Supabase JWT ownership across backend routes — BLOCKED ON D3
 

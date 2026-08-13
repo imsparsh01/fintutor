@@ -26,8 +26,10 @@ RegisterScreen          screens/ (123)             New account
 OnboardingScreen        screens/ (~360)            Five-axis normalized assessment v2: 18+ acknowledgement,
                                                    deterministic chips, skip/exit, progress, and neutral optional
                                                    handoff to Arya/Portfolio/Goals/Tools/Home (BQ-076)
-VoluntaryAssessmentScreen screens/ (~55)            Hidden BQ-068 wrapper: loads/resumes v2 for a legacy opt-in,
-                                                   permits cancel before eligibility, then reuses OnboardingScreen
+VoluntaryAssessmentScreen screens/ (~55)            Hidden Assessment route wrapper: loads/resumes v2 for a legacy
+                                                   opt-in, or opens management for handled users (BQ-088)
+AssessmentContextScreen screens/                    View/change/clear normalized personalization context through
+                                                   D-119's existing endpoints; no raw values or internal metadata
 ConsolidatedScreen      screens/ (~390)            Home — 8-section feed: financial picture, tappable
                                                    Portfolio Health grid, Arya, calculators, scenarios,
                                                    Learn, and streak/reward (BQ-060/D-111)
@@ -98,7 +100,9 @@ income.ts               53      fetchIncome / saveIncome
 goals.ts                        fetchGoals / createGoal / updateGoalFunding
 onboarding.ts           17      Legacy device-local completion helpers (retained for BQ-068 compatibility)
 onboardingAssessment.ts ~130    Dedicated v2 normalized API client + handled-state outage cache,
-                                legacy-presence compatibility read, and local invite dismissal
+                                legacy-presence compatibility read, local invite dismissal, and handled-context
+                                update/clear calls (BQ-088)
+assessmentVocabulary.ts         Shared approved normalized codes and user-facing labels for capture + management
 reminderSchedule.ts     57      reminderScheduleFor(holding) → {day, body, clamped} | null. Pure day-of-month
                                 arithmetic, no Expo imports, so it is testable under `node --test`.
                                 Due days past the 28th clamp so no month is skipped.
