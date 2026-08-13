@@ -180,18 +180,22 @@ This list applies regardless of whether the session is framed as "building" or
 ## End of every session
 
 1. Write `docs/sessions/YYYY-MM-DD.md` — a few lines: what changed, what's next.
-2. **Archiving habit check (D-081).** If this session added entries to
+2. **Decision-delivery disposition check (D-135).** Every decision added or changed this session must have
+   exactly one current row in `docs/DECISION_DELIVERY_TRACKER.md`: NO_BUILD, READY, BLOCKED, DEFERRED,
+   SHIPPED, or SUPERSEDED. READY/BLOCKED rows must link a BQ item; DEFERRED must name an explicit unpark
+   condition. A missing disposition is a session-close failure, never an implied NO_BUILD.
+3. **Archiving habit check (D-081).** If this session added entries to
    `docs/DECISION_LOG.md`, `docs/BUILD_QUEUE.md`, or `PROJECT_SPEC.md`'s §10, confirm
    each is still within its rolling-window size (~20 / DONE-items-should-be-zero /
    ~10 respectively — see the File Permissions section above) and archive the oldest
    down to size if not, before committing. Mechanical relocation, not a rewrite.
-3. If `PROJECT_SPEC.md` or `docs/DECISION_LOG.md` changed, say so explicitly to the
+4. If `PROJECT_SPEC.md` or `docs/DECISION_LOG.md` changed, say so explicitly to the
    owner so they know to skim the change.
-4. Commit with a clear message and push to the session's designated working branch
+5. Commit with a clear message and push to the session's designated working branch
    (D-034 — no separate confirmation needed for the push itself). Do not leave
    uncommitted or unpushed work at session end. If push fails (stale lock, auth,
    network), say so plainly rather than silently leaving it unpushed.
-5. **Sync to `main` (D-056).** If the designated branch is a clean fast-forward ahead
+6. **Sync to `main` (D-056).** If the designated branch is a clean fast-forward ahead
    of `main` (no divergence), merge it into `main` and push `main` too — this is what
    lets a parallel session pull `origin/main` and see this session's work immediately,
    rather than needing to know this session's specific branch name. If `main` has

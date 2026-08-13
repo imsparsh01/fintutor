@@ -18,6 +18,26 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
+### BQ-085 — Goal Affordability calculator — BLOCKED ON FORMULA CONTRACT
+
+Traces to D-128. The MVP capability is approved, but D-128 explicitly forbids implementation before its
+exact inputs, arithmetic, disclosures, validation and edge-case behavior are owner-approved. Unblock only
+when that contract is logged; do not infer a target rate, horizon, contribution, or affordability verdict.
+
+### BQ-086 — Term-insurance Coverage scenarios — BLOCKED ON IMPLEMENTATION CONTRACT
+
+Traces to D-131/D-132. The user-controlled scenario direction is approved. Before build, decide the exact
+component formulas, source/unknown semantics, finite/range validation, loading/stale-user behavior and
+disclosures. India insurance/fintech counsel review is required before external launch, not before private
+implementation once the contract exists.
+
+### BQ-087 — Dedicated minimal financial-context record — BLOCKED ON D3 + D-010
+
+Traces to D-134. Build one optional per-user record for an explicitly confirmed dependant count and
+self-reported emergency-fund months, then make it authoritative for Arya and Portfolio Health. Do not begin
+until authenticated ownership (D3) and the applicable D-010 retention/deletion/backup contract are decided.
+The implementation must prevent the current installation-global Health Score values crossing accounts.
+
 ### BQ-072 — Customer-outcome MVP exit-gate programme — DEFERRED UNTIL INTERNAL MVP VALIDATION
 
 Traces to D-122. This is the owner-directed programme that makes the customer outcome, rather than feature

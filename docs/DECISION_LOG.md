@@ -125,3 +125,10 @@
   explicitly confirmed dependant count and self-reported emergency-fund months; onboarding never infers
   them. Full write-up: `docs/decisions/D-134-dedicated-minimal-financial-context-record.md`.
 - **Date:** 14-Aug-2026
+
+### D-135 — Every decision requires an explicit delivery disposition
+- **Tier:** 3, owner-decided. “Decided and delivered are separate states.” Every new decision must be
+  recorded in `docs/DECISION_DELIVERY_TRACKER.md` as NO_BUILD, READY, BLOCKED, DEFERRED, SHIPPED, or
+  SUPERSEDED before the session closes. Full write-up:
+  `docs/decisions/D-135-mandatory-decision-delivery-disposition.md`.
+- **Date:** 14-Aug-2026
