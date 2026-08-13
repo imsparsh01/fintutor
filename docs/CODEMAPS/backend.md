@@ -70,8 +70,9 @@ POST /chat                      → assemble_baseline → ask_teaching_engine �
 services/baseline.py (75)       assemble_baseline() — merges holdings+income+goals+surfacing into
                                  the dict injected into the teaching prompt. Central to every /chat call.
 services/budget.py (~110)       compute_budget() — normalises recurring income/EMI/SIP/premium to monthly;
-                                 returns provenance rows. Requires explicit recognised frequency on recurring
-                                 items; D-112 includes six-month cadence variants at amount ÷ 6.
+                                 returns provenance rows. Outflows require an explicit recognised frequency;
+                                 income currently falls back to monthly for blank/unknown cadence (a confirmed,
+                                 owner-gated defect). D-112 adds six-month premium variants at amount ÷ 6.
 services/consolidated.py (99)   compute_consolidated() — per-family totals with valuation metadata:
                                  holding/valued/excluded/status per family so client never infers from 0.
 services/holdings.py (137)      CRUD + serialisation. alias auto-generated (D-074) if not provided.

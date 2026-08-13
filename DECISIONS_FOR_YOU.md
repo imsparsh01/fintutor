@@ -1,8 +1,8 @@
 # Decisions waiting on you
 
-**Last updated:** 12-Aug-2026 · **Waiting:** 4 questions below, plus 4 raised by the D-125 audit ·
-**Blocking:** the Part 1 questions block nothing. The D-125 audit questions do — see
-`docs/sessions/2026-08-12-D125-MVP-RECONCILIATION.md`, which is the live list. READY is empty.
+**Last updated:** 14-Aug-2026 · **Waiting:** 4 non-blocking pipeline questions below, plus the owner-gated
+implementation list in `docs/sessions/2026-08-14.md` · **Blocking:** the Part 1 questions block nothing.
+The implementation decisions do; READY is empty.
 
 **How to answer:** type your answer on the `→ Your answer:` line under each question, then save. Or just
 tell me in the next session ("1 to 4: A, A, A, A"). Either works. "Let's discuss" is a valid answer to any
@@ -14,7 +14,7 @@ of them.
 
 This is the idea that answering questions from your phone should be enough to make the build work happen
 on its own, overnight, without you opening a session. The design is written up and ready; these four
-choices are what's left. None of them blocks anything today — the queue has work in it either way.
+choices are what's left. None of them blocks anything today; the READY queue is empty for separate reasons.
 
 Full technical version: `docs/decisions/D-120-commit-triggered-autonomous-build-pipeline.md`
 

@@ -8,12 +8,12 @@ from and the BQ that will resolve it.
 
 ## Testing infrastructure
 
-**jest-expo test runner for pure functions**
+**Frontend test-runner consolidation**
 - Origin: BQ-054 plan-eng-review (T13)
-- Resolve before: any unit test coverage is added
-- Note: `computeSubScores()` in `app/lib/healthScore.ts` is the ideal first test target — pure function,
-  no side effects, 4 sub-scores with clearly defined formulas and edge cases.
-- Decision needed: add jest-expo to devDependencies and configure `jest.config.js`. Treat as an
-  infrastructure decision (new devDependency) — log in `docs/decisions/` before installing.
+- Current state: pure-function coverage already runs directly with Node; 30 tests cover compound growth,
+  credit-card payoff, emergency coverage, and reminder scheduling. `tsc --noEmit` remains the type check.
+- Revisit when: component/native-module tests genuinely require a React Native-aware runner.
+- Decision needed then: adding jest-expo remains a new-devDependency decision and must be logged before
+  installation. It is not a prerequisite for pure-function unit coverage.
 
 ---
