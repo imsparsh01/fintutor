@@ -46,20 +46,61 @@ export function ConsolidatedTotalsCard({ userId }: { userId: string | null }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.row}>
-        <Text style={styles.label}>Investments</Text>
-        <Text style={styles.value}>{displayValue(totals.investments_status, totals.investments_total)}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Loans</Text>
-        <Text style={styles.value}>{displayValue(totals.loans_status, totals.loans_total)}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Insurance (cash value)</Text>
-        <Text style={styles.value}>{displayValue(totals.insurance_status, totals.insurance_total)}</Text>
-      </View>
+      <TotalsRow
+        label="Investments"
+        status={totals.investments_status}
+        total={totals.investments_total}
+        invalidCount={totals.investments_invalid_value_count}
+      />
+      <TotalsRow
+        label="Loans"
+        status={totals.loans_status}
+        total={totals.loans_total}
+        invalidCount={totals.loans_invalid_value_count}
+      />
+      <TotalsRow
+        label="Insurance (cash value)"
+        status={totals.insurance_status}
+        total={totals.insurance_total}
+        invalidCount={totals.insurance_invalid_value_count}
+      />
+      {totals.unclassified_holding_count > 0 ? (
+        <Text style={styles.metadataText}>
+          {countLabel(totals.unclassified_holding_count, 'record needs', 'records need')} classification
+        </Text>
+      ) : null}
     </View>
   );
+}
+
+function TotalsRow({
+  label,
+  status,
+  total,
+  invalidCount,
+}: {
+  label: string;
+  status: ConsolidatedTotals['investments_status'];
+  total: number;
+  invalidCount: number;
+}) {
+  return (
+    <View style={styles.row}>
+      <View style={styles.rowLine}>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.value}>{displayValue(status, total)}</Text>
+      </View>
+      {invalidCount > 0 ? (
+        <Text style={styles.metadataText}>
+          {countLabel(invalidCount, 'record has', 'records have')} a value we couldn&apos;t read
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+function countLabel(count: number, singular: string, plural: string): string {
+  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function displayValue(status: ConsolidatedTotals['investments_status'], total: number): string {
@@ -73,12 +114,14 @@ const styles = StyleSheet.create({
   // Warm-ledger row: label-left/value-right, separated by a hairline rule — not a
   // shadowed card or filled box. Generous vertical rhythm per the visual register.
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingVertical: spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.line,
+  },
+  rowLine: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   // P10: these are real financial figures — undecorated, no valence. Label and value
   // both render in font.mono per the ledger register; only weight/color differ.
@@ -90,5 +133,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   value: typography.ledgerValue,
+  metadataText: {
+    marginTop: spacing.sm,
+    color: colors.inkSecondary,
+    fontFamily: font.ui,
+    fontSize: 13,
+  },
   errorText: { color: colors.danger, textAlign: 'center', fontFamily: font.ui },
 });

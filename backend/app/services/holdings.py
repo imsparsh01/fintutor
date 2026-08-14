@@ -1,8 +1,28 @@
+import math
 import uuid
 
 from sqlalchemy.orm import Session
 
 from app.models import Holding
+
+
+def _validate_tax_inputs(product_type: str, characteristics: dict) -> None:
+    """Reject new invalid values that feed the D-070 Section 80C calculation."""
+    fields: tuple[str, ...] = ()
+    if product_type == "ppf_epf":
+        fields = ("annual_contribution",)
+    elif product_type in ("term_insurance", "endowment_ulip"):
+        fields = ("premium",)
+    for field in fields:
+        value = characteristics.get(field)
+        if value is None:
+            continue
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{field} must be a finite non-negative number") from exc
+        if not math.isfinite(numeric) or numeric < 0:
+            raise ValueError(f"{field} must be a finite non-negative number")
 
 
 def _to_dict(holding: Holding) -> dict:
@@ -48,6 +68,14 @@ def update_holding(
     )
     if holding is None:
         return None
+    effective_type = product_type if product_type is not None else holding.product_type
+    effective_characteristics = (
+        characteristics if characteristics is not None else (holding.characteristics or {})
+    )
+    if characteristics is not None or (
+        product_type is not None and product_type != holding.product_type
+    ):
+        _validate_tax_inputs(effective_type, effective_characteristics)
     if product_type is not None:
         holding.product_type = product_type
     if alias is not None:
@@ -118,6 +146,7 @@ def create_holding(
     generated here. Direct API callers may still supply their own, unchanged."""
     if alias is None:
         alias = _generate_alias(db, user_id, product_type)
+    _validate_tax_inputs(product_type, characteristics or {})
     holding = Holding(
         user_id=user_id,
         product_type=product_type,

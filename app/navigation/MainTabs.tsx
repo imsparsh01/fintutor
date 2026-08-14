@@ -1,4 +1,7 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, type BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
 import { StyleSheet } from 'react-native';
 import { TabIcon, type TabIconName } from '../components/TabIcon';
 import { BudgetingScreen } from '../screens/BudgetingScreen';
@@ -15,6 +18,9 @@ import { ProgressScreen } from '../screens/ProgressScreen';
 import { ScenarioScreen } from '../screens/ScenarioScreen';
 import { ToolsScreen } from '../screens/ToolsScreen';
 import { VoluntaryAssessmentScreen } from '../screens/VoluntaryAssessmentScreen';
+import { LearningReminderScreen } from '../screens/LearningReminderScreen';
+import { LearningReminderManager } from '../components/LearningReminderManager';
+import { useAuth } from '../lib/AuthContext';
 import { colors, font } from '../design/tokens';
 import type { MainTabsParamList } from './types';
 
@@ -36,7 +42,25 @@ const visibleTabIcons: Partial<Record<keyof MainTabsParamList, TabIconName>> = {
 export type OnboardingDestination = 'Consolidated' | 'Portfolio' | 'Goals' | 'Tools' | 'Chat';
 
 export function MainTabs({ initialRouteName = 'Consolidated' }: { initialRouteName?: OnboardingDestination }) {
+  const { userId } = useAuth();
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
+  useEffect(() => {
+    const openLearningDestination = (response: Notifications.NotificationResponse | null) => {
+      if (response?.notification.request.content.data?.reminderKind === 'learning') {
+        navigation.navigate('Consolidated');
+      }
+    };
+    const subscription = Notifications.addNotificationResponseReceivedListener(openLearningDestination);
+    // The listener covers background taps; the last-response read covers a tap that
+    // cold-started the process before this navigator mounted.
+    Notifications.getLastNotificationResponseAsync()
+      .then(openLearningDestination)
+      .catch(() => undefined);
+    return () => subscription.remove();
+  }, [navigation]);
   return (
+    <>
+    {userId ? <LearningReminderManager userId={userId} /> : null}
     <Tab.Navigator
       initialRouteName={initialRouteName}
       screenOptions={({ route }) => ({
@@ -128,6 +152,12 @@ export function MainTabs({ initialRouteName = 'Consolidated' }: { initialRouteNa
           tabBarStyle: { display: 'none' },
         }}
       />
+      <Tab.Screen
+        name="LearningReminder"
+        component={LearningReminderScreen}
+        options={{ tabBarButton: () => null, tabBarItemStyle: { display: 'none' }, tabBarStyle: { display: 'none' } }}
+      />
     </Tab.Navigator>
+    </>
   );
 }

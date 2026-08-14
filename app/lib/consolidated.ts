@@ -19,6 +19,10 @@ export interface ConsolidatedTotals {
   investments_excluded_holding_count: number;
   loans_excluded_holding_count: number;
   insurance_excluded_holding_count: number;
+  investments_invalid_value_count: number;
+  loans_invalid_value_count: number;
+  insurance_invalid_value_count: number;
+  unclassified_holding_count: number;
 }
 
 export async function fetchConsolidated(userId: string): Promise<ConsolidatedTotals> {

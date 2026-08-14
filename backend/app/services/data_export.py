@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.models import (
     DiscretionaryCategory,
+    FinancialContext,
     Goal,
     Holding,
     Income,
@@ -28,6 +29,7 @@ EXPORT_DATA_MODELS = (
     Income,
     Goal,
     DiscretionaryCategory,
+    FinancialContext,
     OnboardingAssessment,
     OnboardingState,
     StreakState,
@@ -53,6 +55,10 @@ EXPORT_SECTIONS = {
     "discretionary_categories": {
         "description": "User-defined planned spending categories.",
         "fields": "id, label, and planned amount",
+    },
+    "financial_context": {
+        "description": "Optional confirmed context used for personalization and Portfolio Health.",
+        "fields": "dependant count, emergency-fund months, and last update time",
     },
     "onboarding_context": {
         "description": "Optional normalized answers used to tailor explanations.",
@@ -132,6 +138,14 @@ def build_data_export(
             "planned_amount": float(row.planned_amount),
         }
         for row in _rows(db, DiscretionaryCategory, user_id)
+    ]
+    financial_context = [
+        {
+            "dependant_count": row.dependant_count,
+            "emergency_fund_months": row.emergency_fund_months,
+            "updated_at": _iso(row.updated_at),
+        }
+        for row in _rows(db, FinancialContext, user_id)
     ]
     assessments = [
         {
@@ -214,6 +228,7 @@ def build_data_export(
             "income": income,
             "goals": goals,
             "discretionary_categories": discretionary,
+            "financial_context": financial_context,
             "onboarding_context": assessments,
             "onboarding_progress": onboarding_progress,
             "streak": streaks,

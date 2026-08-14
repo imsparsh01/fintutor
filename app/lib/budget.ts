@@ -2,6 +2,11 @@ import { authenticatedFetch, BACKEND_URL } from './backend';
 
 export interface BudgetSummary {
   income_total: number;
+  invalid_income_sources: {
+    label: string;
+    frequency: string | null;
+    reason: string;
+  }[];
   recurring_outflows_total: number;
   recurring_outflows: {
     product_type: string;

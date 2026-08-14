@@ -73,9 +73,11 @@ class ElapsedMonthsTests(unittest.TestCase):
     def test_a_future_grant_date_never_goes_negative(self) -> None:
         self.assertEqual(_elapsed_months(date(2027, 1, 1), date(2026, 1, 1)), 0)
 
-    def test_a_month_end_grant_day_is_short_a_month_in_shorter_months(self) -> None:
-        # 31-Jan grant measured on 28-Feb: no 31st exists, so the month doesn't count yet.
-        self.assertEqual(_elapsed_months(date(2026, 1, 31), date(2026, 2, 28)), 0)
+    def test_a_month_end_grant_clamps_to_a_shorter_month_end(self) -> None:
+        self.assertEqual(_elapsed_months(date(2026, 1, 31), date(2026, 2, 28)), 1)
+        self.assertEqual(_elapsed_months(date(2024, 1, 31), date(2024, 2, 29)), 1)
+        self.assertEqual(_elapsed_months(date(2026, 1, 31), date(2026, 3, 30)), 1)
+        self.assertEqual(_elapsed_months(date(2026, 1, 31), date(2026, 3, 31)), 2)
 
 
 class EsopVestingTests(unittest.TestCase):
@@ -164,12 +166,15 @@ class EsopSpreadTests(unittest.TestCase):
         self.assertEqual(result["spread"], -96_000.0)
         self.assertEqual(result["spread_note"], _UNDERWATER_NOTE)
 
-    def test_an_fmv_equal_to_strike_takes_the_underwater_branch(self) -> None:
-        # Current behavior: the note is chosen on `spread > 0`, so an exactly-at-strike
-        # valuation is described as underwater. Pinned as-is, not corrected here.
+    def test_an_fmv_equal_to_strike_reports_zero_paper_gain(self) -> None:
         result = _compute(_grant(strike_price=10, current_fmv=10))
         self.assertEqual(result["spread"], 0.0)
-        self.assertEqual(result["spread_note"], _UNDERWATER_NOTE)
+        self.assertIn("equals the strike price", result["spread_note"])
+
+    def test_a_zero_unit_grant_is_not_described_as_unvested(self) -> None:
+        result = _compute(_grant(total_units_granted=0, current_fmv=60))
+        self.assertEqual(result["spread"], 0.0)
+        self.assertIn("records no units", result["spread_note"])
 
     def test_no_recorded_valuation_leaves_the_spread_unknown(self) -> None:
         result = _compute(_grant())
@@ -276,11 +281,11 @@ class EsopEligibilityAndGuardTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "vesting_period_months must be"):
                     _compute(_grant(vesting_period_months=period))
 
-    def test_zero_units_granted_reads_as_nothing_vested(self) -> None:
+    def test_zero_units_granted_reads_as_no_units(self) -> None:
         result = _compute(_grant(total_units_granted=0))
         self.assertEqual(result["vested_units"], 0.0)
         self.assertEqual(result["exercise_cost"], 0.0)
-        self.assertEqual(result["spread_note"], _NOTHING_VESTED_NOTE)
+        self.assertIn("records no units", result["spread_note"])
 
 
 class EsopDisclosureTests(unittest.TestCase):
@@ -297,6 +302,7 @@ class EsopDisclosureTests(unittest.TestCase):
                     "none of this grant has been exercised",
                     result["exercised_units_assumption_note"],
                 )
+                self.assertIn("actual grant schedule controls", result["vesting_timing_note"])
 
     def test_prior_exercises_are_disclosed_not_tracked(self) -> None:
         # KNOWN_LIMITATIONS: "vested units" is cumulative-since-grant, not net of

@@ -8,7 +8,7 @@ from fastapi import HTTPException
 
 from app.db.session import Base, get_db
 from app.main import app
-from app.models import Holding, ProgressionEvent
+from app.models import FinancialContext, Holding, ProgressionEvent
 from app.services.data_export import EXPORT_DATA_MODELS, build_data_export
 from tests.auth_helpers import authenticated_client
 
@@ -76,6 +76,10 @@ class DataExportServiceTests(unittest.TestCase):
                     occurred_at=now, local_date=date(2026, 8, 14),
                     idempotency_key="internal-retry-key",
                 )]
+            if model is FinancialContext:
+                return [SimpleNamespace(
+                    dependant_count=2, emergency_fund_months=5.5, updated_at=now,
+                )]
             return []
 
         rows.side_effect = records
@@ -87,6 +91,7 @@ class DataExportServiceTests(unittest.TestCase):
         self.assertEqual(result["account"]["email"], "test@example.com")
         self.assertEqual(result["generated_at"], now.isoformat())
         self.assertEqual(result["data"]["holdings"][0]["display_name"], "My real fund")
+        self.assertEqual(result["data"]["financial_context"][0]["dependant_count"], 2)
         serialized = str(result)
         self.assertNotIn("Fund-A", serialized)
         self.assertNotIn("internal-retry-key", serialized)

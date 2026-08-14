@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models import (
     DiscretionaryCategory,
+    FinancialContext,
     Goal,
     GoalFunding,
     Holding,
@@ -27,6 +28,7 @@ ACCOUNT_DATA_MODELS = (
     OnboardingState,
     StreakState,
     DiscretionaryCategory,
+    FinancialContext,
     Income,
     Goal,
     Holding,

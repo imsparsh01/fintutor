@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models import Holding
 from app.services.holding_fields import validate_reconciliation_fields
-from app.services.holdings import create_holding
+from app.services.holdings import _validate_tax_inputs, create_holding
 
 
 @dataclass
@@ -195,6 +195,10 @@ def apply_reconciliation(
     changed = [row for row in refreshed["diff"] if row["status"] != "unchanged"]
     merged = dict(holding.characteristics or {})
     merged.update(characteristics)
+    try:
+        _validate_tax_inputs(product_type, merged)
+    except ValueError as exc:
+        raise ReconciliationValidationError(str(exc)) from exc
     holding.characteristics = merged
     db.commit()
     db.refresh(holding)

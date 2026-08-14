@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchBudget } from './budget';
 import { computeOverall, computeSubScores } from './healthScore';
 import { fetchHoldings } from './holdings';
+import { fetchFinancialContext } from './financialContext';
 import type { BudgetSummary } from './budget';
 import type { SubScores } from './healthScore';
 import type { Holding } from './holdings';
@@ -19,6 +20,11 @@ export interface HealthScoreSnapshot {
 let cachedUserId: string | null = null;
 let cachedSnapshot: HealthScoreSnapshot | null = null;
 let activeLoad: Promise<HealthScoreSnapshot> | null = null;
+let loadGeneration = 0;
+
+export function healthInsuranceStorageKey(userId: string): string {
+  return `fintutor:health-insurance:${userId}`;
+}
 
 function buildSnapshot(
   budget: BudgetSummary | null,
@@ -43,22 +49,30 @@ export function loadHealthScoreSnapshot(
   }
   if (cachedUserId === userId && activeLoad) return activeLoad;
 
+  const generation = ++loadGeneration;
   cachedUserId = userId;
   activeLoad = Promise.all([
     fetchBudget(userId).catch(() => null),
     fetchHoldings(userId).catch((): Holding[] | null => null),
-    AsyncStorage.multiGet(['hs_emergency_months', 'hs_has_health_ins']),
-  ]).then(([budget, holdings, stored]) => {
-    const emergencyMonths = stored[0][1];
-    const rawHealthInsurance = stored[1][1];
+    fetchFinancialContext().catch(() => null),
+    AsyncStorage.getItem(healthInsuranceStorageKey(userId)),
+    // D-145: legacy keys were global to the installation and could cross accounts.
+    // They are deliberately cleared, never migrated to whichever account logs in next.
+    AsyncStorage.multiRemove(['hs_emergency_months', 'hs_has_health_ins']),
+  ]).then(([budget, holdings, context, storedHealthInsurance]) => {
+    const emergencyMonths = context?.emergency_fund_months === null
+      || context?.emergency_fund_months === undefined
+      ? null : String(context.emergency_fund_months);
+    const rawHealthInsurance = storedHealthInsurance;
     const hasHealthIns =
       rawHealthInsurance === 'yes' || rawHealthInsurance === 'no'
         ? rawHealthInsurance
         : null;
-    cachedSnapshot = buildSnapshot(budget, holdings, emergencyMonths, hasHealthIns);
-    return cachedSnapshot;
+    const snapshot = buildSnapshot(budget, holdings, emergencyMonths, hasHealthIns);
+    if (generation === loadGeneration && cachedUserId === userId) cachedSnapshot = snapshot;
+    return snapshot;
   }).finally(() => {
-    activeLoad = null;
+    if (generation === loadGeneration) activeLoad = null;
   });
 
   return activeLoad;

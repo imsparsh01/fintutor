@@ -5,7 +5,7 @@
 ## Database: Supabase (Postgres). ORM: SQLAlchemy.
 
 Schema changes use the linear Alembic chain in `backend/alembic/versions/`; current head is
-`c4e71b93a5d2` (BQ-069).
+`e145c087a001` (BQ-087).
 No FK to a Users table (D-043). Auth is Supabase-side; the DB stores data only, keyed by `user_id UUID`.
 
 ## Tables
@@ -73,6 +73,12 @@ onboarding_assessments
   cleared_at                timestamptz?
   created_at / updated_at   timestamptz
 
+financial_contexts
+  id / user_id              UniqueConstraint(user_id) — one optional row per account
+  dependant_count           int? (0–100); confirmed count, null means unknown
+  emergency_fund_months     float? (0–1200); confirmed coverage, null means unknown
+  updated_at                timestamptz
+
 progression_events            — append-only ledger (BQ-069, D-121)
   id               UUID PK
   user_id          UUID indexed (no FK)
@@ -120,6 +126,7 @@ Sent to LLM (via assemble_baseline):
   surfacing candidates (computed from holdings + known_gaps list)
   derived learning_context on ordinary chat only: explanation_style and, for a caller-supplied generic
     topic, one matching prior_exposure_to_current_topic boolean
+  optional confirmed dependant_count and emergency_fund_months when non-null
 
 Never sent to LLM:
   holdings.display_name  (real product/institution name — D-011)

@@ -46,7 +46,8 @@ def _to_monthly(amount: float, frequency: str | None) -> float:
         return float(amount) / 6
     if freq in ("weekly", "week"):
         return float(amount) * 52 / 12
-    # "monthly"/"month" and any unrecognized value are treated as already-monthly.
+    # This helper is arithmetic-only. Callers must validate cadence membership before
+    # invoking it; falling through here covers the two recognised monthly spellings.
     return float(amount)
 
 
@@ -61,11 +62,20 @@ def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
       off Holding.characteristics (D-013 fields) — the three items D-038 names explicitly.
     discretionary_total: DiscretionaryCategory.planned_amount, summed as-is.
     """
-    income_total = sum(
-        _to_monthly(source["amount"], source.get("frequency"))
-        for income in db.query(Income).filter(Income.user_id == user_id).all()
-        for source in income.sources
-    )
+    income_total = 0.0
+    invalid_income_sources: list[dict] = []
+    for income in db.query(Income).filter(Income.user_id == user_id).all():
+        for source in income.sources:
+            frequency = source.get("frequency")
+            normalized = str(frequency).strip().lower() if frequency is not None else ""
+            if normalized not in _RECURRING_FREQUENCIES:
+                invalid_income_sources.append({
+                    "label": str(source.get("label") or "Income source"),
+                    "frequency": frequency,
+                    "reason": "A recognised cadence is required before this source can enter the monthly view.",
+                })
+                continue
+            income_total += _to_monthly(source["amount"], str(frequency))
 
     recurring_outflows_total = 0.0
     recurring_outflows: list[dict] = []
@@ -102,6 +112,7 @@ def compute_budget(db: Session, user_id: uuid.UUID) -> dict:
 
     return {
         "income_total": round(income_total, 2),
+        "invalid_income_sources": invalid_income_sources,
         "recurring_outflows_total": round(recurring_outflows_total, 2),
         "recurring_outflows": recurring_outflows,
         "discretionary_total": round(discretionary_total, 2),

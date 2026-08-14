@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DefaultTheme, NavigationContainer, type Theme } from '@react-navigation/native';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, StyleSheet, Text, View } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
 import { NotConfiguredScreen } from '../screens/NotConfiguredScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
@@ -16,6 +16,8 @@ import {
   type AssessmentState,
 } from '../lib/onboardingAssessment';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { fetchHoldings } from '../lib/holdings';
+import { refreshHoldingReminders } from '../lib/reminders';
 import { AuthStack } from './AuthStack';
 import { MainTabs, type OnboardingDestination } from './MainTabs';
 
@@ -41,6 +43,19 @@ function AuthenticatedApp({ userId }: { userId: string }) {
   const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
   const [assessmentState, setAssessmentState] = useState<AssessmentState | null>(null);
   const [destination, setDestination] = useState<OnboardingDestination>('Consolidated');
+
+  useEffect(() => {
+    const refresh = () => {
+      fetchHoldings(userId)
+        .then(refreshHoldingReminders)
+        .catch(() => undefined);
+    };
+    refresh();
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refresh();
+    });
+    return () => subscription.remove();
+  }, [userId]);
 
   useEffect(() => {
     let active = true;

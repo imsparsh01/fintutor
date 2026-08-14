@@ -8,7 +8,7 @@ import anthropic
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, StrictBool
+from pydantic import BaseModel, Field, StrictBool
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -34,6 +34,12 @@ from app.services.goals import (
     create_goal,
     list_goals,
     update_goal_funding,
+)
+from app.services.financial_context import (
+    clear_financial_context,
+    get_financial_context,
+    patch_financial_context,
+    set_financial_context,
 )
 from app.services.holding_capture_classifier import classify_holding_capture
 from app.services.holding_reconciliation import (
@@ -86,7 +92,6 @@ from app.services.onboarding_assessment import (
 )
 from app.services.rewards import evaluate_reward
 from app.services.streaks import get_streak, record_app_open
-from app.services.surfacing import compute_surfacing_candidates
 from app.services.tax_saving_room import compute_tax_saving_room
 from app.services.teaching import TeachingEngineNotConfigured, ask_teaching_engine
 
@@ -204,6 +209,11 @@ class GoalFundingUpdate(BaseModel):
     funded_by: list[GoalFundingIn]
 
 
+class FinancialContextUpdate(BaseModel):
+    dependant_count: int | None = Field(default=None, ge=0, le=100)
+    emergency_fund_months: float | None = Field(default=None, ge=0, le=1200)
+
+
 class ProgressionEventIn(BaseModel):
     event_type: str
     # The repeat-limit discriminator — teaching subject, calculator type, capability
@@ -310,11 +320,6 @@ def get_budget(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     return compute_budget(db, user_id)
 
 
-@app.get("/surfacing-candidates")
-def get_surfacing_candidates(user_id: uuid.UUID, db: Session = Depends(get_db)) -> list[dict]:
-    return compute_surfacing_candidates(db, user_id)
-
-
 @app.get("/holdings")
 def get_holdings(user_id: uuid.UUID, db: Session = Depends(get_db)) -> list[dict]:
     return list_holdings(db, user_id)
@@ -338,6 +343,8 @@ def post_holding(
         return create_holding(
             db, user_id, body.product_type, body.alias, body.display_name, body.characteristics
         )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except IntegrityError:
         db.rollback()
         raise HTTPException(
@@ -360,6 +367,8 @@ def patch_holding(
             body.display_name,
             body.characteristics,
         )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except IntegrityError:
         db.rollback()
         raise HTTPException(
@@ -450,6 +459,32 @@ def post_discretionary_category(
 @app.get("/consolidated")
 def get_consolidated(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     return compute_consolidated(db, user_id)
+
+
+@app.get("/financial-context")
+def read_financial_context(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return get_financial_context(db, user_id)
+
+
+@app.put("/financial-context")
+def write_financial_context(
+    user_id: uuid.UUID, body: FinancialContextUpdate, db: Session = Depends(get_db)
+) -> dict:
+    return set_financial_context(
+        db, user_id, body.dependant_count, body.emergency_fund_months
+    )
+
+
+@app.patch("/financial-context")
+def patch_financial_context_fields(
+    user_id: uuid.UUID, body: FinancialContextUpdate, db: Session = Depends(get_db)
+) -> dict:
+    return patch_financial_context(db, user_id, body.model_dump(exclude_unset=True))
+
+
+@app.delete("/financial-context")
+def delete_financial_context(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return clear_financial_context(db, user_id)
 
 
 @app.get("/loan-vs-invest")

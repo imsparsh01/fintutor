@@ -1,3 +1,4 @@
+import math
 import uuid
 
 from sqlalchemy.orm import Session
@@ -35,26 +36,48 @@ def compute_tax_saving_room(db: Session, user_id: uuid.UUID, tax_regime: str) ->
         return {"applicable": False, "note": _NOT_RELEVANT_NOTE, "unused_room": None}
 
     known_contributions = 0.0
+    invalid_contribution_count = 0
     for holding in db.query(Holding).filter(Holding.user_id == user_id).all():
         c = holding.characteristics or {}
         if holding.product_type == "ppf_epf":
-            known_contributions += float(c.get("annual_contribution") or 0)
+            try:
+                contribution = float(c.get("annual_contribution") or 0)
+            except (TypeError, ValueError):
+                contribution = float("nan")
+            if math.isfinite(contribution) and contribution >= 0:
+                known_contributions += contribution
+            else:
+                invalid_contribution_count += 1
         elif holding.product_type in ("term_insurance", "endowment_ulip"):
             frequency = c.get("premium_frequency")
+            premium_value = c.get("premium")
+            try:
+                premium = float(premium_value or 0)
+            except (TypeError, ValueError):
+                premium = float("nan")
+            if not math.isfinite(premium) or premium < 0:
+                invalid_contribution_count += 1
+                continue
             # D-112: match Portfolio Health's strict cadence rule. A premium with a
             # blank or unknown cadence is excluded rather than guessed as monthly.
             if (
                 frequency is not None
                 and str(frequency).strip().lower() in _RECURRING_FREQUENCIES
             ):
-                known_contributions += _to_monthly(c.get("premium") or 0, str(frequency)) * 12
+                known_contributions += _to_monthly(premium, str(frequency)) * 12
 
-    unused_room = max(0.0, _ANNUAL_80C_CAP - known_contributions)
+    unused_room = min(_ANNUAL_80C_CAP, max(0.0, _ANNUAL_80C_CAP - known_contributions))
 
     return {
         "applicable": True,
         "note": _ROOM_NOTE,
         "known_contributions": round(known_contributions, 2),
+        "invalid_contribution_count": invalid_contribution_count,
+        "validation_warning": (
+            "Some invalid recorded contributions were excluded."
+            if invalid_contribution_count
+            else None
+        ),
         "unused_room": round(unused_room, 2),
         "cap": _ANNUAL_80C_CAP,
     }

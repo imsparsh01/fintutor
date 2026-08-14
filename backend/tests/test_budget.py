@@ -114,9 +114,7 @@ class BudgetIncomeTests(unittest.TestCase):
                     compute_budget(db, uuid.uuid4())["income_total"], round(1200 * factor, 2), places=2
                 )
 
-    def test_missing_or_unrecognised_income_cadence_counts_as_monthly(self) -> None:
-        # Unlike recurring outflows, income has no strict-cadence gate: the source still
-        # counts, at its face amount.
+    def test_missing_or_unrecognised_income_cadence_is_excluded_and_flagged(self) -> None:
         for source in (
             {"label": "Salary", "amount": 50000},
             {"label": "Salary", "amount": 50000, "frequency": None},
@@ -125,7 +123,10 @@ class BudgetIncomeTests(unittest.TestCase):
         ):
             with self.subTest(source=source):
                 db = _db(incomes=[_income(source)])
-                self.assertEqual(compute_budget(db, uuid.uuid4())["income_total"], 50000.0)
+                result = compute_budget(db, uuid.uuid4())
+                self.assertEqual(result["income_total"], 0.0)
+                self.assertEqual(len(result["invalid_income_sources"]), 1)
+                self.assertEqual(result["invalid_income_sources"][0]["label"], "Salary")
 
     def test_multiple_rows_and_multiple_sources_are_summed(self) -> None:
         db = _db(incomes=[
@@ -336,6 +337,7 @@ class BudgetTotalsTests(unittest.TestCase):
     def test_empty_user_gets_an_all_zero_view(self) -> None:
         self.assertEqual(compute_budget(_db(), uuid.uuid4()), {
             "income_total": 0.0,
+            "invalid_income_sources": [],
             "recurring_outflows_total": 0.0,
             "recurring_outflows": [],
             "discretionary_total": 0.0,

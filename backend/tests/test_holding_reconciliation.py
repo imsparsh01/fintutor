@@ -132,6 +132,22 @@ class HoldingReconciliationServiceTests(unittest.TestCase):
         self.assertEqual(caught.exception.proposal["diff"][0]["stored_value"], 8.1)
         db.commit.assert_not_called()
 
+    def test_confirmed_update_still_rejects_a_negative_80c_input(self):
+        user_id = uuid.uuid4()
+        holding = Holding(
+            id=uuid.uuid4(), user_id=user_id, product_type="term_insurance",
+            alias="Term Insurance-1", characteristics={"premium": 1000},
+        )
+        db = MagicMock()
+        db.query.return_value.filter.return_value.with_for_update.return_value.first.return_value = holding
+        with self.assertRaisesRegex(ReconciliationValidationError, "premium"):
+            apply_reconciliation(
+                db, user_id, "term_insurance", {"premium": -1}, holding.id,
+                [{"field": "premium", "stored_value": 1000, "proposed_value": -1, "status": "conflicting"}],
+            )
+        self.assertEqual(holding.characteristics, {"premium": 1000})
+        db.commit.assert_not_called()
+
     def test_allowlist_values_and_malformed_or_duplicate_diff_write_nothing(self):
         invalid_cases = [
             ("unknown_type", {"interest_rate": 8}, []),

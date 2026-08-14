@@ -72,15 +72,18 @@ export type WalkthroughStep = {
   title?: string;
   body: string;
   figures?: { label: string; value: string }[];
+  source?: string;
+  missing?: string[];
 };
 
 export type TeachingWalkthroughProps = {
   visible: boolean;
   steps: WalkthroughStep[];
   onDismiss: () => void;
+  onAskMissing?: () => void;
 };
 
-export function TeachingWalkthrough({ visible, steps, onDismiss }: TeachingWalkthroughProps) {
+export function TeachingWalkthrough({ visible, steps, onDismiss, onAskMissing }: TeachingWalkthroughProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const fade = useRef(new Animated.Value(1)).current;
 
@@ -155,6 +158,8 @@ export function TeachingWalkthrough({ visible, steps, onDismiss }: TeachingWalkt
             {step.title ? <Text style={styles.title}>{step.title}</Text> : null}
             <Text style={styles.prose}>{step.body}</Text>
 
+            {step.source ? <Text style={styles.source}>Source: {step.source}</Text> : null}
+
             {step.figures && step.figures.length > 0 ? (
               <View style={styles.figures}>
                 {step.figures.map((f, i) => (
@@ -163,6 +168,18 @@ export function TeachingWalkthrough({ visible, steps, onDismiss }: TeachingWalkt
                     <Text style={styles.figureValue}>{f.value}</Text>
                   </View>
                 ))}
+              </View>
+            ) : null}
+
+            {step.missing && step.missing.length > 0 ? (
+              <View style={styles.missingBox}>
+                <Text style={styles.missingLabel}>NOT RECORDED</Text>
+                <Text style={styles.missingText}>{step.missing.join(' · ')}</Text>
+                {onAskMissing ? (
+                  <Pressable style={styles.missingAction} onPress={onAskMissing}>
+                    <Text style={styles.missingActionText}>Add only these details in Chat</Text>
+                  </Pressable>
+                ) : null}
               </View>
             ) : null}
           </ScrollView>
@@ -255,12 +272,43 @@ const styles = StyleSheet.create({
     color: colors.ink,
     maxWidth: 560,
   },
+  source: {
+    marginTop: spacing.lg,
+    fontFamily: font.mono,
+    fontSize: 12,
+    color: colors.inkMuted,
+  },
   figures: {
     marginTop: spacing.xxl,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.line,
     paddingTop: spacing.lg,
     gap: spacing.md,
+  },
+  missingBox: {
+    marginTop: spacing.xl,
+    padding: spacing.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.line,
+    borderRadius: radius.md,
+  },
+  missingLabel: typography.ledgerLabel,
+  missingText: {
+    marginTop: spacing.xs,
+    fontFamily: font.ui,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.inkSecondary,
+  },
+  missingAction: {
+    alignSelf: 'flex-start',
+    marginTop: spacing.md,
+  },
+  missingActionText: {
+    fontFamily: font.uiSemibold,
+    fontSize: 14,
+    color: colors.ink,
+    textDecorationLine: 'underline',
   },
   figureRow: {
     flexDirection: 'row',

@@ -70,16 +70,17 @@ mechanical.
    owner before acting. Do not expand scope mid-session even if a related fix or
    related question seems obvious — flag it instead.
 
-## Build sprint — gstack (D-107)
+## Build sprint — tool-independent gates (D-107, D-145)
 
-Every build session follows this loop. It mirrors garrytan/gstack's sprint structure, adapted
-for FinTutor's single-owner setup. Skills live in `~/.claude/skills/gstack/` (installed
-11-Aug-2026; `/qa` and browser skills unavailable until `bun` is installed and `./setup` is run).
+Every build session follows this loop. It preserves the sprint discipline adopted in D-107, but no
+third-party skill or named command is a shipping dependency. Use the named gstack commands when they
+are available and compatible; otherwise perform and record the equivalent written gates below.
 
 **Plan** — before writing any code:
 - For any non-trivial task (new screen, new feature, new service, or anything touching more than
-  2 files): invoke `/plan-eng-review` to lock architecture, surface edge cases, and spot scope
-  creep before it's embedded in code.
+  2 files), record a pre-build review that locks **scope, architecture, edge cases, and tests** before
+  implementation. `/plan-eng-review` may produce this review when available; otherwise write the
+  equivalent review directly in the session's working record.
 - Skip only for trivial isolated changes: a copy edit, a single-token fix, session housekeeping
   (archiving, session logs, decision files).
 
@@ -87,15 +88,17 @@ for FinTutor's single-owner setup. Skills live in `~/.claude/skills/gstack/` (in
 absorbing them mid-session.
 
 **Review** — before committing:
-- Invoke `/review` for a staff-engineer audit of the diff. Fix any issues flagged.
-- Do not commit before `/review` passes (or before you have consciously decided a finding is
-  a false positive and noted why).
+- Record a pre-commit review of the diff covering **correctness, security, privacy, scope, and test
+  evidence**. `/review` may produce this audit when available; otherwise perform and record the
+  equivalent manual review. Fix every substantiated finding.
+- Do not commit before the review passes (or before you have consciously decided a finding is a
+  false positive and recorded why).
 - Exception: documentation-only changes (session logs, archiving, decision files) may skip.
 
 **Test** — after review, if applicable:
-- If the session added or modified UI (screens, components, flows): invoke `/qa`.
-- On this machine (Windows), `/qa` requires the `browse` binary — not yet built (bun absent).
-  If `/qa` fails, note it in the session log and proceed; it is best-effort, not a blocker.
+- If the session added or modified UI (screens, components, flows), use `/qa` when available and
+  compatible. If it is unavailable or fails, record that fact and the equivalent checks performed;
+  UI QA remains best-effort and is not a shipping blocker.
 
 **Ship + Reflect** — handled by the "End of every session" checklist below (D-034/D-056;
 no PR — gstack's `/ship` is skipped in favour of direct-merge-to-main).

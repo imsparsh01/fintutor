@@ -175,12 +175,13 @@ class ConsolidatedExclusionTests(unittest.TestCase):
         self.assertEqual(result["insurance_holding_count"], 2)
         self.assertEqual(result["insurance_excluded_holding_count"], 1)
 
-    def test_unknown_product_type_is_ignored_by_every_family(self) -> None:
+    def test_unknown_product_type_is_counted_as_unclassified(self) -> None:
         result = compute_consolidated(_db([
             _holding("savings_balance", {"current_value": 75000}),
         ]), USER_ID)
 
         self.assertEqual(result["investments_total"], 0.0)
+        self.assertEqual(result["unclassified_holding_count"], 1)
         for family in ("investments", "loans", "insurance"):
             self.assertEqual(result[f"{family}_holding_count"], 0)
             self.assertEqual(result[f"{family}_status"], "empty")
@@ -197,6 +198,8 @@ class ConsolidatedValuationStatusTests(unittest.TestCase):
             self.assertEqual(result[f"{family}_holding_count"], 0)
             self.assertEqual(result[f"{family}_valued_holding_count"], 0)
             self.assertEqual(result[f"{family}_excluded_holding_count"], 0)
+            self.assertEqual(result[f"{family}_invalid_value_count"], 0)
+        self.assertEqual(result["unclassified_holding_count"], 0)
 
     def test_a_real_zero_counts_as_valued_not_as_missing(self) -> None:
         result = compute_consolidated(_db([
@@ -277,8 +280,76 @@ class ConsolidatedValuationStatusTests(unittest.TestCase):
                 f"{family}_holding_count",
                 f"{family}_valued_holding_count",
                 f"{family}_excluded_holding_count",
+                f"{family}_invalid_value_count",
             })
+        expected.add("unclassified_holding_count")
         self.assertEqual(set(result), expected)
+
+
+class ConsolidatedInvalidValueTests(unittest.TestCase):
+    """D-145: malformed/non-finite stored values fail soft and stay visible."""
+
+    def test_malformed_value_is_counted_and_never_coerced_to_zero(self) -> None:
+        result = compute_consolidated(_db([
+            _holding("stocks", {"current_value": "not-a-number"}),
+        ]), USER_ID)
+
+        self.assertEqual(result["investments_total"], 0.0)
+        self.assertEqual(result["investments_holding_count"], 1)
+        self.assertEqual(result["investments_valued_holding_count"], 0)
+        self.assertEqual(result["investments_invalid_value_count"], 1)
+        self.assertEqual(result["investments_status"], "unvalued")
+
+    def test_non_finite_values_fail_soft_in_every_family(self) -> None:
+        result = compute_consolidated(_db([
+            _holding("stocks", {"current_value": "NaN"}),
+            _holding("home_loan", {"outstanding_balance": "Infinity"}),
+            _holding("endowment_ulip", {"current_fund_value": float("-inf")}),
+        ]), USER_ID)
+
+        for family in ("investments", "loans", "insurance"):
+            self.assertEqual(result[f"{family}_total"], 0.0)
+            self.assertEqual(result[f"{family}_invalid_value_count"], 1)
+            self.assertEqual(result[f"{family}_status"], "unvalued")
+
+    def test_boolean_and_structured_values_are_invalid_not_numeric(self) -> None:
+        result = compute_consolidated(_db([
+            _holding("stocks", {"current_value": True}),
+            _holding("fd_rd", {"principal_or_monthly_amount": {"amount": 50}}),
+        ]), USER_ID)
+
+        self.assertEqual(result["investments_invalid_value_count"], 2)
+        self.assertEqual(result["investments_valued_holding_count"], 0)
+
+    def test_malformed_characteristics_container_fails_soft(self) -> None:
+        holding = _holding("home_loan", {})
+        holding.characteristics = ["bad-json-shape"]
+
+        result = compute_consolidated(_db([holding]), USER_ID)
+
+        self.assertEqual(result["loans_invalid_value_count"], 1)
+        self.assertEqual(result["loans_status"], "unvalued")
+
+    def test_valid_and_invalid_values_produce_mixed_status_and_valid_total(self) -> None:
+        result = compute_consolidated(_db([
+            _holding("stocks", {"current_value": 1250}),
+            _holding("equity_mutual_fund", {"current_value": "broken"}),
+        ]), USER_ID)
+
+        self.assertEqual(result["investments_total"], 1250.0)
+        self.assertEqual(result["investments_invalid_value_count"], 1)
+        self.assertEqual(result["investments_status"], "mixed")
+
+    def test_finite_values_that_overflow_the_aggregate_are_excluded(self) -> None:
+        result = compute_consolidated(_db([
+            _holding("stocks", {"current_value": 1e308}),
+            _holding("equity_mutual_fund", {"current_value": 1e308}),
+        ]), USER_ID)
+
+        self.assertEqual(result["investments_total"], 1e308)
+        self.assertEqual(result["investments_valued_holding_count"], 1)
+        self.assertEqual(result["investments_invalid_value_count"], 1)
+        self.assertEqual(result["investments_status"], "mixed")
 
 
 class ConsolidatedQueryScopeTests(unittest.TestCase):

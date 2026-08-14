@@ -19,6 +19,7 @@ import {
 } from '../lib/holdingReconciliation';
 import { HoldingProposalCard } from './HoldingProposalCard';
 import { scheduleHoldingReminder } from '../lib/reminders';
+import { noteMeaningfulLearningInteraction } from '../lib/learningReminders';
 
 interface Message {
   id: string;
@@ -159,6 +160,7 @@ export const ChatThread = forwardRef<
           holdingProposal: holdingProposal ?? undefined,
         },
       ]);
+      noteMeaningfulLearningInteraction(userId);
     } catch (err) {
       if (generation !== generationRef.current) return;
       setError(err instanceof Error ? err.message : 'Failed to reach the teaching engine');

@@ -12,6 +12,72 @@
 
 ---
 
+## BQ-087 — Privacy Policy v1 and dedicated financial context — DONE 14-Aug-2026
+
+Published the internal-MVP privacy policy with pre-registration and authenticated access. Added a nullable,
+per-user dependant-count/emergency-months record with JWT-owned GET/PATCH/clear controls; authoritative Arya,
+Portfolio Health and consented term-insurance use; cross-account and async-race guards; export/deletion
+coverage; and backend-only RLS. Applied migration `e145c087a001` to `fintutor-dev`. External collection and
+launch remain counsel-gated. Verified with 349 backend tests, 65 frontend tests, TypeScript, web export,
+remote constraints/grants/RLS inspection and independent review.
+
+## BQ-086 — Context-first term-insurance exploration — DONE 14-Aug-2026
+
+Added a transient, consent-first component explorer with source-visible debts, goals, assets, cover and
+confirmed context; critical-unknown blocking; editable inclusion; exact bounded arithmetic; and neutral
+signed cover comparison. It never infers support amounts, recommends purchase, labels adequacy or rewards a
+financial outcome. India insurance/fintech counsel remains required before external launch.
+
+## BQ-085 — Neutral Goal Affordability gap calculator — DONE 14-Aug-2026
+
+Added the D-145 month-end goal model with user-owned assumptions, modeled ending value, required monthly
+contribution and useful signed gap language. Inputs remain editable, stale results invalidate, arithmetic is
+bounded and tested, and the UI never declares affordable/unaffordable/on-track.
+
+## BQ-103 — Budget, 80C, ESOP and streak conformance corrections — DONE 14-Aug-2026
+
+Made income cadence strict and visible; rejected new invalid 80C inputs while excluding/flagging legacy bad
+values and clamping room to ₹0–₹1.5L; corrected equal-FMV and zero-unit ESOP copy plus clamped-anniversary
+timing/disclosure; and made future streak dates a logged no-op. Independent review closed reconciliation,
+recategorization and legacy-edit validation bypasses.
+
+## BQ-102 — Interactive own-numbers walkthrough — DONE 14-Aug-2026
+
+Family walkthroughs now optionally use consented recorded details with visible provenance, preserve real
+zeroes, name missing/malformed values, and ask Chat only for missing information with confirmation before
+save. They remain skippable, freely navigable, non-persistent, ungated and non-advisory.
+
+## BQ-097 — Preserve selected reminder due day — DONE 14-Aug-2026
+
+Replaced permanent day-28 recurrence with rolling dated one-shots that preserve day 1–31, clamp only in short
+months and restore the selected day later. Added edit/foreground refresh, legacy-ID migration, rollback and
+per-holding serialization; account switches suspend prior-account schedules without losing preferences.
+
+## BQ-096 — Preserve unvalued and unclassified holding metadata — DONE 14-Aug-2026
+
+Recognised malformed/non-finite values now stay counted but excluded with `unvalued`/`mixed` status and
+invalid counts. Unknown product types increment an unclassified count, never disappear or make a portfolio
+look empty. Home shows neutral warnings; the response never silently zeroes or fails wholesale.
+
+## BQ-095 — Opt-in ethical learning reminder — DONE 14-Aug-2026
+
+Added a one-time offer after meaningful learning, explicit time/permission opt-in, once-daily generic local
+copy, Home routing and change/pause/disable controls. Denial is respected; schedules are user-scoped and
+separate from holding reminders; no financial data, product targeting, urgency, guilt or streak pressure is
+used.
+
+## BQ-093 — Bounded in-context comparison coverage — DONE 14-Aug-2026
+
+Implemented D-145's fixed mechanism-only pair table with deterministic precedence, at most one absent
+candidate and D-080 on-topic timing. Removed the old Home cold-surfacing route/path. D-078 confirmation remains
+required before capture; no borrowing/refinancing or suitability suggestion was introduced.
+
+## BQ-091 — Tool-independent mandatory engineering gates — DONE 14-Aug-2026
+
+Superseded unavailable command dependence while preserving D-107 discipline: non-trivial work records a
+pre-build scope/architecture/edge/test plan and a pre-commit correctness/security/privacy/scope/test review.
+Named commands remain preferred when compatible; equivalent manual gates are mandatory otherwise.
+
 ## BQ-105 — Reauthenticated self-service JSON data export — DONE 14-Aug-2026
 
 Added `POST /account/export` with verified-subject ownership and fresh password reauthentication. One

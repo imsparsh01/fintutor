@@ -113,6 +113,14 @@ export function BudgetingScreen() {
 
       <View style={styles.card}>
         <BudgetRow label="Income" display={incomeDisplay} />
+        {budget.invalid_income_sources.length > 0 && (
+          <Text style={styles.validationWarning}>
+            {budget.invalid_income_sources.length} income source
+            {budget.invalid_income_sources.length === 1 ? ' is' : 's are'} excluded because a recognised
+            cadence is missing. Edit {budget.invalid_income_sources.length === 1 ? 'it' : 'them'} to include
+            {budget.invalid_income_sources.length === 1 ? ' it' : ' them'} in monthly income and net.
+          </Text>
+        )}
         <BudgetRow label="Recurring outflows" display={formatRupees(budget.recurring_outflows_total)} />
         {budget.recurring_outflows.length > 0 && (
           <View style={styles.provenance}>
@@ -631,6 +639,13 @@ const styles = StyleSheet.create({
   rowLabel: typography.ledgerLabel,
   provenance: { marginTop: spacing.sm, marginBottom: spacing.sm, paddingLeft: spacing.md, borderLeftWidth: 2, borderLeftColor: colors.line },
   provenanceTitle: { fontFamily: font.uiMedium, fontSize: 13, color: colors.inkSecondary, marginBottom: spacing.xs },
+  validationWarning: {
+    fontFamily: font.ui,
+    fontSize: 12,
+    lineHeight: 17,
+    color: colors.inkSecondary,
+    marginBottom: spacing.sm,
+  },
   rowSubtitle: { fontFamily: font.mono, fontSize: 11, color: colors.inkMuted, marginTop: 2 },
   // Ledger-row value spec (1E) — font.mono 15/600/ink.
   rowValue: typography.ledgerValue,

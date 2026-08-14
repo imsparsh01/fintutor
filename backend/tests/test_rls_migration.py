@@ -8,19 +8,17 @@ from app import models  # noqa: F401 — registers every model with Base.metadat
 
 class RlsMigrationCoverageTests(unittest.TestCase):
     def test_every_application_table_is_in_fastapi_only_boundary(self) -> None:
-        migration_path = (
-            Path(__file__).parents[1]
-            / "alembic"
-            / "versions"
-            / "d142a104f001_lock_public_tables_behind_fastapi.py"
-        )
-        spec = importlib.util.spec_from_file_location("rls_migration", migration_path)
-        assert spec and spec.loader
-        migration = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(migration)
+        versions = Path(__file__).parents[1] / "alembic" / "versions"
+        secured = set()
+        for index, migration_path in enumerate(versions.glob("*.py")):
+            spec = importlib.util.spec_from_file_location(f"rls_migration_{index}", migration_path)
+            assert spec and spec.loader
+            migration = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(migration)
+            secured.update(getattr(migration, "_TABLES", ()))
 
         expected = set(Base.metadata.tables) | {"alembic_version"}
-        self.assertEqual(expected, set(migration._TABLES))
+        self.assertEqual(expected, secured)
 
 
 if __name__ == "__main__":

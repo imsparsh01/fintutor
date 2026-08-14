@@ -16,25 +16,25 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | Decision | Disposition | Deliverable | Blocker / transition |
 |---|---|---|---|
 | D-009 | DEFERRED | India securities/fintech legal review | Before public launch |
-| D-010 | READY → BQ-087 | Internal-MVP Privacy Policy v1, accessible links and dedicated context | Build contract approved by D-145; external collection/public launch still requires qualified India counsel review |
+| D-010 | SHIPPED → BQ-087 | Internal-MVP Privacy Policy v1, accessible links and dedicated context | External collection/public launch still requires qualified India counsel review under D-009 |
 | D-138 | DEFERRED | Verify production SSL enforcement and applicable database network restrictions | Unparks with D-143 before any non-local/external backend deployment; JWT ownership already shipped |
 | D-142 | SHIPPED → BQ-104 | Enforce FastAPI-only access to every public application table | Completed 14-Aug-2026 at Alembic head `d142a104f001`; direct client roles denied, private backend role verified |
 | D-144 | SHIPPED → BQ-105 | Reauthenticated self-service JSON data export | Completed 14-Aug-2026; verified-subject export, native/web delivery, temporary-file cleanup, and future-model coverage guard |
 | D-139/D-140 | SHIPPED → BQ-099 | Reauthenticated, retry-safe whole-account deletion with seven-day backup treatment | Completed 14-Aug-2026 |
-| D-012/D-051 | READY → BQ-093 | Complete bounded in-context comparison coverage | D-145 approved pairing, precedence and compliance-safe copy; cold surfacing stays out |
+| D-012/D-051 | SHIPPED → BQ-093 | Bounded in-context comparison coverage | Completed 14-Aug-2026; cold surfacing removed |
 | D-022 | DEFERRED | Conversation memory | Storage, retrieval, retention and deletion policy approved; explicitly post-MVP |
 | D-031/D-079 | DEFERRED | Real estate, Cash & bank, and Alternatives holding families | Explicit post-MVP unpark/priority decision |
 | D-046 | SHIPPED → BQ-094 | Repair standalone-file evidence for five historical IDs | Completed 14-Aug-2026; every D-001–D-136 ID resolves to one primary artifact |
-| D-060 | READY → BQ-095 | Opt-in ethical daily learning reminder | D-145 approved frequency, controls, destination and prohibited targeting/copy |
-| D-089 | READY → BQ-102 | Interactive own-numbers educational walkthrough | D-145 approved consent, provenance, missing-value, persistence and teach-not-advise contract |
+| D-060 | SHIPPED → BQ-095 | Opt-in ethical daily learning reminder | Completed 14-Aug-2026 |
+| D-089 | SHIPPED → BQ-102 | Interactive own-numbers educational walkthrough | Completed 14-Aug-2026 |
 | D-067 | DEFERRED | Automatic comparison-trigger detection | Real usage shows users ask decision-shaped questions without the explicit trigger |
 | D-095 | DEFERRED | Tighten localhost CORS and verify the dev-auth bypass is absent | Before first non-development deployment |
-| D-097 | READY → BQ-096 | Preserve valuation metadata for unmapped/malformed holdings | D-145 approved fail-soft exclusion, unvalued/mixed and unclassified semantics |
-| D-048/D-069/D-070 | READY → BQ-103 | Correct audited budget/ESOP/tax-room/streak defects | D-145 approved exact input, arithmetic, wording, date and no-op behavior |
-| D-101 | READY → BQ-097 | Preserve reminder day 1–31 with per-month clamping | D-145 approved recurrence contract; no permanent day-28 rewrite |
+| D-097 | SHIPPED → BQ-096 | Preserve valuation metadata for unmapped/malformed holdings | Completed 14-Aug-2026 |
+| D-048/D-069/D-070 | SHIPPED → BQ-103 | Correct audited budget/ESOP/tax-room/streak defects | Completed 14-Aug-2026 after independent conformance review |
+| D-101 | SHIPPED → BQ-097 | Preserve reminder day 1–31 with per-month clamping | Completed 14-Aug-2026 |
 | D-105 | DEFERRED | Income-tax comparison and HRA exemption calculators | D-145 requires named FY, official sources, verification owner/date, stale shutdown and counsel review |
 | D-106 | DEFERRED | Rent-vs-buy scenario (S-04) | Explicit schema/input and money-calculation approval |
-| D-107 | READY → BQ-091 | Tool-independent mandatory engineering plan/review gates | D-145 approved manual-equivalent fallback and deliberate operating-rules edit |
+| D-107 | SHIPPED → BQ-091 | Tool-independent mandatory engineering plan/review gates | Completed 14-Aug-2026 |
 | D-117 | DEFERRED | Progression pacing simulation | Before external launch; test light/frequent paths and single-feature dominance |
 | D-119 | SHIPPED → BQ-088 | Assessment context view/change/clear UI | Completed 14-Aug-2026 |
 | D-119/D-121 | SHIPPED → BQ-099 | Whole-account deletion integration for assessment/progression | Completed 14-Aug-2026 |
@@ -44,10 +44,10 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-121 | DEFERRED | Operational 400-day progression pruning | Unparks with D-143/BQ-092 when a production scheduler is required before external users |
 | D-114/D-121 | DEFERRED | Internal de-identified progression/business aggregates | BQ-072 measurement design after internal MVP validation |
 | D-122/D-124/D-125 | BLOCKED → BQ-072 | Customer-outcome MVP exit-gate programme | Complete approved MVP, owner simulator validation, then external activation testing |
-| D-128 | READY → BQ-085 | Neutral Goal Affordability gap calculator | D-145 approved inputs, month-end model, useful gap, validation and non-verdict disclosure |
-| D-131/D-132 | READY → BQ-086 | Context-first term-insurance exploration | D-145 approved component/source/unknown/validation/disclosure contract; counsel before external launch |
-| D-134/D-141 | READY → BQ-087 | Privacy Policy v1 and dedicated minimal context record | D-145 approved internal build; external collection/public launch remains counsel-gated |
-| D-145 | READY → BQ-091/BQ-093/BQ-095/BQ-096/BQ-097/BQ-102/BQ-103/BQ-085/BQ-086/BQ-087 | Execute the consolidated MVP backlog contracts | Ten bounded queue items; BQ-098 is separately deferred |
+| D-128 | SHIPPED → BQ-085 | Neutral Goal Affordability gap calculator | Completed 14-Aug-2026 |
+| D-131/D-132 | SHIPPED → BQ-086 | Context-first term-insurance exploration | Completed 14-Aug-2026; counsel still required before external launch |
+| D-134/D-141 | SHIPPED → BQ-087 | Privacy Policy v1 and dedicated minimal context record | Completed 14-Aug-2026; external collection/public launch remains counsel-gated |
+| D-145 | SHIPPED → BQ-091/BQ-093/BQ-095/BQ-096/BQ-097/BQ-102/BQ-103/BQ-085/BQ-086/BQ-087 | Execute consolidated MVP backlog contracts | Ten builds completed 14-Aug-2026; BQ-098 remains deliberately deferred |
 | D-129 | SHIPPED → BQ-101 | Align recurring-contribution timing and disclosures | Owner reconfirmed Option A; completed 14-Aug-2026 |
 | D-005/D-008/D-143 | DEFERRED | Select and implement the production FastAPI host | Unparks before external testing/distribution or any workflow requiring a non-local backend; Supabase remains Postgres/Auth only |
 | D-005/D-008/D-052/D-137 | SHIPPED → BQ-089 | Validate Supabase JWT and derive request ownership | Completed 14-Aug-2026; verified token subject is authoritative across protected routes |

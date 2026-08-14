@@ -5,6 +5,7 @@ import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HoldingEditModal } from '../components/HoldingEditModal';
+import { TermInsuranceExplorerModal } from '../components/TermInsuranceExplorerModal';
 import { TeachingBlock } from '../components/TeachingBlock';
 import { colors, figure, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
@@ -12,11 +13,12 @@ import { useAuth } from '../lib/AuthContext';
 import { fetchConsolidated, type ConsolidatedTotals } from '../lib/consolidated';
 import { formatRupees } from '../lib/format';
 import { fetchHoldings, type Holding } from '../lib/holdings';
+import { fetchGoals, type GoalRecord } from '../lib/goals';
 import { humanizeProductType, INSURANCE_TYPES } from '../lib/taxonomy';
 import type { HoldingsStackParamList, MainTabsParamList } from '../navigation/types';
 import { HoldingDetailScreen } from './HoldingDetailScreen';
 import { TeachingWalkthrough } from '../components/TeachingWalkthrough';
-import { INSURANCE_WALKTHROUGH } from '../lib/walkthroughSteps';
+import { buildWalkthroughPlan } from '../lib/walkthroughSteps';
 
 const Stack = createNativeStackNavigator<HoldingsStackParamList>();
 
@@ -50,18 +52,26 @@ function holdingDetail(h: Holding): string {
 function InsuranceList({ navigation }: ListProps) {
   const { userId } = useAuth();
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
+  const [allHoldings, setAllHoldings] = useState<Holding[] | null>(null);
+  const [goals, setGoals] = useState<GoalRecord[] | null>(null);
   const [totals, setTotals] = useState<ConsolidatedTotals | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [showTermExplorer, setShowTermExplorer] = useState(false);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
+  const walkthroughPlan = buildWalkthroughPlan('insurance', holdings ?? []);
 
   const load = useCallback(() => {
     if (!userId) return;
     setError(null);
     fetchHoldings(userId)
-      .then((all) => setHoldings(all.filter((h) => INSURANCE_TYPES.includes(h.product_type))))
+      .then((all) => {
+        setAllHoldings(all);
+        setHoldings(all.filter((h) => INSURANCE_TYPES.includes(h.product_type)));
+      })
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load holdings'));
+    fetchGoals(userId).then(setGoals).catch(() => setGoals(null));
     fetchConsolidated(userId)
       .then(setTotals)
       .catch(() => setTotals(null));
@@ -71,6 +81,12 @@ function InsuranceList({ navigation }: ListProps) {
 
   const startWalkthrough = () => {
     setShowWalkthrough(true);
+  };
+
+  const askMissingWalkthroughDetails = () => {
+    if (!walkthroughPlan.missingQuestion) return;
+    setShowWalkthrough(false);
+    parentNavigation?.navigate('Chat', { prefillQuestion: walkthroughPlan.missingQuestion });
   };
 
   const startAlreadyHave = () => {
@@ -147,12 +163,21 @@ function InsuranceList({ navigation }: ListProps) {
         </TeachingBlock>
 
         <Text style={styles.walkthroughPrompt}>
-          Want a short map of how each one works? You can apply it to your own numbers in Chat when
-          you are ready.
+          Start with a record you choose to provide. Unknown details stay unknown until you add and confirm them.
         </Text>
 
         <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
-          <Text style={styles.walkthroughButtonText}>Walk me through it</Text>
+          <Text style={styles.walkthroughButtonText}>Start an own-numbers walkthrough</Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.explorerButton}
+          disabled={allHoldings === null}
+          onPress={() => setShowTermExplorer(true)}
+        >
+          <Text style={styles.explorerButtonText}>
+            {allHoldings === null ? 'Loading your context…' : 'Explore term cover with my numbers'}
+          </Text>
         </Pressable>
 
         <Pressable style={styles.alreadyHaveButton} onPress={startAlreadyHave}>
@@ -164,7 +189,8 @@ function InsuranceList({ navigation }: ListProps) {
         </Pressable>
 
         {modal}
-        <TeachingWalkthrough visible={showWalkthrough} steps={INSURANCE_WALKTHROUGH} onDismiss={() => setShowWalkthrough(false)} />
+        <TeachingWalkthrough visible={showWalkthrough} steps={walkthroughPlan.steps} onDismiss={() => setShowWalkthrough(false)} onAskMissing={walkthroughPlan.missingQuestion ? askMissingWalkthroughDetails : undefined} />
+        {allHoldings ? <TermInsuranceExplorerModal visible={showTermExplorer} holdings={allHoldings} goals={goals ?? []} recordedContextAvailable={goals !== null} onDismiss={() => setShowTermExplorer(false)} /> : null}
       </ScrollView>
     );
   }
@@ -174,6 +200,9 @@ function InsuranceList({ navigation }: ListProps) {
       <Text style={styles.pageTitle}>Insurance</Text>
       <Text style={styles.subtitle}>{holdings.length} {holdings.length === 1 ? 'policy' : 'policies'}</Text>
       {totals && <Text style={styles.familyTotal}>{formatRupees(totals.insurance_total)}</Text>}
+      <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
+        <Text style={styles.walkthroughButtonText}>Use my recorded details</Text>
+      </Pressable>
       <FlatList
         data={holdings}
         keyExtractor={(item) => item.id}
@@ -200,7 +229,18 @@ function InsuranceList({ navigation }: ListProps) {
         <Text style={styles.addButtonSecondaryText}>+ Add a policy</Text>
       </Pressable>
       <Text style={styles.addCaption}>Or just mention it in Ask — that's usually faster.</Text>
+      <Pressable
+        style={styles.explorerButton}
+        disabled={allHoldings === null}
+        onPress={() => setShowTermExplorer(true)}
+      >
+        <Text style={styles.explorerButtonText}>
+          {allHoldings === null ? 'Loading your context…' : 'Explore term cover with my numbers'}
+        </Text>
+      </Pressable>
       {modal}
+      <TeachingWalkthrough visible={showWalkthrough} steps={walkthroughPlan.steps} onDismiss={() => setShowWalkthrough(false)} onAskMissing={walkthroughPlan.missingQuestion ? askMissingWalkthroughDetails : undefined} />
+      {allHoldings ? <TermInsuranceExplorerModal visible={showTermExplorer} holdings={allHoldings} goals={goals ?? []} recordedContextAvailable={goals !== null} onDismiss={() => setShowTermExplorer(false)} /> : null}
     </View>
   );
 }
@@ -265,6 +305,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   walkthroughButtonText: typography.primaryButtonText,
+  explorerButton: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.tutor,
+    borderRadius: radius.md,
+    paddingVertical: 14,
+    paddingHorizontal: spacing.md,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  explorerButtonText: typography.secondaryButtonText,
   alreadyHaveButton: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.tutor,

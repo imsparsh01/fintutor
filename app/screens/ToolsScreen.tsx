@@ -70,6 +70,11 @@ const CALCULATORS: CalcEntry[] = [
     label: 'Emergency Coverage',
     description: 'See how many months the accessible balances you enter would cover.',
   },
+  {
+    type: 'goal_affordability',
+    label: 'Goal contribution gap',
+    description: 'Compare your planned monthly amount with a modeled amount for a goal.',
+  },
 ];
 
 const SCENARIOS: ScenarioEntry[] = [

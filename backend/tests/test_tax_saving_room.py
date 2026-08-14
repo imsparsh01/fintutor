@@ -79,6 +79,8 @@ class TaxRegimeBranchTests(unittest.TestCase):
             "applicable": True,
             "note": _ROOM_NOTE,
             "known_contributions": 0.0,
+            "invalid_contribution_count": 0,
+            "validation_warning": None,
             "unused_room": 150000.0,
             "cap": 150000.0,
         })
@@ -184,12 +186,24 @@ class KnownContributionTests(unittest.TestCase):
             _room(_holding("ppf_epf", {"annual_contribution": 149999}))["unused_room"], 1.0
         )
 
-    def test_negative_recorded_contribution_pushes_room_above_the_cap(self) -> None:
-        # Current behaviour, pinned deliberately: max() only floors at zero, it does not
-        # ceiling at the cap, so a negative recorded figure inflates the room.
+    def test_negative_legacy_contribution_is_excluded_and_room_stays_at_cap(self) -> None:
         result = _room(_holding("ppf_epf", {"annual_contribution": -50000}))
-        self.assertEqual(result["known_contributions"], -50000.0)
-        self.assertEqual(result["unused_room"], 200000.0)
+        self.assertEqual(result["known_contributions"], 0.0)
+        self.assertEqual(result["unused_room"], 150000.0)
+        self.assertEqual(result["invalid_contribution_count"], 1)
+        self.assertIsNotNone(result["validation_warning"])
+
+    def test_invalid_legacy_premium_warns_even_without_a_recognised_cadence(self) -> None:
+        for characteristics in (
+            {"premium": -1},
+            {"premium": float("inf"), "premium_frequency": "whenever"},
+            {"premium": "malformed", "premium_frequency": None},
+        ):
+            with self.subTest(characteristics=characteristics):
+                result = _room(_holding("term_insurance", characteristics))
+                self.assertEqual(result["known_contributions"], 0.0)
+                self.assertEqual(result["invalid_contribution_count"], 1)
+                self.assertIsNotNone(result["validation_warning"])
 
     def test_figures_are_rounded_to_two_decimals(self) -> None:
         result = _room(_holding("ppf_epf", {"annual_contribution": 1234.567}))

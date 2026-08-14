@@ -1,53 +1,82 @@
 import type { Holding } from './holdings';
 
-// Pure day arithmetic, deliberately free of expo-notifications and AsyncStorage imports so it
-// can be tested under `node --test` (same split as emergencyCoverage.ts vs its Tool component).
-// The scheduling/permission side lives in reminders.ts.
-
-// A monthly repeating trigger can only name a day that every month has. A reminder that
-// arrives a few days early is harmless; one that silently skips February is not, so a due
-// day past the 28th is pulled back rather than left to not fire at all.
-const LAST_ALWAYS_PRESENT_DAY = 28;
+// Pure calendar arithmetic, deliberately free of Expo and AsyncStorage imports so the
+// due-day contract can be proved under `node --test`.
 export const REMINDER_HOUR = 9;
+// Six months keeps recurrence resilient without consuming an entire device's finite
+// pending-notification allowance, which is shared with the daily learning reminder.
+export const REMINDER_OCCURRENCE_COUNT = 6;
 
 export interface ReminderSchedule {
-  day: number;
+  /** The user's original selection. It is never rewritten after a short month. */
+  selectedDay: number;
   body: string;
-  /** True when the stored due day was pulled back to keep every month covered. */
+}
+
+export interface ReminderOccurrence {
+  date: Date;
+  /** Whether this particular month used its final day. */
   clamped: boolean;
 }
 
-/**
- * Which day of the month this holding should remind on, if any.
- *
- * Both supported product types are monthly-cycle obligations: `emi_due_day` is stored as a
- * day-of-month outright, and a credit card's `payment_due_date` is a full date whose
- * day-of-month is the recurring due day.
- */
+/** Extract the recurring due day from a supported holding. */
 export function reminderScheduleFor(holding: Holding): ReminderSchedule | null {
   const c = holding.characteristics;
   const body = reminderBody(holding.product_type);
 
   if (holding.product_type === 'credit_card_debt') {
     if (typeof c.payment_due_date !== 'string') return null;
-    const parsed = new Date(`${c.payment_due_date}T09:00:00`);
-    if (Number.isNaN(parsed.getTime())) return null;
-    return clampToMonthly(parsed.getDate(), body);
+    // Parse the ISO date fields directly. Date.parse accepts rollover-like inputs on some
+    // engines, which would quietly change the user's selected day.
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(c.payment_due_date);
+    if (!match) return null;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    if (month < 1 || month > 12 || day < 1 || day > daysInMonth(year, month - 1)) return null;
+    return { selectedDay: day, body };
   }
 
   if (holding.product_type === 'home_loan' || holding.product_type === 'personal_loan') {
     if (typeof c.emi_due_day !== 'number' || !Number.isFinite(c.emi_due_day)) return null;
-    const day = Math.floor(c.emi_due_day);
-    if (day < 1 || day > 31) return null;
-    return clampToMonthly(day, body);
+    const selectedDay = Math.floor(c.emi_due_day);
+    if (selectedDay < 1 || selectedDay > 31) return null;
+    return { selectedDay, body };
   }
 
   return null;
 }
 
-function clampToMonthly(day: number, body: string): ReminderSchedule {
-  const clamped = day > LAST_ALWAYS_PRESENT_DAY;
-  return { day: clamped ? LAST_ALWAYS_PRESENT_DAY : day, body, clamped };
+/**
+ * Produce the next dated occurrences. Each month independently clamps to month-end,
+ * so a 31st reminder becomes 28/29 in February and returns to 31 in March.
+ */
+export function nextReminderOccurrences(
+  schedule: ReminderSchedule,
+  now: Date = new Date(),
+  count = REMINDER_OCCURRENCE_COUNT
+): ReminderOccurrence[] {
+  if (!Number.isFinite(now.getTime()) || !Number.isInteger(count) || count < 1) return [];
+
+  const occurrences: ReminderOccurrence[] = [];
+  let monthOffset = 0;
+  while (occurrences.length < count) {
+    const firstOfMonth = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+    const year = firstOfMonth.getFullYear();
+    const month = firstOfMonth.getMonth();
+    const finalDay = daysInMonth(year, month);
+    const day = Math.min(schedule.selectedDay, finalDay);
+    const date = new Date(year, month, day, REMINDER_HOUR, 0, 0, 0);
+    if (date.getTime() > now.getTime()) {
+      occurrences.push({ date, clamped: day !== schedule.selectedDay });
+    }
+    monthOffset += 1;
+  }
+  return occurrences;
+}
+
+function daysInMonth(year: number, zeroBasedMonth: number): number {
+  return new Date(year, zeroBasedMonth + 1, 0).getDate();
 }
 
 function reminderBody(productType: string): string {

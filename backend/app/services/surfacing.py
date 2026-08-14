@@ -4,41 +4,112 @@ from sqlalchemy.orm import Session
 
 from app.models import Holding
 
-# D-051/BQ-013 — WHICH half of D-012's trigger logic only. Purely mechanical: no model
-# judgment anywhere here. WHEN (deciding a live turn is the right moment to raise a
-# candidate) is a separate, still-gated question — see D-051 — this never decides to
-# surface anything, it only computes what's eligible.
-#
-# Rule order is the fixed precedence order for a future WHEN-stage tie-break (D-051):
-# first rule in this list is highest precedence. v1 has one rule, so precedence isn't
-# exercised yet, but the shape is here for when the table grows.
-_PAIRING_RULES = [
+# D-145/BQ-093 — the deterministic WHICH stage. Rule order is precedence: the
+# first eligible rule is the only candidate returned. The service never decides
+# WHEN to mention it; candidates are available only inside /chat, where D-080's
+# verified on-topic prompt rule governs the whole answer.
+_PAIRING_RULES = (
     {
         "trigger_types": {"home_loan", "personal_loan"},
-        "requires_absent": "term_insurance",
         "candidate": "term_insurance",
-        "reason": "loan_without_life_cover",
+        "reason": "loan_and_term_cover_mechanisms",
+        "mechanism_difference": (
+            "Loan repayment and term life cover are separate mechanisms: one repays borrowing, "
+            "while the other transfers a defined death-risk during a selected cover period."
+        ),
     },
-]
+    {
+        "trigger_types": {"endowment_ulip"},
+        "candidate": "term_insurance",
+        "reason": "bundled_and_pure_cover_mechanisms",
+        "mechanism_difference": (
+            "Endowment or ULIP contracts combine cover with a savings or investment component; "
+            "term insurance provides cover without that bundled component."
+        ),
+    },
+    {
+        "trigger_types": {"term_insurance"},
+        "candidate": "endowment_ulip",
+        "reason": "pure_and_bundled_cover_mechanisms",
+        "mechanism_difference": (
+            "Term insurance provides cover without a savings component; endowment or ULIP "
+            "contracts combine cover with a savings or investment component."
+        ),
+    },
+    {
+        "trigger_types": {"esop"},
+        "candidate": "stocks",
+        "reason": "employee_option_and_share_mechanisms",
+        "mechanism_difference": (
+            "An ESOP grant is a contractual route to employer shares under vesting and exercise "
+            "terms; a stock holding is direct ownership of shares already acquired."
+        ),
+    },
+    {
+        "trigger_types": {"stocks"},
+        "candidate": "equity_mutual_fund",
+        "reason": "direct_and_pooled_equity_mechanisms",
+        "mechanism_difference": (
+            "A stock holding is ownership in an individual company; an equity mutual fund pools "
+            "money across a managed portfolio of equity holdings."
+        ),
+    },
+    {
+        "trigger_types": {"equity_mutual_fund"},
+        "candidate": "debt_mutual_fund",
+        "reason": "equity_and_debt_fund_mechanisms",
+        "mechanism_difference": (
+            "Equity mutual funds primarily hold company ownership interests; debt mutual funds "
+            "primarily hold interest-bearing debt instruments."
+        ),
+    },
+    {
+        "trigger_types": {"debt_mutual_fund"},
+        "candidate": "fd_rd",
+        "reason": "debt_fund_and_deposit_mechanisms",
+        "mechanism_difference": (
+            "A debt mutual fund owns a changing portfolio of market-priced debt instruments; "
+            "an FD or RD is a deposit governed by an agreed rate and term."
+        ),
+    },
+    {
+        "trigger_types": {"fd_rd"},
+        "candidate": "ppf_epf",
+        "reason": "deposit_and_provident_fund_mechanisms",
+        "mechanism_difference": (
+            "An FD or RD follows its deposit contract; PPF or EPF follows a provident-fund "
+            "framework with its own contribution, access, and interest rules."
+        ),
+    },
+    {
+        "trigger_types": {"ppf_epf"},
+        "candidate": "fd_rd",
+        "reason": "provident_fund_and_deposit_mechanisms",
+        "mechanism_difference": (
+            "PPF or EPF follows a provident-fund framework with its own contribution, access, "
+            "and interest rules; an FD or RD follows an agreed deposit rate and term."
+        ),
+    },
+)
 
 
 def compute_surfacing_candidates(db: Session, user_id: uuid.UUID) -> list[dict]:
-    """Ordered list of {product_type, reason} candidates worth surfacing to the user.
+    """Return zero or one absent-type, mechanism-only educational candidate.
 
-    Endowment/ULIP presence does NOT suppress the term_insurance candidate (owner-
-    confirmed, D-051/BQ-013 scoping) — D-013 split Term from Endowment/ULIP because the
-    teaching moment genuinely differs, so the gap stands regardless of what else is held.
+    This function is read-only and deliberately has no natural-language call to
+    action, suitability claim, or capture behavior.
     """
     product_types = {
         h.product_type for h in db.query(Holding).filter(Holding.user_id == user_id).all()
     }
 
-    candidates = []
-    seen = set()
     for rule in _PAIRING_RULES:
-        if product_types & rule["trigger_types"] and rule["requires_absent"] not in product_types:
-            if rule["candidate"] not in seen:
-                candidates.append({"product_type": rule["candidate"], "reason": rule["reason"]})
-                seen.add(rule["candidate"])
-
-    return candidates
+        if product_types & rule["trigger_types"] and rule["candidate"] not in product_types:
+            return [
+                {
+                    "product_type": rule["candidate"],
+                    "reason": rule["reason"],
+                    "mechanism_difference": rule["mechanism_difference"],
+                }
+            ]
+    return []

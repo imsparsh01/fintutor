@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { ConsolidatedTotalsCard } from '../components/ConsolidatedTotalsCard';
 import { AccountDeletionModal } from '../components/AccountDeletionModal';
 import { DataExportModal } from '../components/DataExportModal';
+import { FinancialContextModal } from '../components/FinancialContextModal';
+import { PrivacyPolicyModal } from '../components/PrivacyPolicyModal';
 import { ProgressBar } from '../components/ProgressBar';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
@@ -19,7 +21,6 @@ import {
 import { randomRewardFact } from '../lib/rewardFacts';
 import { fetchProgression, type ProgressionSummary } from '../lib/progression';
 import { recordAppOpen, type StreakOpenResult } from '../lib/streaks';
-import { fetchSurfacingCandidates, type SurfacingCandidate } from '../lib/surfacing';
 import { supabase } from '../lib/supabase';
 import type { HealthScoreSnapshot } from '../lib/healthScoreSnapshot';
 import type {
@@ -62,16 +63,18 @@ const LEARN_CARDS = [
 // Every number remains neutral (P10), and every tool card opens a user-controlled mechanism.
 export function ConsolidatedScreen() {
   const { userId, displayName } = useAuth();
+  const currentUser = useRef(userId);
+  currentUser.current = userId;
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
   const [streak, setStreak] = useState<StreakOpenResult | null>(null);
-  const [candidate, setCandidate] = useState<SurfacingCandidate | null>(null);
-  const [dismissed, setDismissed] = useState(false);
   const [rewardFact, setRewardFact] = useState<string | null>(null);
   const [health, setHealth] = useState<HealthScoreSnapshot | null>(null);
   const [showAssessmentInvite, setShowAssessmentInvite] = useState(false);
   const [progression, setProgression] = useState<ProgressionSummary | null>(null);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [exportingData, setExportingData] = useState(false);
+  const [editingFinancialContext, setEditingFinancialContext] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -84,11 +87,9 @@ export function ConsolidatedScreen() {
   const loadHome = useCallback(() => {
     let active = true;
     setProgression(null);
+    setHealth(null);
     if (!userId) return () => { active = false; };
-    loadHealthScoreSnapshot(userId, true).then(setHealth);
-    fetchSurfacingCandidates(userId)
-      .then((items) => setCandidate(items[0] ?? null))
-      .catch(() => setCandidate(null));
+    loadHealthScoreSnapshot(userId, true).then((next) => { if (active) setHealth(next); });
     fetchProgression(userId)
       .then((next) => { if (active) setProgression(next); })
       .catch(() => { if (active) setProgression(null); });
@@ -164,22 +165,15 @@ export function ConsolidatedScreen() {
           </View>
         </View>
         <Text style={styles.aryaBody}>
-          {candidate && !dismissed
-            ? tutorPrompt(candidate)
-            : 'Bring one number or mechanism you want to understand. We can take it apart without choosing for you.'}
+          Bring one number or mechanism you want to understand. We can take it apart without choosing for you.
         </Text>
         <View style={styles.aryaActions}>
           <Pressable
             style={styles.primaryButton}
-            onPress={() => navigation.navigate('Chat', {
-              prefillQuestion: candidate && !dismissed ? tutorPrefill(candidate) : undefined,
-            })}
+            onPress={() => navigation.navigate('Chat')}
           >
             <Text style={styles.primaryButtonText}>Start a conversation</Text>
           </Pressable>
-          {candidate && !dismissed && (
-            <Pressable onPress={() => setDismissed(true)}><Text style={styles.secondaryAction}>Not now</Text></Pressable>
-          )}
         </View>
       </View>
 
@@ -254,6 +248,13 @@ export function ConsolidatedScreen() {
         <Text style={styles.personalizationLinkText}>Manage personalization</Text>
       </Pressable>
 
+      <Pressable style={styles.personalizationLink} onPress={() => setEditingFinancialContext(true)}>
+        <Text style={styles.personalizationLinkText}>Manage optional financial context</Text>
+      </Pressable>
+      <Pressable accessibilityRole="link" style={styles.personalizationLink} onPress={() => setShowPrivacy(true)}>
+        <Text style={styles.personalizationLinkText}>Privacy Policy</Text>
+      </Pressable>
+
       <Pressable style={styles.signOut} onPress={() => supabase?.auth.signOut()}>
         <Text style={styles.signOutText}>Sign out</Text>
       </Pressable>
@@ -269,6 +270,16 @@ export function ConsolidatedScreen() {
       </Pressable>
       <DataExportModal visible={exportingData} onClose={() => setExportingData(false)} />
       <AccountDeletionModal visible={deletingAccount} onClose={() => setDeletingAccount(false)} />
+      <FinancialContextModal visible={editingFinancialContext} onClose={() => {
+        setEditingFinancialContext(false);
+        const requestedUser = userId;
+        if (requestedUser) {
+          loadHealthScoreSnapshot(requestedUser, true).then((next) => {
+            if (currentUser.current === requestedUser) setHealth(next);
+          });
+        }
+      }} />
+      <PrivacyPolicyModal visible={showPrivacy} onClose={() => setShowPrivacy(false)} />
     </ScrollView>
   );
 }
@@ -363,20 +374,6 @@ async function shouldOfferAssessment(userId: string): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-function tutorPrompt(candidate: SurfacingCandidate): string {
-  if (candidate.reason === 'loan_without_life_cover') {
-    return "You’re carrying a loan, but there’s no term cover on record. Want to see how term insurance works with your own numbers?";
-  }
-  return 'There’s a mechanism in your records worth understanding. Want to walk through it with your own numbers?';
-}
-
-function tutorPrefill(candidate: SurfacingCandidate): string {
-  if (candidate.reason === 'loan_without_life_cover') {
-    return 'Can you explain how term insurance works, using my own numbers?';
-  }
-  return 'Can you walk me through this, using my own numbers?';
 }
 
 const styles = StyleSheet.create({

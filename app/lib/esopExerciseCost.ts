@@ -6,6 +6,7 @@ export interface EsopExerciseCostResult {
   total_units_granted: number;
   exercise_cost: number;
   exercised_units_assumption_note: string;
+  vesting_timing_note: string;
   spread: number | null;
   spread_note: string | null;
   exercise_window_note: string | null;

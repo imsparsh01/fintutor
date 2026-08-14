@@ -48,14 +48,6 @@ approved assessment schema; BQ-068 does not silently expand D-119's storage pack
 **Revisit:** before external launch if “dismiss everywhere” is required. This needs an explicit persistence,
 retention, and deletion decision—not a drive-by column or mutation of preserved legacy rows.
 
-### `baseline.dependents` / `baseline.emergency_fund_months` missing from the teaching engine
-**Traces to:** BQ-023, `backend/app/services/baseline.py`. `SYSTEM_PROMPT_v0_8_runnable.md` §4 documents
-both fields as part of `baseline`; neither has a backing field anywhere in the schema, so both are omitted
-from every `/chat` call. The teaching engine is running on a baseline structurally thinner than what it was
-written to expect.
-**Revisit:** needs its own schema decision (new fields on `Income`? A new small profile object?) — not
-something to add on spec, same hard-stop-4 territory D-065/D-066 were escalated under.
-
 ---
 
 ## Deferred by design — a real evidence-based unpark condition already exists

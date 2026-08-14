@@ -1,9 +1,12 @@
+import logging
 import uuid
 from datetime import date, timedelta
 
 from sqlalchemy.orm import Session
 
 from app.models import StreakState
+
+logger = logging.getLogger(__name__)
 
 
 def _to_dict(state: StreakState) -> dict:
@@ -43,7 +46,12 @@ def record_app_open(db: Session, user_id: uuid.UUID) -> dict:
         db.refresh(state)
         return _to_dict(state)
 
-    if state.last_active_date == today:
+    if state.last_active_date is not None and state.last_active_date >= today:
+        if state.last_active_date > today:
+            logger.warning(
+                "Ignoring app-open streak update for future last_active_date",
+                extra={"user_id": str(user_id), "last_active_date": state.last_active_date.isoformat()},
+            )
         return _to_dict(state)
 
     if state.last_active_date == today - timedelta(days=1):

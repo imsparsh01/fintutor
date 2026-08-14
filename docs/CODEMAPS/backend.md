@@ -35,8 +35,9 @@ POST /goals                     → create_goal(…, funded_by: list[{holding_id
 PUT  /goals/{id}/funding        → replace owned funded_by links; empty list allowed
 
 GET  /consolidated              → compute_consolidated(db, user_id)
+GET/PUT/PATCH/DELETE /financial-context → view, replace, field-update or clear optional confirmed
+                                      dependant/emergency context; first-write races retry safely
 GET  /budget                    → compute_budget(db, user_id)
-GET  /surfacing-candidates      → compute_surfacing_candidates(db, user_id)
 GET  /loan-vs-invest            → compute_loan_vs_invest(…, prepay_amount)
 GET  /esop-exercise-cost        → compute_esop_exercise_cost(…)
 GET  /tax-saving-room           → compute_tax_saving_room(…, tax_regime)
@@ -78,12 +79,15 @@ POST /account/export            → password reauthentication → documented JSO
 services/baseline.py (75)       assemble_baseline() — merges holdings+income+goals+surfacing into
                                  the dict injected into the teaching prompt. Central to every /chat call.
 services/budget.py (~110)       compute_budget() — normalises recurring income/EMI/SIP/premium to monthly;
-                                 returns provenance rows. Outflows require an explicit recognised frequency;
-                                 income currently falls back to monthly for blank/unknown cadence (a confirmed,
-                                 owner-gated defect). D-112 adds six-month premium variants at amount ÷ 6.
-services/consolidated.py (99)   compute_consolidated() — per-family totals with valuation metadata:
-                                 holding/valued/excluded/status per family so client never infers from 0.
-services/holdings.py (137)      CRUD + serialisation. alias auto-generated (D-074) if not provided.
+                                 returns provenance rows. Income and outflows both require an explicit
+                                 recognised frequency; invalid income cadence is excluded and returned for a
+                                 visible warning. D-112 adds six-month variants at amount ÷ 6.
+services/consolidated.py        compute_consolidated() — per-family totals with fail-soft valuation metadata:
+                                 holding/valued/excluded/invalid/status per family, plus a top-level
+                                 unclassified count. Malformed/non-finite JSONB values never become zero
+                                 and never fail the complete response.
+services/holdings.py            CRUD + serialisation. Alias auto-generated (D-074) if not provided; new
+                                 negative/non-finite 80C contribution/premium inputs are rejected.
 services/income.py (44)         CRUD for income sources (floor + optional amount_high, D-073).
 services/goals.py               Create/list + owned earmarked_amount link replacement.
 services/onboarding.py (242)    start_or_resume() / record_turn() / build_onboarding_instruction()
@@ -129,12 +133,15 @@ services/privacy_masking.py      Random-nonce request envelope across question/p
                                  requires ongoing review because no finite list can enumerate every brand.
 services/holding_fields.py       Shared reconciliation product/characteristic allowlist + scalar validation.
 services/deepen_classifier.py (59)   classify_deepen() — picks alias from baseline to surface in depth.
-services/surfacing.py (44)      compute_surfacing_candidates() — known_gaps list for /chat baseline.
+services/surfacing.py           compute_surfacing_candidates() — ordered D-145 pairing table; returns at
+                                 most one absent-type, mechanism-only candidate inside /chat baseline.
+                                 No public candidate route: D-080's on-topic prompt gate must govern WHEN.
 services/rewards.py (22)        evaluate_reward(is_new_day) — returns reward signal on new-day open.
-services/streaks.py (58)        record_app_open() / get_streak().
+services/streaks.py             record_app_open() / get_streak(); future stored activity dates log and no-op.
 services/loan_vs_invest.py (102) Math: prepayment vs invest decision; uses hurdle rate (D-014).
-services/esop_exercise_cost.py (115) ESOP exercise cost computation (D-066).
-services/tax_saving_room.py (~60) 80C room left under old/new regime (D-016). No NPS/80CCD handling
+services/esop_exercise_cost.py  ESOP cost with clamped-anniversary vesting estimate, equal-FMV/zero-unit copy.
+services/tax_saving_room.py     80C room left under old/new regime (D-016), always clamped to ₹0–₹1.5L;
+                                  legacy invalid contributions are excluded and visibly flagged. No NPS/80CCD
                                   exists — D-070's formula is ppf_epf annual_contribution plus annualised
                                   insurance premiums only. D-112 strict cadence:
                                   blank/unknown premium frequency excluded; six-month variants count ×2/year.
@@ -144,6 +151,7 @@ services/account_deletion.py    Reauthenticates against Supabase, deletes the co
                                  in one DB transaction, then calls the server-only Auth Admin deletion API.
 services/data_export.py         Complete user-readable export registry + serializers. Every query is scoped
                                  to the verified subject; a coverage test pairs it with all owned models.
+services/financial_context.py   One owned optional context row: view/upsert/clear; null remains unknown.
 ```
 
 ## DB Models (all in `backend/app/models/`)
@@ -158,6 +166,7 @@ StreakState       streak_states     — current_streak, longest_streak, last_act
 OnboardingState   onboarding_states — track, stage, turns_in_stage (one row per user)
 OnboardingAssessment onboarding_assessments — versioned normalized five-axis context, structural
                                       question/status state, eligibility/handled/clear timestamps
+FinancialContext financial_contexts — optional dependant_count + emergency_fund_months; one row per user
 ProgressionEvent     progression_events — append-only ledger; no points/dimension columns
                                       UniqueConstraint(user_id, idempotency_key)
 ProgressionDailyRollup progression_daily_rollups — per-user-day aggregate; frozen record once pruned

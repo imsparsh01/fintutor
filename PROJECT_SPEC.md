@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v5.1, 14-Aug-2026)
+# FinTutor — Project Spec (v5.2, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -214,14 +214,15 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       available as design-philosophy inspiration for `app/`'s real UI work — explicit-ask only, not
       auto-triggered; see its `PROVENANCE.md` for the applicability caveat and invocation policy before
       using it.
-- [ ] Write the data privacy policy (D-010): model-boundary masking is settled by D-133 and MVP at-rest
+- [x] **Internal-MVP Privacy Policy v1 shipped (D-010/D-145/BQ-087, 14-Aug-2026).** Model-boundary masking is settled by D-133 and MVP at-rest
       protection by D-138 (Supabase-managed encryption plus strict access/transport/network controls; no
       application-managed field encryption for MVP). D-139 caps recovery-only backup retention after active
       deletion at seven days. D-140 settles reauthenticated, data-first, retry-safe whole-account deletion.
       D-141 places detailed disclosure for D-134's optional sensitive context in the privacy policy while
       preserving clear optional labels and user controls in-product. D-144 adds a fresh-authenticated,
-      self-service JSON export covering every active user-owned record. Still needs remaining provider
-      treatment, final policy text/link, and legal review.
+      self-service JSON export covering every active user-owned record. `docs/PRIVACY_POLICY.md` is linked
+      before registration and from authenticated Home; D-134's per-user context record is live. Qualified
+      India counsel review remains a D-009 external-launch gate, not unfinished internal-MVP implementation.
 - [x] Write DECISION_PROTOCOL.md (D-017) — **COMPLETE at v1.0.** All six sections written: §1 taxonomy
       (retroactive classification of D-001–D-016, five categories), §2 tiers + six-trigger checklist +
       routing sequence, §3 four evaluation lenses, §4 conflict/precedence + supersession marker + the
@@ -311,6 +312,11 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v5.2 (14-Aug-2026) — **D-145's executable backlog completed.** Ten BQs shipped: tool-independent
+  engineering gates, bounded comparisons, ethical learning reminders, fail-soft consolidated metadata,
+  correct due-day recurrence, interactive own-numbers walkthroughs, audited money/state corrections, Goal
+  Affordability, context-first term-insurance exploration, and Privacy Policy v1 with dedicated per-user
+  financial context. Supabase is at Alembic `e145c087a001`; tax/HRA and external-launch gates stay deferred.
 - v5.1 (14-Aug-2026) — **D-145 consolidated backlog contracts approved.** Ten previously blocked MVP items
   now have executable contracts: engineering gates, educational pairings, ethical reminders, valuation
   metadata, due-day recurrence, own-numbers walkthroughs, audited corrections, Goal Affordability,
@@ -348,8 +354,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   carry a Supabase access token; the backend verifies it and derives ownership solely from the verified
   subject rather than a client-selected `user_id`. Multiple test accounts remain supported, with
   cross-account isolation required in BQ-089.
-- v4.2 (12-Aug-2026) — **D-118/D-119 onboarding v2 contract and privacy/persistence boundary approved.**
-  Initial release is 18+; the five optional axes store only normalized categories in a separate versioned
-  assessment table; raw dialogue is not persisted; backend completion is cross-device authoritative; and
-  legacy users are grandfathered without inferred answers or forced reassessment. This authorises bounded
-  onboarding implementation, not the broader progression event ledger or final D-010 privacy policy.

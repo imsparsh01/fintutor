@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from app.db.session import Base, get_db
 from app.main import app
 from app.models import (
-    DiscretionaryCategory, Goal, Holding, Income, OnboardingAssessment, OnboardingState,
+    DiscretionaryCategory, FinancialContext, Goal, Holding, Income, OnboardingAssessment, OnboardingState,
     ProgressionDailyRollup, ProgressionEvent, ProgressionSummary, StreakState,
 )
 from app.services.account_deletion import ACCOUNT_DATA_MODELS, delete_active_user_data
@@ -19,7 +19,7 @@ class AccountDeletionServiceTests(unittest.TestCase):
         delete_active_user_data(db, user_id)
         queried = {entry.args[0] for entry in db.query.call_args_list}
         for model in (
-            Goal, Holding, Income, DiscretionaryCategory, StreakState, OnboardingState,
+            Goal, Holding, Income, DiscretionaryCategory, FinancialContext, StreakState, OnboardingState,
             OnboardingAssessment, ProgressionEvent, ProgressionDailyRollup, ProgressionSummary,
         ):
             self.assertIn(model, queried)

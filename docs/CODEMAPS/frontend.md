@@ -67,10 +67,13 @@ ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…"
 InvestmentsScreen       screens/ (338)             Hidden tab — holdings list (equity/debt/fd/ppf/stocks)
 LoansScreen             screens/ (290)             Hidden tab — holdings list (home_loan/personal_loan/cc)
 InsuranceScreen         screens/ (296)             Hidden tab — holdings list (term_insurance/endowment_ulip)
-BudgetingScreen         screens/ (659)             Hidden tab — income + goals + discretionary + tax room
+BudgetingScreen         screens/                   Hidden tab — income + goals + discretionary + tax room;
+                                                   visibly flags income omitted for invalid cadence
 ChatScreen              screens/ (47)              Chat tab — thin wrapper rendering ChatThread
 ProgressScreen          screens/                   Hidden BQ-070 learning-progress detail: stage,
                                                    backend-authored bar/gates, awarded-only attribution
+LearningReminderScreen  screens/                   Hidden per-user settings: choose/change time, pause,
+                                                   disable, and OS-settings recovery after permission denial
 HoldingDetailScreen     screens/ (357)             Single holding — edit + ESOP/LoanVsInvest modals
 ```
 
@@ -87,16 +90,25 @@ HoldingProposalCard         components/ (~175) Transient reconciliation: zero/on
 HoldingEditModal            components/ (326)  Add/edit holding — schema-driven form via characteristicsSchema
 GoalFundingFields           components/        Optional neutral holding picker + earmarked amounts;
                                                reused by goal creation and existing-goal link editing
-ConsolidatedTotalsCard      components/ (94)   Home totals — uses metadata flags not numeric zero (D-097)
-TeachingWalkthrough         components/ (312)  Full-screen P9-guarded walkthrough (D-090). Four-part guard:
-                                               skip on every step, nothing unlocks, no comprehension check,
-                                               freely navigable. Receives steps[] + family name as props.
+ConsolidatedTotalsCard      components/        Home totals — uses status/count metadata rather than numeric
+                                               zero; visibly flags unreadable values and unclassified records
+TeachingWalkthrough         components/        Full-screen P9-guarded own-numbers walkthrough. Skip stays live
+                                               on every step; nothing unlocks and nothing persists. Shows
+                                               source-visible saved figures, explicit unknowns and an optional
+                                               D-078-confirmed Chat handoff for only missing details.
 TeachingBlock               components/ (46)   Inline teaching paragraph (used inside family screens)
 LoanVsInvestModal           components/ (335)  Prepayment vs invest calculator (D-014)
 EmergencyCoverageTool      components/          Shared S-05/C-14 editable form, independent fail-open
                                                budget/FD prefills, disclosures, result and accessibility
-EsopExerciseCostModal       components/ (166)  ESOP exercise cost today (D-066)
-TaxSavingRoomModal          components/ (260)  80C/NPS headroom calculator (D-016)
+EsopExerciseCostModal       components/        ESOP cost today + clamped-anniversary estimate disclosure
+TaxSavingRoomModal          components/        80C headroom + visible legacy-invalid exclusion warning
+TermInsuranceExplorerModal components/        Consent-first transient component model: source-visible
+                                               recorded context, critical-input blocking, editable inclusion
+                                               and neutral cover difference
+FinancialContextModal      components/        View/change/clear the two optional account-owned context values
+PrivacyPolicyModal         components/        Full internal-MVP v1 policy, linked before registration and Home
+LearningReminderManager components/           One-time post-learning opt-in offer plus foreground horizon
+                                               refresh; never prompts or schedules before explicit opt-in
 StreakBadge                 components/ (32)   Streak counter — behaviour color only (P7)
 TabIcon                     components/ (~180) Five code-native primary-nav glyphs; no icon dependency
 [Mascot deleted — BQ-053]
@@ -112,22 +124,27 @@ dataExport.ts                   Reauthenticated export API + browser download/na
 dataExportFormat.ts             Stable dated filename and readable newline-terminated JSON formatting
 chat.ts                 78      sendChatMessage() — POST /chat wrapper; onboarding fields
 holdings.ts             74      fetchHoldings / createHolding / updateHolding / deleteHolding
-consolidated.ts         30      fetchConsolidated() → {families, totals, metadata}
+consolidated.ts                 fetchConsolidated() → family totals/status/counts, including invalid-value
+                                counts and a top-level unclassified-record count
 budget.ts               24      fetchBudget() → {income, provenance, goals, discretionary, taxRoom}
 income.ts               53      fetchIncome / saveIncome
 goals.ts                        fetchGoals / createGoal / updateGoalFunding
+financialContext.ts             Authenticated view/replace/clear API for confirmed dependant/emergency context
 onboarding.ts           17      Legacy device-local completion helpers (retained for BQ-068 compatibility)
 onboardingAssessment.ts ~130    Dedicated v2 normalized API client + handled-state outage cache,
                                 legacy-presence compatibility read, local invite dismissal, and handled-context
                                 update/clear calls (BQ-088)
 assessmentVocabulary.ts         Shared approved normalized codes and user-facing labels for capture + management
-reminderSchedule.ts     57      reminderScheduleFor(holding) → {day, body, clamped} | null. Pure day-of-month
-                                arithmetic, no Expo imports, so it is testable under `node --test`.
-                                Due days past the 28th clamp so no month is skipped.
-reminders.ts            36      scheduleHoldingReminder() / cancelHoldingReminder() — Expo Notifications;
-                                credit card due + EMI due day (D-101). Uses a MONTHLY repeating trigger:
-                                the original DATE trigger fired once and then went silent until the
-                                holding was next edited (fixed 12-Aug-2026, D-125 audit F-3).
+reminderSchedule.ts             Pure selected-day extraction + next-occurrence calendar arithmetic. Each
+                                month independently clamps to its final day, then later months restore the
+                                original 1–31 selection; Expo-free and tested under `node --test`.
+reminders.ts                    Expo local credit-card/EMI reminders. Maintains six dated one-shot occurrences,
+                                refreshes the rolling horizon on authenticated foreground/edit, migrates old
+                                single-ID storage, and never requests permission during background refresh.
+learningReminderSchedule.ts     Pure next-seven-days local-time arithmetic and deterministic rotation across
+                                generic behavior-only notification copy; tested without Expo imports
+learningReminders.ts            Per-user opt-in/preference state and isolated Expo one-shot scheduler;
+                                supports change, pause, disable and denial-without-renag behavior
 streaks.ts              32      fetchStreak / recordAppOpen
 progression.ts          ~95     BQ-071 emitters: recordCalculatorCompleted / recordScenarioCompleted,
                                 plus fetchProgression(). Every emitter is fire-and-forget and swallows
@@ -137,9 +154,9 @@ progression.ts          ~95     BQ-071 emitters: recordCalculatorCompleted / rec
                                 ResultCard effects emit only after a valid result commits to the screen.
                                 These live in the app because calculators and scenarios compute client-side.
                                 BQ-070 also fetches the backend-authored summary/history projections.
-surfacing.ts            17      fetchSurfacingCandidates()
 characteristicsSchema.ts 94     CHARACTERISTICS_SCHEMA — per-product-type field definitions for HoldingEditModal
-walkthroughSteps.ts     42      Per-family static step arrays for TeachingWalkthrough (D-096)
+walkthroughSteps.ts             Pure per-family plan builder: selects only mechanism-relevant saved fields,
+                                preserves real zeroes, labels provenance, and never fabricates unknown values
 rewardFacts.ts          9       Curated mechanism-fact array for app-open reward surface (D-100)
 taxSavingRoom.ts        24      fetchTaxSavingRoom()
 loanVsInvest.ts         30      fetchLoanVsInvest()
@@ -147,6 +164,8 @@ holdingReconciliation.ts       Resolve owned candidate/new choice and apply conf
                                 exposes refreshed proposal on stale 409
 compoundGrowth.ts              Pure D-128/D-129 month-end contribution model with finite/safe bounds;
                                 typed validation/overflow reasons, zero-rate branch, arithmetic difference
+goalAffordability.ts           D-145 pure month-end goal-gap model: ending value, required monthly
+                                contribution and signed planned-minus-required gap with bounded validation
 creditCardPayoff.ts            Pure fixed-payment month loop: interest then clamped month-end payment;
                                 paid/non-clearing/1200-cap/typed-invalid outcomes
                                 Calculator UI clears all card inputs/results on auth-user change; any
@@ -155,6 +174,9 @@ stepUpSip.ts                   D-129 pure month-end contribution loop; annual st
                                 first contribution of each new 12-month block
 emergencyCoverage.ts           Shared D-130 pure accessible-balances / monthly-outgoings calculation and
                                liquidity-narrow budget/fixed-deposit prefill helpers; retirement excluded
+termInsurance.ts               Pure D-145 support-stream/component model and source-visible recorded-context
+                               projection; no inferred rate, persisted scenario, advice or outcome reward
+requestGeneration.ts           Tiny stale-async guard used when consented modal context requests outlive UI state
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
                                 computeOverall(scores) → {score,measured}; pure functions, no side effects
@@ -204,8 +226,9 @@ CalculatorType (navigation/types.ts):
   'compound_growth' D-128 — lump sum + month-end contributions at a user-entered rate
   'credit_card_payoff' D-128 — optional recorded-card prefill + user-entered fixed payment model
   'emergency_coverage' D-128/D-130 — shared accessible-balances runway mechanism (C-14)
+  'goal_affordability' D-145 — neutral modeled ending value, required contribution and signed gap
 ```
-All 8 are pure frontend math. Tax/HRA remain blocked pending a separate rule-source contract.
+All 9 are pure frontend math. Tax/HRA remain blocked pending a separate rule-source contract.
 
 ## Scenario types (D-106, BQ-056)
 

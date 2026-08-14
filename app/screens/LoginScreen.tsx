@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import type { AuthStackParamList } from '../navigation/types';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
+import { PrivacyPolicyModal } from '../components/PrivacyPolicyModal';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
@@ -13,6 +14,7 @@ export function LoginScreen({ navigation }: Props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   async function handleLogin() {
     if (!supabase) return;
@@ -62,6 +64,10 @@ export function LoginScreen({ navigation }: Props) {
       <Pressable onPress={() => navigation.navigate('Register')} hitSlop={8}>
         <Text style={styles.link}>Don't have an account? Register</Text>
       </Pressable>
+      <Pressable accessibilityRole="link" onPress={() => setShowPrivacy(true)} hitSlop={8}>
+        <Text style={styles.privacyLink}>Privacy Policy</Text>
+      </Pressable>
+      <PrivacyPolicyModal visible={showPrivacy} onClose={() => setShowPrivacy(false)} />
     </View>
   );
 }
@@ -112,5 +118,6 @@ const styles = StyleSheet.create({
     color: colors.inkSecondary,
     fontFamily: font.ui,
   },
+  privacyLink: { marginTop: spacing.md, textAlign: 'center', color: colors.tutor, fontFamily: font.uiMedium },
   error: { color: colors.danger, marginBottom: spacing.md, fontFamily: font.ui },
 });

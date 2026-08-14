@@ -4,6 +4,8 @@ export interface TaxSavingRoomResult {
   applicable: boolean;
   note: string;
   known_contributions?: number;
+  invalid_contribution_count?: number;
+  validation_warning?: string | null;
   unused_room: number | null;
   cap?: number;
 }

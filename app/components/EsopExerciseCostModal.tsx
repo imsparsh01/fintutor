@@ -70,6 +70,7 @@ export function EsopExerciseCostModal({
                 {result.total_units_granted.toLocaleString('en-IN')}
               </Text>
               <Text style={styles.cardNote}>{result.exercised_units_assumption_note}</Text>
+              <Text style={styles.cardNote}>{result.vesting_timing_note}</Text>
             </View>
 
             {/* The deciding figure: largest type on the screen (mandatory device #3). */}

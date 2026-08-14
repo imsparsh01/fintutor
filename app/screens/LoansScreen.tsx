@@ -16,7 +16,7 @@ import { humanizeProductType, LOAN_TYPES } from '../lib/taxonomy';
 import type { HoldingsStackParamList, MainTabsParamList } from '../navigation/types';
 import { HoldingDetailScreen } from './HoldingDetailScreen';
 import { TeachingWalkthrough } from '../components/TeachingWalkthrough';
-import { LOAN_WALKTHROUGH } from '../lib/walkthroughSteps';
+import { buildWalkthroughPlan } from '../lib/walkthroughSteps';
 
 const Stack = createNativeStackNavigator<HoldingsStackParamList>();
 
@@ -56,6 +56,7 @@ function LoansList({ navigation }: ListProps) {
   const [adding, setAdding] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
+  const walkthroughPlan = buildWalkthroughPlan('loans', holdings ?? []);
 
   const load = useCallback(() => {
     if (!userId) return;
@@ -72,6 +73,12 @@ function LoansList({ navigation }: ListProps) {
 
   const startWalkthrough = () => {
     setShowWalkthrough(true);
+  };
+
+  const askMissingWalkthroughDetails = () => {
+    if (!walkthroughPlan.missingQuestion) return;
+    setShowWalkthrough(false);
+    parentNavigation?.navigate('Chat', { prefillQuestion: walkthroughPlan.missingQuestion });
   };
 
   const startAlreadyHave = () => {
@@ -141,12 +148,11 @@ function LoansList({ navigation }: ListProps) {
         </TeachingBlock>
 
         <Text style={styles.walkthroughPrompt}>
-          Want a short map of how each one works? You can apply it to your own numbers in Chat when
-          you are ready.
+          Start with a record you choose to provide. Unknown details stay unknown until you add and confirm them.
         </Text>
 
         <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
-          <Text style={styles.walkthroughButtonText}>Walk me through it</Text>
+          <Text style={styles.walkthroughButtonText}>Start an own-numbers walkthrough</Text>
         </Pressable>
 
         <Pressable style={styles.alreadyHaveButton} onPress={startAlreadyHave}>
@@ -158,7 +164,7 @@ function LoansList({ navigation }: ListProps) {
         </Pressable>
 
         {modal}
-        <TeachingWalkthrough visible={showWalkthrough} steps={LOAN_WALKTHROUGH} onDismiss={() => setShowWalkthrough(false)} />
+        <TeachingWalkthrough visible={showWalkthrough} steps={walkthroughPlan.steps} onDismiss={() => setShowWalkthrough(false)} onAskMissing={walkthroughPlan.missingQuestion ? askMissingWalkthroughDetails : undefined} />
       </ScrollView>
     );
   }
@@ -168,6 +174,9 @@ function LoansList({ navigation }: ListProps) {
       <Text style={styles.pageTitle}>Loans</Text>
       <Text style={styles.subtitle}>{holdings.length} {holdings.length === 1 ? 'loan' : 'loans'}</Text>
       {totals && <Text style={styles.familyTotal}>{formatRupees(totals.loans_total)}</Text>}
+      <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
+        <Text style={styles.walkthroughButtonText}>Use my recorded details</Text>
+      </Pressable>
       <FlatList
         data={holdings}
         keyExtractor={(item) => item.id}
@@ -195,6 +204,7 @@ function LoansList({ navigation }: ListProps) {
       </Pressable>
       <Text style={styles.addCaption}>Or just mention it in Ask — that's usually faster.</Text>
       {modal}
+      <TeachingWalkthrough visible={showWalkthrough} steps={walkthroughPlan.steps} onDismiss={() => setShowWalkthrough(false)} onAskMissing={walkthroughPlan.missingQuestion ? askMissingWalkthroughDetails : undefined} />
     </View>
   );
 }

@@ -18,6 +18,7 @@ import { EmergencyCoverageTool } from '../components/EmergencyCoverageTool';
 import { useAuth } from '../lib/AuthContext';
 import { calculateCompoundGrowth } from '../lib/compoundGrowth';
 import { calculateCreditCardPayoff, PAYOFF_MONTH_CAP } from '../lib/creditCardPayoff';
+import { calculateGoalAffordability } from '../lib/goalAffordability';
 import { calculateStepUpSip } from '../lib/stepUpSip';
 import { fetchHoldings, type Holding } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
@@ -55,6 +56,7 @@ export function CalculatorScreen() {
       {type === 'compound_growth' && <CompoundGrowthCalc onComputed={onComputed} />}
       {type === 'credit_card_payoff' && <CreditCardPayoffCalc userId={userId} onComputed={onComputed} />}
       {type === 'emergency_coverage' && <EmergencyCoverageTool key={userId ?? 'signed-out'} userId={userId} surface="calculator" onComputed={onComputed} />}
+      {type === 'goal_affordability' && <GoalAffordabilityCalc onComputed={onComputed} />}
     </KeyboardAvoidingView>
   );
 }
@@ -412,6 +414,78 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
   );
 }
 
+// ─── D-145: Neutral goal contribution gap ─────────────────────────────────
+function GoalAffordabilityCalc({ onComputed }: CalcProps) {
+  const [target, setTarget] = useState('');
+  const [current, setCurrent] = useState('');
+  const [plannedMonthly, setPlannedMonthly] = useState('');
+  const [rate, setRate] = useState('');
+  const [years, setYears] = useState('');
+  const [outcome, setOutcome] = useState<ReturnType<typeof calculateGoalAffordability> | null>(null);
+  const edit = (setter: (value: string) => void) => (value: string) => {
+    setter(value);
+    setOutcome(null);
+  };
+
+  const calculate = () => setOutcome(calculateGoalAffordability(
+    Number(target), Number(current), Number(plannedMonthly), Number(rate), Number(years)
+  ));
+  const result = outcome?.ok ? outcome.result : null;
+  const errorCopy = outcome && !outcome.ok ? {
+    non_finite: 'Enter ordinary finite numbers in every field.',
+    target_required: 'Enter a target amount above zero.',
+    negative_value: 'Amounts, rate, and horizon cannot be negative.',
+    amount_too_large: 'Each amount must be no more than ₹1 lakh crore.',
+    rate_out_of_range: 'Enter an annual assumed rate from 0% to 1,000%.',
+    horizon_out_of_range: 'Enter a horizon no greater than 200 years.',
+    horizon_rounds_to_zero: 'Enter a horizon that rounds to at least one modeled month—about 0.042 years or more.',
+    numeric_overflow: 'This combination grows beyond the calculator’s safe numeric range. Reduce an amount, rate, or horizon.',
+  }[outcome.error] : null;
+
+  let gapCopy = '';
+  if (result) {
+    const gap = result.monthlyContributionGap;
+    gapCopy = Math.abs(gap) < 0.005
+      ? 'Your planned monthly contribution matches the modeled requirement.'
+      : gap < 0
+        ? `${formatRupees(Math.abs(gap))} more per month closes the modeled gap.`
+        : `Your plan is ${formatRupees(gap)} above the modeled monthly requirement.`;
+  }
+
+  return (
+    <CalcWrapper title="Goal contribution gap">
+      <Text style={styles.prefillIntro}>
+        Enter one possible goal scenario. Change any value and calculate again to compare a different scenario.
+      </Text>
+      <CalcInput label="Goal target" prefix="₹" value={target} onChange={edit(setTarget)} />
+      <CalcInput label="Current amount earmarked" prefix="₹" value={current} onChange={edit(setCurrent)} />
+      <CalcInput label="Planned monthly contribution" prefix="₹" value={plannedMonthly} onChange={edit(setPlannedMonthly)} />
+      <CalcInput label="Annual assumed return" suffix="%" value={rate} onChange={edit(setRate)} />
+      <CalcInput label="Time horizon" suffix="years" value={years} onChange={edit(setYears)} />
+      <CalcButton onPress={calculate} disabled={[target, current, plannedMonthly, rate, years].some((value) => value === '')} />
+      {errorCopy ? <Text accessibilityRole="alert" style={styles.calcError}>{errorCopy}</Text> : null}
+      {result ? (
+        <>
+          <ResultCard
+            unit="Modeled amount at end"
+            value={formatRupees(result.endingValue)}
+            mechanismNote={`Your current amount compounds for ${result.months} months. Each planned contribution enters at month end and begins compounding the following month.`}
+            onRendered={onComputed}
+          />
+          <View style={styles.secondaryResult}>
+            <Text style={styles.secondaryLabel}>Modeled monthly requirement</Text>
+            <Text style={styles.secondaryValue}>{formatRupees(result.requiredMonthlyContribution)}</Text>
+          </View>
+          <Text style={styles.gapExplanation}>{gapCopy}</Text>
+          <Text style={styles.disclosure}>
+            This is a conditional model using only the values you entered. It holds the return and monthly contribution constant and excludes volatility, fees, tax, inflation, missed contributions, and changing rates. It is not a forecast or recommendation.
+          </Text>
+        </>
+      ) : null}
+    </CalcWrapper>
+  );
+}
+
 // ─── D-128: Credit-card Payoff ────────────────────────────────────────────
 function CreditCardPayoffCalc({ userId, onComputed }: CalcProps & { userId: string | null }) {
   const [cards, setCards] = useState<Holding[]>([]);
@@ -608,6 +682,7 @@ const styles = StyleSheet.create({
   secondaryValue: { fontFamily: font.mono, fontSize: 15, color: colors.ink },
   calcError: { color: colors.danger, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginBottom: spacing.lg },
   disclosure: { color: colors.inkSecondary, fontFamily: font.tutor, fontSize: 13, lineHeight: 19, marginTop: spacing.lg },
+  gapExplanation: { color: colors.ink, fontFamily: font.tutor, fontSize: 15, lineHeight: 21, marginTop: spacing.lg },
   prefillIntro: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginBottom: spacing.md },
   prefillStatus: { color: colors.inkMuted, fontFamily: font.ui, fontSize: 13, lineHeight: 19, marginBottom: spacing.md },
   cardChoices: { gap: spacing.sm, marginBottom: spacing.lg },

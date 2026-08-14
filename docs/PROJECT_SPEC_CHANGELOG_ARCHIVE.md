@@ -10,6 +10,12 @@
 
 ---
 
+- v4.2 (12-Aug-2026) — **D-118/D-119 onboarding v2 contract and privacy/persistence boundary approved.**
+  Initial release is 18+; the five optional axes store only normalized categories in a separate versioned
+  assessment table; raw dialogue is not persisted; backend completion is cross-device authoritative; and
+  legacy users are grandfathered without inferred answers or forced reassessment. This authorises bounded
+  onboarding implementation, not the broader progression event ledger or final D-010 privacy policy.
+
 - v4.1 (12-Aug-2026) — **Target audience and progression direction updated (D-114); standing execution-agent
   authorisation adopted (D-115).** §3 now covers students through working professionals with roughly ten
   years' experience (approximately 18–32 as audience, never access gate), superseding D-053/D-054's narrower

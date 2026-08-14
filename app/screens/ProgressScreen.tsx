@@ -42,6 +42,9 @@ export function ProgressScreen() {
       <Pressable onPress={() => navigation.navigate('Consolidated')}><Text style={styles.back}>‹ Home</Text></Pressable>
       <Text style={styles.heading}>Learning progress</Text>
       <Text style={styles.guardrail}>This reflects participation across FinTutor—not competence, financial health, or financial success.</Text>
+      <Pressable style={styles.reminderLink} onPress={() => navigation.navigate('LearningReminder')} accessibilityRole="button">
+        <Text style={styles.reminderLinkText}>Daily learning reminder settings</Text>
+      </Pressable>
       {summary && <>
         <View style={styles.hero}>
           <Text style={styles.stage}>{STAGE_LABELS[summary.stage] ?? summary.stage}</Text>
@@ -106,6 +109,7 @@ const styles = StyleSheet.create({
   back: { fontFamily: font.uiMedium, color: colors.tutor, fontSize: 14, marginBottom: spacing.lg },
   heading: { fontFamily: font.uiSemibold, fontSize: 25, color: colors.ink },
   guardrail: { fontFamily: font.ui, fontSize: 14, lineHeight: 20, color: colors.inkSecondary, marginTop: spacing.sm },
+  reminderLink: { alignSelf: 'flex-start', marginTop: spacing.md }, reminderLinkText: { color: colors.tutor, fontFamily: font.uiSemibold, fontSize: 14 },
   hero: { backgroundColor: colors.tutorSoft, borderRadius: radius.lg, padding: spacing.xl, marginTop: spacing.xl, gap: spacing.md },
   stage: { fontFamily: font.uiSemibold, fontSize: 22, color: colors.ink }, points: { fontFamily: font.monoSemibold, fontSize: 16, color: colors.ink },
   range: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary }, section: { fontFamily: font.mono, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase', color: colors.inkMuted, marginTop: spacing.xxl, marginBottom: spacing.sm },

@@ -25,7 +25,8 @@ all application data passes through FastAPI's private Postgres connection.
 ```
 ChatScreen / OnboardingScreen
   → POST /chat?user_id=…
-      assemble_baseline()          ← holdings + income + goals + gaps from DB
+      assemble_baseline()          ← holdings + income + goals + at most one absent-type pairing from DB;
+                                     D-080 prompt rule decides whether it is on-topic to render
       classify_deepen()            ← picks one alias to "deepen" on
       [onboarding: start_or_resume() + build_onboarding_instruction()]
       ask_teaching_engine()        ← Anthropic API call (claude-3-5-sonnet)

@@ -14,7 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TeachingBlock } from '../components/TeachingBlock';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
-import { loadHealthScoreSnapshot, updateHealthScoreInputs } from '../lib/healthScoreSnapshot';
+import { healthInsuranceStorageKey, loadHealthScoreSnapshot, updateHealthScoreInputs } from '../lib/healthScoreSnapshot';
+import { patchFinancialContext } from '../lib/financialContext';
 import type { HealthScoreSnapshot } from '../lib/healthScoreSnapshot';
 import type { MainTabsParamList } from '../navigation/types';
 
@@ -30,7 +31,10 @@ export function HealthScoreScreen() {
 
   const loadData = useCallback(() => {
     if (!userId) return;
-    loadHealthScoreSnapshot(userId).then(setState);
+    let active = true;
+    setState(null);
+    loadHealthScoreSnapshot(userId).then((snapshot) => { if (active) setState(snapshot); });
+    return () => { active = false; };
   }, [userId]);
 
   useFocusEffect(loadData);
@@ -50,8 +54,10 @@ export function HealthScoreScreen() {
 
   async function saveEmergencyMonths() {
     const trimmed = draftMonths.trim();
-    await AsyncStorage.setItem('hs_emergency_months', trimmed);
+    const parsed = Number(trimmed);
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1200) return;
     if (userId) {
+      await patchFinancialContext({ emergency_fund_months: parsed });
       const next = updateHealthScoreInputs(userId, { emergencyMonths: trimmed });
       if (next) setState(next);
     }
@@ -60,8 +66,8 @@ export function HealthScoreScreen() {
   }
 
   async function saveHealthIns(answer: 'yes' | 'no') {
-    await AsyncStorage.setItem('hs_has_health_ins', answer);
     if (userId) {
+      await AsyncStorage.setItem(healthInsuranceStorageKey(userId), answer);
       const next = updateHealthScoreInputs(userId, { hasHealthIns: answer });
       if (next) setState(next);
     }
@@ -149,7 +155,7 @@ export function HealthScoreScreen() {
         </SubScoreRow>
         <SubScoreRow
           label="Emergency buffer"
-          mechanismNote="Months of expenses you can cover without income. 12 months = 100 points. Stored on this device only."
+          mechanismNote="Months of expenses you can cover without income. 12 months = 100 points. This optional confirmed value is stored with your account."
           score={subScores.emergency}
           ctaLabel="Enter your emergency fund months"
           onFill={() => toggleRow('emergency')}

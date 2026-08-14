@@ -105,6 +105,9 @@ export function TaxSavingRoomModal({ userId, onClose }: { userId: string; onClos
                     <Text style={styles.heroValue}>{formatRupees(result.unused_room ?? 0)}</Text>
                   </View>
                   <Text style={styles.cardNote}>{result.note}</Text>
+                  {result.validation_warning && (
+                    <Text style={styles.cardNote}>{result.validation_warning}</Text>
+                  )}
                 </View>
 
                 <TeachingBlock heading="What we won't say">

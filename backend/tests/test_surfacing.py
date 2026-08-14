@@ -21,94 +21,87 @@ def _holding(product_type: str) -> Holding:
 def _db(product_types: list[str]) -> MagicMock:
     db = MagicMock()
     db.query.return_value.filter.return_value.all.return_value = [
-        _holding(p) for p in product_types
+        _holding(product_type) for product_type in product_types
     ]
     return db
 
 
-class SurfacingTriggerTests(unittest.TestCase):
-    """D-051/BQ-013: which product-type gaps become eligible candidates."""
+class SurfacingPairingTests(unittest.TestCase):
+    """D-145/BQ-093: bounded, deterministic educational pairing table."""
 
-    def test_no_holdings_surfaces_nothing(self) -> None:
-        self.assertEqual(compute_surfacing_candidates(_db([]), USER_ID), [])
+    def assert_candidate(self, held: str, expected: str) -> None:
+        result = compute_surfacing_candidates(_db([held]), USER_ID)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["product_type"], expected)
+        self.assertTrue(result[0]["reason"])
+        self.assertTrue(result[0]["mechanism_difference"])
 
-    def test_home_loan_without_term_insurance_surfaces_term_insurance(self) -> None:
-        self.assertEqual(
-            compute_surfacing_candidates(_db(["home_loan"]), USER_ID),
-            [{"product_type": "term_insurance", "reason": "loan_without_life_cover"}],
+    def test_every_approved_direction(self) -> None:
+        cases = (
+            ("home_loan", "term_insurance"),
+            ("personal_loan", "term_insurance"),
+            ("endowment_ulip", "term_insurance"),
+            ("term_insurance", "endowment_ulip"),
+            ("esop", "stocks"),
+            ("stocks", "equity_mutual_fund"),
+            ("equity_mutual_fund", "debt_mutual_fund"),
+            ("debt_mutual_fund", "fd_rd"),
+            ("fd_rd", "ppf_epf"),
+            ("ppf_epf", "fd_rd"),
         )
+        for held, expected in cases:
+            with self.subTest(held=held):
+                self.assert_candidate(held, expected)
 
-    def test_personal_loan_without_term_insurance_surfaces_term_insurance(self) -> None:
-        self.assertEqual(
-            compute_surfacing_candidates(_db(["personal_loan"]), USER_ID),
-            [{"product_type": "term_insurance", "reason": "loan_without_life_cover"}],
+    def test_no_holdings_unknown_type_and_credit_card_surface_nothing(self) -> None:
+        for held in ([], ["savings_balance"], ["credit_card_debt"]):
+            with self.subTest(held=held):
+                self.assertEqual(compute_surfacing_candidates(_db(held), USER_ID), [])
+
+    def test_candidate_must_be_absent(self) -> None:
+        held = ["home_loan", "term_insurance"]
+        result = compute_surfacing_candidates(_db(held), USER_ID)
+        self.assertNotIn(result[0]["product_type"], held)
+
+    def test_endowment_does_not_suppress_loan_to_term_pair(self) -> None:
+        result = compute_surfacing_candidates(
+            _db(["home_loan", "endowment_ulip"]), USER_ID
         )
+        self.assertEqual(result[0]["product_type"], "term_insurance")
 
-    def test_credit_card_debt_alone_is_not_a_trigger(self) -> None:
-        self.assertEqual(compute_surfacing_candidates(_db(["credit_card_debt"]), USER_ID), [])
-
-    def test_non_loan_holdings_do_not_trigger_anything(self) -> None:
-        holdings = ["equity_mutual_fund", "debt_mutual_fund", "stocks", "fd_rd", "ppf_epf", "esop"]
-        self.assertEqual(compute_surfacing_candidates(_db(holdings), USER_ID), [])
-
-    def test_unknown_product_type_does_not_trigger_anything(self) -> None:
-        self.assertEqual(compute_surfacing_candidates(_db(["savings_balance"]), USER_ID), [])
-
-
-class SurfacingSuppressionTests(unittest.TestCase):
-    """D-051: only the exact required-absent type suppresses a candidate."""
-
-    def test_term_insurance_already_held_suppresses_the_candidate(self) -> None:
-        self.assertEqual(
-            compute_surfacing_candidates(_db(["home_loan", "term_insurance"]), USER_ID), []
+    def test_fixed_precedence_returns_at_most_one_candidate(self) -> None:
+        result = compute_surfacing_candidates(
+            _db(["home_loan", "esop", "stocks", "debt_mutual_fund"]), USER_ID
         )
-
-    def test_endowment_ulip_does_not_suppress_the_term_insurance_candidate(self) -> None:
-        self.assertEqual(
-            compute_surfacing_candidates(_db(["home_loan", "endowment_ulip"]), USER_ID),
-            [{"product_type": "term_insurance", "reason": "loan_without_life_cover"}],
-        )
-
-    def test_unrelated_holdings_do_not_suppress_the_candidate(self) -> None:
-        holdings = ["personal_loan", "stocks", "fd_rd", "credit_card_debt", "ppf_epf"]
-        self.assertEqual(
-            compute_surfacing_candidates(_db(holdings), USER_ID),
-            [{"product_type": "term_insurance", "reason": "loan_without_life_cover"}],
-        )
-
-
-class SurfacingOutputShapeTests(unittest.TestCase):
-    """The candidate list is deduplicated and carries no user-identifying detail."""
-
-    def test_both_trigger_types_together_surface_the_candidate_only_once(self) -> None:
-        result = compute_surfacing_candidates(_db(["home_loan", "personal_loan"]), USER_ID)
-
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["product_type"], "term_insurance")
 
-    def test_duplicate_holdings_of_a_trigger_type_surface_the_candidate_once(self) -> None:
-        result = compute_surfacing_candidates(_db(["home_loan", "home_loan", "home_loan"]), USER_ID)
+    def test_no_pair_invents_borrowing_or_refinancing(self) -> None:
+        for held in ("stocks", "equity_mutual_fund", "fd_rd", "ppf_epf"):
+            result = compute_surfacing_candidates(_db([held]), USER_ID)
+            self.assertNotIn(
+                result[0]["product_type"],
+                {"home_loan", "personal_loan", "credit_card_debt"},
+            )
 
-        self.assertEqual(len(result), 1)
+    def test_output_is_mechanism_only_not_advice(self) -> None:
+        forbidden = {"need", "needed", "missing", "better", "safer", "suitable", "should", "buy"}
+        for held in (
+            "home_loan", "endowment_ulip", "term_insurance", "esop", "stocks",
+            "equity_mutual_fund", "debt_mutual_fund", "fd_rd", "ppf_epf",
+        ):
+            candidate = compute_surfacing_candidates(_db([held]), USER_ID)[0]
+            words = set(candidate["mechanism_difference"].lower().replace("-", " ").split())
+            self.assertTrue(words.isdisjoint(forbidden), candidate)
 
-    def test_candidate_carries_only_product_type_and_reason(self) -> None:
-        result = compute_surfacing_candidates(_db(["home_loan"]), USER_ID)
-
-        self.assertEqual(set(result[0]), {"product_type", "reason"})
-
-    def test_computing_candidates_never_writes(self) -> None:
+    def test_service_is_read_only_and_scoped_to_user(self) -> None:
         db = _db(["home_loan"])
-        compute_surfacing_candidates(db, USER_ID)
-
-        db.add.assert_not_called()
-        db.commit.assert_not_called()
-
-    def test_holdings_are_queried_and_filtered_once(self) -> None:
-        db = _db([])
         compute_surfacing_candidates(db, USER_ID)
 
         db.query.assert_called_once_with(Holding)
         db.query.return_value.filter.assert_called_once()
+        db.add.assert_not_called()
+        db.commit.assert_not_called()
 
 
 if __name__ == "__main__":

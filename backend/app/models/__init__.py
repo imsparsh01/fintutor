@@ -1,4 +1,5 @@
 from app.models.discretionary_category import DiscretionaryCategory
+from app.models.financial_context import FinancialContext
 from app.models.goal import Goal, GoalFunding
 from app.models.holding import Holding
 from app.models.income import Income
@@ -13,6 +14,7 @@ from app.models.streak_state import StreakState
 
 __all__ = [
     "DiscretionaryCategory",
+    "FinancialContext",
     "Goal",
     "GoalFunding",
     "Holding",

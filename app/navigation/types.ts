@@ -8,7 +8,7 @@ export type AuthStackParamList = {
 // D-106: 5-tab nav (Home · Portfolio · Goals · Tools · Chat).
 // Family screens (Investments/Loans/Insurance/Budgeting) stay in the navigator as hidden
 // screens (tabBarButton: () => null) so existing navigation.navigate calls keep working.
-export type CalculatorType = 'sip_goal' | 'emi' | 'inflation' | 'stepup_sip' | 'cagr_backward' | 'compound_growth' | 'credit_card_payoff' | 'emergency_coverage';
+export type CalculatorType = 'sip_goal' | 'emi' | 'inflation' | 'stepup_sip' | 'cagr_backward' | 'compound_growth' | 'credit_card_payoff' | 'emergency_coverage' | 'goal_affordability';
 
 // BQ-056 (D-106): scenario batch 1. S-04 (rent vs buy) is parked — it needs input fields the
 // schema doesn't have. S-02 (prepay vs invest) is already the LoanVsInvest modal (D-014).
@@ -43,6 +43,7 @@ export type MainTabsParamList = {
   Assessment: undefined;
   // BQ-070: hidden detail route, opened by the compact Home summary.
   Progress: undefined;
+  LearningReminder: undefined;
 };
 
 // BQ-022: each family tab (Investments/Loans/Insurance) is its own small stack —

@@ -1,4 +1,5 @@
 import { authenticatedFetch, BACKEND_URL } from './backend';
+import { noteMeaningfulLearningInteraction } from './learningReminders';
 
 // BQ-071 / D-121. Progression is a side effect of using FinTutor, never a precondition
 // for it: every function here is fire-and-forget and swallows its own failures. A
@@ -107,6 +108,7 @@ function todayStamp(): string {
  * sending obvious duplicates.
  */
 export function recordCalculatorCompleted(userId: string, calculatorType: string): void {
+  noteMeaningfulLearningInteraction(userId);
   void emit(
     userId,
     'calculator_completed',
@@ -118,6 +120,7 @@ export function recordCalculatorCompleted(userId: string, calculatorType: string
 
 /** A scenario produced a valid, rendered result. Same rules as calculators. */
 export function recordScenarioCompleted(userId: string, scenarioType: string): void {
+  noteMeaningfulLearningInteraction(userId);
   void emit(
     userId,
     'scenario_completed',

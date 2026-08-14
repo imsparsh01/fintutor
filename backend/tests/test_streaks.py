@@ -137,14 +137,16 @@ class StreakDayBoundaryTests(unittest.TestCase):
         self.assertEqual(result["current_streak"], 1)
         self.assertEqual(result["longest_streak"], 1)
 
-    def test_a_future_last_active_date_resets_to_one(self) -> None:
+    def test_a_future_last_active_date_is_a_no_op(self) -> None:
         state = _state(9, 9, TODAY + timedelta(days=1))
         db = _db(state)
         with _frozen_today():
             result = record_app_open(db, USER_ID)
 
-        self.assertEqual(result["current_streak"], 1)
-        self.assertEqual(result["last_active_date"], TODAY.isoformat())
+        self.assertEqual(result["current_streak"], 9)
+        self.assertEqual(result["longest_streak"], 9)
+        self.assertEqual(result["last_active_date"], (TODAY + timedelta(days=1)).isoformat())
+        db.commit.assert_not_called()
 
     def test_repeated_consecutive_days_accumulate(self) -> None:
         state = _state(1, 1, date(2026, 8, 9))
