@@ -69,8 +69,8 @@ These are open items that are **not build tasks** (Claude Code should not mistak
 - AI-surfacing WHEN-stage verification — RESOLVED (D-080, Phase-1 Run 7): FINDING 8 does not reproduce
   0/5 against v0.8, live. `known_gaps` surfacing (already wired into every `/chat` call) can be treated as
   verified, not provisional.
-- Conversation memory (PARKED — D-022). Subagents (PARKED — D-014). Legal review of D-009. Data privacy
-  policy (D-010, unwritten).
+- Conversation memory (PARKED — D-022). Qualified India legal review (DEFERRED — D-009, before external
+  collection/launch). Execution subagents were unparked by D-093/D-115; Privacy Policy v1 shipped in BQ-087.
 
 ---
 
