@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-104 — Enforce FastAPI-only Supabase table access — DONE 14-Aug-2026
+
+Applied the previously approved progression schema catch-up and then D-142's versioned security migration to
+`fintutor-dev`. All 12 public tables now have RLS enabled with no client policies and zero privileges for
+`anon` or `authenticated`; direct reads as both roles fail with permission denied. FastAPI's private
+`postgres` connection retains access. A coverage test forces every future ORM table to be named in the
+security boundary. Verified at Alembic head `d142a104f001`, 327 backend tests, Supabase MCP inspection, and
+security-advisor review.
+
 ## BQ-099 — Whole-account deletion integration — DONE 14-Aug-2026
 
 Added a Home deletion surface with scope and seven-day backup disclosure, password reauthentication, and a

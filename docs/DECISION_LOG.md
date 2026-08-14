@@ -130,3 +130,9 @@
   Field labels remain clear, optional, explicitly entered, and user-controlled. Full write-up:
   `docs/decisions/D-141-sensitive-context-disclosure-in-privacy-policy.md`.
 - **Date:** 14-Aug-2026
+
+### D-142 — Public financial tables are accessible only through FastAPI
+- **Tier:** 3, owner-decided. “FastAPI remains the sole application-data gateway.” RLS is enabled without
+  client policies and direct `anon`/`authenticated` table privileges are revoked. Full write-up:
+  `docs/decisions/D-142-fastapi-only-financial-table-access.md`.
+- **Date:** 14-Aug-2026

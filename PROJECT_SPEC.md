@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.7, 14-Aug-2026)
+# FinTutor — Project Spec (v4.8, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -127,6 +127,9 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   the backend verifies it and derives the authoritative user identity from the token subject. A
   caller-supplied `user_id` never grants or selects ownership. Intentionally public routes containing no
   user data may remain unauthenticated.
+- **Backend-only table access (D-142).** Supabase Auth remains client-facing, but application tables do not:
+  every public table has RLS enabled without client policies and grants no privileges to `anon` or
+  `authenticated`. All application data passes through FastAPI's private Postgres connection.
 - LLM is stateless: relevant profile slice is re-sent as context on every call.
 - Teaching = context engineering (system prompt + user profile), NOT fine-tuning.
 - Cost levers designed in from day 1: prompt caching on system prompt + static rules; Haiku for reconciliation.
@@ -306,6 +309,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.8 (14-Aug-2026) — **D-142 FastAPI-only table access approved and shipped.** The progression schema
+  catch-up and security migration are live on `fintutor-dev`. All 12 public tables have RLS enabled with no
+  client policies or `anon`/`authenticated` privileges; direct-role reads fail while FastAPI's private role
+  retains access.
 - v4.7 (14-Aug-2026) — **D-141 sensitive-context disclosure placement approved.** The detailed explanation
   for dependant count and self-reported emergency-fund months will live in the privacy policy. The fields
   remain clearly labelled, optional, explicitly entered, and viewable/changeable/clearable in-product;
@@ -356,10 +363,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   for the first time: WHICH (D-051/BQ-013), WHEN (D-080), micro-capture (D-078/BQ-039), onboarding re-think
   (D-082/D-083/D-084/BQ-042, built this session), manual fallback UI (BQ-036, already shipped). Owner-
   confirmed before checking off, per §8's own edit rule.
-- v3.8 (05-Aug-2026) — **D-080: D-051's WHEN-stage surfacing verification satisfied, live.** The first
-  live Anthropic API test run executed directly from inside a Cowork/Claude Code session on this
-  project (network-access assumption corrected — this environment allows it, contrary to the standing
-  note in `scripts/run_phase1_test.py` and several `BUILD_QUEUE.md` entries). Q7 re-run n=5 against the
-  current prompt (v0.8): FINDING 8 does not reproduce, 0/5 — D-032's on-topic surfacing fix holds three
-  prompt regenerations later. Also caught and fixed a real, previously-undetected `anthropic`/`httpx`
-  dependency incompatibility (BQ-040) that would have crashed the backend's first live `/chat` call.

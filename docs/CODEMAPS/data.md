@@ -133,6 +133,9 @@ Never sent to LLM:
 
 ## Key invariants
 
+- D-142: application tables are backend-only. Every public table has RLS enabled without `anon` or
+  `authenticated` policies, and those roles have no table privileges. FastAPI's private Postgres role is
+  the sole data gateway; every future table must join this boundary in its creation migration.
 - `characteristics` is free-form JSONB — the schema lives in the frontend (`characteristicsSchema.ts`),
   not in the DB. Adding a field requires no migration.
 - `alias` uniqueness is enforced DB-side (UniqueConstraint + 409 on conflict).

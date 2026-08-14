@@ -16,6 +16,10 @@ with the verified token subject before route parsing; callers cannot select owne
 documentation routes contain no user data and remain public. No local Users table; owned records retain
 their Supabase subject UUID as `user_id`.
 
+Database access is backend-only (D-142): public tables have RLS enabled with no client policies and expose
+no privileges to Supabase's `anon` or `authenticated` roles. The app uses Supabase directly for Auth only;
+all application data passes through FastAPI's private Postgres connection.
+
 ## Data flow: Chat (the core teaching loop)
 
 ```
