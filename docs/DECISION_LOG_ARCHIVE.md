@@ -951,3 +951,45 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   owner-validates it, then external activation testing begins. Full write-up:
   `docs/decisions/D-125-internal-mvp-completion-before-external-testing.md`.
 - **Date:** 12-Aug-2026
+
+### D-126 — Onboarding ends with an optional, user-chosen first action
+- **Tier:** 3, owner-decided. “The user needs direction after orientation but does not owe FinTutor a
+  financial census before receiving value.” Preserves D-118/D-119's five-axis orientation, then offers
+  Arya, an existing item, a goal, Tools, or Home without forced disclosure. Full write-up:
+  `docs/decisions/D-126-optional-guided-onboarding-handoff.md`.
+- **Date:** 12-Aug-2026
+
+### D-127 — Conversational holding reconciliation uses a user-confirmed field diff
+- **Tier:** 3, owner-decided. “The AI extracts and compares; the user retains authority over the
+  financial-data write.” New, updated, and conflicting holding information shows its target and exact diff;
+  ambiguity requires user selection and nothing writes without confirmation. Full write-up:
+  `docs/decisions/D-127-user-confirmed-holding-reconciliation.md`.
+- **Date:** 12-Aug-2026
+
+### D-128 — MVP adds a focused five-calculator second batch
+- **Tier:** 3, owner-decided. “The focused batch covers debt, resilience, growth, goals, and protection
+  without turning FinTutor into an unbounded calculator catalogue.” Adds credit-card payoff, emergency-fund
+  coverage, compound growth, goal affordability, and term-insurance coverage; tax/HRA stay blocked. Full
+  write-up: `docs/decisions/D-128-focused-second-calculator-batch.md`.
+- **Date:** 12-Aug-2026
+
+### D-129 — Users own consequential calculator assumptions; recurring contributions use month-end timing
+- **Tier:** 3, owner-decided. “The user should control the uncertain financial inputs; the app should own
+  only transparent arithmetic.” No typical/default assumptions; disclosed conditional conventions only;
+  monthly contributions use consistent end-of-month timing. Full write-up:
+  `docs/decisions/D-129-user-owned-assumptions-and-end-month-convention.md`.
+- **Date:** 12-Aug-2026
+
+### D-130 — Emergency runway counts accessible amounts, not total recorded wealth
+- **Tier:** 3, owner-decided. “Emergency runway measures accessible funding time, not ownership or net
+  worth.” Counts entered cash, editable fixed-deposit principal, and only additional amounts the user says
+  are accessible; full PPF/EPF is no longer automatic. Full write-up:
+  `docs/decisions/D-130-emergency-runway-counts-accessible-amounts.md`.
+- **Date:** 12-Aug-2026
+
+### D-131 — Term insurance uses a full-picture needs exploration, not a simple income multiple
+- **Tier:** 3, owner-decided. “Term-insurance need is a household resilience question, not merely an income
+  multiplication.” Approves the full-picture educational direction; exact output, formula, sensitive inputs,
+  and inclusion rules remain decision-gated. Full write-up:
+  `docs/decisions/D-131-full-picture-term-insurance-needs-exploration-direction.md`.
+- **Date:** 12-Aug-2026

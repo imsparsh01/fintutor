@@ -10,6 +10,10 @@
 
 ---
 
+- v4.3 (14-Aug-2026) — **D-137 authenticated backend ownership approved.** Protected backend requests will
+  carry a Supabase access token; the backend verifies it and derives ownership solely from the verified
+  subject rather than a client-selected `user_id`. Multiple test accounts remain supported, with
+  cross-account isolation required in BQ-089.
 - v4.2 (12-Aug-2026) — **D-118/D-119 onboarding v2 contract and privacy/persistence boundary approved.**
   Initial release is 18+; the five optional axes store only normalized categories in a separate versioned
   assessment table; raw dialogue is not persisted; backend completion is cross-device authoritative; and

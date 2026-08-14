@@ -48,6 +48,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-131/D-132 | SHIPPED → BQ-086 | Context-first term-insurance exploration | Completed 14-Aug-2026; counsel still required before external launch |
 | D-134/D-141 | SHIPPED → BQ-087 | Privacy Policy v1 and dedicated minimal context record | Completed 14-Aug-2026; external collection/public launch remains counsel-gated |
 | D-145 | SHIPPED → BQ-091/BQ-093/BQ-095/BQ-096/BQ-097/BQ-102/BQ-103/BQ-085/BQ-086/BQ-087 | Execute consolidated MVP backlog contracts | Ten builds completed 14-Aug-2026; BQ-098 remains deliberately deferred |
+| D-146 | SHIPPED → BQ-106 | Keep native-only accessibility focus out of web runtime | Completed 14-Aug-2026; original Goal contribution-gap crash reproduced and retested live |
 | D-129 | SHIPPED → BQ-101 | Align recurring-contribution timing and disclosures | Owner reconfirmed Option A; completed 14-Aug-2026 |
 | D-005/D-008/D-143 | DEFERRED | Select and implement the production FastAPI host | Unparks before external testing/distribution or any workflow requiring a non-local backend; Supabase remains Postgres/Auth only |
 | D-005/D-008/D-052/D-137 | SHIPPED → BQ-089 | Validate Supabase JWT and derive request ownership | Completed 14-Aug-2026; verified token subject is authoritative across protected routes |

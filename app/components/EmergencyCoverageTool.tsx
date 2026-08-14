@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, findNodeHandle, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibilityInfo, findNodeHandle, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, font, radius, spacing } from '../design/tokens';
@@ -75,8 +75,10 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
   useEffect(() => {
     if (!result) return;
     AccessibilityInfo.announceForAccessibility(`Months covered: ${result.value.months.toFixed(1)}`);
-    const handle = findNodeHandle(resultHeading.current);
-    if (handle) AccessibilityInfo.setAccessibilityFocus(handle);
+    if (Platform.OS !== 'web') {
+      const handle = findNodeHandle(resultHeading.current);
+      if (handle) AccessibilityInfo.setAccessibilityFocus(handle);
+    }
     if (shouldEmitEmergencyCoverage(lastEmittedSignature.current, result.signature)) {
       lastEmittedSignature.current = result.signature;
       onComputedRef.current();

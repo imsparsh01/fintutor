@@ -3,6 +3,7 @@ import {
   AccessibilityInfo,
   findNodeHandle,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -233,8 +234,10 @@ export function ToolsScreen() {
         animationType="slide"
         onRequestClose={closeLoanPicker}
         onShow={() => {
-          const headingHandle = findNodeHandle(pickerHeadingRef.current);
-          if (headingHandle) AccessibilityInfo.setAccessibilityFocus(headingHandle);
+          if (Platform.OS !== 'web') {
+            const headingHandle = findNodeHandle(pickerHeadingRef.current);
+            if (headingHandle) AccessibilityInfo.setAccessibilityFocus(headingHandle);
+          }
         }}
       >
         <ScrollView contentContainerStyle={styles.pickerContent} accessibilityViewIsModal>

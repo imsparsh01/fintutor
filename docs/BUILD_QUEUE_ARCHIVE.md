@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-106 — Prevent native-only accessibility focus from crashing web — DONE 14-Aug-2026
+
+Traces to D-146. Guarded all remaining `findNodeHandle` / `setAccessibilityFocus` calls behind the native
+platform boundary while retaining semantic headings and announcements. Reproduced the original Goal
+contribution-gap failure, reran it successfully after the fix, and verified 65 frontend tests, TypeScript
+and clean diff.
+
 ## BQ-087 — Privacy Policy v1 and dedicated financial context — DONE 14-Aug-2026
 
 Published the internal-MVP privacy policy with pre-registration and authenticated access. Added a nullable,

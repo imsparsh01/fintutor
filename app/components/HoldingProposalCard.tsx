@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, findNodeHandle, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, findNodeHandle, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { CHARACTERISTICS_SCHEMA } from '../lib/characteristicsSchema';
 import type { HoldingProposal } from '../lib/holdingReconciliation';
 import { humanizeProductType } from '../lib/taxonomy';
@@ -33,8 +33,10 @@ export function HoldingProposalCard({
   useEffect(() => {
     if (!announcement) return;
     AccessibilityInfo.announceForAccessibility(announcement);
-    const heading = findNodeHandle(headingRef.current);
-    if (heading) AccessibilityInfo.setAccessibilityFocus(heading);
+    if (Platform.OS !== 'web') {
+      const heading = findNodeHandle(headingRef.current);
+      if (heading) AccessibilityInfo.setAccessibilityFocus(heading);
+    }
   }, [announcement, proposal]);
 
   const run = async (action: () => Promise<void>) => {

@@ -133,8 +133,10 @@ function ResultCard({
   const headingRef = useRef<Text>(null);
   useEffect(() => {
     AccessibilityInfo.announceForAccessibility(`${unit}: ${value}`);
-    const handle = findNodeHandle(headingRef.current);
-    if (handle) AccessibilityInfo.setAccessibilityFocus(handle);
+    if (Platform.OS !== 'web') {
+      const handle = findNodeHandle(headingRef.current);
+      if (handle) AccessibilityInfo.setAccessibilityFocus(handle);
+    }
     onRendered?.();
   }, [onRendered, unit, value]);
   return (

@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v5.2, 14-Aug-2026)
+# FinTutor — Project Spec (v5.3, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -312,6 +312,11 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v5.3 (14-Aug-2026) — **D-146 web accessibility-focus conformance repair shipped.** Owner live-validation
+  reproduced a calculator-result crash caused by React Native's native-only imperative focus API on web.
+  All four existing focus sites now retain semantic announcements on web and apply imperative focus only on
+  native. The original Goal contribution-gap scenario renders successfully; 65 frontend tests and TypeScript
+  pass.
 - v5.2 (14-Aug-2026) — **D-145's executable backlog completed.** Ten BQs shipped: tool-independent
   engineering gates, bounded comparisons, ethical learning reminders, fail-soft consolidated metadata,
   correct due-day recurrence, interactive own-numbers walkthroughs, audited money/state corrections, Goal
@@ -350,7 +355,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   encryption will be paired with JWT ownership, TLS, production SSL enforcement, applicable network
   restrictions, secret isolation and security tests. FinTutor will not manage separate field-encryption keys
   for the MVP; backup duration, deletion, disclosure/export and legal review remain open under D-010.
-- v4.3 (14-Aug-2026) — **D-137 authenticated backend ownership approved.** Protected backend requests will
-  carry a Supabase access token; the backend verifies it and derives ownership solely from the verified
-  subject rather than a client-selected `user_id`. Multiple test accounts remain supported, with
-  cross-account isolation required in BQ-089.

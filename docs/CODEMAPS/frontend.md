@@ -257,7 +257,8 @@ launched from Tools with direct-open for one eligible loan or a neutral owned-lo
 - `CalculatorScreen` receives `{ type: CalculatorType; label: string }` as route params and renders the
   appropriate calculator. ToolsScreen is the only entry point (hidden tab pattern). Shared calculator
   inputs/buttons expose labels, hints, roles and disabled state; a valid ResultCard announces and receives
-  accessibility focus after render, which is also the completion-emission boundary.
+  accessibility focus after render on native, which is also the completion-emission boundary. Web retains
+  the semantic heading and announcement but never calls React Native's native-only `findNodeHandle` path.
 - **AsyncStorage keys `hs_emergency_months` / `hs_has_health_ins`** are written by HealthScoreScreen and
   read by both HealthScoreScreen and GoalsScreen. One answer, two surfaces — do not add a second prompt
   for either question. No vector-icon library is installed: GoalsScreen's goal-type marks are drawn from
