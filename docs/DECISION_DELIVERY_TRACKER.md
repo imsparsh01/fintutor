@@ -17,7 +17,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 |---|---|---|---|
 | D-009 | DEFERRED | India securities/fintech legal review | Before public launch |
 | D-010 | BLOCKED | Final data privacy policy | At-rest, backup retention and account deletion settled by D-138–D-140; D-141 settles where sensitive-context disclosure appears; owner decisions on export and remaining provider treatment; legal review |
-| D-138 | BLOCKED → BQ-092 | Verify production SSL enforcement and applicable database network restrictions | Production backend hosting target must be settled first; JWT ownership already shipped in BQ-089 |
+| D-138 | DEFERRED | Verify production SSL enforcement and applicable database network restrictions | Unparks with D-143 before any non-local/external backend deployment; JWT ownership already shipped |
 | D-142 | SHIPPED → BQ-104 | Enforce FastAPI-only access to every public application table | Completed 14-Aug-2026 at Alembic head `d142a104f001`; direct client roles denied, private backend role verified |
 | D-139/D-140 | SHIPPED → BQ-099 | Reauthenticated, retry-safe whole-account deletion with seven-day backup treatment | Completed 14-Aug-2026 |
 | D-012/D-051 | BLOCKED → BQ-093 | Complete in-context AI surfacing coverage across the MVP taxonomy | Owner-approved pairing content/precedence beyond loan→term insurance; cold surfacing stays out |
@@ -40,14 +40,14 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-120 | NO_BUILD | Draft autonomous-pipeline design is not an approved decision | Four owner choices remain; create a new decision if approved |
 | D-123 | DEFERRED | Meaningful non-gating recap interaction and `recap_completed` emitter | Approve a recap interaction/completion contract consistent with P9 |
 | D-123 | DEFERRED | Progression profile-coverage dimension | Approve an evidence-backed denominator |
-| D-121 | BLOCKED → BQ-100 | Operational 400-day progression pruning | Production scheduling mechanism after deployment architecture |
+| D-121 | DEFERRED | Operational 400-day progression pruning | Unparks with D-143/BQ-092 when a production scheduler is required before external users |
 | D-114/D-121 | DEFERRED | Internal de-identified progression/business aggregates | BQ-072 measurement design after internal MVP validation |
 | D-122/D-124/D-125 | BLOCKED → BQ-072 | Customer-outcome MVP exit-gate programme | Complete approved MVP, owner simulator validation, then external activation testing |
 | D-128 | BLOCKED → BQ-085 | Goal Affordability calculator | Exact input/formula/disclosure/edge-case contract |
 | D-131/D-132 | BLOCKED → BQ-086 | Term-insurance Coverage scenarios | Exact component formula/source/validation/disclosure contract; counsel before external launch |
 | D-134/D-141 | BLOCKED → BQ-087 | Dedicated minimal financial-context record with policy-based detailed disclosure | Final applicable D-010 privacy-policy text and accessible in-app link; auth/retention/deletion/backup are settled |
 | D-129 | SHIPPED → BQ-101 | Align recurring-contribution timing and disclosures | Owner reconfirmed Option A; completed 14-Aug-2026 |
-| D-005/D-008 | BLOCKED → BQ-092 | Confirm and implement the production hosting/deployment target | Owner confirms whether Supabase “hosting” still governs FastAPI or is superseded |
+| D-005/D-008/D-143 | DEFERRED | Select and implement the production FastAPI host | Unparks before external testing/distribution or any workflow requiring a non-local backend; Supabase remains Postgres/Auth only |
 | D-005/D-008/D-052/D-137 | SHIPPED → BQ-089 | Validate Supabase JWT and derive request ownership | Completed 14-Aug-2026; verified token subject is authoritative across protected routes |
 | D-062/D-135 | SHIPPED → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Completed 14-Aug-2026 |
 

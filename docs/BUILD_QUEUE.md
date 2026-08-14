@@ -24,11 +24,12 @@ Traces to D-107. The operating rules call the gates mandatory, while several ses
 commands absent or failing. Unblock by either proving one compatible plan and review invocation, or by an
 owner decision superseding the tool-specific mandate with an explicit manual fallback.
 
-### BQ-092 — Production hosting/deployment target — BLOCKED ON OWNER CONFIRMATION
+### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 
-Traces to D-005/D-008/D-041/D-138. Supabase database and frontend auth are present, but no repository artifact
-proves where FastAPI is hosted. Confirm whether the old “Supabase hosting” wording still governs the backend
-or must be superseded, then create the bounded deployment implementation. Before any non-development deploy,
+Traces to D-005/D-008/D-041/D-138/D-143. Supabase hosts Postgres and Auth, not the existing Python/FastAPI
+application. Owner deferred selecting or paying for a backend host during internal MVP work. Unpark before
+external activation testing, test-user distribution, or any production-like device validation requiring a
+non-local backend. Provider selection must then use current pricing/region/security evidence. Before deploy,
 also close D-095's CORS/dev-bypass cleanup and verify database SSL enforcement plus applicable network
 restrictions.
 
@@ -60,10 +61,11 @@ design that preserves the actual due day in longer months.
 Traces to D-105/D-128. Both were approved, but require a supported financial year, authoritative rule source,
 verification/update ownership, stale behavior and legal review before build.
 
-### BQ-100 — Schedule progression retention pruning — BLOCKED ON DEPLOYMENT ARCHITECTURE
+### BQ-100 — Schedule progression retention pruning — DEFERRED WITH HOSTING
 
-Traces to D-121. Tested `prune_raw_events()` exists, but no periodic job invokes it. Choose the scheduler
-after BQ-092 settles deployment; verify pruning, replay, failure alerting and the 400-day boundary end to end.
+Traces to D-121/D-143. Tested `prune_raw_events()` exists, but no periodic job invokes it. Unpark with BQ-092
+when external access requires a host; choose its scheduler and verify pruning, replay, failure alerting and
+the 400-day boundary end to end before external users.
 
 ### BQ-102 — Reconcile empty-state personalized walkthrough promise — BLOCKED
 

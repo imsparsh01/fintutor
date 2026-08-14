@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.8, 14-Aug-2026)
+# FinTutor — Project Spec (v4.9, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -156,7 +156,8 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 - Backend:    Python + FastAPI ✅ (chosen over Java: less boilerplate, Python-first AI ecosystem)
 - Database:   Postgres, managed host ✅
 - LLM:        Anthropic API — Sonnet (teaching) + Haiku (reconciliation) ✅
-- Hosting:    Supabase (bundles Postgres + auth + hosting) ✅ — project `fintutor-dev`, region `ap-southeast-1`
+- Data/Auth hosting: Supabase ✅ — project `fintutor-dev`, region `ap-southeast-1`
+- FastAPI hosting: deferred during internal MVP work (D-143); select before external access is required
 - Auth:       Managed via Supabase — do NOT roll our own ✅
 
 ## 8. Open decisions (resolve these before/early in build)
@@ -309,6 +310,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.9 (14-Aug-2026) — **D-143 production FastAPI hosting deferred.** Supabase remains the Postgres/Auth
+  provider, but does not host the existing Python application. A backend host will be selected only before
+  external testing, distribution, or another workflow needs non-local reachability; production security
+  cleanup and the progression-pruning scheduler unpark at the same boundary.
 - v4.8 (14-Aug-2026) — **D-142 FastAPI-only table access approved and shipped.** The progression schema
   catch-up and security migration are live on `fintutor-dev`. All 12 public tables have RLS enabled with no
   client policies or `anon`/`authenticated` privileges; direct-role reads fail while FastAPI's private role
@@ -358,8 +363,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   dependencies, and new screens explicitly out of bounds for every agent. **No MVP scope change:** this is
   a presentation-layer pass over screens that already exist. The mockups' undrawn/unbuilt surfaces
   (notification tray, standalone reminders screen, Income screen as drawn) are NOT authorised by it.
-- v3.9 (09-Aug-2026) — **§8 AI-surfacing trigger-logic item RESOLVED — housekeeping, no new decision.** All
-  four of D-012's original undesigned consequences are closed across prior decisions, recognized as a set
-  for the first time: WHICH (D-051/BQ-013), WHEN (D-080), micro-capture (D-078/BQ-039), onboarding re-think
-  (D-082/D-083/D-084/BQ-042, built this session), manual fallback UI (BQ-036, already shipped). Owner-
-  confirmed before checking off, per §8's own edit rule.

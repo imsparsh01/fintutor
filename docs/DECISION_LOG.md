@@ -136,3 +136,10 @@
   client policies and direct `anon`/`authenticated` table privileges are revoked. Full write-up:
   `docs/decisions/D-142-fastapi-only-financial-table-access.md`.
 - **Date:** 14-Aug-2026
+
+### D-143 — Production FastAPI hosting is deferred until external access is required
+- **Tier:** 3, owner-decided. “FinTutor will keep FastAPI local during internal MVP completion and owner
+  validation.” Supabase remains the Postgres/Auth host; a Python backend host is selected only before a
+  workflow needs external reachability. Full write-up:
+  `docs/decisions/D-143-production-fastapi-hosting-deferred-until-required.md`.
+- **Date:** 14-Aug-2026

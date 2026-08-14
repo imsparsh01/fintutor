@@ -10,6 +10,12 @@
 
 ---
 
+- v3.9 (09-Aug-2026) — **§8 AI-surfacing trigger-logic item RESOLVED — housekeeping, no new decision.** All
+  four of D-012's original undesigned consequences are closed across prior decisions, recognized as a set
+  for the first time: WHICH (D-051/BQ-013), WHEN (D-080), micro-capture (D-078/BQ-039), onboarding re-think
+  (D-082/D-083/D-084/BQ-042, built this session), manual fallback UI (BQ-036, already shipped). Owner-
+  confirmed before checking off, per §8's own edit rule.
+
 - v3.8 (05-Aug-2026) — **D-080: D-051's WHEN-stage surfacing verification satisfied, live.** The first
   live Anthropic API test run executed directly from inside a Cowork/Claude Code session on this
   project (network-access assumption corrected — this environment allows it, contrary to the standing
