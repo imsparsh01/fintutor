@@ -123,3 +123,10 @@
   after both stages complete. Full write-up:
   `docs/decisions/D-140-reauthenticated-retry-safe-whole-account-deletion.md`.
 - **Date:** 14-Aug-2026
+
+### D-141 — Detailed sensitive-context disclosure lives in the privacy policy
+- **Tier:** 3, owner-decided. “The detailed explanation of how FinTutor collects, uses, protects, retains,
+  and deletes the dedicated financial-context values approved by D-134 will live in the privacy policy.”
+  Field labels remain clear, optional, explicitly entered, and user-controlled. Full write-up:
+  `docs/decisions/D-141-sensitive-context-disclosure-in-privacy-policy.md`.
+- **Date:** 14-Aug-2026

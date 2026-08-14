@@ -16,7 +16,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | Decision | Disposition | Deliverable | Blocker / transition |
 |---|---|---|---|
 | D-009 | DEFERRED | India securities/fintech legal review | Before public launch |
-| D-010 | BLOCKED | Final data privacy policy | At-rest, backup retention and account deletion settled by D-138–D-140; owner decisions on disclosure/export and remaining provider treatment; legal review |
+| D-010 | BLOCKED | Final data privacy policy | At-rest, backup retention and account deletion settled by D-138–D-140; D-141 settles where sensitive-context disclosure appears; owner decisions on export and remaining provider treatment; legal review |
 | D-138 | BLOCKED → BQ-092 | Verify production SSL enforcement and applicable database network restrictions | Production backend hosting target must be settled first; JWT ownership already shipped in BQ-089 |
 | D-139/D-140 | SHIPPED → BQ-099 | Reauthenticated, retry-safe whole-account deletion with seven-day backup treatment | Completed 14-Aug-2026 |
 | D-012/D-051 | BLOCKED → BQ-093 | Complete in-context AI surfacing coverage across the MVP taxonomy | Owner-approved pairing content/precedence beyond loan→term insurance; cold surfacing stays out |
@@ -44,7 +44,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-122/D-124/D-125 | BLOCKED → BQ-072 | Customer-outcome MVP exit-gate programme | Complete approved MVP, owner simulator validation, then external activation testing |
 | D-128 | BLOCKED → BQ-085 | Goal Affordability calculator | Exact input/formula/disclosure/edge-case contract |
 | D-131/D-132 | BLOCKED → BQ-086 | Term-insurance Coverage scenarios | Exact component formula/source/validation/disclosure contract; counsel before external launch |
-| D-134 | BLOCKED → BQ-087 | Dedicated minimal financial-context record | D3 authenticated ownership and D-010 privacy/deletion/backup contract |
+| D-134/D-141 | BLOCKED → BQ-087 | Dedicated minimal financial-context record with policy-based detailed disclosure | Final applicable D-010 privacy-policy text and accessible in-app link; auth/retention/deletion/backup are settled |
 | D-129 | SHIPPED → BQ-101 | Align recurring-contribution timing and disclosures | Owner reconfirmed Option A; completed 14-Aug-2026 |
 | D-005/D-008 | BLOCKED → BQ-092 | Confirm and implement the production hosting/deployment target | Owner confirms whether Supabase “hosting” still governs FastAPI or is superseded |
 | D-005/D-008/D-052/D-137 | SHIPPED → BQ-089 | Validate Supabase JWT and derive request ownership | Completed 14-Aug-2026; verified token subject is authoritative across protected routes |

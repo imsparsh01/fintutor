@@ -10,6 +10,11 @@
 
 ---
 
+- v3.7 (05-Aug-2026) — **§8 `savings_balance` item RESOLVED (D-079).** The 25-Jul-2026 open question (does
+  idle cash need a formal 9th D-013 type?) is closed: it's schema-exempt, being an instance of D-031's
+  already-deferred "Cash & bank" family rather than a gap inside D-013's three-MVP-family taxonomy. No new
+  type, no build work, no fixture change — owner-confirmed.
+
 - v3.6 (05-Aug-2026) — **D-078: AI-surfaced holding-capture mechanism confirmed, queued as BQ-039.** Owner
   confirmed both forks: extraction via a second narrow Haiku call (same shape as D-072's `deepen_classifier`,
   not a new architectural pattern) and an explicit confirm-card UI gate before any write (never auto-create

@@ -91,12 +91,14 @@ component formulas, source/unknown semantics, finite/range validation, loading/s
 disclosures. India insurance/fintech counsel review is required before external launch, not before private
 implementation once the contract exists.
 
-### BQ-087 — Dedicated minimal financial-context record — BLOCKED ON D3 + D-010
+### BQ-087 — Dedicated minimal financial-context record — BLOCKED ON PRIVACY-POLICY ARTIFACT
 
-Traces to D-134. Build one optional per-user record for an explicitly confirmed dependant count and
-self-reported emergency-fund months, then make it authoritative for Arya and Portfolio Health. Do not begin
-until authenticated ownership (D3) and the applicable D-010 retention/deletion/backup contract are decided.
-The implementation must prevent the current installation-global Health Score values crossing accounts.
+Traces to D-134/D-141. Build one optional per-user record for an explicitly confirmed dependant count and
+self-reported emergency-fund months, then make it authoritative for Arya and Portfolio Health. D-137 through
+D-140 settle authenticated ownership, retention, backup and deletion. D-141 places detailed disclosure in
+the privacy policy while retaining clear optional labels and view/change/clear controls in-product. Do not
+begin collection until the final applicable policy text and an accessible in-app link exist. The
+implementation must prevent the current installation-global Health Score values crossing accounts.
 
 ### BQ-072 — Customer-outcome MVP exit-gate programme — DEFERRED UNTIL INTERNAL MVP VALIDATION
 

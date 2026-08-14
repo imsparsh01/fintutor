@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.6, 14-Aug-2026)
+# FinTutor — Project Spec (v4.7, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -214,7 +214,9 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       protection by D-138 (Supabase-managed encryption plus strict access/transport/network controls; no
       application-managed field encryption for MVP). D-139 caps recovery-only backup retention after active
       deletion at seven days. D-140 settles reauthenticated, data-first, retry-safe whole-account deletion.
-      Still needs disclosure/export, remaining provider treatment, and legal review.
+      D-141 places detailed disclosure for D-134's optional sensitive context in the privacy policy while
+      preserving clear optional labels and user controls in-product. Still needs export, remaining provider
+      treatment, final policy text/link, and legal review.
 - [x] Write DECISION_PROTOCOL.md (D-017) — **COMPLETE at v1.0.** All six sections written: §1 taxonomy
       (retroactive classification of D-001–D-016, five categories), §2 tiers + six-trigger checklist +
       routing sequence, §3 four evaluation lenses, §4 conflict/precedence + supersession marker + the
@@ -304,6 +306,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v4.7 (14-Aug-2026) — **D-141 sensitive-context disclosure placement approved.** The detailed explanation
+  for dependant count and self-reported emergency-fund months will live in the privacy policy. The fields
+  remain clearly labelled, optional, explicitly entered, and viewable/changeable/clearable in-product;
+  collection remains blocked until the applicable policy text and accessible in-app link exist.
 - v4.6 (14-Aug-2026) — **D-140 whole-account deletion contract approved.** Deletion requires fresh
   authentication and a separate final confirmation, removes active application data before the Auth account,
   is idempotent and retry-safe, and reports success only after both stages finish. BQ-099 is READY.
@@ -357,7 +363,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   current prompt (v0.8): FINDING 8 does not reproduce, 0/5 — D-032's on-topic surfacing fix holds three
   prompt regenerations later. Also caught and fixed a real, previously-undetected `anthropic`/`httpx`
   dependency incompatibility (BQ-040) that would have crashed the backend's first live `/chat` call.
-- v3.7 (05-Aug-2026) — **§8 `savings_balance` item RESOLVED (D-079).** The 25-Jul-2026 open question (does
-  idle cash need a formal 9th D-013 type?) is closed: it's schema-exempt, being an instance of D-031's
-  already-deferred "Cash & bank" family rather than a gap inside D-013's three-MVP-family taxonomy. No new
-  type, no build work, no fixture change — owner-confirmed.
