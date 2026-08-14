@@ -68,6 +68,8 @@ POST /chat                      → assemble_baseline → ask_teaching_engine �
                                   ordinary chat may add derived `learning_context`; legacy onboarding never does
 POST /account/delete            → password reauthentication → delete every active user row → permanently
                                   delete Supabase Auth user; idempotent data-first sequencing
+POST /account/export            → password reauthentication → documented JSON snapshot of every active
+                                  verified-subject record; excludes secrets and internal masking/control data
 ```
 
 ## Services → what each computes
@@ -140,6 +142,8 @@ services/baseline.py (75)       Assembles prompt context dict (holdings, income,
 services/discretionary_categories.py (32) CRUD for user-labelled discretionary spend buckets.
 services/account_deletion.py    Reauthenticates against Supabase, deletes the complete owned-model registry
                                  in one DB transaction, then calls the server-only Auth Admin deletion API.
+services/data_export.py         Complete user-readable export registry + serializers. Every query is scoped
+                                 to the verified subject; a coverage test pairs it with all owned models.
 ```
 
 ## DB Models (all in `backend/app/models/`)

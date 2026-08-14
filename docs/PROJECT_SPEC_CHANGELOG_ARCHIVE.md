@@ -10,6 +10,21 @@
 
 ---
 
+- v4.0 (10-Aug-2026) — **The aesthetic layer is decided (D-086 through D-092); execution subagents
+  unparked (D-093).** §8's UX-principles item carried a standing note that visual style, density, motion
+  and hierarchy were "deliberately still left for when real screen decisions force it." The v1 mockups
+  (`docs/ux/mockups/`, moved into the repo this session) were that forcing function. Adopted: the
+  warm-ledger register + token set, with `success: '#116611'` renamed to `tutor` rather than recoloured
+  (D-086); **P10** — real figures never styled by valence (D-087); **P11** — the tutor's voice has its own
+  typeface, scoped to platform system faces (D-088); empty sections as teaching surfaces, resolving what
+  P8 left open (D-089); teaching moments as a full-screen walkthrough with a binding four-part P9 guard
+  (D-090, REVIEW-FLAGGED); the "what we won't say" block adopted as drawn (D-091, Tier 3); the
+  refusal-before-result meta-statement dropped (D-092, Tier 3). D-093 unparks D-014's execution subagents
+  — condition satisfied, not overridden — scoped to this reskin only, with backend changes, new
+  dependencies, and new screens explicitly out of bounds for every agent. **No MVP scope change:** this is
+  a presentation-layer pass over screens that already exist. The mockups' undrawn/unbuilt surfaces
+  (notification tray, standalone reminders screen, Income screen as drawn) are NOT authorised by it.
+
 - v3.9 (09-Aug-2026) — **§8 AI-surfacing trigger-logic item RESOLVED — housekeeping, no new decision.** All
   four of D-012's original undesigned consequences are closed across prior decisions, recognized as a set
   for the first time: WHICH (D-051/BQ-013), WHEN (D-080), micro-capture (D-078/BQ-039), onboarding re-think

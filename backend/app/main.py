@@ -21,6 +21,7 @@ from app.services.account_deletion import (
     delete_supabase_auth_user,
     reauthenticate_password,
 )
+from app.services.data_export import build_data_export
 from app.services.budget import compute_budget
 from app.services.consolidated import compute_consolidated
 from app.services.deepen_classifier import classify_deepen
@@ -272,6 +273,11 @@ class AccountDeletionRequest(BaseModel):
     confirmation: Literal["DELETE MY ACCOUNT"]
 
 
+class AccountExportRequest(BaseModel):
+    email: str
+    password: str
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -287,6 +293,16 @@ async def delete_account(
     delete_active_user_data(db, user_id)
     await delete_supabase_auth_user(user_id)
     return {"deleted": True}
+
+
+@app.post("/account/export")
+async def export_account_data(
+    body: AccountExportRequest,
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+) -> dict:
+    await reauthenticate_password(body.email, body.password, user_id)
+    return build_data_export(db, user_id, account_email=body.email)
 
 
 @app.get("/budget")

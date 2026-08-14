@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v4.9, 14-Aug-2026)
+# FinTutor — Project Spec (v5.0, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -219,7 +219,8 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
       application-managed field encryption for MVP). D-139 caps recovery-only backup retention after active
       deletion at seven days. D-140 settles reauthenticated, data-first, retry-safe whole-account deletion.
       D-141 places detailed disclosure for D-134's optional sensitive context in the privacy policy while
-      preserving clear optional labels and user controls in-product. Still needs export, remaining provider
+      preserving clear optional labels and user controls in-product. D-144 adds a fresh-authenticated,
+      self-service JSON export covering every active user-owned record. Still needs remaining provider
       treatment, final policy text/link, and legal review.
 - [x] Write DECISION_PROTOCOL.md (D-017) — **COMPLETE at v1.0.** All six sections written: §1 taxonomy
       (retroactive classification of D-001–D-016, five categories), §2 tiers + six-trigger checklist +
@@ -310,6 +311,10 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v5.0 (14-Aug-2026) — **D-144 self-service data export approved and shipped.** After fresh password
+  reauthentication, the verified user can download one documented JSON snapshot of active owned data.
+  Browsers download directly; native uses temporary cache plus the system share/save sheet and removes the
+  temporary file afterward. Secrets, masking internals, internal aliases and control keys are excluded.
 - v4.9 (14-Aug-2026) — **D-143 production FastAPI hosting deferred.** Supabase remains the Postgres/Auth
   provider, but does not host the existing Python application. A backend host will be selected only before
   external testing, distribution, or another workflow needs non-local reachability; production security
@@ -349,17 +354,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   with Path A's binding separation: real financial data/change never drives game progress or rewards. D-115
   authorises parallel agents for already-decided work across the repo without per-fleet owner approval;
   decision-protocol hard stops and deliberate-only file controls remain unchanged.
-- v4.0 (10-Aug-2026) — **The aesthetic layer is decided (D-086 through D-092); execution subagents
-  unparked (D-093).** §8's UX-principles item carried a standing note that visual style, density, motion
-  and hierarchy were "deliberately still left for when real screen decisions force it." The v1 mockups
-  (`docs/ux/mockups/`, moved into the repo this session) were that forcing function. Adopted: the
-  warm-ledger register + token set, with `success: '#116611'` renamed to `tutor` rather than recoloured
-  (D-086); **P10** — real figures never styled by valence (D-087); **P11** — the tutor's voice has its own
-  typeface, scoped to platform system faces (D-088); empty sections as teaching surfaces, resolving what
-  P8 left open (D-089); teaching moments as a full-screen walkthrough with a binding four-part P9 guard
-  (D-090, REVIEW-FLAGGED); the "what we won't say" block adopted as drawn (D-091, Tier 3); the
-  refusal-before-result meta-statement dropped (D-092, Tier 3). D-093 unparks D-014's execution subagents
-  — condition satisfied, not overridden — scoped to this reskin only, with backend changes, new
-  dependencies, and new screens explicitly out of bounds for every agent. **No MVP scope change:** this is
-  a presentation-layer pass over screens that already exist. The mockups' undrawn/unbuilt surfaces
-  (notification tray, standalone reminders screen, Income screen as drawn) are NOT authorised by it.

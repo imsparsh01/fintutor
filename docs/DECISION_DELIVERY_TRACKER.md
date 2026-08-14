@@ -16,9 +16,10 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | Decision | Disposition | Deliverable | Blocker / transition |
 |---|---|---|---|
 | D-009 | DEFERRED | India securities/fintech legal review | Before public launch |
-| D-010 | BLOCKED | Final data privacy policy | At-rest, backup retention and account deletion settled by D-138–D-140; D-141 settles where sensitive-context disclosure appears; owner decisions on export and remaining provider treatment; legal review |
+| D-010 | BLOCKED | Final data privacy policy | At-rest, backup retention, deletion, disclosure placement and export settled by D-138–D-144; final policy text, remaining provider treatment, and legal review remain |
 | D-138 | DEFERRED | Verify production SSL enforcement and applicable database network restrictions | Unparks with D-143 before any non-local/external backend deployment; JWT ownership already shipped |
 | D-142 | SHIPPED → BQ-104 | Enforce FastAPI-only access to every public application table | Completed 14-Aug-2026 at Alembic head `d142a104f001`; direct client roles denied, private backend role verified |
+| D-144 | SHIPPED → BQ-105 | Reauthenticated self-service JSON data export | Completed 14-Aug-2026; verified-subject export, native/web delivery, temporary-file cleanup, and future-model coverage guard |
 | D-139/D-140 | SHIPPED → BQ-099 | Reauthenticated, retry-safe whole-account deletion with seven-day backup treatment | Completed 14-Aug-2026 |
 | D-012/D-051 | BLOCKED → BQ-093 | Complete in-context AI surfacing coverage across the MVP taxonomy | Owner-approved pairing content/precedence beyond loan→term insurance; cold surfacing stays out |
 | D-022 | DEFERRED | Conversation memory | Storage, retrieval, retention and deletion policy approved; explicitly post-MVP |

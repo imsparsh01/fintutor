@@ -14,6 +14,10 @@ disclosure → password reauthentication → separate irreversible confirmation.
 calls the protected deletion endpoint, signs out locally, and clears installation-local account state only
 after backend success.
 
+`components/DataExportModal.tsx` is the adjacent account-access control: fresh password reauthentication
+then `lib/dataExport.ts` downloads a documented JSON snapshot. Web uses a browser download; native writes
+only to Expo's cache, opens the system share/save sheet, and deletes the temporary file afterward.
+
 ## Entry: `app/App.tsx` → `app/navigation/RootNavigator.tsx`
 
 ## Navigation: `app/navigation/MainTabs.tsx`
@@ -44,7 +48,7 @@ AssessmentContextScreen screens/                    View/change/clear normalized
                                                    D-119's existing endpoints; no raw values or internal metadata
 ConsolidatedScreen      screens/ (~390)            Home — 8-section feed: financial picture, tappable
                                                    Portfolio Health grid, Arya, calculators, scenarios,
-                                                   Learn, and streak/reward (BQ-060/D-111)
+                                                   Learn, streak/reward, and export/delete account controls
 PortfolioScreen         screens/ (~430)            Portfolio tab — allocation donut by record count,
                                                    shared Health Score sub-scores, family nav rows,
                                                    category concentration, trend mechanism panel (BQ-058/061)
@@ -104,6 +108,8 @@ TabIcon                     components/ (~180) Five code-native primary-nav glyp
 File                    Lines   Purpose
 ────────────────────────────────────────────────────────────────────────────
 backend.ts              17      Shared base URL (EXPO_PUBLIC_BACKEND_URL ?? localhost:8000)
+dataExport.ts                   Reauthenticated export API + browser download/native temporary share/save
+dataExportFormat.ts             Stable dated filename and readable newline-terminated JSON formatting
 chat.ts                 78      sendChatMessage() — POST /chat wrapper; onboarding fields
 holdings.ts             74      fetchHoldings / createHolding / updateHolding / deleteHolding
 consolidated.ts         30      fetchConsolidated() → {families, totals, metadata}

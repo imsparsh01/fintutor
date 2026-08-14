@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-105 — Reauthenticated self-service JSON data export — DONE 14-Aug-2026
+
+Added `POST /account/export` with verified-subject ownership and fresh password reauthentication. One
+documented JSON envelope covers every current user-owned model and goal funding links while excluding
+secrets, internal aliases/masking data, retry keys, and internal progression controls; a coverage guard
+fails when future owned models lack export treatment. Home now offers Download my data: browsers download
+directly, while iOS/Android use temporary Expo FileSystem storage plus the native Sharing sheet and clean up
+afterward. Verified with 332 backend tests, 39 frontend tests, TypeScript, Expo web export, and clean diff.
+
 ## BQ-104 — Enforce FastAPI-only Supabase table access — DONE 14-Aug-2026
 
 Applied the previously approved progression schema catch-up and then D-142's versioned security migration to

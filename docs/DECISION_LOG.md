@@ -143,3 +143,10 @@
   workflow needs external reachability. Full write-up:
   `docs/decisions/D-143-production-fastapi-hosting-deferred-until-required.md`.
 - **Date:** 14-Aug-2026
+
+### D-144 — Users receive a reauthenticated self-service JSON data export
+- **Tier:** 3, owner-decided. “A fresh password reauthentication is required before the verified JWT
+  subject's active data is assembled into one documented, dated JSON file.” Web downloads directly; native
+  uses temporary cache plus the share/save sheet. Full write-up:
+  `docs/decisions/D-144-reauthenticated-self-service-json-data-export.md`.
+- **Date:** 14-Aug-2026
