@@ -10,6 +10,14 @@
 
 ---
 
+- v4.1 (12-Aug-2026) — **Target audience and progression direction updated (D-114); standing execution-agent
+  authorisation adopted (D-115).** §3 now covers students through working professionals with roughly ten
+  years' experience (approximately 18–32 as audience, never access gate), superseding D-053/D-054's narrower
+  early-career-only direction. §4's engagement item now includes levels plus continuous learning progress,
+  with Path A's binding separation: real financial data/change never drives game progress or rewards. D-115
+  authorises parallel agents for already-decided work across the repo without per-fleet owner approval;
+  decision-protocol hard stops and deliberate-only file controls remain unchanged.
+
 - v4.0 (10-Aug-2026) — **The aesthetic layer is decided (D-086 through D-092); execution subagents
   unparked (D-093).** §8's UX-principles item carried a standing note that visual style, density, motion
   and hierarchy were "deliberately still left for when real screen decisions force it." The v1 mockups

@@ -16,13 +16,59 @@ Rules for this file:
 
 ## READY — pick one of these
 
+### BQ-091 — Replace unavailable gstack commands with equivalent mandatory gates — READY
+
+Implement D-145's tool-independent written plan and pre-commit review gates in the operating rules. Preserve
+the sprint discipline, use named commands when available, and record equivalent manual checks otherwise.
+
+### BQ-093 — Complete bounded in-context comparison coverage — READY
+
+Implement D-145's deterministic pairing table under D-080: on-topic only, at most one absent-type candidate,
+mechanism-only copy, no cold surfacing or advice, and D-078 confirmation before capture.
+
+### BQ-095 — Add the opt-in ethical learning reminder — READY
+
+Implement D-145's once-daily local reminder after meaningful learning: user-chosen time, explicit opt-in,
+generic behavior-only copy, complete settings controls, and no financial/outcome/streak-loss targeting.
+
+### BQ-096 — Preserve unvalued and unclassified holding metadata — READY
+
+Implement D-145's per-holding fail-soft valuation semantics, family invalid counts and top-level unclassified
+count. Never silently zero, guess a family, call a non-empty portfolio empty, or fail the whole response.
+
+### BQ-097 — Preserve the selected reminder due day — READY
+
+Implement D-145's per-month clamping: selected day 1–31, month-end only when necessary, restoration in longer
+months, and no permanent day-28 rewrite.
+
+### BQ-102 — Add an interactive own-numbers walkthrough — READY
+
+Implement D-145's skippable mechanism walkthrough using consented known context plus only necessary missing
+inputs. Show provenance, never fabricate/default unknowns, save nothing without confirmation, and do not
+gate, quiz, reward or advise.
+
+### BQ-103 — Correct remaining budget, tax-room, ESOP and streak defects — READY
+
+Implement every D-145 conformance correction, including strict income cadence, bounded 80C room, ESOP
+wording and clamped-anniversary timing, and future-date streak no-op behavior. Add regression tests.
+
+### BQ-085 — Build the neutral Goal Affordability gap calculator — READY
+
+Implement D-145's user-controlled month-end model, ending value, required contribution and signed gap with
+adjustable scenarios, validation and disclosures. Never make an affordability/on-track verdict.
+
+### BQ-086 — Build context-first term-insurance exploration — READY
+
+Implement D-145's consented, source-visible component exploration with critical-unknown blocking, transient
+scenarios, editable inclusion and neutral cover difference. Never recommend purchase or reward outcomes.
+
+### BQ-087 — Publish Privacy Policy v1 and build dedicated context — READY
+
+Draft and link D-145's internal-MVP policy, then build the optional per-user context record, authoritative
+consumers, cross-account containment, legacy handling, controls, export/deletion coverage and tests. External
+collection/launch remains gated on qualified India counsel review.
+
 ## BLOCKED — do not start
-
-### BQ-091 — Restore or supersede mandatory gstack plan/review gates — BLOCKED
-
-Traces to D-107. The operating rules call the gates mandatory, while several sessions report the installed
-commands absent or failing. Unblock by either proving one compatible plan and review invocation, or by an
-owner decision superseding the tool-specific mandate with an explicit manual fallback.
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 
@@ -33,33 +79,11 @@ non-local backend. Provider selection must then use current pricing/region/secur
 also close D-095's CORS/dev-bypass cleanup and verify database SSL enforcement plus applicable network
 restrictions.
 
-### BQ-093 — Complete in-context AI surfacing coverage — BLOCKED ON PAIRING CONTENT
 
-Traces to D-012/D-051. Generic capture supports the taxonomy, but deterministic surfacing has only the
-loan→missing-term-insurance rule. Define owner-reviewed, on-topic pairings and precedence for remaining MVP
-types, then implement them under D-080's verified WHEN constraint. Cold surfacing remains out of MVP.
+### BQ-098 — Income-tax and HRA calculators — DEFERRED ON RULE CONTRACT
 
-### BQ-095 — Complete or narrow the Hook Loop trigger layer — BLOCKED ON PRODUCT DESIGN
-
-Traces to D-060/D-061. Streaks and variable rewards shipped, but the adopted Hook Loop described a trigger/
-notification layer without a concrete contract. Decide trigger shape, frequency and control without tying
-engagement to financial outcomes, or explicitly narrow the full-adoption wording.
-
-### BQ-096 — Consolidated valuation metadata defects — BLOCKED ON OWNER APPROVAL
-
-Traces to D-065/D-097 and the D-125 audit. Unmapped product types can disappear from metadata and malformed
-JSONB can fail the response. Approve neutral status/error semantics before changing financial aggregation.
-
-### BQ-097 — Reconcile reminder due-day behavior — BLOCKED ON D4
-
-Traces to D-101/BQ-084. D-101 approved days 1–31 with shorter months clamped to month end. Current recurring
-triggers map 29–31 permanently to 28. Confirm that simplification as a supersession or approve a scheduling
-design that preserves the actual due day in longer months.
-
-### BQ-098 — Income-tax and HRA calculators — BLOCKED ON RULE CONTRACT
-
-Traces to D-105/D-128. Both were approved, but require a supported financial year, authoritative rule source,
-verification/update ownership, stale behavior and legal review before build.
+Traces to D-105/D-128/D-145. Unpark only when one supported financial year, official primary sources, a
+verification owner/date, stale-rule shutdown and qualified India tax/fintech counsel review are established.
 
 ### BQ-100 — Schedule progression retention pruning — DEFERRED WITH HOSTING
 
@@ -67,40 +91,6 @@ Traces to D-121/D-143. Tested `prune_raw_events()` exists, but no periodic job i
 when external access requires a host; choose its scheduler and verify pruning, replay, failure alerting and
 the 400-day boundary end to end before external users.
 
-### BQ-102 — Reconcile empty-state personalized walkthrough promise — BLOCKED
-
-Traces to D-089. Empty sections ship generic mechanism walkthroughs and send own-number application to Chat,
-while D-089 literally promises an offered walkthrough using the user's own numbers. Owner must confirm the
-two-stage handoff satisfies the decision or approve a bounded personalized walkthrough contract.
-
-### BQ-103 — Remaining D-125 conformance defects — BLOCKED ON OWNER APPROVAL
-
-Traces to D-048/D-069/D-070 and the D-125 audit. Decide exact fixes for strict income cadence; 80C cap and
-negative inputs; ESOP equal-FMV wording, month-end vesting and zero-unit wording; and future-dated streak
-state. BQ-096 separately owns the two consolidated defects. Pinning current behavior in tests is not approval
-to preserve it; each correction remains money/tax/state gated.
-
-### BQ-085 — Goal Affordability calculator — BLOCKED ON FORMULA CONTRACT
-
-Traces to D-128. The MVP capability is approved, but D-128 explicitly forbids implementation before its
-exact inputs, arithmetic, disclosures, validation and edge-case behavior are owner-approved. Unblock only
-when that contract is logged; do not infer a target rate, horizon, contribution, or affordability verdict.
-
-### BQ-086 — Term-insurance Coverage scenarios — BLOCKED ON IMPLEMENTATION CONTRACT
-
-Traces to D-131/D-132. The user-controlled scenario direction is approved. Before build, decide the exact
-component formulas, source/unknown semantics, finite/range validation, loading/stale-user behavior and
-disclosures. India insurance/fintech counsel review is required before external launch, not before private
-implementation once the contract exists.
-
-### BQ-087 — Dedicated minimal financial-context record — BLOCKED ON PRIVACY-POLICY ARTIFACT
-
-Traces to D-134/D-141. Build one optional per-user record for an explicitly confirmed dependant count and
-self-reported emergency-fund months, then make it authoritative for Arya and Portfolio Health. D-137 through
-D-140 settle authenticated ownership, retention, backup and deletion. D-141 places detailed disclosure in
-the privacy policy while retaining clear optional labels and view/change/clear controls in-product. Do not
-begin collection until the final applicable policy text and an accessible in-app link exist. The
-implementation must prevent the current installation-global Health Score values crossing accounts.
 
 ### BQ-072 — Customer-outcome MVP exit-gate programme — DEFERRED UNTIL INTERNAL MVP VALIDATION
 

@@ -150,3 +150,9 @@
   uses temporary cache plus the share/save sheet. Full write-up:
   `docs/decisions/D-144-reauthenticated-self-service-json-data-export.md`.
 - **Date:** 14-Aug-2026
+
+### D-145 — The remaining MVP backlog has explicit build contracts
+- **Tier:** 3, owner-decided. “Implementation may be split into bounded build-queue items without reopening
+  routine mechanics.” Ten formerly blocked items are READY; tax/HRA remains deliberately deferred. Full
+  write-up: `docs/decisions/D-145-consolidated-mvp-backlog-contracts.md`.
+- **Date:** 14-Aug-2026

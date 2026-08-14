@@ -1,4 +1,4 @@
-# FinTutor — Project Spec (v5.0, 14-Aug-2026)
+# FinTutor — Project Spec (v5.1, 14-Aug-2026)
 
 > Single source of truth for the build. Same discipline as the financial baseline doc:
 > updated at the end of **every** working session. If a decision isn't written here, it didn't happen.
@@ -311,6 +311,12 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
 
 > **Older entries archived (D-081).** This section holds only the most recent ~10 change-log entries. Once a session's edit pushes the count past that, move the OLDEST kept entries into `docs/PROJECT_SPEC_CHANGELOG_ARCHIVE.md` verbatim — a per-session-close habit now (see `CLAUDE.md`'s checklist), not a one-time cleanup. Look up an older entry by grepping the archive file directly.
 
+- v5.1 (14-Aug-2026) — **D-145 consolidated backlog contracts approved.** Ten previously blocked MVP items
+  now have executable contracts: engineering gates, educational pairings, ethical reminders, valuation
+  metadata, due-day recurrence, own-numbers walkthroughs, audited corrections, Goal Affordability,
+  context-first term-insurance exploration, and Privacy Policy v1 plus dedicated context. Tax/HRA remains
+  deferred until its FY/source/verification/stale/legal gate; external collection and launch remain subject
+  to qualified India counsel review.
 - v5.0 (14-Aug-2026) — **D-144 self-service data export approved and shipped.** After fresh password
   reauthentication, the verified user can download one documented JSON snapshot of active owned data.
   Browsers download directly; native uses temporary cache plus the system share/save sheet and removes the
@@ -347,10 +353,3 @@ Phone app  →  Your backend  →  Anthropic API (Sonnet = teaching, Haiku = rec
   assessment table; raw dialogue is not persisted; backend completion is cross-device authoritative; and
   legacy users are grandfathered without inferred answers or forced reassessment. This authorises bounded
   onboarding implementation, not the broader progression event ledger or final D-010 privacy policy.
-- v4.1 (12-Aug-2026) — **Target audience and progression direction updated (D-114); standing execution-agent
-  authorisation adopted (D-115).** §3 now covers students through working professionals with roughly ten
-  years' experience (approximately 18–32 as audience, never access gate), superseding D-053/D-054's narrower
-  early-career-only direction. §4's engagement item now includes levels plus continuous learning progress,
-  with Path A's binding separation: real financial data/change never drives game progress or rewards. D-115
-  authorises parallel agents for already-decided work across the repo without per-fleet owner approval;
-  decision-protocol hard stops and deliberate-only file controls remain unchanged.
