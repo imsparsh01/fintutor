@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "backend",
-      "runtimeExecutable": "backend/.venv/bin/python",
+      "runtimeExecutable": "backend/.venv/Scripts/python",
       "runtimeArgs": [
         "-m",
         "uvicorn",

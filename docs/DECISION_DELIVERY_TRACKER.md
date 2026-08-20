@@ -54,6 +54,8 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-005/D-008/D-052/D-137 | SHIPPED → BQ-089 | Validate Supabase JWT and derive request ownership | Completed 14-Aug-2026; verified token subject is authoritative across protected routes |
 | D-062/D-135 | SHIPPED → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Completed 14-Aug-2026 |
 
+| D-147 | SHIPPED → requirements.txt + D-147 decision file | Python 3.14/Windows venv fix; psycopg2-binary, SQLAlchemy, Alembic floor bumps + tzdata added |
+
 ## Current-session decisions
 
 | Decision | Disposition | Evidence |

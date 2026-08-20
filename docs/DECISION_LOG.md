@@ -119,3 +119,10 @@
   semantic headings, but does not call the native-only focus API.” Full write-up:
   `docs/decisions/D-146-web-accessibility-focus-stays-native-only.md`.
 - **Date:** 14-Aug-2026
+
+### D-147 — Python 3.14 / Windows compatibility fixes in requirements.txt
+- **Tier:** 1, bounded conformance repair. “Pure compatibility shims with no effect on product
+  behaviour, data schema, money calculations, or API contracts.” Upgrades psycopg2-binary, SQLAlchemy,
+  and Alembic floor versions; adds tzdata for Windows zoneinfo. Full write-up:
+  `docs/decisions/D-147-python314-windows-compatibility-fixes.md`.
+- **Date:** 20-Aug-2026
