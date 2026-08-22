@@ -1,7 +1,8 @@
 # Arya feature package
 
 **Work item:** BQ-107  
-**Status:** Package and prototype complete; awaiting owner validation.  
+**Status:** Owner validation PASS on 23-Aug-2026; package frozen at prototype commit `d150d1c`.
+
 **Production impact:** None. The prototype is fixture-only and does not call FastAPI, Supabase, or a model.
 
 ## Package contents
@@ -40,11 +41,11 @@ Open:
 Append `?theme=light` or `?theme=dark` for deterministic theme review. Without a parameter, the page follows
 the operating-system preference.
 
-Use the task selector above the phone frame. Complete the tasks in the validation document without reading
-the expected observations first. Record the outcome in `VALIDATION_RESULT.md` using the provided template.
+The owner completed all seven tasks and confirmed PASS against all four criteria. The prototype remains the
+frozen validation reference for eventual engineering and regression checks.
 
 ## Gate
 
-BQ-107 remains blocked on owner validation. A PASS freezes this package and permits bounded production build
-items. REVISE, PARK and ESCALATE follow D-148. Do not edit production prompts, APIs, schemas or calculations
-from prototype feedback without completing that disposition.
+BQ-107 passed and is complete. Production work must be taken only through bounded queue items derived from
+this frozen package. Any later change to prompts, APIs, schemas, masking, calculations or standing teaching
+boundaries must be routed independently under the decision protocol.

@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-107 — Arya product-definition package and owner prototype — DONE 23-Aug-2026
+
+Traces to D-148 and the ranked Phase-1 audit. Delivered the complete Arya PRD, journey/state matrices,
+functional/content contracts, acceptance matrix, decision register and seven-scenario controlled-fixture
+prototype in `docs/features/arya/`. Automated/static checks and browser QA passed. The owner completed all
+seven tasks and confirmed PASS across all four validation criteria; the package is frozen at `d150d1c` and
+bounded production conformance work proceeds as BQ-108.
+
 ## BQ-106 — Prevent native-only accessibility focus from crashing web — DONE 14-Aug-2026
 
 Traces to D-146. Guarded all remaining `findNodeHandle` / `setAccessibilityFocus` calls behind the native

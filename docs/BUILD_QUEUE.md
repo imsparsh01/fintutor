@@ -16,15 +16,18 @@ Rules for this file:
 
 ## READY — pick one of these
 
+### BQ-108 — Arya validated presentation and recovery contract
+
+Traces to D-148 and the owner-PASS BQ-107 package. Bring the existing production Chat experience into
+conformance with the frozen Arya presentation contract for: first-entry role and memory scope, visible
+request-boundary disclosure, legible unsaved/proposed provenance, explicit ambiguous-record selection,
+explicit retry without silent resend, and fresh-thread/no-memory explanation. Preserve the existing prompt,
+masking, extraction, reconciliation, API, schema and financial-logic contracts. Reuse existing components
+and dependencies. Add focused component/flow tests for the validated states, account switching and failure
+recovery; run native/web UI regression QA. Stop if implementation exposes a need to change any preserved
+contract or standing teaching/privacy boundary.
+
 ## BLOCKED — do not start
-
-### BQ-107 — Arya product-definition package and owner prototype — AWAITING OWNER VALIDATION
-
-Traces to D-148 and the ranked Phase-1 audit. The complete Arya PRD, journey/state matrices,
-functional/content contracts, acceptance matrix, decision register and seven-scenario controlled-fixture
-prototype are in `docs/features/arya/`. Automated/static checks and browser QA pass. The owner must now run
-the seven tasks in `ACCEPTANCE_AND_VALIDATION.md` without coaching and record PASS, REVISE, PARK or ESCALATE
-in `VALIDATION_RESULT.md`. No production Arya build item is authorised before that disposition.
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 
