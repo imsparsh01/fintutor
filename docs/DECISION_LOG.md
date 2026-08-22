@@ -133,3 +133,11 @@
   production engineering. Full write-up:
   `docs/decisions/D-148-ten-workstream-product-definition-programme.md`.
 - **Date:** 23-Aug-2026
+
+### D-149 — Baseline lifecycle and integrity directions approved
+- **Tier:** 3, owner-decided. “The baseline is a user-correctable source of truth reused throughout FinTutor.”
+  Full edit/delete extends to income, discretionary categories and goals; direct edits use durable stale
+  comparison; committed holding saves remain authoritative across reminder failure; goal progress moves toward
+  live available value but its exact money rule remains blocked. Full write-up:
+  `docs/features/baseline/decisions/D-149-baseline-lifecycle-and-integrity-directions.md`.
+- **Date:** 23-Aug-2026

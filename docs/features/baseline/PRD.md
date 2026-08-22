@@ -40,8 +40,7 @@ views changed, and recover from invalid or failed data without exposing another 
 
 - New holding families, bank sync, transactions, advice, product evaluation or completeness scoring.
 - Production API/schema/calculation changes.
-- New edit/delete capability where the current MVP contract has not approved it.
-- A new optimistic-concurrency mechanism or transactional reminder architecture.
+- Production implementation remains outside BQ-109; D-149's approved concurrency work follows only after gate.
 
 ## Evidence ledger
 
@@ -69,5 +68,5 @@ views changed, and recover from invalid or failed data without exposing another 
 
 ## Dependencies
 
-D-009/D-010/D-012/D-013/D-031/D-038/D-059/D-078/D-133/D-137/D-142/D-145/D-148, plus the existing
+D-009/D-010/D-012/D-013/D-031/D-038/D-059/D-078/D-133/D-137/D-142/D-145/D-148/D-149, plus the existing
 holdings, reconciliation, income, goals, discretionary, budget, consolidated, export and deletion services.

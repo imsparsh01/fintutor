@@ -2,6 +2,8 @@
 
 ## O-01: How much non-holding lifecycle management belongs in MVP?
 
+**Owner decision:** Path B, recorded in D-149.
+
 - **Trigger:** expanding income/discretionary/goal edit-delete capabilities may grow MVP scope; current product
   language implies correction but only holdings have the full lifecycle.
 - **Path A:** keep current create/append plus goal-funding edit. Consequence: explicitly document limits and
@@ -14,6 +16,9 @@
 
 ## O-02: What does goal progress mean?
 
+**Owner decision:** Path B direction selected in D-149. The required cap/allocation/unknown-value rule remains
+open in `GOAL_PROGRESS_RULE_BRIEF.md`.
+
 - **Trigger:** money logic. Documentation says progress reads linked holdings' current values; runtime sums
   static `earmarked_amount` links.
 - **Path A:** progress is the sum of earmarked planning amounts. Consequence: stable and simple, but does not
@@ -25,6 +30,9 @@
 
 ## O-03: How should direct edits handle stale data?
 
+**Owner decision:** Path B, recorded in D-149. A durable compare-on-write token and refreshed reconfirmation are
+binding; exact migration mechanics belong to the later bounded engineering plan.
+
 - **Trigger:** low-reversibility architecture and financial-data correctness. Direct PATCH can overwrite a
   newer cross-device edit; reconciliation already uses row-lock stale detection.
 - **Path A:** retain last-write-wins and disclose refresh behaviour. Lowest build cost, weakest protection.
@@ -34,6 +42,8 @@
 
 ## O-04: What happens when the holding saves but reminder scheduling fails?
 
+**Owner decision:** Path A, recorded in D-149.
+
 - **Trigger:** data correctness and architecture. Current UI may say save failed after the server committed,
   inviting duplicate creation.
 - **Path A:** holding success is authoritative; reminder failure is a separate non-blocking notice/retry.
@@ -41,5 +51,5 @@
 - **Path C:** attempt compensating rollback. Consequence: high complexity and can erase a valid financial record.
 - **Owner judgment:** desired coupling and recovery contract. Path C has the highest data-loss risk.
 
-No recommendation is recorded because the owner did not ask for one. These four decisions block package freeze,
-not completion of the controlled prototype.
+No recommendation was recorded. O-01, O-03 and O-04 are resolved. O-02 has a selected direction but remains
+blocked on its narrower money-logic rule.

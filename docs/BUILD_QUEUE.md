@@ -18,14 +18,15 @@ Rules for this file:
 
 ## BLOCKED — do not start
 
-### BQ-109 — Personal financial baseline package and owner prototype — OWNER DECISIONS + VALIDATION
+### BQ-109 — Personal financial baseline package and owner prototype — GOAL RULE + VALIDATION
 
 Traces to D-148 and the ranked Phase-1 audit. The full PRD, journey/state matrix, contracts, acceptance matrix,
 decision register, four-fork owner brief and eight-scenario controlled-fixture prototype are complete in
-`docs/features/baseline/`. Static checks and browser interaction QA pass. Owner decisions O-01 to O-04 are
-required for management breadth, goal-progress money logic, direct-edit stale handling, and post-write reminder
-failure semantics. After those are recorded, the owner runs the eight tasks and records PASS, REVISE, PARK or
-ESCALATE. No production baseline build item is authorised before that disposition.
+`docs/features/baseline/`. Static checks and browser interaction QA pass. D-149 resolves full supporting-object
+management, durable stale-edit reconfirmation and authoritative-save/separate-reminder recovery; it also selects
+live available-value goal progress. The exact cap/allocation/unknown-value rule remains owner-blocked in
+`GOAL_PROGRESS_RULE_BRIEF.md`. After that rule is recorded, the owner runs the eight tasks and records PASS,
+REVISE, PARK or ESCALATE. No production baseline build item is authorised before that disposition.
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 

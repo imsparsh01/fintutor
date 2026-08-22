@@ -1,6 +1,6 @@
 # Baseline owner validation result
 
-**Date:** Pending owner decisions and walkthrough
+**Date:** Pending goal-progress rule and owner walkthrough
 
 **Prototype commit:** `f959d7d`
 
@@ -14,12 +14,13 @@
 | Budget cadence | Pending | Pending | Pending | Pending | |
 | Goal funding | Pending | Pending | Pending | Pending | |
 | Partial outage | Pending | Pending | Pending | Pending | |
-| Saved/reminder failure | Pending | Pending | Pending | Pending | O-04 open |
+| Saved/reminder failure | Pending | Pending | Pending | Pending | D-149 Path A applies |
 | Account switch | Pending | Pending | Pending | Pending | |
 
-## Open owner decisions
+## Open owner decision
 
-O-01 to O-04 in `OWNER_DECISION_BRIEF.md`.
+O-02's cap/allocation/unknown-value rule in `GOAL_PROGRESS_RULE_BRIEF.md`. O-01, O-03 and O-04 are resolved by
+D-149.
 
 ## Confusion, interventions, trust surprises and required changes
 

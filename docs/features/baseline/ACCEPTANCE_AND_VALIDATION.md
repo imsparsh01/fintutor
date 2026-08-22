@@ -28,7 +28,7 @@
 6. **Partial outage:** encounter a goals-service failure while other baseline sections remain available; recover
    without creating a duplicate goal.
 7. **Saved record, reminder failed:** complete a holding save whose reminder side effect fails; identify the
-   authoritative saved state and safe next action. Final production semantics depend on O-04.
+   authoritative saved state and safe next action under D-149.
 8. **Account switch:** switch from Mira to Kabir while a load is pending; verify no Mira record/draft appears in
    Kabir's account.
 
@@ -37,7 +37,7 @@ state/provenance understood, neutrality clear, recovery clear, and any intervent
 
 ## Disposition rule
 
-- **PASS:** all settled tasks pass and O-01 to O-04 have recorded owner decisions.
+- **PASS:** all settled tasks pass and O-02's cap/allocation/unknown-value rule is recorded.
 - **REVISE:** return only failed presentation/workflow hypotheses to the package/prototype.
 - **PARK:** name an explicit unpark condition.
 - **ESCALATE:** keep owner-decision forks open; do not freeze or authorise production.

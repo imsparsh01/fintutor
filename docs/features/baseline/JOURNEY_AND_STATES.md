@@ -24,10 +24,10 @@
 | Excluded | Source remains visible with exclusion reason | Correct or accept omission |
 | Zero | Explicit measured/entered zero with provenance | Edit if incorrect |
 | Unsaved | Draft/proposal labelled “Not saved yet” | Confirm or discard |
-| Stale | Do not overwrite silently; show old/current/proposed | Refresh and reconfirm (decision open for direct CRUD) |
+| Stale | Do not overwrite silently; show old/current/proposed | Refresh and reconfirm under D-149 |
 | Permission denied | No data rendered; account/auth recovery | Reauthenticate or leave |
 | Offline/backend failure | Never show empty as success; preserve safe draft | Explicit retry |
-| Post-write side effect failure | Authoritative saved state named separately | Retry side effect only (decision open) |
+| Post-write side effect failure | Authoritative saved state named separately | Retry reminder only under D-149 |
 | Cross-account transition | Clear data/drafts/errors before next load | Load new subject only |
 | Delete impact | Name affected links/reminders before confirmation | Cancel or confirm |
 
@@ -40,4 +40,5 @@
 - Holding persistence can succeed before reminder scheduling fails, while UI may report save failure.
 - Goal model documentation says current-value progress while runtime sums static earmarks.
 
-These are evidence, not silently accepted final behaviour. Their decision routes are in the register.
+These are current-production evidence, not accepted final behaviour. D-149 resolves management breadth, stale
+edits and reminder recovery; its goal-progress direction still needs the rule in `GOAL_PROGRESS_RULE_BRIEF.md`.

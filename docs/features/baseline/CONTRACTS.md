@@ -43,10 +43,10 @@
 - Fetch failure is not an empty state.
 - Partial services fail independently where a safe partial view is possible.
 - A failed write keeps the draft and gives explicit retry; it does not imply success.
-- If a write committed but a reminder/progression side effect failed, the saved state and side-effect state must
-  be separated. Exact production behaviour requires owner decision.
+- If a holding write committed but reminder scheduling failed, the saved record remains authoritative and the
+  reminder is a separate non-blocking retry under D-149.
 - Cross-account changes invalidate in-flight responses and clear local presentation/drafts.
-- Ordinary stale-write handling requires owner decision; no silent last-write-wins promise is added here.
+- Ordinary direct writes use durable compare-on-write state and refreshed explicit reconfirmation under D-149.
 
 ## Privacy and security
 

@@ -24,13 +24,14 @@
 | H-05 | Partial failure must occupy the failed section, not become empty | Owner recognises outage and retries it |
 | H-06 | Clearing old content before account load prevents cross-account trust failure | Owner sees no prior-account record during switch |
 
-## Owner decisions required
+## Owner decision status
 
 | ID | Fork | Trigger |
 |---|---|---|
-| O-01 | Management breadth for income, discretionary categories and goals | MVP scope/product contract |
-| O-02 | Goal progress: static earmark sum or live holding-value mechanism | User-relied-on money logic |
-| O-03 | Stale-write contract for ordinary direct edits | Low-reversibility architecture/data correctness |
-| O-04 | Holding write succeeds but reminder side effect fails | Financial-data correctness and architecture |
+| O-01 | Full edit/delete for income, discretionary categories and goals | RESOLVED, D-149 Path B |
+| O-02 | Live available-value goal progress | DIRECTION RESOLVED, D-149; cap/allocation/unknown rule OPEN |
+| O-03 | Durable compare-on-write plus refreshed reconfirmation | RESOLVED, D-149 Path B |
+| O-04 | Holding save authoritative; reminder failure separate/retryable | RESOLVED, D-149 Path A |
 
-See `OWNER_DECISION_BRIEF.md`. Until decided, the prototype demonstrates the fork without authorising production.
+See `OWNER_DECISION_BRIEF.md` and `GOAL_PROGRESS_RULE_BRIEF.md`. Production remains unauthorised until the
+remaining money rule and owner prototype validation are complete.
