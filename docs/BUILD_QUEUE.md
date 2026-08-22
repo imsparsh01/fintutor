@@ -16,17 +16,15 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-107 — Arya product-definition package and owner prototype
-
-Traces to D-148 and the ranked Phase-1 audit. Produce Arya's complete PRD, journey/state matrices,
-functional/content contracts, acceptance matrix and decision register by reconciling the live teaching,
-privacy, surfacing and reconciliation behaviour. Build a controlled-fixture interactive journey with 5-8
-owner tasks covering first insight, neutrality, masking, capture ambiguity, stale confirmation, provider
-failure and session restart. Do not alter production APIs, schemas, prompts or money logic; any such need is
-routed through the decision protocol. PASS freezes the package and scopes bounded production items; REVISE,
-PARK or ESCALATE follows D-148.
-
 ## BLOCKED — do not start
+
+### BQ-107 — Arya product-definition package and owner prototype — AWAITING OWNER VALIDATION
+
+Traces to D-148 and the ranked Phase-1 audit. The complete Arya PRD, journey/state matrices,
+functional/content contracts, acceptance matrix, decision register and seven-scenario controlled-fixture
+prototype are in `docs/features/arya/`. Automated/static checks and browser QA pass. The owner must now run
+the seven tasks in `ACCEPTANCE_AND_VALIDATION.md` without coaching and record PASS, REVISE, PARK or ESCALATE
+in `VALIDATION_RESULT.md`. No production Arya build item is authorised before that disposition.
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 

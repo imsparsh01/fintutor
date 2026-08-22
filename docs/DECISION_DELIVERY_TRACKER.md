@@ -55,7 +55,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-062/D-135 | SHIPPED → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Completed 14-Aug-2026 |
 
 | D-147 | SHIPPED → requirements.txt + D-147 decision file | Python 3.14/Windows venv fix; psycopg2-binary, SQLAlchemy, Alembic floor bumps + tzdata added |
-| D-148 | READY → BQ-107 | Ten-workstream definition and prototype programme; Phase 1 audit shipped | Start with ranked Arya package/prototype; subsequent workstreams proceed one bounded BQ at a time after each owner gate |
+| D-148 | BLOCKED → BQ-107 | Ten-workstream definition and prototype programme; Phase 1 audit and Arya package/prototype shipped | Owner runs Arya's seven fixture tasks and records PASS, REVISE, PARK or ESCALATE; subsequent workstreams proceed one bounded BQ at a time after each owner gate |
 
 ## Current-session decisions
 

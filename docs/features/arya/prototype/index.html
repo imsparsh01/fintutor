@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Arya owner validation prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="prototype-shell">
+      <section class="task-panel" aria-labelledby="validation-title">
+        <p class="plain-label">Owner validation</p>
+        <h1 id="validation-title">Test Arya without coaching</h1>
+        <p class="intro">Choose a task, read its prompt, then use the phone. All data and responses are controlled fixtures.</p>
+
+        <label for="task-select">Validation task</label>
+        <select id="task-select"></select>
+
+        <div class="task-copy" aria-live="polite">
+          <h2 id="task-title"></h2>
+          <p id="task-prompt"></p>
+        </div>
+
+        <fieldset>
+          <legend>Record after the task</legend>
+          <label class="check-row"><input type="checkbox" /> Completed without coaching</label>
+          <label class="check-row"><input type="checkbox" /> Mechanism understood</label>
+          <label class="check-row"><input type="checkbox" /> Neutrality was clear</label>
+          <label class="check-row"><input type="checkbox" /> Recovery or next action was clear</label>
+        </fieldset>
+
+        <p class="fixture-note">This prototype makes no network request and saves nothing.</p>
+      </section>
+
+      <section class="device-stage" aria-label="Interactive mobile prototype">
+        <div class="device">
+          <div class="app" id="app-root">
+            <header class="app-header">
+              <div class="arya-identity">
+                <span class="avatar" aria-hidden="true">A</span>
+                <span>
+                  <strong>Arya</strong>
+                  <small>Your financial tutor</small>
+                </span>
+              </div>
+              <button class="text-button" id="privacy-button" type="button">What Arya receives</button>
+            </header>
+
+            <div id="context-bar" class="context-bar" hidden></div>
+            <div id="session-note" class="session-note" hidden></div>
+
+            <section class="messages" id="messages" aria-label="Conversation" aria-live="polite"></section>
+
+            <div class="composer-wrap">
+              <label for="composer">Your question</label>
+              <div class="composer">
+                <textarea id="composer" rows="2" placeholder="Ask a question"></textarea>
+                <button class="primary-button" id="send-button" type="button">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="privacy-dialog" aria-labelledby="privacy-title">
+      <div class="dialog-content">
+        <h2 id="privacy-title">What Arya receives</h2>
+        <p>Recognisable names stay on this device and backend boundary. The teaching model receives aliases plus relevant characteristics.</p>
+        <dl>
+          <div><dt>You see</dt><dd>HDFC Equity Opportunities</dd></div>
+          <div><dt>The model sees</dt><dd>Fund-A, equity mutual fund, risk bucket high</dd></div>
+          <div><dt>Not sent</dt><dd>Account numbers, PAN, policy IDs, card numbers, email or phone</dd></div>
+        </dl>
+        <button class="primary-button" id="close-privacy" type="button">Got it</button>
+      </div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+
