@@ -126,3 +126,10 @@
   and Alembic floor versions; adds tzdata for Windows zoneinfo. Full write-up:
   `docs/decisions/D-147-python314-windows-compatibility-fixes.md`.
 - **Date:** 20-Aug-2026
+
+### D-148 — Ten-workstream product definition precedes further production engineering
+- **Tier:** 3, owner-decided. “Implementation breadth is not the current constraint.” Ten major workstreams
+  receive a comparable audit, decision-complete package, fixture prototype and owner validation before new
+  production engineering. Full write-up:
+  `docs/decisions/D-148-ten-workstream-product-definition-programme.md`.
+- **Date:** 23-Aug-2026
