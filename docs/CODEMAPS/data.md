@@ -5,7 +5,7 @@
 ## Database: Supabase (Postgres). ORM: SQLAlchemy.
 
 Schema changes use the linear Alembic chain in `backend/alembic/versions/`; current head is
-`e145c087a001` (BQ-087).
+`f150b110a001` (BQ-110).
 No FK to a Users table (D-043). Auth is Supabase-side; the DB stores data only, keyed by `user_id UUID`.
 
 ## Tables
@@ -24,9 +24,11 @@ holdings
 income
   id      UUID PK
   user_id UUID (indexed)
-  sources JSONB  — list of {label, amount, frequency, amount_high?}
+  sources JSONB  — list of {id, label, amount, frequency, amount_high?}
                    amount = floor/conservative figure (used in budget math, D-073)
                    amount_high = optional typical figure (display only, not computed)
+                   legacy entries receive a stable UUIDv5 ID on read and persist it on next mutation
+  version int     — durable concurrency token; incremented under a row lock
 
 goals
   id              UUID PK
@@ -34,6 +36,7 @@ goals
   target_amount   float
   target_date     date
   category        string
+  version         int — durable concurrency token shared by goal and funding mutations
   funded_by       relationship via goal_fundings — owned holding links + earmarked amounts;
                   replaced atomically by PUT /goals/{id}/funding
 
@@ -42,6 +45,7 @@ discretionary_categories
   user_id         UUID (indexed)
   label           string
   planned_amount  float
+  version         int — durable concurrency token; incremented under a row lock
 
 streak_states
   id                UUID PK

@@ -4,6 +4,7 @@ from decimal import Decimal, InvalidOperation
 from sqlalchemy.orm import Session
 
 from app.models import Goal, GoalFunding, Holding
+from app.services.baseline_lifecycle import require_version
 
 
 class GoalFundingValidationError(ValueError):
@@ -46,6 +47,7 @@ def _to_dict(goal: Goal) -> dict:
         "target_amount": float(goal.target_amount),
         "target_date": goal.target_date.isoformat(),
         "category": goal.category,
+        "version": goal.version or 1,
         "funded_by": funded_by,
         # D-038: progress is computed live as the sum of earmarked amounts, never stored
         # on the Goal record itself.
@@ -91,15 +93,83 @@ def update_goal_funding(
     user_id: uuid.UUID,
     goal_id: uuid.UUID,
     funded_by: list[dict],
+    expected_version: int | None = None,
 ) -> dict | None:
-    goal = db.query(Goal).filter(Goal.user_id == user_id, Goal.id == goal_id).first()
+    goal = db.query(Goal).filter(
+        Goal.user_id == user_id, Goal.id == goal_id
+    ).with_for_update().first()
     if goal is None:
         return None
+    if expected_version is not None:
+        require_version(_to_dict(goal), expected_version, {"funded_by": funded_by})
     _validate_funding(db, user_id, funded_by)
     goal.funded_by = [
         GoalFunding(holding_id=item["holding_id"], earmarked_amount=item["earmarked_amount"])
         for item in funded_by
     ]
+    goal.version = (goal.version or 1) + 1
     db.commit()
     db.refresh(goal)
     return _to_dict(goal)
+
+
+def goal_deletion_impact(db: Session, user_id: uuid.UUID, goal_id: uuid.UUID) -> dict | None:
+    goal = db.query(Goal).filter(Goal.user_id == user_id, Goal.id == goal_id).first()
+    if goal is None:
+        return None
+    return {
+        "record_type": "goal",
+        "record_id": str(goal.id),
+        "category": goal.category,
+        "target_amount": float(goal.target_amount),
+        "target_date": goal.target_date.isoformat(),
+        "funding_links_removed": len(goal.funded_by),
+        "affects": ["goal_list", "computed_goal_progress"],
+        "version": goal.version or 1,
+    }
+
+
+def update_goal(
+    db: Session, user_id: uuid.UUID, goal_id: uuid.UUID, *, target_amount: float,
+    target_date, category: str, funded_by: list[dict], expected_version: int
+) -> dict | None:
+    goal = db.query(Goal).filter(
+        Goal.user_id == user_id, Goal.id == goal_id
+    ).with_for_update().first()
+    if goal is None:
+        return None
+    proposed = {"target_amount": target_amount, "target_date": target_date.isoformat(),
+                "category": category, "funded_by": funded_by}
+    require_version(_to_dict(goal), expected_version, proposed)
+    _validate_funding(db, user_id, funded_by)
+    goal.target_amount = target_amount
+    goal.target_date = target_date
+    goal.category = category
+    goal.funded_by = [GoalFunding(holding_id=item["holding_id"],
+                                  earmarked_amount=item["earmarked_amount"])
+                      for item in funded_by]
+    goal.version = (goal.version or 1) + 1
+    db.commit()
+    db.refresh(goal)
+    return _to_dict(goal)
+
+
+def delete_goal(
+    db: Session, user_id: uuid.UUID, goal_id: uuid.UUID, expected_version: int
+) -> dict | None:
+    goal = db.query(Goal).filter(
+        Goal.user_id == user_id, Goal.id == goal_id
+    ).with_for_update().first()
+    if goal is None:
+        return None
+    current = _to_dict(goal)
+    require_version(current, expected_version, {"delete_id": str(goal_id)})
+    impact = {
+        "record_type": "goal", "record_id": str(goal.id), "category": goal.category,
+        "target_amount": float(goal.target_amount), "target_date": goal.target_date.isoformat(),
+        "funding_links_removed": len(goal.funded_by),
+        "affects": ["goal_list", "computed_goal_progress"], "version": goal.version or 1,
+    }
+    db.delete(goal)
+    db.commit()
+    return {"deleted": True, "impact": impact}

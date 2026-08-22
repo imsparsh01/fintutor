@@ -53,7 +53,7 @@ class GoalFundingTests(unittest.TestCase):
         goal = Goal(id=uuid.uuid4(), user_id=user_id, target_amount=10000,
                     target_date=date(2030, 1, 1), category="Education", funded_by=[])
         goal_query = MagicMock()
-        goal_query.filter.return_value.first.return_value = goal
+        goal_query.filter.return_value.with_for_update.return_value.first.return_value = goal
         holding_query = MagicMock()
         holding_query.filter.return_value.all.return_value = [(first_id,), (second_id,)]
         db = MagicMock()

@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-110 — Baseline lifecycle and stale-write backend contracts — DONE 23-Aug-2026
+
+Added owned source-level income correction/deletion, discretionary edit/delete and full goal edit/delete with
+neutral deletion-impact previews. Income sources now have stable IDs; income, discretionary and goal rows carry
+durable versions; every new direct mutation locks the owned row, compares the expected version and returns the
+current/proposed state on conflict. Export includes versions, existing ownership/deletion registries remain
+intact, and holding persistence remains authoritative independently of local reminders. Applied migration
+`f150b110a001` to the development database and verified 352 backend tests. D-150 arithmetic remains BQ-111.
+
 ## BQ-109 — Personal financial baseline package and owner prototype — DONE 23-Aug-2026
 
 Traces to D-148 and the ranked Phase-1 audit. Delivered the complete baseline PRD, journey/state matrix,

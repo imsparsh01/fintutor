@@ -112,7 +112,7 @@ def build_data_export(
         for row in _rows(db, Holding, user_id)
     ]
     income = [
-        {"id": str(row.id), "sources": row.sources}
+        {"id": str(row.id), "sources": row.sources, "version": getattr(row, "version", 1)}
         for row in _rows(db, Income, user_id)
     ]
     goals = [
@@ -121,6 +121,7 @@ def build_data_export(
             "target_amount": float(row.target_amount),
             "target_date": _iso(row.target_date),
             "category": row.category,
+            "version": getattr(row, "version", 1),
             "funded_by": [
                 {
                     "holding_id": str(link.holding_id),
@@ -136,6 +137,7 @@ def build_data_export(
             "id": str(row.id),
             "label": row.label,
             "planned_amount": float(row.planned_amount),
+            "version": getattr(row, "version", 1),
         }
         for row in _rows(db, DiscretionaryCategory, user_id)
     ]

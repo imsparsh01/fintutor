@@ -27,12 +27,19 @@ from app.services.consolidated import compute_consolidated
 from app.services.deepen_classifier import classify_deepen
 from app.services.discretionary_categories import (
     create_discretionary_category,
+    delete_discretionary_category,
+    discretionary_deletion_impact,
     list_discretionary_categories,
+    update_discretionary_category,
 )
+from app.services.baseline_lifecycle import StaleBaselineWriteError
 from app.services.goals import (
     GoalFundingValidationError,
     create_goal,
+    delete_goal,
+    goal_deletion_impact,
     list_goals,
+    update_goal,
     update_goal_funding,
 )
 from app.services.financial_context import (
@@ -57,7 +64,14 @@ from app.services.holdings import (
     update_holding,
 )
 from app.services.esop_exercise_cost import compute_esop_exercise_cost
-from app.services.income import create_income, list_income, update_income
+from app.services.income import (
+    create_income,
+    delete_income_source,
+    income_source_deletion_impact,
+    list_income,
+    replace_income_source,
+    update_income,
+)
 from app.services.loan_vs_invest import compute_loan_vs_invest
 from app.services.onboarding import (
     build_onboarding_instruction,
@@ -169,6 +183,7 @@ class HoldingReconciliationApply(BaseModel):
 
 
 class IncomeSource(BaseModel):
+    id: uuid.UUID | None = None
     label: str
     # D-073: the floor/conservative figure — this is what compute_budget()'s math uses,
     # unchanged. For a steady income this is just "the amount"; for variable income it's
@@ -186,11 +201,23 @@ class IncomeCreate(BaseModel):
 
 class IncomeUpdate(BaseModel):
     sources: list[IncomeSource]
+    expected_version: int | None = Field(default=None, ge=1)
+
+
+class IncomeSourceMutation(BaseModel):
+    expected_version: int = Field(ge=1)
+    source: IncomeSource
 
 
 class DiscretionaryCategoryCreate(BaseModel):
     label: str
-    planned_amount: float
+    planned_amount: float = Field(ge=0)
+
+
+class DiscretionaryCategoryUpdate(BaseModel):
+    label: str
+    planned_amount: float = Field(ge=0)
+    expected_version: int = Field(ge=1)
 
 
 class GoalFundingIn(BaseModel):
@@ -199,7 +226,7 @@ class GoalFundingIn(BaseModel):
 
 
 class GoalCreate(BaseModel):
-    target_amount: float
+    target_amount: float = Field(gt=0)
     target_date: date
     category: str
     funded_by: list[GoalFundingIn] = []
@@ -207,6 +234,15 @@ class GoalCreate(BaseModel):
 
 class GoalFundingUpdate(BaseModel):
     funded_by: list[GoalFundingIn]
+    expected_version: int | None = Field(default=None, ge=1)
+
+
+class GoalUpdate(BaseModel):
+    target_amount: float = Field(gt=0)
+    target_date: date
+    category: str
+    funded_by: list[GoalFundingIn] = []
+    expected_version: int = Field(ge=1)
 
 
 class FinancialContextUpdate(BaseModel):
@@ -436,10 +472,69 @@ def post_income(user_id: uuid.UUID, body: IncomeCreate, db: Session = Depends(ge
 def put_income(
     income_id: uuid.UUID, user_id: uuid.UUID, body: IncomeUpdate, db: Session = Depends(get_db)
 ) -> dict:
-    updated = update_income(db, user_id, income_id, [s.model_dump() for s in body.sources])
+    try:
+        updated = update_income(
+            db, user_id, income_id,
+            [s.model_dump(exclude_none=True) for s in body.sources], body.expected_version,
+        )
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This income record changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
     if updated is None:
         raise HTTPException(status_code=404, detail="Income not found")
     return updated
+
+
+@app.get("/income/{income_id}/sources/{source_id}/deletion-impact")
+def get_income_source_deletion_impact(
+    income_id: uuid.UUID, source_id: uuid.UUID, user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+) -> dict:
+    impact = income_source_deletion_impact(db, user_id, income_id, source_id)
+    if impact is None:
+        raise HTTPException(status_code=404, detail="Income source not found")
+    return impact
+
+
+@app.patch("/income/{income_id}/sources/{source_id}")
+def patch_income_source(
+    income_id: uuid.UUID, source_id: uuid.UUID, user_id: uuid.UUID,
+    body: IncomeSourceMutation, db: Session = Depends(get_db),
+) -> dict:
+    try:
+        updated = replace_income_source(
+            db, user_id, income_id, source_id,
+            body.source.model_dump(exclude_none=True), body.expected_version,
+        )
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This income record changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Income source not found")
+    return updated
+
+
+@app.delete("/income/{income_id}/sources/{source_id}")
+def remove_income_source(
+    income_id: uuid.UUID, source_id: uuid.UUID, expected_version: int,
+    user_id: uuid.UUID, db: Session = Depends(get_db),
+) -> dict:
+    try:
+        deleted = delete_income_source(
+            db, user_id, income_id, source_id, expected_version
+        )
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This income record changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Income source not found")
+    return deleted
 
 
 @app.get("/discretionary-categories")
@@ -454,6 +549,54 @@ def post_discretionary_category(
     user_id: uuid.UUID, body: DiscretionaryCategoryCreate, db: Session = Depends(get_db)
 ) -> dict:
     return create_discretionary_category(db, user_id, body.label, body.planned_amount)
+
+
+@app.get("/discretionary-categories/{category_id}/deletion-impact")
+def get_discretionary_category_deletion_impact(
+    category_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    impact = discretionary_deletion_impact(db, user_id, category_id)
+    if impact is None:
+        raise HTTPException(status_code=404, detail="Discretionary category not found")
+    return impact
+
+
+@app.patch("/discretionary-categories/{category_id}")
+def patch_discretionary_category(
+    category_id: uuid.UUID, user_id: uuid.UUID, body: DiscretionaryCategoryUpdate,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        updated = update_discretionary_category(
+            db, user_id, category_id, body.label, body.planned_amount, body.expected_version
+        )
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This category changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Discretionary category not found")
+    return updated
+
+
+@app.delete("/discretionary-categories/{category_id}")
+def remove_discretionary_category(
+    category_id: uuid.UUID, expected_version: int, user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        deleted = delete_discretionary_category(
+            db, user_id, category_id, expected_version
+        )
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This category changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Discretionary category not found")
+    return deleted
 
 
 @app.get("/consolidated")
@@ -559,13 +702,70 @@ def put_goal_funding(
 ) -> dict:
     try:
         updated = update_goal_funding(
-            db, user_id, goal_id, [item.model_dump() for item in body.funded_by]
+            db, user_id, goal_id, [item.model_dump() for item in body.funded_by],
+            body.expected_version,
         )
     except GoalFundingValidationError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This goal changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
     if updated is None:
         raise HTTPException(status_code=404, detail="Goal not found")
     return updated
+
+
+@app.get("/goals/{goal_id}/deletion-impact")
+def get_goal_deletion_impact(
+    goal_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    impact = goal_deletion_impact(db, user_id, goal_id)
+    if impact is None:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    return impact
+
+
+@app.patch("/goals/{goal_id}")
+def patch_goal(
+    goal_id: uuid.UUID, user_id: uuid.UUID, body: GoalUpdate,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        updated = update_goal(
+            db, user_id, goal_id, target_amount=body.target_amount,
+            target_date=body.target_date, category=body.category,
+            funded_by=[item.model_dump() for item in body.funded_by],
+            expected_version=body.expected_version,
+        )
+    except GoalFundingValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This goal changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    return updated
+
+
+@app.delete("/goals/{goal_id}")
+def remove_goal(
+    goal_id: uuid.UUID, expected_version: int, user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        deleted = delete_goal(db, user_id, goal_id, expected_version)
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This goal changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    return deleted
 
 
 @app.get("/streak")

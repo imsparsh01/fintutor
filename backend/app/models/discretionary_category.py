@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Numeric, String
+from sqlalchemy import Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -23,3 +23,4 @@ class DiscretionaryCategory(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
     label: Mapped[str] = mapped_column(String, nullable=False)
     planned_amount: Mapped[float] = mapped_column(Numeric(14, 2), nullable=False)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)

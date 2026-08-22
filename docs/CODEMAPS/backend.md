@@ -26,13 +26,19 @@ POST /holding-reconciliation/apply   → row-lock, stale recheck, merge shown fi
 GET  /income                    → list_income(db, user_id)
 POST /income                    → create_income(db, user_id, sources: list)
 PUT  /income/{id}               → update_income(…)
+GET/PATCH/DELETE /income/{id}/sources/{source_id}[/deletion-impact]
+                               → versioned source correction, neutral impact preview and deletion
 
 GET  /discretionary-categories  → list_discretionary_categories(…)
 POST /discretionary-categories  → create_discretionary_category(…)
+GET/PATCH/DELETE /discretionary-categories/{id}[/deletion-impact]
+                               → versioned edit, neutral impact preview and deletion
 
 GET  /goals                     → list_goals(db, user_id)
 POST /goals                     → create_goal(…, funded_by: list[{holding_id, earmarked}])
 PUT  /goals/{id}/funding        → replace owned funded_by links; empty list allowed
+GET/PATCH/DELETE /goals/{id}[/deletion-impact]
+                               → versioned full edit, neutral impact preview and cascading deletion
 
 GET  /consolidated              → compute_consolidated(db, user_id)
 GET/PUT/PATCH/DELETE /financial-context → view, replace, field-update or clear optional confirmed
@@ -88,8 +94,9 @@ services/consolidated.py        compute_consolidated() — per-family totals wit
                                  and never fail the complete response.
 services/holdings.py            CRUD + serialisation. Alias auto-generated (D-074) if not provided; new
                                  negative/non-finite 80C contribution/premium inputs are rejected.
-services/income.py (44)         CRUD for income sources (floor + optional amount_high, D-073).
-services/goals.py               Create/list + owned earmarked_amount link replacement.
+services/baseline_lifecycle.py Durable version comparison; stale writes carry current + proposed state.
+services/income.py              Stable source IDs; row-locked versioned source edit/delete + impact preview.
+services/goals.py               Create/list, row-locked full edit/delete and funding replacement + impact.
 services/onboarding.py (242)    start_or_resume() / record_turn() / build_onboarding_instruction()
                                  Track: fresh_starter | reactive_dabbler | habit_former | unclassified
                                  Stage: intro → sequencing → mechanism → reflect → gapscan → complete
@@ -146,7 +153,7 @@ services/tax_saving_room.py     80C room left under old/new regime (D-016), alwa
                                   insurance premiums only. D-112 strict cadence:
                                   blank/unknown premium frequency excluded; six-month variants count ×2/year.
 services/baseline.py (75)       Assembles prompt context dict (holdings, income, goals, gaps, deepen).
-services/discretionary_categories.py (32) CRUD for user-labelled discretionary spend buckets.
+services/discretionary_categories.py Row-locked versioned CRUD + impact for discretionary spend buckets.
 services/account_deletion.py    Reauthenticates against Supabase, deletes the complete owned-model registry
                                  in one DB transaction, then calls the server-only Auth Admin deletion API.
 services/data_export.py         Complete user-readable export registry + serializers. Every query is scoped
@@ -159,9 +166,9 @@ services/financial_context.py   One owned optional context row: view/upsert/clea
 ```
 Holding           holdings table    — product_type, alias, display_name, characteristics (JSONB)
                                       UniqueConstraint(user_id, alias)
-Income            income table      — sources (JSONB list of {label, amount, frequency, amount_high?})
-Goal              goals table       — target_amount, target_date, category, funded_by (JSONB)
-DiscretionaryCategory               — label, planned_amount
+Income            income table      — sources (JSONB list incl. stable id), version
+Goal              goals table       — target_amount, target_date, category, funded_by relationship, version
+DiscretionaryCategory               — label, planned_amount, version
 StreakState       streak_states     — current_streak, longest_streak, last_active_date
 OnboardingState   onboarding_states — track, stage, turns_in_stage (one row per user)
 OnboardingAssessment onboarding_assessments — versioned normalized five-axis context, structural

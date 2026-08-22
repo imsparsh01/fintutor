@@ -16,15 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-110 — Baseline lifecycle and stale-write backend contracts
-
-Traces to D-148/D-149 and the frozen BQ-109 package. Add full owned edit/delete APIs for income sources,
-discretionary categories and goals; define deletion-impact responses; add durable version/timestamp comparison
-and refreshed reconfirmation for direct edits; and return authoritative saved-record state independently from
-reminder-side-effect outcomes. Preserve JWT-derived ownership, export/deletion registries and existing budget
-provenance. Required evidence: migrations, API/service tests, ownership/security tests, stale-write races,
-idempotent deletion and codemap updates. Do not implement D-150 goal-progress arithmetic in this item.
-
 ### BQ-111 — Shared proportional live goal-progress engine
 
 Depends on BQ-110. Implement D-150's decimal, per-holding live-value cap and proportional cross-goal allocation,

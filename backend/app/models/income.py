@@ -1,5 +1,7 @@
 import uuid
 
+from sqlalchemy import Integer
+
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -17,3 +19,4 @@ class Income(Base):
     # No Users table exists yet — loose reference, no FK (owner decision, BQ-009 session).
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
     sources: Mapped[list[dict]] = mapped_column(JSONB, nullable=False, default=list)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
