@@ -141,3 +141,10 @@
   live available value but its exact money rule remains blocked. Full write-up:
   `docs/features/baseline/decisions/D-149-baseline-lifecycle-and-integrity-directions.md`.
 - **Date:** 23-Aug-2026
+
+### D-150 — Goal progress uses shared proportional live holding value
+- **Tier:** 3, owner-decided money logic. “For each recognized linked holding, goal progress uses at most that
+  holding's live recorded value once across all goals.” Over-allocation scales by earmark proportion; unknown
+  valuation remains unmeasured; exact currency totals and provenance are preserved. Full write-up:
+  `docs/features/baseline/decisions/D-150-shared-proportional-live-goal-progress.md`.
+- **Date:** 23-Aug-2026

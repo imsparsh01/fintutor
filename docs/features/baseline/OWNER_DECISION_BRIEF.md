@@ -16,8 +16,8 @@
 
 ## O-02: What does goal progress mean?
 
-**Owner decision:** Path B direction selected in D-149. The required cap/allocation/unknown-value rule remains
-open in `GOAL_PROGRESS_RULE_BRIEF.md`.
+**Owner decision:** Path B selected and completed by D-149/D-150. Shared proportional allocation caps each
+holding once across all goals; unknown valuation remains explicitly unmeasured.
 
 - **Trigger:** money logic. Documentation says progress reads linked holdings' current values; runtime sums
   static `earmarked_amount` links.
@@ -51,5 +51,4 @@ binding; exact migration mechanics belong to the later bounded engineering plan.
 - **Path C:** attempt compensating rollback. Consequence: high complexity and can erase a valid financial record.
 - **Owner judgment:** desired coupling and recovery contract. Path C has the highest data-loss risk.
 
-No recommendation was recorded. O-01, O-03 and O-04 are resolved. O-02 has a selected direction but remains
-blocked on its narrower money-logic rule.
+No recommendation was recorded. O-01 to O-04 are resolved by D-149/D-150.

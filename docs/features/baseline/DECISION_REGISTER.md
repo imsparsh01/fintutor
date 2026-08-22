@@ -29,9 +29,9 @@
 | ID | Fork | Trigger |
 |---|---|---|
 | O-01 | Full edit/delete for income, discretionary categories and goals | RESOLVED, D-149 Path B |
-| O-02 | Live available-value goal progress | DIRECTION RESOLVED, D-149; cap/allocation/unknown rule OPEN |
+| O-02 | Shared proportional live available-value goal progress | RESOLVED, D-149/D-150 Path B |
 | O-03 | Durable compare-on-write plus refreshed reconfirmation | RESOLVED, D-149 Path B |
 | O-04 | Holding save authoritative; reminder failure separate/retryable | RESOLVED, D-149 Path A |
 
-See `OWNER_DECISION_BRIEF.md` and `GOAL_PROGRESS_RULE_BRIEF.md`. Production remains unauthorised until the
-remaining money rule and owner prototype validation are complete.
+See `OWNER_DECISION_BRIEF.md` and `GOAL_PROGRESS_RULE_BRIEF.md`. All forks are resolved. Production remains
+unauthorised until owner prototype validation is complete.

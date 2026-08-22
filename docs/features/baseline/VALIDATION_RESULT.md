@@ -1,10 +1,10 @@
 # Baseline owner validation result
 
-**Date:** Pending goal-progress rule and owner walkthrough
+**Date:** Pending owner walkthrough
 
 **Prototype commit:** `f959d7d`
 
-**Disposition:** ESCALATE
+**Disposition:** PENDING
 
 | Task | No coaching | State/provenance understood | Neutrality clear | Recovery clear | Notes |
 |---|---|---|---|---|---|
@@ -17,10 +17,9 @@
 | Saved/reminder failure | Pending | Pending | Pending | Pending | D-149 Path A applies |
 | Account switch | Pending | Pending | Pending | Pending | |
 
-## Open owner decision
+## Owner decisions
 
-O-02's cap/allocation/unknown-value rule in `GOAL_PROGRESS_RULE_BRIEF.md`. O-01, O-03 and O-04 are resolved by
-D-149.
+O-01 to O-04 are resolved by D-149/D-150. No product-intent fork remains open before the walkthrough.
 
 ## Confusion, interventions, trust surprises and required changes
 

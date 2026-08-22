@@ -2,7 +2,7 @@
 
 **Work item:** BQ-109
 
-**Status:** Definition and fixture prototype complete. One goal-progress money rule and owner validation remain.
+**Status:** Decision-complete package and fixture prototype complete; awaiting owner validation.
 
 **Production impact:** None. The prototype uses controlled data and makes no network or storage request.
 
@@ -47,6 +47,5 @@ Open `http://127.0.0.1:4173/docs/features/baseline/prototype/`.
 
 ## Gate
 
-D-149 resolves O-01, O-03 and O-04 and selects O-02's live-value direction. The prototype does not settle the
-remaining cap/allocation/unknown-value rule in `GOAL_PROGRESS_RULE_BRIEF.md`. That rule must be recorded before
-the package can be frozen; the eight scenarios then require owner validation under D-148.
+D-149 resolves O-01, O-03 and O-04. D-150 completes O-02 with shared proportional live-value allocation. The
+eight scenarios now require owner validation under D-148 before the package can be frozen.

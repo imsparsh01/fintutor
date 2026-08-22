@@ -1,6 +1,8 @@
 # Goal progress rule brief
 
-## Decision still required
+## Decision
+
+**Path B selected by the owner and recorded as D-150.**
 
 For each goal, how should live holding value be capped and allocated when one holding links to multiple goals,
 linked earmarks exceed current value, or valuation is unknown?
@@ -32,7 +34,7 @@ At write time, prevent total earmarks across goals from exceeding current recogn
 scale existing links proportionally until the user revises them. Unknown-value holdings cannot contribute to a
 progress figure but may remain linked as an unmeasured plan. Strongest user control, highest correction friction.
 
-## What only the owner can judge
+## Owner judgment recorded
 
-Whether goal progress should favour independent planning flexibility, system-wide no-double-counting, or strict
-user-owned allocation. This is money logic; no path is authorised by D-149's live-value direction alone.
+Goal progress favours system-wide no-double-counting through shared proportional allocation. D-150 contains the
+binding formula, eligibility, unknown-value, precision and provenance rules.

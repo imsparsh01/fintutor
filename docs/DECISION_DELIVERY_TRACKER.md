@@ -55,8 +55,9 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-062/D-135 | SHIPPED → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Completed 14-Aug-2026 |
 
 | D-147 | SHIPPED → requirements.txt + D-147 decision file | Python 3.14/Windows venv fix; psycopg2-binary, SQLAlchemy, Alembic floor bumps + tzdata added |
-| D-148 | BLOCKED → BQ-109 | Baseline package/prototype complete; D-149 resolves three forks and selects live goal value | Owner approves the goal cap/allocation/unknown rule, then validates eight tasks |
-| D-149 | BLOCKED → BQ-109 | Supporting-object lifecycle, stale-write and reminder recovery contracts approved; live goal-value direction selected | Goal-progress money rule and D-148 owner validation remain |
+| D-148 | BLOCKED → BQ-109 | Baseline decision-complete package and eight-scenario prototype complete | Owner validates the eight baseline tasks |
+| D-149 | BLOCKED → BQ-109 | Supporting-object lifecycle, stale-write and reminder recovery approved; D-150 completes goal progress | D-148 owner validation remains |
+| D-150 | BLOCKED → BQ-109 | Shared proportional live goal-progress money contract approved and prototyped | D-148 owner validation remains |
 
 ## Current-session decisions
 
