@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>FinTutor baseline owner prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="task-panel" aria-labelledby="page-title">
+      <p class="label">Owner validation</p>
+      <h1 id="page-title">Test the financial baseline</h1>
+      <p>Choose a task, read only its prompt, then use the phone. All records are controlled fixtures.</p>
+      <label for="task-select">Validation task</label>
+      <select id="task-select"></select>
+      <div class="task-copy" aria-live="polite">
+        <h2 id="task-title"></h2>
+        <p id="task-prompt"></p>
+      </div>
+      <fieldset>
+        <legend>Record after the task</legend>
+        <label><input type="checkbox"> Completed without coaching</label>
+        <label><input type="checkbox"> State and provenance understood</label>
+        <label><input type="checkbox"> Neutrality was clear</label>
+        <label><input type="checkbox"> Recovery was clear</label>
+      </fieldset>
+      <p class="fixture-note">No network request. Nothing is saved.</p>
+    </section>
+
+    <section class="device-stage" aria-label="Interactive baseline prototype">
+      <div class="device">
+        <div class="app">
+          <header>
+            <div><span class="brand">FinTutor</span><small id="account-name">Mira's records</small></div>
+            <button class="text-button" id="switch-account" type="button">Switch account</button>
+          </header>
+          <nav aria-label="Baseline sections">
+            <button type="button" data-view="picture" class="active">Picture</button>
+            <button type="button" data-view="holdings">Holdings</button>
+            <button type="button" data-view="budget">Budget</button>
+            <button type="button" data-view="goals">Goals</button>
+          </nav>
+          <section id="status-strip" class="status-strip" aria-live="polite"></section>
+          <section id="content" class="content" aria-live="polite"></section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dialog id="dialog" aria-labelledby="dialog-title"><div id="dialog-body"></div></dialog>
+  <script src="app.js"></script>
+</body>
+</html>

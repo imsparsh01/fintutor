@@ -16,17 +16,16 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-109 — Personal financial baseline product-definition package and owner prototype
-
-Traces to D-148 and the ranked Phase-1 audit. Produce the decision-complete workstream package and a
-controlled-fixture interactive prototype for investments, loans, insurance, income, discretionary spending,
-goals, funding links and the computed budget. Cover manual/captured entry, edit, delete, recategorisation,
-unknown/malformed/unvalued data, goal funding, cadence validity, stale/write failure, and cross-account
-transition. Reconcile all existing decisions and implementations as evidence, not automatic specification.
-Do not change production APIs, schemas, calculations or financial data. Route every money-logic, privacy,
-legal/compliance, principle, architecture or MVP-scope fork to the owner before treating it as settled.
-
 ## BLOCKED — do not start
+
+### BQ-109 — Personal financial baseline package and owner prototype — OWNER DECISIONS + VALIDATION
+
+Traces to D-148 and the ranked Phase-1 audit. The full PRD, journey/state matrix, contracts, acceptance matrix,
+decision register, four-fork owner brief and eight-scenario controlled-fixture prototype are complete in
+`docs/features/baseline/`. Static checks and browser interaction QA pass. Owner decisions O-01 to O-04 are
+required for management breadth, goal-progress money logic, direct-edit stale handling, and post-write reminder
+failure semantics. After those are recorded, the owner runs the eight tasks and records PASS, REVISE, PARK or
+ESCALATE. No production baseline build item is authorised before that disposition.
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 

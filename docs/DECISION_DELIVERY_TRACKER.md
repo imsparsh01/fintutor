@@ -55,7 +55,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-062/D-135 | SHIPPED → BQ-090 | Synchronize the session-close skill with mandatory delivery disposition | Completed 14-Aug-2026 |
 
 | D-147 | SHIPPED → requirements.txt + D-147 decision file | Python 3.14/Windows venv fix; psycopg2-binary, SQLAlchemy, Alembic floor bumps + tzdata added |
-| D-148 | READY → BQ-109 | Phase 1 audit and Arya definition/validation/production conformance shipped | Define and owner-validate the next-ranked personal financial baseline workstream |
+| D-148 | BLOCKED → BQ-109 | Baseline definition package, decision brief and eight-scenario fixture prototype complete | Owner decides O-01 to O-04, then validates the eight baseline tasks |
 
 ## Current-session decisions
 
