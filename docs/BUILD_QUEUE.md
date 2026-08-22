@@ -16,16 +16,15 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-108 — Arya validated presentation and recovery contract
+### BQ-109 — Personal financial baseline product-definition package and owner prototype
 
-Traces to D-148 and the owner-PASS BQ-107 package. Bring the existing production Chat experience into
-conformance with the frozen Arya presentation contract for: first-entry role and memory scope, visible
-request-boundary disclosure, legible unsaved/proposed provenance, explicit ambiguous-record selection,
-explicit retry without silent resend, and fresh-thread/no-memory explanation. Preserve the existing prompt,
-masking, extraction, reconciliation, API, schema and financial-logic contracts. Reuse existing components
-and dependencies. Add focused component/flow tests for the validated states, account switching and failure
-recovery; run native/web UI regression QA. Stop if implementation exposes a need to change any preserved
-contract or standing teaching/privacy boundary.
+Traces to D-148 and the ranked Phase-1 audit. Produce the decision-complete workstream package and a
+controlled-fixture interactive prototype for investments, loans, insurance, income, discretionary spending,
+goals, funding links and the computed budget. Cover manual/captured entry, edit, delete, recategorisation,
+unknown/malformed/unvalued data, goal funding, cadence validity, stale/write failure, and cross-account
+transition. Reconcile all existing decisions and implementations as evidence, not automatic specification.
+Do not change production APIs, schemas, calculations or financial data. Route every money-logic, privacy,
+legal/compliance, principle, architecture or MVP-scope fork to the owner before treating it as settled.
 
 ## BLOCKED — do not start
 

@@ -36,7 +36,7 @@ export function ChatScreen({ route, navigation }: Props) {
     <ChatThread
       ref={threadRef}
       userId={userId}
-      emptyState={<Text style={styles.body}>Ask about your loans, investments, or goals.</Text>}
+      emptyState={<Text style={styles.body}>Ask about a loan, investment, goal, or money mechanism.</Text>}
     />
   );
 }

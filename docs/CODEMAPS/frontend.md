@@ -82,11 +82,13 @@ HoldingDetailScreen     screens/ (357)             Single holding — edit + ESO
 ```
 Component                   File (lines)       Purpose
 ──────────────────────────────────────────────────────────────────────────────
-ChatThread                  components/ (~470) Core chat UI — Arya header (BQ-055), message list, input,
-                                               proposal card rendering, reconciliation status (D-099).
-                                               AryaHeader rendered when !onboarding (D-105).
-HoldingProposalCard         components/ (~175) Transient reconciliation: zero/one/many candidate UX,
-                                               stored/proposed field diff, explicit apply/dismiss (BQ-077)
+ChatThread                  components/        Core chat UI — Arya header, first-entry role/memory scope,
+                                               visible model-boundary disclosure, messages, explicit
+                                               no-duplicate retry, proposal rendering and reconciliation.
+                                               Validated framing is hidden during onboarding (BQ-108).
+HoldingProposalCard         components/        Transient reconciliation: visible not-saved provenance,
+                                               zero/one/many candidate UX, stored/proposed field diff,
+                                               explicit apply/dismiss (BQ-077/BQ-108)
 HoldingEditModal            components/ (326)  Add/edit holding — schema-driven form via characteristicsSchema
 GoalFundingFields           components/        Optional neutral holding picker + earmarked amounts;
                                                reused by goal creation and existing-goal link editing
@@ -123,6 +125,8 @@ backend.ts              17      Shared base URL (EXPO_PUBLIC_BACKEND_URL ?? loca
 dataExport.ts                   Reauthenticated export API + browser download/native temporary share/save
 dataExportFormat.ts             Stable dated filename and readable newline-terminated JSON formatting
 chat.ts                 78      sendChatMessage() — POST /chat wrapper; onboarding fields
+chatRetry.ts                    Dependency-free explicit-retry contract: retains only the failed question's
+                                send inputs and forbids a duplicate user-message append on retry
 holdings.ts             74      fetchHoldings / createHolding / updateHolding / deleteHolding
 consolidated.ts                 fetchConsolidated() → family totals/status/counts, including invalid-value
                                 counts and a top-level unclassified-record count

@@ -61,6 +61,11 @@ export function HoldingProposalCard({
         {proposal.kind === 'select' ? 'Which holding did you mean?' : proposal.kind === 'new' ? 'Add as a new holding?' : 'Review this change'}
       </Text>
       <Text style={styles.productType}>{humanizeProductType(proposal.product_type)}</Text>
+      <Text style={styles.persistenceNote}>
+        {proposal.kind === 'select'
+          ? 'Nothing is selected or saved yet.'
+          : 'Not saved yet. Review the stored and proposed details before you confirm.'}
+      </Text>
 
       {proposal.kind === 'select' ? (
         <View style={styles.candidates}>
@@ -142,6 +147,13 @@ const styles = StyleSheet.create({
   card: { backgroundColor: colors.screen, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.sm, maxWidth: '94%', alignSelf: 'flex-start' },
   title: { fontSize: 12, color: colors.inkMuted, marginBottom: spacing.sm, fontFamily: font.monoSemibold, textTransform: 'uppercase', letterSpacing: 0.5 },
   productType: { fontSize: 16, color: colors.ink, marginBottom: spacing.md, fontFamily: font.uiSemibold },
+  persistenceNote: {
+    color: colors.inkSecondary,
+    fontFamily: font.ui,
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: spacing.md,
+  },
   targetName: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 13, marginBottom: spacing.md },
   candidates: { gap: spacing.sm },
   candidateButton: { minHeight: 52, justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },

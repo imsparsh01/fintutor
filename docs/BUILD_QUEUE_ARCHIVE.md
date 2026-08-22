@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-108 — Arya validated presentation and recovery contract — DONE 23-Aug-2026
+
+Aligned production Chat with BQ-107's owner-validated presentation contract: first-entry role and fresh-chat
+scope, an inspectable model-data boundary, explicit not-saved proposal provenance, unchanged neutral
+candidate selection, accessible loading, and explicit no-duplicate retry. Preserved prompts, masking,
+extraction, reconciliation, APIs, schemas and financial logic. Verified 68 frontend tests, TypeScript and a
+successful web export; authenticated visual QA remained unavailable without a signed-in fixture account.
+
 ## BQ-107 — Arya product-definition package and owner prototype — DONE 23-Aug-2026
 
 Traces to D-148 and the ranked Phase-1 audit. Delivered the complete Arya PRD, journey/state matrices,

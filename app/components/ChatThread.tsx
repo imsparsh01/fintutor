@@ -20,6 +20,12 @@ import {
 import { HoldingProposalCard } from './HoldingProposalCard';
 import { scheduleHoldingReminder } from '../lib/reminders';
 import { noteMeaningfulLearningInteraction } from '../lib/learningReminders';
+import {
+  CHAT_FAILURE_MESSAGE,
+  captureFailedChatRequest,
+  retryInvocationFor,
+  type FailedChatRequest,
+} from '../lib/chatRetry';
 
 interface Message {
   id: string;
@@ -111,6 +117,8 @@ export const ChatThread = forwardRef<
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [failedRequest, setFailedRequest] = useState<FailedChatRequest | null>(null);
+  const [disclosureOpen, setDisclosureOpen] = useState(false);
   const generationRef = useRef(0);
 
   useEffect(() => {
@@ -119,12 +127,19 @@ export const ChatThread = forwardRef<
     setInput('');
     setSending(false);
     setError(null);
+    setFailedRequest(null);
+    setDisclosureOpen(false);
     return () => {
       generationRef.current += 1;
     };
   }, [userId]);
 
-  const sendText = async (raw: string, deepenAlias?: string, onboardingTrackHint?: string) => {
+  const sendText = async (
+    raw: string,
+    deepenAlias?: string,
+    onboardingTrackHint?: string,
+    appendUserMessage = true,
+  ) => {
     const question = raw.trim();
     if (!question || sending) return;
     const generation = generationRef.current;
@@ -137,11 +152,14 @@ export const ChatThread = forwardRef<
       : undefined;
 
     setError(null);
+    setFailedRequest(null);
     setInput('');
-    const userMessage: Message = { id: `${Date.now()}-u`, role: 'user', text: question };
-    setMessages((prev) => [...prev, userMessage]);
+    if (appendUserMessage) {
+      const userMessage: Message = { id: `${Date.now()}-u`, role: 'user', text: question };
+      setMessages((prev) => [...prev, userMessage]);
+    }
     setSending(true);
-    onMessageSent?.();
+    if (appendUserMessage) onMessageSent?.();
 
     try {
       const { response, holdingProposal } = await askQuestion(
@@ -163,10 +181,23 @@ export const ChatThread = forwardRef<
       noteMeaningfulLearningInteraction(userId);
     } catch (err) {
       if (generation !== generationRef.current) return;
-      setError(err instanceof Error ? err.message : 'Failed to reach the teaching engine');
+      setFailedRequest(captureFailedChatRequest(question, deepenAlias, onboardingTrackHint));
+      setError(CHAT_FAILURE_MESSAGE);
     } finally {
       if (generation === generationRef.current) setSending(false);
     }
+  };
+
+  const retryFailedRequest = () => {
+    if (sending) return;
+    const retry = retryInvocationFor(failedRequest);
+    if (!retry) return;
+    void sendText(
+      retry.question,
+      retry.deepenAlias,
+      retry.onboardingTrackHint,
+      retry.appendUserMessage,
+    );
   };
 
   const resolveProposal = (messageId: string, saved: boolean) => {
@@ -221,9 +252,20 @@ export const ChatThread = forwardRef<
     >
       {/* BQ-055 (D-105): Arya persona header — shown in the Chat tab, hidden on onboarding
           (which has its own context framing). Avatar is a monogram "A" in colors.tutor. */}
-      {!onboarding && <AryaHeader />}
+      {!onboarding && (
+        <>
+          <AryaHeader
+            disclosureOpen={disclosureOpen}
+            onToggleDisclosure={() => setDisclosureOpen((open) => !open)}
+          />
+          {disclosureOpen && <ModelBoundaryDisclosure />}
+        </>
+      )}
       {messages.length === 0 ? (
-        <View style={styles.centered}>{emptyState}</View>
+        <View style={styles.centered}>
+          {!onboarding && <FirstEntryScope />}
+          {emptyState}
+        </View>
       ) : (
         <FlatList
           style={styles.list}
@@ -268,8 +310,31 @@ export const ChatThread = forwardRef<
         />
       )}
 
-      {sending && <ActivityIndicator style={styles.spinner} color={colors.ink} />}
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {sending && (
+        <View
+          style={styles.loadingState}
+          accessibilityRole="progressbar"
+          accessibilityLabel="Arya is preparing an explanation"
+        >
+          <ActivityIndicator color={colors.ink} />
+          <Text style={styles.loadingText}>Arya is preparing an explanation…</Text>
+        </View>
+      )}
+      {error && failedRequest && (
+        <View style={styles.errorCard} accessibilityRole="alert">
+          <Text style={styles.errorText}>{error}</Text>
+          <Pressable
+            style={styles.retryButton}
+            accessibilityRole="button"
+            accessibilityLabel="Retry the failed question"
+            disabled={sending}
+            accessibilityState={{ disabled: sending }}
+            onPress={retryFailedRequest}
+          >
+            <Text style={styles.retryButtonText}>Retry question</Text>
+          </Pressable>
+        </View>
+      )}
 
       <View style={styles.inputRow}>
         <TextInput
@@ -278,10 +343,17 @@ export const ChatThread = forwardRef<
           onChangeText={setInput}
           placeholder="Ask a question…"
           placeholderTextColor={colors.inkMuted}
+          accessibilityLabel="Your question"
           multiline
           editable={!sending}
         />
-        <Pressable style={styles.sendButton} onPress={() => sendText(input)} disabled={sending || !input.trim()}>
+        <Pressable
+          style={styles.sendButton}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: sending || !input.trim() }}
+          onPress={() => sendText(input)}
+          disabled={sending || !input.trim()}
+        >
           <Text style={styles.sendButtonText}>Send</Text>
         </Pressable>
       </View>
@@ -291,16 +363,59 @@ export const ChatThread = forwardRef<
 
 // BQ-055 (D-105): Arya header — monogram avatar + name + subtitle. Shown at top of the Chat
 // tab (not during onboarding). Visual = circle filled colors.tutor, "A" in colors.canvas.
-function AryaHeader() {
+function AryaHeader({
+  disclosureOpen,
+  onToggleDisclosure,
+}: {
+  disclosureOpen: boolean;
+  onToggleDisclosure: () => void;
+}) {
   return (
     <View style={styles.aryaHeader}>
       <View style={styles.aryaAvatar}>
         <Text style={styles.aryaMonogram}>A</Text>
       </View>
-      <View>
+      <View style={styles.aryaIdentityText}>
         <Text style={styles.aryaName}>Arya</Text>
         <Text style={styles.aryaSubtitle}>Your financial tutor</Text>
       </View>
+      <Pressable
+        style={styles.disclosureButton}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: disclosureOpen }}
+        onPress={onToggleDisclosure}
+      >
+        <Text style={styles.disclosureButtonText}>What Arya receives</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function ModelBoundaryDisclosure() {
+  return (
+    <View style={styles.disclosurePanel} accessibilityLiveRegion="polite">
+      <Text style={styles.disclosureTitle}>What Arya receives</Text>
+      <Text style={styles.disclosureBody}>
+        Recognisable names are replaced inside FinTutor before the teaching model receives your question.
+        The model receives aliases and relevant characteristics.
+      </Text>
+      <Text style={styles.disclosureFootnote}>
+        Account, card and policy numbers, PAN-like identifiers, email addresses and phone numbers are not sent.
+      </Text>
+    </View>
+  );
+}
+
+function FirstEntryScope() {
+  return (
+    <View style={styles.firstEntryScope}>
+      <Text style={styles.firstEntryTitle}>Start with what feels unclear.</Text>
+      <Text style={styles.firstEntryBody}>
+        Arya explains financial mechanisms using your current recorded context. The decision stays with you.
+      </Text>
+      <Text style={styles.sessionScope}>
+        This is a fresh conversation. Arya can use your current records, but not a previous chat.
+      </Text>
     </View>
   );
 }
@@ -392,8 +507,26 @@ const styles = StyleSheet.create({
   // Inline figure emphasis inside a tutor reply — font.mono per the "every real number is
   // mono" constraint, smaller than the surrounding serif prose, same ratio the mockup draws.
   figureInline: { fontFamily: font.monoMedium, fontSize: 13 },
-  spinner: { marginVertical: spacing.sm },
-  errorText: { color: colors.danger, paddingHorizontal: spacing.lg, marginBottom: spacing.sm, fontFamily: font.ui },
+  loadingState: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
+  loadingText: { color: colors.inkSecondary, fontFamily: font.ui, fontSize: 12 },
+  errorCard: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
+    padding: spacing.md,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.danger,
+    borderRadius: radius.md,
+    backgroundColor: colors.screen,
+  },
+  errorText: { color: colors.danger, marginBottom: spacing.sm, fontFamily: font.ui, fontSize: 13, lineHeight: 19 },
+  retryButton: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center', paddingHorizontal: spacing.md },
+  retryButtonText: { color: colors.tutor, fontFamily: font.uiSemibold, fontSize: 14 },
   // Flow 03.1 — RANGE, NOT YOUR NUMBER. Dashed hairline, off the ledger register on purpose
   // (a dashed rule reads as "aside," not as a bounded card the way HoldingProposalCard is).
   rangeBlock: {
@@ -510,6 +643,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.line,
     backgroundColor: colors.canvas,
   },
+  aryaIdentityText: { flex: 1 },
   aryaAvatar: {
     width: 40,
     height: 40,
@@ -521,4 +655,34 @@ const styles = StyleSheet.create({
   aryaMonogram: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.canvas },
   aryaName: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.ink },
   aryaSubtitle: { fontFamily: font.ui, fontSize: 12, color: colors.inkSecondary },
+  disclosureButton: { minHeight: 44, justifyContent: 'center', paddingLeft: spacing.sm },
+  disclosureButtonText: { fontFamily: font.uiMedium, fontSize: 12, color: colors.tutor },
+  disclosurePanel: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
+    backgroundColor: colors.tutorSoft,
+  },
+  disclosureTitle: { fontFamily: font.uiSemibold, fontSize: 13, color: colors.ink, marginBottom: spacing.xs },
+  disclosureBody: { fontFamily: font.ui, fontSize: 12, lineHeight: 18, color: colors.inkSecondary },
+  disclosureFootnote: { fontFamily: font.ui, fontSize: 11, lineHeight: 17, color: colors.inkMuted, marginTop: spacing.xs },
+  firstEntryScope: { alignItems: 'center', maxWidth: 420, marginBottom: spacing.lg },
+  firstEntryTitle: { fontFamily: font.uiSemibold, fontSize: 20, color: colors.ink, textAlign: 'center' },
+  firstEntryBody: {
+    fontFamily: font.tutor,
+    fontSize: 15,
+    lineHeight: 22,
+    color: colors.inkSecondary,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+  sessionScope: {
+    fontFamily: font.ui,
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.inkMuted,
+    textAlign: 'center',
+    marginTop: spacing.md,
+  },
 });
