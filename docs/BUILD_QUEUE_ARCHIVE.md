@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-109 — Personal financial baseline package and owner prototype — DONE 23-Aug-2026
+
+Traces to D-148 and the ranked Phase-1 audit. Delivered the complete baseline PRD, journey/state matrix,
+contracts, acceptance matrix, decision register, four-fork owner brief and controlled-fixture prototype in
+`docs/features/baseline/`. D-149/D-150 resolve lifecycle, stale-write, reminder-recovery and proportional live
+goal-progress contracts. A delegated independent panel ran all eight tasks; two prototype defects were revised
+and independently retested, then every scenario passed. The package is frozen at `842c0a5`; production work is
+bounded as BQ-110 through BQ-112.
+
 ## BQ-108 — Arya validated presentation and recovery contract — DONE 23-Aug-2026
 
 Aligned production Chat with BQ-107's owner-validated presentation contract: first-entry role and fresh-chat

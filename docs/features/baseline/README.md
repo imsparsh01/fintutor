@@ -2,7 +2,7 @@
 
 **Work item:** BQ-109
 
-**Status:** Decision-complete package and fixture prototype complete; awaiting owner validation.
+**Status:** Frozen after delegated owner validation PASS at prototype commit `842c0a5`.
 
 **Production impact:** None. The prototype uses controlled data and makes no network or storage request.
 
@@ -14,7 +14,7 @@
 - `ACCEPTANCE_AND_VALIDATION.md`: acceptance matrix and eight owner tasks.
 - `DECISION_REGISTER.md`: settled constraints, hypotheses and unresolved Tier-3 forks.
 - `OWNER_DECISION_BRIEF.md`: four owner decisions exposed by the audit.
-- `VALIDATION_RESULT.md`: pending owner record.
+- `VALIDATION_RESULT.md`: eight-scenario PASS record, including revisions and limitations.
 - `prototype/`: standalone HTML/CSS/JavaScript controlled-fixture journey.
 
 ## First-principles model
@@ -48,4 +48,4 @@ Open `http://127.0.0.1:4173/docs/features/baseline/prototype/`.
 ## Gate
 
 D-149 resolves O-01, O-03 and O-04. D-150 completes O-02 with shared proportional live-value allocation. The
-eight scenarios now require owner validation under D-148 before the package can be frozen.
+owner delegated validation to an independent agent panel; all eight scenarios passed and the package is frozen.
