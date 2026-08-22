@@ -2,7 +2,7 @@
 
 **Date:** Pending owner decisions and walkthrough
 
-**Prototype commit:** Pending session commit
+**Prototype commit:** `f959d7d`
 
 **Disposition:** ESCALATE
 
