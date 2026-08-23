@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-112 — Baseline lifecycle, integrity and recovery UI — DONE 24-Aug-2026
+
+Implemented the frozen BQ-109 baseline journeys across holdings, Budgeting and Goals: complete supporting-record
+edit/delete, durable stale-write reconfirmation, impact-first deletion, recategorisation field-loss review,
+authoritative holding writes with reminder-only recovery, independent partial failures, synchronous cross-account
+suppression and backend-authored goal-progress provenance. Goal-link changes now invalidate holding deletion-impact
+versions. Applied development migration `b112c152a001`; verified 366 backend tests, 78 frontend tests, TypeScript,
+web export and independent pre-commit review.
+
 ## BQ-111 — Shared proportional live goal-progress engine — DONE 24-Aug-2026
 
 Implemented D-150/D-151 as a live, non-persisted Decimal/paise projection across the complete owned goal set.

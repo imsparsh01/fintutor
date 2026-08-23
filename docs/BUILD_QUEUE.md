@@ -16,14 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-112 — Baseline lifecycle, integrity and recovery UI
-
-Dependencies BQ-110 and BQ-111 are complete. Implement the frozen BQ-109 journeys and state matrix across family holdings,
-Budgeting and Goals: complete supporting-record edit/delete, stale reconfirmation, recategorisation field-loss
-review, authoritative-save/reminder-only recovery, partial failures, cross-account clearing, provenance and D-150
-goal progress. Required evidence: component/integration/accessibility tests, delayed-response account switches,
-manual QA copied from all eight validated scenarios and frontend codemap updates.
-
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED

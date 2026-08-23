@@ -24,6 +24,6 @@ Date: 24-Aug-2026
 
 The revised controlled-fixture prototype previously passed all eight scenarios independently. A new in-app-browser replay was attempted during this production close, but the browser safety layer blocked the local `file://` artifact and no authenticated production fixture account is available. Source inspection was not substituted for that browser result; the production evidence is the automated/build checks plus the already-recorded independent prototype validation above.
 
-## Remaining release gate
+## Release disposition
 
-Migration `b112c152a001` adds the durable holding concurrency version. Its application to the populated development database requires the owner's explicit high-critical approval. Until it is applied and verified, BQ-112 remains READY rather than SHIPPED.
+The owner explicitly approved migration `b112c152a001`. It was applied transactionally to the development database and verified as the current Alembic head. BQ-112 is SHIPPED.
