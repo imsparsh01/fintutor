@@ -16,7 +16,9 @@
   discretionary categories.
 - Consolidated valuation is not stored: recognized finite valuation fields plus explicit invalid/unvalued/
   unclassified counts.
-- Goal progress currently sums persisted earmarked amounts. No money moves or becomes reserved.
+- Goal progress is computed live under D-150/D-151: each recognized holding value is rounded half-up to paise,
+  capped once across all goals and shared proportionally when earmarks exceed it. Unknown/unsupported links make
+  the measured known total partial and expose provenance. No money moves or becomes reserved; nothing is stored.
 - Arya receives aliases/characteristics and permitted derived context, never local display names.
 
 ## Write semantics

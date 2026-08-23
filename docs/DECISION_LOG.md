@@ -148,3 +148,10 @@
   valuation remains unmeasured; exact currency totals and provenance are preserved. Full write-up:
   `docs/features/baseline/decisions/D-150-shared-proportional-live-goal-progress.md`.
 - **Date:** 23-Aug-2026
+
+### D-151 — Goal progress converts holding values to paise with round-half-up
+- **Tier:** 3, owner-decided money logic. “Before D-150 allocates a recognized live holding value across goals,
+  convert that value to two decimal places using Decimal `ROUND_HALF_UP`.” Allocation then uses integer paise;
+  unknown and unsupported contributions remain partial, never zero. Full write-up:
+  `docs/features/baseline/decisions/D-151-goal-progress-currency-rounding.md`.
+- **Date:** 24-Aug-2026

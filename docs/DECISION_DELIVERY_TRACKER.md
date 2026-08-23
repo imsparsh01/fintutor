@@ -57,7 +57,8 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-147 | SHIPPED → requirements.txt + D-147 decision file | Python 3.14/Windows venv fix; psycopg2-binary, SQLAlchemy, Alembic floor bumps + tzdata added |
 | D-148 | SHIPPED → BQ-109 | Baseline package frozen after delegated eight-scenario validation PASS | Completed 23-Aug-2026; production bounded in BQ-110–BQ-112 |
 | D-149 | READY → BQ-112 | Backend lifecycle/stale-write contracts shipped in BQ-110 | Implement integrated UI and reminder recovery |
-| D-150 | READY → BQ-111/BQ-112 | Shared proportional live goal-progress money contract approved | Implement engine, then UI |
+| D-150 | READY → BQ-112 | Shared proportional engine shipped in BQ-111 | Implement validated provenance/partial UI |
+| D-151 | SHIPPED → BQ-111 | Round-half-up paise conversion implemented and verified | Completed 24-Aug-2026 |
 
 ## Current-session decisions
 

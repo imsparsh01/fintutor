@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-111 — Shared proportional live goal-progress engine — DONE 24-Aug-2026
+
+Implemented D-150/D-151 as a live, non-persisted Decimal/paise projection across the complete owned goal set.
+Recognized values round half-up, each holding is capped once, oversubscription uses largest remainder with stable
+goal UUID ties, and unknown/excluded links expose partial provenance rather than zero. Goal reads and write
+responses now return applied value, source field/value, earmark, adjustment and reason. Covered under/exact/over
+allocation, half-up edges, ties, value decline, huge finite values, multiple holdings, unknown/invalid/negative/
+excluded values, cross-account filtering and stale snapshots. All 365 backend tests pass.
+
 ## BQ-110 — Baseline lifecycle and stale-write backend contracts — DONE 23-Aug-2026
 
 Added owned source-level income correction/deletion, discretionary edit/delete and full goal edit/delete with

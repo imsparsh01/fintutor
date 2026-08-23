@@ -16,16 +16,9 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-111 — Shared proportional live goal-progress engine
-
-Depends on BQ-110. Implement D-150's decimal, per-holding live-value cap and proportional cross-goal allocation,
-deterministic currency rounding, recognized valuation eligibility, explicit unknown/partial semantics and source
-provenance. Required evidence: under/exact/over allocation, rounding ties, value decline, invalid/unknown value,
-multiple holdings, deleted links and cross-account ownership tests. No recommendation or progress verdict.
-
 ### BQ-112 — Baseline lifecycle, integrity and recovery UI
 
-Depends on BQ-110 and BQ-111. Implement the frozen BQ-109 journeys and state matrix across family holdings,
+Dependencies BQ-110 and BQ-111 are complete. Implement the frozen BQ-109 journeys and state matrix across family holdings,
 Budgeting and Goals: complete supporting-record edit/delete, stale reconfirmation, recategorisation field-loss
 review, authoritative-save/reminder-only recovery, partial failures, cross-account clearing, provenance and D-150
 goal progress. Required evidence: component/integration/accessibility tests, delayed-response account switches,

@@ -111,7 +111,8 @@ class BaselineLifecycleApiTests(unittest.TestCase):
 
     def test_goal_edit_delete_funding_impact_and_stale_reconfirmation(self) -> None:
         holding = Holding(
-            user_id=self.user_id, product_type="fd_rd", alias="FD-1", characteristics={}
+            user_id=self.user_id, product_type="fd_rd", alias="FD-1",
+            characteristics={"principal_or_monthly_amount": 100000}
         )
         self.db.add(holding)
         self.db.commit()
@@ -137,6 +138,10 @@ class BaselineLifecycleApiTests(unittest.TestCase):
         })
         self.assertEqual(stale.status_code, 409)
         self.assertEqual(stale.json()["detail"]["current"]["target_amount"], 600000)
+        self.assertEqual(stale.json()["detail"]["current"]["progress"], 60000)
+        self.assertEqual(
+            stale.json()["detail"]["current"]["progress_provenance"][0]["status"], "applied"
+        )
 
         deleted = self.client.delete(f"/goals/{created['id']}?expected_version=2")
         self.assertEqual(deleted.status_code, 200)

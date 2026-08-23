@@ -1,7 +1,7 @@
 import unittest
 import uuid
 from datetime import date
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -59,10 +59,14 @@ class GoalFundingTests(unittest.TestCase):
         db = MagicMock()
         db.query.side_effect = [goal_query, holding_query]
 
-        result = update_goal_funding(db, user_id, goal.id, [
-            {"holding_id": first_id, "earmarked_amount": 1200},
-            {"holding_id": second_id, "earmarked_amount": 800},
-        ])
+        with patch("app.services.goals.compute_goal_progress", return_value={goal.id: {
+            "progress": 2000, "progress_status": "measured",
+            "progress_is_partial": False, "progress_provenance": [],
+        }}):
+            result = update_goal_funding(db, user_id, goal.id, [
+                {"holding_id": first_id, "earmarked_amount": 1200},
+                {"holding_id": second_id, "earmarked_amount": 800},
+            ])
 
         self.assertEqual(result["progress"], 2000)
         self.assertEqual(len(result["funded_by"]), 2)
@@ -80,7 +84,8 @@ class GoalFundingApiTests(unittest.TestCase):
         self.db = sessionmaker(bind=engine)()
         self.user_id = uuid.uuid4()
         self.other_user_id = uuid.uuid4()
-        self.owned = Holding(user_id=self.user_id, product_type="fd_rd", alias="FD-1", characteristics={})
+        self.owned = Holding(user_id=self.user_id, product_type="fd_rd", alias="FD-1",
+                             characteristics={"principal_or_monthly_amount": 10000})
         self.other = Holding(user_id=self.other_user_id, product_type="fd_rd", alias="FD-2", characteristics={})
         self.db.add_all([self.owned, self.other])
         self.db.commit()
@@ -140,3 +145,21 @@ class GoalFundingApiTests(unittest.TestCase):
                 response = self.create([{"holding_id": str(self.owned.id), "earmarked_amount": amount}])
                 self.assertEqual(response.status_code, 422)
         self.assertEqual(self.db.query(Goal).count(), 0)
+
+    def test_get_recomputes_one_holding_once_across_all_goals(self) -> None:
+        first_id = self.create([{
+            "holding_id": str(self.owned.id), "earmarked_amount": 7500,
+        }]).json()["id"]
+        second_id = self.client.post("/goals", json={
+            "target_amount": 20000, "target_date": "2031-01-01", "category": "Home",
+            "funded_by": [{"holding_id": str(self.owned.id), "earmarked_amount": 5000}],
+        }).json()["id"]
+
+        goals = {goal["id"]: goal for goal in self.client.get("/goals").json()}
+
+        self.assertEqual(goals[first_id]["progress"], 6000)
+        self.assertEqual(goals[second_id]["progress"], 4000)
+        self.assertEqual(goals[first_id]["progress_status"], "measured")
+        provenance = goals[first_id]["progress_provenance"][0]
+        self.assertEqual(provenance["valuation_field"], "principal_or_monthly_amount")
+        self.assertEqual(provenance["recorded_value"], "10000.00")

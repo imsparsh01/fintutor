@@ -96,7 +96,12 @@ services/holdings.py            CRUD + serialisation. Alias auto-generated (D-07
                                  negative/non-finite 80C contribution/premium inputs are rejected.
 services/baseline_lifecycle.py Durable version comparison; stale writes carry current + proposed state.
 services/income.py              Stable source IDs; row-locked versioned source edit/delete + impact preview.
-services/goals.py               Create/list, row-locked full edit/delete and funding replacement + impact.
+services/goals.py               Create/list, row-locked full edit/delete and funding replacement + impact;
+                                 every response joins the live D-150 progress projection.
+services/goal_progress.py       Pure live cross-goal allocation engine. D-151 rounds recognized values
+                                 half-up to paise, then caps each holding once and distributes oversubscription
+                                 by largest remainder/stable goal UUID. Unknown/excluded links remain partial
+                                 with provenance; no result is persisted.
 services/onboarding.py (242)    start_or_resume() / record_turn() / build_onboarding_instruction()
                                  Track: fresh_starter | reactive_dabbler | habit_former | unclassified
                                  Stage: intro → sequencing → mechanism → reflect → gapscan → complete
