@@ -5,7 +5,7 @@
 ## Database: Supabase (Postgres). ORM: SQLAlchemy.
 
 Schema changes use the linear Alembic chain in `backend/alembic/versions/`; current head is
-`f150b110a001` (BQ-110).
+`b112c152a001` (BQ-112 holding lifecycle prerequisite).
 No FK to a Users table (D-043). Auth is Supabase-side; the DB stores data only, keyed by `user_id UUID`.
 
 ## Tables
@@ -18,6 +18,8 @@ holdings
   alias           string   — LLM-visible name e.g. "Fund-A". UniqueConstraint(user_id, alias)
   display_name    string?  — real institution/product name. NEVER sent to LLM (D-011)
   characteristics JSONB    — per-type fields (see characteristicsSchema.ts for field definitions)
+  version         int      — durable concurrency token; incremented by direct edits and confirmed
+                              reconciliation updates under a row lock
   BQ-077 reconciliation uses this existing row only: transient proposals are never stored;
                   confirmed updates row-lock and merge supplied fields without deleting unstated fields
 

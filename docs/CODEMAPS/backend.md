@@ -93,7 +93,10 @@ services/consolidated.py        compute_consolidated() — per-family totals wit
                                  unclassified count. Malformed/non-finite JSONB values never become zero
                                  and never fail the complete response.
 services/holdings.py            CRUD + serialisation. Alias auto-generated (D-074) if not provided; new
-                                 negative/non-finite 80C contribution/premium inputs are rejected.
+                                 negative/non-finite 80C contribution/premium inputs are rejected. Direct
+                                 edits/deletes row-lock the owned record and accept a durable expected_version;
+                                 stale writes return current + proposed. Owned deletion impact names goal
+                                 funding links and the computed views that will change.
 services/baseline_lifecycle.py Durable version comparison; stale writes carry current + proposed state.
 services/income.py              Stable source IDs; row-locked versioned source edit/delete + impact preview.
 services/goals.py               Create/list, row-locked full edit/delete and funding replacement + impact;
@@ -169,7 +172,7 @@ services/financial_context.py   One owned optional context row: view/upsert/clea
 ## DB Models (all in `backend/app/models/`)
 
 ```
-Holding           holdings table    — product_type, alias, display_name, characteristics (JSONB)
+Holding           holdings table    — product_type, alias, display_name, characteristics (JSONB), version
                                       UniqueConstraint(user_id, alias)
 Income            income table      — sources (JSONB list incl. stable id), version
 Goal              goals table       — target_amount, target_date, category, funded_by relationship, version

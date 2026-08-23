@@ -5,7 +5,7 @@ from typing import Literal
 from urllib.parse import parse_qsl, urlencode
 
 import anthropic
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, StrictBool
@@ -60,6 +60,7 @@ from app.services.holdings import (
     create_holding,
     delete_holding,
     get_holding,
+    holding_deletion_impact,
     list_holdings,
     update_holding,
 )
@@ -166,6 +167,7 @@ class HoldingUpdate(BaseModel):
     alias: str | None = None
     display_name: str | None = None
     characteristics: dict | None = None
+    expected_version: int = Field(ge=1)
 
 
 class HoldingReconciliationResolve(BaseModel):
@@ -201,7 +203,7 @@ class IncomeCreate(BaseModel):
 
 class IncomeUpdate(BaseModel):
     sources: list[IncomeSource]
-    expected_version: int | None = Field(default=None, ge=1)
+    expected_version: int = Field(ge=1)
 
 
 class IncomeSourceMutation(BaseModel):
@@ -234,7 +236,7 @@ class GoalCreate(BaseModel):
 
 class GoalFundingUpdate(BaseModel):
     funded_by: list[GoalFundingIn]
-    expected_version: int | None = Field(default=None, ge=1)
+    expected_version: int = Field(ge=1)
 
 
 class GoalUpdate(BaseModel):
@@ -402,7 +404,13 @@ def patch_holding(
             body.alias,
             body.display_name,
             body.characteristics,
+            body.expected_version,
         )
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This holding changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except IntegrityError:
@@ -416,10 +424,31 @@ def patch_holding(
     return updated
 
 
-@app.delete("/holdings/{holding_id}", status_code=204)
-def remove_holding(holding_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)) -> None:
-    if not delete_holding(db, user_id, holding_id):
+@app.get("/holdings/{holding_id}/deletion-impact")
+def get_holding_deletion_impact(
+    holding_id: uuid.UUID, user_id: uuid.UUID, db: Session = Depends(get_db)
+) -> dict:
+    impact = holding_deletion_impact(db, user_id, holding_id)
+    if impact is None:
         raise HTTPException(status_code=404, detail="Holding not found")
+    return impact
+
+
+@app.delete("/holdings/{holding_id}")
+def remove_holding(
+    holding_id: uuid.UUID, user_id: uuid.UUID, expected_version: int = Query(ge=1),
+    db: Session = Depends(get_db),
+) -> dict:
+    try:
+        deleted = delete_holding(db, user_id, holding_id, expected_version)
+    except StaleBaselineWriteError as exc:
+        raise HTTPException(status_code=409, detail={
+            "message": "This holding changed. Review the refreshed record.",
+            "current": exc.current, "proposed": exc.proposed,
+        }) from exc
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Holding not found")
+    return deleted
 
 
 @app.post("/holding-reconciliation/resolve")

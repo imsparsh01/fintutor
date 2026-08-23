@@ -12,6 +12,23 @@ class GoalFundingValidationError(ValueError):
     pass
 
 
+def _bump_linked_holding_versions(
+    db: Session, user_id: uuid.UUID, holding_ids: set[uuid.UUID]
+) -> None:
+    """Make a holding token cover changes to its deletion impact as well as its fields."""
+    if not holding_ids:
+        return
+    holdings = (
+        db.query(Holding)
+        .filter(Holding.user_id == user_id, Holding.id.in_(sorted(holding_ids, key=str)))
+        .order_by(Holding.id)
+        .with_for_update()
+        .all()
+    )
+    for holding in holdings:
+        holding.version = (holding.version or 1) + 1
+
+
 def _validate_funding(db: Session, user_id: uuid.UUID, funded_by: list[dict]) -> None:
     for item in funded_by:
         try:
@@ -83,6 +100,7 @@ def create_goal(
     sqlalchemy.exc.IntegrityError if a holding_id doesn't exist (FK constraint) — caller's
     job to turn that into a 4xx, same responsibility split as create_holding."""
     _validate_funding(db, user_id, funded_by)
+    _bump_linked_holding_versions(db, user_id, {item["holding_id"] for item in funded_by})
     goal = Goal(
         user_id=user_id,
         target_amount=target_amount,
@@ -114,6 +132,10 @@ def update_goal_funding(
     if expected_version is not None:
         require_version(_to_live_dict(db, user_id, goal), expected_version, {"funded_by": funded_by})
     _validate_funding(db, user_id, funded_by)
+    old_ids = {link.holding_id for link in goal.funded_by}
+    _bump_linked_holding_versions(
+        db, user_id, old_ids | {item["holding_id"] for item in funded_by}
+    )
     goal.funded_by = [
         GoalFunding(holding_id=item["holding_id"], earmarked_amount=item["earmarked_amount"])
         for item in funded_by
@@ -153,6 +175,10 @@ def update_goal(
                 "category": category, "funded_by": funded_by}
     require_version(_to_live_dict(db, user_id, goal), expected_version, proposed)
     _validate_funding(db, user_id, funded_by)
+    old_ids = {link.holding_id for link in goal.funded_by}
+    _bump_linked_holding_versions(
+        db, user_id, old_ids | {item["holding_id"] for item in funded_by}
+    )
     goal.target_amount = target_amount
     goal.target_date = target_date
     goal.category = category
@@ -175,6 +201,7 @@ def delete_goal(
         return None
     current = _to_live_dict(db, user_id, goal)
     require_version(current, expected_version, {"delete_id": str(goal_id)})
+    _bump_linked_holding_versions(db, user_id, {link.holding_id for link in goal.funded_by})
     impact = {
         "record_type": "goal", "record_id": str(goal.id), "category": goal.category,
         "target_amount": float(goal.target_amount), "target_date": goal.target_date.isoformat(),

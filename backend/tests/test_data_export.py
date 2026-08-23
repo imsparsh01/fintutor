@@ -91,6 +91,7 @@ class DataExportServiceTests(unittest.TestCase):
         self.assertEqual(result["account"]["email"], "test@example.com")
         self.assertEqual(result["generated_at"], now.isoformat())
         self.assertEqual(result["data"]["holdings"][0]["display_name"], "My real fund")
+        self.assertEqual(result["data"]["holdings"][0]["version"], 1)
         self.assertEqual(result["data"]["financial_context"][0]["dependant_count"], 2)
         serialized = str(result)
         self.assertNotIn("Fund-A", serialized)

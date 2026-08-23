@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,16 +11,17 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TeachingBlock } from '../components/TeachingBlock';
 import { GoalFundingFields } from '../components/GoalFundingFields';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { useAuth } from '../lib/AuthContext';
-import { createGoal, fetchGoals, updateGoalFunding } from '../lib/goals';
+import { createGoal, deleteGoal, fetchGoalDeletionImpact, fetchGoals, updateGoal } from '../lib/goals';
 import { fetchHoldings } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
 import type { GoalRecord } from '../lib/goals';
 import type { GoalFundingRecord } from '../lib/goals';
+import type { GoalDeletionImpact } from '../lib/goals';
+import { isStaleWriteError } from '../lib/apiResponse';
 import { fundingAmountsValid } from '../lib/goalFundingValidation';
 import type { Holding } from '../lib/holdings';
 import type { MainTabsParamList } from '../navigation/types';
@@ -72,51 +73,60 @@ const GOAL_TYPES: GoalType[] = [
 ];
 
 interface ScreenState {
-  goals: GoalRecord[] | null;
+  accountId: string | null;
+  goals: GoalRecord[];
+  goalsStatus: 'loading' | 'available' | 'failed';
   holdings: Holding[] | null;
   holdingsError: boolean;
-  emergencyMonths: string | null;
-  hasHealthIns: 'yes' | 'no' | null;
 }
 
 export function GoalsScreen() {
   const { userId } = useAuth();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
   const [state, setState] = useState<ScreenState>({
-    goals: null,
+    accountId: null,
+    goals: [],
+    goalsStatus: 'loading',
     holdings: null,
     holdingsError: false,
-    emergencyMonths: null,
-    hasHealthIns: null,
   });
   const [openType, setOpenType] = useState<string | null>(null);
   const [editingGoal, setEditingGoal] = useState<GoalRecord | null>(null);
+  const loadGeneration = useRef(0);
+
+  useEffect(() => {
+    loadGeneration.current += 1;
+    setOpenType(null);
+    setEditingGoal(null);
+    setState({ accountId: userId, goals: [], goalsStatus: 'loading', holdings: null, holdingsError: false });
+  }, [userId]);
 
   const loadData = useCallback(() => {
     if (!userId) return;
-    Promise.all([
-      fetchGoals(userId).catch((): GoalRecord[] | null => null),
-      fetchHoldings(userId)
-        .then((data) => ({ data, error: false }))
-        .catch(() => ({ data: null, error: true })),
-      // Same two keys the Portfolio Health screen writes — one answer, read in both places,
-      // rather than asking the user the same question twice.
-      AsyncStorage.multiGet(['hs_emergency_months', 'hs_has_health_ins']),
-    ]).then(([goals, holdingResult, stored]) => {
-      const hi = stored[1][1];
-      setState({
-        goals,
-        holdings: holdingResult.data,
-        holdingsError: holdingResult.error,
-        emergencyMonths: stored[0][1],
-        hasHealthIns: hi === 'yes' || hi === 'no' ? hi : null,
-      });
+    const generation = ++loadGeneration.current;
+    setState((current) => ({ ...current, accountId: userId, goalsStatus: 'loading', holdings: null, holdingsError: false }));
+    fetchGoals(userId).then((goals) => {
+      if (generation !== loadGeneration.current) return;
+      setState((current) => ({ ...current, goals, goalsStatus: 'available' }));
+    }).catch(() => {
+      if (generation !== loadGeneration.current) return;
+      setState((current) => ({ ...current, goals: [], goalsStatus: 'failed' }));
+    });
+    fetchHoldings(userId).then((holdings) => {
+      if (generation !== loadGeneration.current) return;
+      setState((current) => ({ ...current, holdings, holdingsError: false }));
+    }).catch(() => {
+      if (generation !== loadGeneration.current) return;
+      setState((current) => ({ ...current, holdings: null, holdingsError: true }));
     });
   }, [userId]);
 
   useFocusEffect(loadData);
 
-  const goals = state.goals ?? [];
+  const visibleState = state.accountId === userId
+    ? state
+    : { accountId: userId, goals: [], goalsStatus: 'loading' as const, holdings: null, holdingsError: false };
+  const goals = visibleState.goals;
 
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -124,7 +134,14 @@ export function GoalsScreen() {
         <Text style={styles.heading}>Goals</Text>
 
         {/* ── Existing goals ─────────────────────────────────────────────── */}
-        {goals.length > 0 && (
+        {visibleState.goalsStatus === 'loading' && <Text style={styles.caption}>Loading your goals…</Text>}
+        {visibleState.goalsStatus === 'failed' && (
+          <View style={styles.loadFailure}>
+            <Text style={styles.errorText}>Your goals could not be loaded. No empty state is being inferred.</Text>
+            <Pressable style={styles.cancelBtn} onPress={loadData}><Text style={styles.cancelBtnText}>Try again</Text></Pressable>
+          </View>
+        )}
+        {visibleState.goalsStatus === 'available' && goals.length > 0 && (
           <>
             <Text style={styles.sectionLabel}>Your goals</Text>
             <View style={styles.card}>
@@ -136,8 +153,8 @@ export function GoalsScreen() {
               <GoalFundingEditor
                 key={editingGoal.id}
                 goal={editingGoal}
-                holdings={state.holdings}
-                holdingsError={state.holdingsError}
+                holdings={visibleState.holdings}
+                holdingsError={visibleState.holdingsError}
                 userId={userId}
                 onDone={() => { setEditingGoal(null); loadData(); }}
                 onCancel={() => setEditingGoal(null)}
@@ -150,11 +167,12 @@ export function GoalsScreen() {
           </>
         )}
 
+        {visibleState.goalsStatus === 'available' && <>
         {/* ── Goal types ─────────────────────────────────────────────────── */}
         <Text style={[styles.sectionLabel, goals.length > 0 && styles.sectionLabelSpaced]}>
           {goals.length > 0 ? 'Start another' : 'Start a goal'}
         </Text>
-        {goals.length === 0 && (
+        {visibleState.goalsStatus === 'available' && goals.length === 0 && (
           // D-089: an empty section is a teaching surface, not a dead end. What lives here is
           // described as a mechanism, not as a product to buy.
           <Text style={styles.caption}>
@@ -180,8 +198,8 @@ export function GoalsScreen() {
           <NewGoalForm
             type={GOAL_TYPES.find((t) => t.key === openType)!}
             userId={userId}
-            holdings={state.holdings}
-            holdingsError={state.holdingsError}
+            holdings={visibleState.holdings}
+            holdingsError={visibleState.holdingsError}
             onSaved={() => {
               setOpenType(null);
               loadData();
@@ -189,12 +207,13 @@ export function GoalsScreen() {
             onCancel={() => setOpenType(null)}
           />
         )}
+        </>}
 
         {/* ── Insurance coverage ─────────────────────────────────────────── */}
         <Text style={[styles.sectionLabel, styles.sectionLabelSpaced]}>Insurance coverage</Text>
         <InsuranceSummary
-          holdings={state.holdings}
-          hasHealthIns={state.hasHealthIns}
+          holdings={visibleState.holdings}
+          hasHealthIns={null}
           onOpenInsurance={() => navigation.navigate('Insurance')}
           onOpenHealthScore={() => navigation.navigate('HealthScore')}
         />
@@ -202,7 +221,7 @@ export function GoalsScreen() {
         {/* ── Emergency readiness ────────────────────────────────────────── */}
         <Text style={[styles.sectionLabel, styles.sectionLabelSpaced]}>Emergency readiness</Text>
         <EmergencyCard
-          months={state.emergencyMonths}
+          months={null}
           onOpenHealthScore={() => navigation.navigate('HealthScore')}
           onOpenScenario={() =>
             navigation.navigate('Scenario', {
@@ -272,15 +291,37 @@ function GoalProgressRow({ goal, last, onManage }: { goal: GoalRecord; last: boo
         <Text style={styles.goalDate}>{formatTargetDate(goal.target_date)}</Text>
       </View>
       <Text style={styles.goalFigures}>
-        {formatRupees(goal.progress)} / {formatRupees(goal.target_amount)}
+        {formatRupees(goal.progress)}{goal.progress_is_partial ? ' known' : ''} / {formatRupees(goal.target_amount)}
       </Text>
       {/* P10: ink fill on a neutral track. No colour encodes whether 27% is good. */}
       <View style={styles.goalTrack}>
         <View style={[styles.goalFill, { width: `${pct}%` }]} />
       </View>
-      <Pressable onPress={onManage}><Text style={styles.manageLink}>Manage counted holdings</Text></Pressable>
+      {goal.progress_is_partial && (
+        <Text style={styles.progressNote}>Partial total: one or more linked values are unknown and are not treated as zero.</Text>
+      )}
+      {goal.progress_provenance.map((source) => (
+        <Text key={source.holding_id} style={styles.provenanceText}>
+          {source.holding_display_name ?? source.holding_alias ?? 'Linked holding'}: {source.status === 'applied'
+            ? `${formatRupees(source.applied_amount ?? 0)} counted from ${formatRupees(source.earmarked_amount)} earmarked${source.was_proportionally_adjusted ? ' after proportional allocation' : ''}`
+            : `unknown (${progressReason(source.reason)})`}
+        </Text>
+      ))}
+      <Pressable accessibilityRole="button" accessibilityLabel={`Edit or delete ${goal.category}`} onPress={onManage}><Text style={styles.manageLink}>Edit or delete goal</Text></Pressable>
     </View>
   );
+}
+
+function progressReason(reason: GoalRecord['progress_provenance'][number]['reason']): string {
+  const labels: Record<string, string> = {
+    holding_unavailable: 'linked holding is unavailable',
+    product_type_excluded: 'this holding type is excluded from goal value',
+    product_type_unclassified: 'holding type is not classified',
+    valuation_missing: 'recognized live value is missing',
+    valuation_invalid: 'recognized live value is invalid',
+    valuation_negative: 'recognized live value is negative',
+  };
+  return reason ? labels[reason] ?? 'value unavailable' : 'value unavailable';
 }
 
 function formatTargetDate(raw: string): string {
@@ -388,27 +429,101 @@ function NewGoalForm({
 function GoalFundingEditor({ goal, holdings, holdingsError, userId, onDone, onCancel }: {
   goal: GoalRecord; holdings: Holding[] | null; holdingsError: boolean; userId: string; onDone: () => void; onCancel: () => void;
 }) {
+  const [category, setCategory] = useState(goal.category);
+  const [amount, setAmount] = useState(String(goal.target_amount));
+  const [date, setDate] = useState(goal.target_date);
   const [fundedBy, setFundedBy] = useState<GoalFundingRecord[]>(goal.funded_by);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  async function save() {
+  const [stale, setStale] = useState<{ kind: 'edit' | 'delete'; current: GoalRecord; proposed: { category: string; target_amount: number; target_date: string; funded_by: GoalFundingRecord[] } } | null>(null);
+  const [impact, setImpact] = useState<GoalDeletionImpact | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+
+  function proposedInput() {
+    return { category: category.trim(), target_amount: Number(amount), target_date: date, funded_by: fundedBy };
+  }
+
+  function valid(input: ReturnType<typeof proposedInput>): boolean {
+    if (!input.category || !input.target_amount || input.target_amount <= 0 || !/^\d{4}-\d{2}-\d{2}$/.test(input.target_date)) {
+      setError('A name, amount above zero, and date as YYYY-MM-DD are needed.');
+      return false;
+    }
     if (!fundingAmountsValid(fundedBy)) {
       setError('Use a positive amount with at most 12 whole digits and 2 decimal places for each selected holding.');
-      return;
+      return false;
     }
+    return true;
+  }
+
+  async function save(expectedVersion = goal.version, input = proposedInput()) {
+    if (!valid(input)) return;
     setSaving(true); setError(null);
-    try { await updateGoalFunding(userId, goal.id, fundedBy); onDone(); }
-    catch (err) { setError(err instanceof Error ? err.message : 'Could not update goal funding.'); }
+    try { await updateGoal(userId, goal.id, input, expectedVersion); onDone(); }
+    catch (err) {
+      if (isStaleWriteError<GoalRecord, typeof input>(err)) {
+        setStale({ kind: 'edit', current: err.detail.current, proposed: err.detail.proposed });
+        setError(null);
+      } else setError(err instanceof Error ? err.message : 'Could not update this goal.');
+    }
     finally { setSaving(false); }
+  }
+
+  async function prepareDelete() {
+    setSaving(true); setError(null);
+    try { setImpact(await fetchGoalDeletionImpact(userId, goal.id)); setDeleteConfirm(true); }
+    catch (err) { setError(err instanceof Error ? err.message : 'Could not load deletion impact.'); }
+    finally { setSaving(false); }
+  }
+
+  async function remove(expectedVersion = impact?.version ?? goal.version) {
+    setSaving(true); setError(null);
+    try { await deleteGoal(userId, goal.id, expectedVersion); onDone(); }
+    catch (err) {
+      if (isStaleWriteError<GoalRecord, Record<string, unknown>>(err)) {
+        try {
+          const refreshedImpact = await fetchGoalDeletionImpact(userId, goal.id);
+          setImpact(refreshedImpact);
+          setDeleteConfirm(true);
+          setStale(null);
+          setError(`This goal changed after the earlier review. Current: ${err.detail.current.category}, ${formatRupees(err.detail.current.target_amount)}, version ${err.detail.current.version}. The deletion impact below has been refreshed; confirm it again if you still want to delete.`);
+        } catch {
+          setDeleteConfirm(false);
+          setError('This goal changed and its updated deletion impact could not be loaded. Retry the impact review.');
+        }
+      } else setError(err instanceof Error ? err.message : 'Could not delete this goal.');
+    } finally { setSaving(false); }
   }
   return (
     <View style={styles.form}>
-      <Text style={styles.formTitle}>Count holdings toward {goal.category}</Text>
+      <Text style={styles.formTitle}>Edit {goal.category}</Text>
+      <Text style={styles.fieldLabel}>Goal name</Text>
+      <TextInput style={styles.input} value={category} onChangeText={setCategory} />
+      <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>Target amount</Text>
+      <TextInput style={styles.input} value={amount} onChangeText={setAmount} keyboardType="decimal-pad" />
+      <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>Target date</Text>
+      <TextInput style={styles.input} value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" />
       <GoalFundingFields holdings={holdings} loadFailed={holdingsError} value={fundedBy} onChange={setFundedBy} />
+      {stale && (
+        <View style={styles.staleBox}>
+          <Text style={styles.formTitle}>This goal changed elsewhere</Text>
+          <Text style={styles.caption}>Current: {stale.current.category}, {formatRupees(stale.current.target_amount)}, version {stale.current.version}. Your proposed changes have not been applied.</Text>
+          <Pressable accessibilityRole="button" style={stale.kind === 'delete' ? styles.deleteBtn : styles.saveBtn} disabled={saving} onPress={() => stale.kind === 'delete' ? prepareDelete() : save(stale.current.version, stale.proposed)}>
+            <Text style={stale.kind === 'delete' ? styles.deleteBtnText : styles.saveBtnText}>{stale.kind === 'delete' ? 'Refresh deletion impact' : 'Reconfirm my proposed change'}</Text>
+          </Pressable>
+        </View>
+      )}
+      {deleteConfirm && impact && (
+        <View style={styles.staleBox}>
+          <Text style={styles.formTitle}>Delete this goal?</Text>
+          <Text style={styles.caption}>This removes the goal and {impact.funding_links_removed} funding {impact.funding_links_removed === 1 ? 'link' : 'links'}. It does not delete any holding or move money.</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Delete ${goal.category}`} style={styles.deleteBtn} disabled={saving} onPress={() => remove()}><Text style={styles.deleteBtnText}>Delete goal</Text></Pressable>
+        </View>
+      )}
       {error && <Text style={styles.errorText}>{error}</Text>}
       <View style={styles.formActions}>
         <Pressable style={styles.cancelBtn} onPress={onCancel}><Text style={styles.cancelBtnText}>Cancel</Text></Pressable>
-        <Pressable style={styles.saveBtn} onPress={save} disabled={saving}><Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save links'}</Text></Pressable>
+        <Pressable style={styles.cancelBtn} onPress={prepareDelete} disabled={saving}><Text style={styles.cancelBtnText}>Review delete</Text></Pressable>
+        <Pressable style={styles.saveBtn} onPress={() => save()} disabled={saving}><Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save goal'}</Text></Pressable>
       </View>
     </View>
   );
@@ -478,8 +593,8 @@ function InsuranceSummary({
       </View>
       <Text style={styles.caption}>
         Sum assured is what a policy pays out, not what it has cost you or what it is worth today.
-        Health cover is the yes/no you gave on the Portfolio Health screen — the app does not hold a
-        policy amount for it.
+        Health-cover context is unavailable here until an account-scoped source exists. Device-only
+        context is not reused across accounts.
       </Text>
       <Pressable style={styles.linkRow} onPress={onOpenInsurance}>
         <Text style={styles.linkText}>Open Insurance holdings ›</Text>
@@ -542,8 +657,8 @@ function EmergencyCard({
       ) : (
         <>
           <Text style={styles.emergencyBody}>
-            An emergency buffer is the number of months your existing balances would cover if income
-            stopped. The app has no way to see your bank balance, so this one is yours to tell it.
+            Account-scoped emergency context is not available here. Use the scenario to explore the
+            mechanism with values you enter; those values are not treated as this account's saved baseline.
           </Text>
         </>
       )}
@@ -621,6 +736,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   goalFill: { height: '100%', backgroundColor: colors.ink },
+  progressNote: { fontFamily: font.tutor, fontSize: 12, lineHeight: 17, color: colors.inkSecondary, marginTop: spacing.sm },
+  provenanceText: { fontFamily: font.mono, fontSize: 11, lineHeight: 16, color: colors.inkSecondary, marginTop: spacing.xs },
   manageLink: { fontFamily: font.uiMedium, fontSize: 12, color: colors.tutor, marginTop: spacing.sm },
 
   // ── Goal-type grid
@@ -768,6 +885,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveBtnText: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.canvas },
+  loadFailure: { marginBottom: spacing.xl },
+  staleBox: { backgroundColor: colors.screen, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.md, padding: spacing.md, marginTop: spacing.lg, gap: spacing.sm },
+  deleteBtn: { flex: 1, backgroundColor: colors.danger, borderRadius: radius.md, paddingVertical: 12, alignItems: 'center' },
+  deleteBtnText: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.canvas },
 
   linkRow: { marginTop: spacing.md },
   linkText: { fontFamily: font.ui, fontSize: 14, color: colors.tutor },

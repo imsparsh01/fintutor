@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -55,29 +55,41 @@ function InsuranceList({ navigation }: ListProps) {
   const [allHoldings, setAllHoldings] = useState<Holding[] | null>(null);
   const [goals, setGoals] = useState<GoalRecord[] | null>(null);
   const [totals, setTotals] = useState<ConsolidatedTotals | null>(null);
+  const [totalsError, setTotalsError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [showTermExplorer, setShowTermExplorer] = useState(false);
+  const [dataAccountId, setDataAccountId] = useState<string | null>(null);
+  const loadGeneration = useRef(0);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
   const walkthroughPlan = buildWalkthroughPlan('insurance', holdings ?? []);
 
   const load = useCallback(() => {
-    if (!userId) return;
+    const generation = ++loadGeneration.current;
+    setHoldings(null);
+    setAllHoldings(null);
+    setGoals(null);
+    setTotals(null);
+    setTotalsError(false);
     setError(null);
+    if (!userId) return;
     fetchHoldings(userId)
       .then((all) => {
+        if (generation !== loadGeneration.current) return;
         setAllHoldings(all);
         setHoldings(all.filter((h) => INSURANCE_TYPES.includes(h.product_type)));
+        setDataAccountId(userId);
       })
-      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load holdings'));
-    fetchGoals(userId).then(setGoals).catch(() => setGoals(null));
+      .catch((err) => { if (generation === loadGeneration.current) { setDataAccountId(userId); setError(err instanceof Error ? err.message : 'Failed to load holdings'); } });
+    fetchGoals(userId).then((value) => { if (generation === loadGeneration.current) setGoals(value); }).catch(() => undefined);
     fetchConsolidated(userId)
-      .then(setTotals)
-      .catch(() => setTotals(null));
+      .then((value) => { if (generation === loadGeneration.current) setTotals(value); })
+      .catch(() => { if (generation === loadGeneration.current) setTotalsError(true); });
   }, [userId]);
 
   useFocusEffect(load);
+  useEffect(() => { setAdding(false); setShowWalkthrough(false); setShowTermExplorer(false); }, [userId]);
 
   const startWalkthrough = () => {
     setShowWalkthrough(true);
@@ -113,6 +125,8 @@ function InsuranceList({ navigation }: ListProps) {
       </View>
     );
   }
+
+  if (dataAccountId !== userId) return <View style={styles.centered}><ActivityIndicator color={colors.ink} /></View>;
 
   if (error) {
     return (
@@ -199,7 +213,9 @@ function InsuranceList({ navigation }: ListProps) {
     <View style={styles.listContainer}>
       <Text style={styles.pageTitle}>Insurance</Text>
       <Text style={styles.subtitle}>{holdings.length} {holdings.length === 1 ? 'policy' : 'policies'}</Text>
-      {totals && <Text style={styles.familyTotal}>{formatRupees(totals.insurance_total)}</Text>}
+      {totals?.insurance_status === 'valued' && <Text style={styles.familyTotal}>{formatRupees(totals.insurance_total)}</Text>}
+      {totals?.insurance_status === 'mixed' && <Text style={styles.totalUnavailable}>{formatRupees(totals.insurance_total)} known; full family total unavailable because some values are unknown or invalid.</Text>}
+      {(totalsError || (totals && ['unvalued', 'excluded'].includes(totals.insurance_status))) && <Text style={styles.totalUnavailable}>Family total unavailable — recorded policies remain visible.</Text>}
       <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
         <Text style={styles.walkthroughButtonText}>Use my recorded details</Text>
       </Pressable>
@@ -270,6 +286,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     marginBottom: spacing.lg,
   },
+  totalUnavailable: { fontFamily: font.ui, fontSize: 12, color: colors.inkMuted, marginVertical: spacing.sm },
   list: { flex: 1 },
   row: {
     flexDirection: 'row',

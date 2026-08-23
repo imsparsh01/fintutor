@@ -59,7 +59,7 @@ class GoalFundingTests(unittest.TestCase):
         db = MagicMock()
         db.query.side_effect = [goal_query, holding_query]
 
-        with patch("app.services.goals.compute_goal_progress", return_value={goal.id: {
+        with patch("app.services.goals._bump_linked_holding_versions"), patch("app.services.goals.compute_goal_progress", return_value={goal.id: {
             "progress": 2000, "progress_status": "measured",
             "progress_is_partial": False, "progress_provenance": [],
         }}):
@@ -120,12 +120,17 @@ class GoalFundingApiTests(unittest.TestCase):
         goal_id = self.create([]).json()["id"]
         updated = self.client.put(f"/goals/{goal_id}/funding?user_id={self.user_id}", json={
             "funded_by": [{"holding_id": str(self.owned.id), "earmarked_amount": 800}],
+            "expected_version": 1,
         })
         self.assertEqual(updated.status_code, 200)
         self.assertEqual(updated.json()["progress"], 800)
-        cleared = self.client.put(f"/goals/{goal_id}/funding?user_id={self.user_id}", json={"funded_by": []})
+        self.db.refresh(self.owned)
+        self.assertEqual(self.owned.version, 2)
+        cleared = self.client.put(f"/goals/{goal_id}/funding?user_id={self.user_id}", json={"funded_by": [], "expected_version": 2})
         self.assertEqual(cleared.status_code, 200)
         self.assertEqual(cleared.json()["funded_by"], [])
+        self.db.refresh(self.owned)
+        self.assertEqual(self.owned.version, 3)
         self.db.expire_all()
         self.assertEqual(self.db.query(Goal).one().funded_by, [])
 

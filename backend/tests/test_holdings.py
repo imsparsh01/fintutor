@@ -33,7 +33,7 @@ class HoldingReconciliationStatusTests(unittest.TestCase):
             characteristics={"interest_rate": 8.5},
         )
         db = MagicMock()
-        db.query.return_value.filter.return_value.first.return_value = holding
+        db.query.return_value.filter.return_value.with_for_update.return_value.first.return_value = holding
 
         result = update_holding(
             db,
@@ -74,7 +74,7 @@ class TaxInputValidationTests(unittest.TestCase):
             alias="Term Insurance-1", characteristics={"premium": 1000},
         )
         db = MagicMock()
-        db.query.return_value.filter.return_value.first.return_value = holding
+        db.query.return_value.filter.return_value.with_for_update.return_value.first.return_value = holding
         with self.assertRaisesRegex(ValueError, "premium"):
             update_holding(
                 db, holding.user_id, holding.id, None, None, None, {"premium": -1}
@@ -87,7 +87,7 @@ class TaxInputValidationTests(unittest.TestCase):
             alias="Holding-1", characteristics={"annual_contribution": -1},
         )
         db = MagicMock()
-        db.query.return_value.filter.return_value.first.return_value = holding
+        db.query.return_value.filter.return_value.with_for_update.return_value.first.return_value = holding
         with self.assertRaisesRegex(ValueError, "annual_contribution"):
             update_holding(
                 db, holding.user_id, holding.id, "ppf_epf", None, None, None
@@ -101,7 +101,7 @@ class TaxInputValidationTests(unittest.TestCase):
             alias="PPF-1", characteristics={"annual_contribution": -1},
         )
         db = MagicMock()
-        db.query.return_value.filter.return_value.first.return_value = holding
+        db.query.return_value.filter.return_value.with_for_update.return_value.first.return_value = holding
         result = update_holding(
             db, holding.user_id, holding.id, None, "PPF renamed", None, None
         )

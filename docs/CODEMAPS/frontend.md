@@ -54,9 +54,9 @@ PortfolioScreen         screens/ (~430)            Portfolio tab — allocation 
                                                    category concentration, trend mechanism panel (BQ-058/061)
 HealthScoreScreen       screens/ (~260)            Hidden “Portfolio Health” screen — 0-100 score + 4
                                                    expandable rows; accepts an optional focus route param
-GoalsScreen             screens/ (~640)            Goals tab — goal progress rows, 4 goal-type cards with
-                                                   inline create form, insurance coverage summary,
-                                                   emergency readiness CTA (BQ-059)
+GoalsScreen             screens/                   Goals tab — explicit load/failure/retry, live partial goal
+                                                   progress with valuation provenance, full versioned edit/delete,
+                                                   4 goal-type create cards, insurance and emergency summaries
 ToolsScreen             screens/ (~310)            Tools tab — 8 calculators + scenarios; S-02 loads eligible
                                                    owned loans and reuses LoanVsInvestModal (BQ-075)
 CalculatorScreen        screens/ (~580)            Hidden tab — prior 5 + Compound Growth + Credit-card Payoff
@@ -64,11 +64,12 @@ CalculatorScreen        screens/ (~580)            Hidden tab — prior 5 + Comp
                                                    primary ResultCard emits after a valid result renders
 ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
                                                    Prefills inputs from budget+holdings; every field editable.
-InvestmentsScreen       screens/ (338)             Hidden tab — holdings list (equity/debt/fd/ppf/stocks)
-LoansScreen             screens/ (290)             Hidden tab — holdings list (home_loan/personal_loan/cc)
-InsuranceScreen         screens/ (296)             Hidden tab — holdings list (term_insurance/endowment_ulip)
-BudgetingScreen         screens/                   Hidden tab — income + goals + discretionary + tax room;
-                                                   visibly flags income omitted for invalid cadence
+InvestmentsScreen       screens/                   Hidden tab — account-guarded holdings list; partial totals named
+LoansScreen             screens/                   Hidden tab — account-guarded loan list; partial totals named
+InsuranceScreen         screens/                   Hidden tab — account-guarded policy list; partial totals named
+BudgetingScreen         screens/                   Hidden tab — independently recoverable budget/income/goals/
+                                                   discretionary/holdings sections; versioned source/category
+                                                   edit/delete; invalid cadence opens its correction path
 ChatScreen              screens/ (47)              Chat tab — thin wrapper rendering ChatThread
 ProgressScreen          screens/                   Hidden BQ-070 learning-progress detail: stage,
                                                    backend-authored bar/gates, awarded-only attribution
@@ -89,7 +90,9 @@ ChatThread                  components/        Core chat UI — Arya header, fir
 HoldingProposalCard         components/        Transient reconciliation: visible not-saved provenance,
                                                zero/one/many candidate UX, stored/proposed field diff,
                                                explicit apply/dismiss (BQ-077/BQ-108)
-HoldingEditModal            components/ (326)  Add/edit holding — schema-driven form via characteristicsSchema
+HoldingEditModal            components/        Add/edit/delete/recategorise holding — schema-driven validation,
+                                               field-loss review, version conflict reconfirmation, deletion impact,
+                                               and reminder-only recovery after an authoritative backend write
 GoalFundingFields           components/        Optional neutral holding picker + earmarked amounts;
                                                reused by goal creation and existing-goal link editing
 ConsolidatedTotalsCard      components/        Home totals — uses status/count metadata rather than numeric
@@ -127,12 +130,15 @@ dataExportFormat.ts             Stable dated filename and readable newline-termi
 chat.ts                 78      sendChatMessage() — POST /chat wrapper; onboarding fields
 chatRetry.ts                    Dependency-free explicit-retry contract: retains only the failed question's
                                 send inputs and forbids a duplicate user-message append on retry
-holdings.ts             74      fetchHoldings / createHolding / updateHolding / deleteHolding
+apiResponse.ts                  Structured backend error parsing; preserves typed 409 current/proposed payloads
+baselineUiState.ts              Pure stale-reconfirm, field-loss, partial-load, reminder and account-generation rules
+holdings.ts                     Versioned holding CRUD + owned deletion-impact preview
 consolidated.ts                 fetchConsolidated() → family totals/status/counts, including invalid-value
                                 counts and a top-level unclassified-record count
 budget.ts               24      fetchBudget() → {income, provenance, goals, discretionary, taxRoom}
-income.ts               53      fetchIncome / saveIncome
-goals.ts                        fetchGoals / createGoal / updateGoalFunding
+income.ts                       Stable source IDs; versioned source edit/delete + deletion impact
+discretionaryCategories.ts      Versioned category create/edit/delete + deletion impact
+goals.ts                        Full versioned goal lifecycle and backend-authored live progress provenance
 financialContext.ts             Authenticated view/replace/clear API for confirmed dependant/emergency context
 onboarding.ts           17      Legacy device-local completion helpers (retained for BQ-068 compatibility)
 onboardingAssessment.ts ~130    Dedicated v2 normalized API client + handled-state outage cache,

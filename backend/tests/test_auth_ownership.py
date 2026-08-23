@@ -74,10 +74,10 @@ class AuthenticatedOwnershipTests(unittest.TestCase):
         client_b = authenticated_client(app, self.user_b)
         update = client_b.patch(
             f"/holdings/{self.holding_a.id}?user_id={self.user_a}",
-            json={"display_name": "Changed"},
+            json={"display_name": "Changed", "expected_version": 1},
         )
         delete = client_b.delete(
-            f"/holdings/{self.holding_a.id}?user_id={self.user_a}"
+            f"/holdings/{self.holding_a.id}?user_id={self.user_a}&expected_version=1"
         )
         self.assertEqual(update.status_code, 404)
         self.assertEqual(delete.status_code, 404)

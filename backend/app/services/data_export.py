@@ -108,6 +108,7 @@ def build_data_export(
             "product_type": row.product_type,
             "display_name": row.display_name,
             "characteristics": row.characteristics,
+            "version": getattr(row, "version", 1),
         }
         for row in _rows(db, Holding, user_id)
     ]

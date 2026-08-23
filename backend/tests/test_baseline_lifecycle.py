@@ -148,6 +148,60 @@ class BaselineLifecycleApiTests(unittest.TestCase):
         self.assertEqual(deleted.json()["impact"]["funding_links_removed"], 1)
         self.assertEqual(self.db.query(GoalFunding).count(), 0)
 
+    def test_holding_versioned_edit_delete_impact_and_ownership(self) -> None:
+        holding = self.client.post("/holdings", json={
+            "product_type": "fd_rd", "display_name": "My deposit",
+            "characteristics": {"principal_or_monthly_amount": 200000},
+        }).json()
+        self.assertEqual(holding["version"], 1)
+        goal = self.client.post("/goals", json={
+            "target_amount": 500000, "target_date": "2030-01-01",
+            "category": "Education", "funded_by": [{
+                "holding_id": holding["id"], "earmarked_amount": 150000,
+            }],
+        }).json()
+
+        cross_impact = self.other_client.get(
+            f"/holdings/{holding['id']}/deletion-impact"
+        )
+        self.assertEqual(cross_impact.status_code, 404)
+
+        impact = self.client.get(f"/holdings/{holding['id']}/deletion-impact")
+        self.assertEqual(impact.status_code, 200)
+        self.assertEqual(impact.json()["funding_links_removed"], 1)
+        self.assertEqual(impact.json()["version"], 2)
+        self.assertEqual(impact.json()["affected_goals"], [{
+            "id": goal["id"], "category": "Education", "earmarked_amount": 150000.0,
+        }])
+
+        updated = self.client.patch(f"/holdings/{holding['id']}", json={
+            "display_name": "My renamed deposit", "expected_version": 2,
+        })
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()["version"], 3)
+
+        stale = self.client.patch(f"/holdings/{holding['id']}", json={
+            "display_name": "Obsolete edit", "expected_version": 2,
+        })
+        self.assertEqual(stale.status_code, 409)
+        self.assertEqual(stale.json()["detail"]["current"]["version"], 3)
+        self.assertEqual(
+            stale.json()["detail"]["proposed"]["display_name"], "Obsolete edit"
+        )
+
+        stale_delete = self.client.delete(
+            f"/holdings/{holding['id']}?expected_version=2"
+        )
+        self.assertEqual(stale_delete.status_code, 409)
+        self.assertEqual(stale_delete.json()["detail"]["current"]["version"], 3)
+
+        deleted = self.client.delete(
+            f"/holdings/{holding['id']}?expected_version=3"
+        )
+        self.assertEqual(deleted.status_code, 200)
+        self.assertTrue(deleted.json()["deleted"])
+        self.assertEqual(deleted.json()["impact"]["funding_links_removed"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

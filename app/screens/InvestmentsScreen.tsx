@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -87,26 +87,44 @@ function InvestmentsList({ navigation }: ListProps) {
   const { userId } = useAuth();
   const [holdings, setHoldings] = useState<Holding[] | null>(null);
   const [totals, setTotals] = useState<ConsolidatedTotals | null>(null);
+  const [totalsError, setTotalsError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
+  const [dataAccountId, setDataAccountId] = useState<string | null>(null);
+  const loadGeneration = useRef(0);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
   const walkthroughPlan = buildWalkthroughPlan('investments', holdings ?? []);
 
   const load = useCallback(() => {
-    if (!userId) return;
+    const generation = ++loadGeneration.current;
+    setHoldings(null);
+    setTotals(null);
+    setTotalsError(false);
     setError(null);
+    if (!userId) return;
     fetchHoldings(userId)
-      .then((all) => setHoldings(all.filter((h) => INVESTMENT_TYPES.includes(h.product_type))))
-      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load holdings'));
+      .then((all) => {
+        if (generation === loadGeneration.current) {
+          setHoldings(all.filter((h) => INVESTMENT_TYPES.includes(h.product_type)));
+          setDataAccountId(userId);
+        }
+      })
+      .catch((err) => {
+        if (generation === loadGeneration.current) {
+          setDataAccountId(userId);
+          setError(err instanceof Error ? err.message : 'Failed to load holdings');
+        }
+      });
     // Family total (mockup 4.1) — reuses the existing /consolidated endpoint as-is; the
     // computation stays entirely server-side (D-065), this screen only displays it.
     fetchConsolidated(userId)
-      .then(setTotals)
-      .catch(() => setTotals(null));
+      .then((value) => { if (generation === loadGeneration.current) setTotals(value); })
+      .catch(() => { if (generation === loadGeneration.current) setTotalsError(true); });
   }, [userId]);
 
   useFocusEffect(load);
+  useEffect(() => { setAdding(false); setShowWalkthrough(false); }, [userId]);
 
   const startWalkthrough = () => {
     setShowWalkthrough(true);
@@ -142,6 +160,8 @@ function InvestmentsList({ navigation }: ListProps) {
       </View>
     );
   }
+
+  if (dataAccountId !== userId) return <View style={styles.centered}><ActivityIndicator color={colors.ink} /></View>;
 
   if (error) {
     return (
@@ -210,7 +230,9 @@ function InvestmentsList({ navigation }: ListProps) {
     <View style={styles.listContainer}>
       <Text style={styles.pageTitle}>Investments</Text>
       <Text style={styles.subtitle}>{holdings.length} {holdings.length === 1 ? 'holding' : 'holdings'}</Text>
-      {totals && <Text style={styles.familyTotal}>{formatRupees(totals.investments_total)}</Text>}
+      {totals?.investments_status === 'valued' && <Text style={styles.familyTotal}>{formatRupees(totals.investments_total)}</Text>}
+      {totals?.investments_status === 'mixed' && <Text style={styles.totalUnavailable}>{formatRupees(totals.investments_total)} known; full family total unavailable because some values are unknown or invalid.</Text>}
+      {(totalsError || (totals && ['unvalued', 'excluded'].includes(totals.investments_status))) && <Text style={styles.totalUnavailable}>Family total unavailable — recorded holdings remain visible.</Text>}
       <Pressable style={styles.walkthroughButton} onPress={startWalkthrough}>
         <Text style={styles.walkthroughButtonText}>Use my recorded details</Text>
       </Pressable>
@@ -277,6 +299,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     marginBottom: spacing.lg,
   },
+  totalUnavailable: { fontFamily: font.ui, fontSize: 12, color: colors.inkMuted, marginVertical: spacing.sm },
   list: { flex: 1 },
   row: {
     flexDirection: 'row',

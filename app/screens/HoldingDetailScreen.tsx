@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -163,10 +163,19 @@ const MECHANISM_COPY: Record<string, string> = {
 export function HoldingDetailScreen({ route, navigation }: Props) {
   const { holding } = route.params;
   const { userId } = useAuth();
-  const [editing, setEditing] = useState(false);
+  const accountAtEntry = useRef(userId);
+  const [editing, setEditing] = useState<'edit' | 'recategorise' | null>(null);
   const [comparing, setComparing] = useState(false);
   const [checkingExerciseCost, setCheckingExerciseCost] = useState(false);
   const parentNavigation = navigation.getParent<BottomTabNavigationProp<MainTabsParamList>>();
+
+  useEffect(() => {
+    if (userId !== accountAtEntry.current) {
+      setEditing(null);
+      setComparing(false);
+      setCheckingExerciseCost(false);
+    }
+  }, [userId]);
 
   // D-069/BRIEF-015's scope: ESOP options only, not RSU (no exercise decision for RSUs).
   const isEsopOptions =
@@ -182,6 +191,17 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
     const value = holding.characteristics[field.key];
     return value !== null && value !== undefined && value !== '';
   });
+
+  if (userId !== accountAtEntry.current) {
+    return (
+      <View style={[styles.screen, styles.accountUnavailable]}>
+        <Text style={styles.emptyText}>This holding belongs to the previous account and is no longer displayed.</Text>
+        <Pressable style={styles.editButton} onPress={() => navigation.goBack()} accessibilityRole="button">
+          <Text style={styles.editButtonText}>Back to current account</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   const askAboutThis = () => {
     // Alias only, never display_name — /chat sends this question text to the LLM
@@ -248,7 +268,7 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
           </Pressable>
         )}
 
-        <Pressable style={styles.editButton} onPress={() => setEditing(true)}>
+        <Pressable style={styles.editButton} onPress={() => setEditing('edit')}>
           <Text style={styles.editButtonText}>Edit</Text>
         </Pressable>
 
@@ -256,7 +276,7 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
             a holding already lives inside HoldingEditModal's product-type picker
             (BQ-027/D-059); this just gives it its own discoverable entry point instead of
             leaving it buried under a generically-labelled Edit button. */}
-        <Pressable style={styles.editButton} onPress={() => setEditing(true)}>
+        <Pressable style={styles.editButton} onPress={() => setEditing('recategorise')}>
           <Text style={styles.editButtonText}>Recategorise</Text>
         </Pressable>
       </ScrollView>
@@ -265,9 +285,10 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
         <HoldingEditModal
           holding={holding}
           noun={noun}
-          onClose={() => setEditing(false)}
+          intent={editing}
+          onClose={() => setEditing(null)}
           onChanged={() => {
-            setEditing(false);
+            setEditing(null);
             navigation.goBack();
           }}
         />
@@ -294,6 +315,7 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
 
 const styles = StyleSheet.create({
   screen: { backgroundColor: colors.screen },
+  accountUnavailable: { flex: 1, justifyContent: 'center', padding: spacing.xl },
   container: { padding: spacing.xl, paddingBottom: spacing.xxxl },
   backLink: { alignSelf: 'flex-start', paddingVertical: spacing.xs, marginBottom: spacing.md },
   backLinkText: { fontFamily: font.ui, fontSize: 14, color: colors.inkSecondary },

@@ -3,7 +3,8 @@ import uuid
 
 from sqlalchemy.orm import Session
 
-from app.models import Holding
+from app.models import Goal, GoalFunding, Holding
+from app.services.baseline_lifecycle import require_version
 
 
 def _validate_tax_inputs(product_type: str, characteristics: dict) -> None:
@@ -32,7 +33,19 @@ def _to_dict(holding: Holding) -> dict:
         "alias": holding.alias,
         "display_name": holding.display_name,
         "characteristics": holding.characteristics,
+        "version": holding.version or 1,
     }
+
+
+def _owned(
+    db: Session, user_id: uuid.UUID, holding_id: uuid.UUID, *, lock: bool = False
+) -> Holding | None:
+    query = db.query(Holding).filter(
+        Holding.user_id == user_id, Holding.id == holding_id
+    )
+    if lock:
+        query = query.with_for_update()
+    return query.first()
 
 
 def list_holdings(db: Session, user_id: uuid.UUID) -> list[dict]:
@@ -41,11 +54,7 @@ def list_holdings(db: Session, user_id: uuid.UUID) -> list[dict]:
 
 
 def get_holding(db: Session, user_id: uuid.UUID, holding_id: uuid.UUID) -> dict | None:
-    holding = (
-        db.query(Holding)
-        .filter(Holding.user_id == user_id, Holding.id == holding_id)
-        .first()
-    )
+    holding = _owned(db, user_id, holding_id)
     return _to_dict(holding) if holding else None
 
 
@@ -57,17 +66,22 @@ def update_holding(
     alias: str | None,
     display_name: str | None,
     characteristics: dict | None,
+    expected_version: int | None = None,
 ) -> dict | None:
     """Partial update — only fields explicitly passed (non-None) are changed. Returns None if
     no matching holding exists. Raises sqlalchemy.exc.IntegrityError on a duplicate (user_id,
     alias), same caller responsibility as create_holding."""
-    holding = (
-        db.query(Holding)
-        .filter(Holding.user_id == user_id, Holding.id == holding_id)
-        .first()
-    )
+    holding = _owned(db, user_id, holding_id, lock=True)
     if holding is None:
         return None
+    proposed = {
+        "product_type": product_type,
+        "alias": alias,
+        "display_name": display_name,
+        "characteristics": characteristics,
+    }
+    if expected_version is not None:
+        require_version(_to_dict(holding), expected_version, proposed)
     effective_type = product_type if product_type is not None else holding.product_type
     effective_characteristics = (
         characteristics if characteristics is not None else (holding.characteristics or {})
@@ -84,6 +98,7 @@ def update_holding(
         holding.display_name = display_name
     if characteristics is not None:
         holding.characteristics = characteristics
+    holding.version = (holding.version or 1) + 1
     db.commit()
     db.refresh(holding)
     result = _to_dict(holding)
@@ -95,18 +110,49 @@ def update_holding(
     return result
 
 
-def delete_holding(db: Session, user_id: uuid.UUID, holding_id: uuid.UUID) -> bool:
-    """Returns False if no matching holding exists (caller turns that into a 404)."""
-    holding = (
-        db.query(Holding)
-        .filter(Holding.user_id == user_id, Holding.id == holding_id)
-        .first()
-    )
+def holding_deletion_impact(
+    db: Session, user_id: uuid.UUID, holding_id: uuid.UUID
+) -> dict | None:
+    holding = _owned(db, user_id, holding_id)
     if holding is None:
-        return False
+        return None
+    affected_links = (
+        db.query(GoalFunding, Goal)
+        .join(Goal, Goal.id == GoalFunding.goal_id)
+        .filter(Goal.user_id == user_id, GoalFunding.holding_id == holding_id)
+        .all()
+    )
+    return {
+        "record_type": "holding",
+        "record_id": str(holding.id),
+        "display_label": holding.display_name or holding.alias,
+        "funding_links_removed": len(affected_links),
+        "affected_goals": [
+            {"id": str(goal.id), "category": goal.category,
+             "earmarked_amount": float(link.earmarked_amount)}
+            for link, goal in affected_links
+        ],
+        "affects": ["holding_list", "consolidated_view", "computed_budget",
+                    "computed_goal_progress"],
+        "version": holding.version or 1,
+    }
+
+
+def delete_holding(
+    db: Session, user_id: uuid.UUID, holding_id: uuid.UUID,
+    expected_version: int | None = None,
+) -> dict | None:
+    """Delete one owned holding and return its neutral, pre-delete impact."""
+    holding = _owned(db, user_id, holding_id, lock=True)
+    if holding is None:
+        return None
+    current = _to_dict(holding)
+    if expected_version is not None:
+        require_version(current, expected_version, {"delete_id": str(holding_id)})
+    impact = holding_deletion_impact(db, user_id, holding_id)
     db.delete(holding)
     db.commit()
-    return True
+    return {"deleted": True, "impact": impact}
 
 
 def _humanize_product_type(product_type: str) -> str:

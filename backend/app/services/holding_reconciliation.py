@@ -200,6 +200,7 @@ def apply_reconciliation(
     except ValueError as exc:
         raise ReconciliationValidationError(str(exc)) from exc
     holding.characteristics = merged
+    holding.version = (holding.version or 1) + 1
     db.commit()
     db.refresh(holding)
     result = {
@@ -208,6 +209,7 @@ def apply_reconciliation(
         "alias": holding.alias,
         "display_name": holding.display_name,
         "characteristics": holding.characteristics,
+        "version": holding.version or 1,
         "reconciliation": {
             "status": "contradiction" if any(row["status"] == "conflicting" for row in changed) else "updated",
             "product_type": holding.product_type,
