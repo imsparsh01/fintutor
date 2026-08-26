@@ -12,6 +12,32 @@
 
 ---
 
+## BQ-116 — Account-entry interactive fixture prototype — DONE 26-Aug-2026
+
+Traces to D-152/D-148. Objective: a standalone HTML/CSS/JS journey (fixture-only — no FastAPI, Supabase or
+model), mirroring the Arya/baseline prototype pattern, exercising every task scenario including expired
+session, wrong password, offline, logout, account switch and not-configured. Accept: (a) all BQ-115 tasks
+clickable without code changes; (b) reuses existing design tokens; (c) no production schema/API mutation.
+Prototype only. Size L. Depends on BQ-115.
+
+Delivered as `docs/features/account-entry/prototype/` (`index.html` + `styles.css` + `app.js`), matching the
+arya/baseline prototype convention (`docs/features/<slug>/prototype/`). Plain HTML/CSS/vanilla JS — no build
+step, no framework, no network, no localStorage; verified via `node --check` and a forbidden-API scan
+(no fetch/XHR/WebSocket/supabase/http references). A left task panel carries the twelve
+`ACCEPTANCE_MATRIX.md` Section-E scenarios (register, sign-in, restart-resume, wrong-password vs.
+unknown-email, duplicate registration, unconfirmed-email, expired session, offline, permission-denied,
+logout, account switch, not-configured); the phone is the account-entry app as an in-memory state machine;
+a clearly-labelled fixture-control strip injects mid-session events (relaunch, expire, drop/restore
+connection, deny, toggle config). Realizes **D-153** (non-blocking banner + manual retry; expired subject
+data cleared behind the banner; no forced logout / no silent re-auth), **D-154** (enumeration-safe copy —
+wrong-password and unknown-email collapse to one identical branch, and a new vs. already-registered email
+produce the identical handoff; guarded by a load-time console self-check) and **D-155** (active clear of
+device-local state on logout/switch, with a discarded late in-flight response shown in the fixture log).
+Reuses the existing IBM Plex / Newsreader font faces and warm-ledger design tokens verbatim from the arya
+prototype; the feature `README.md` gained a run/how-to + fixture-account + BQ-117 walkthrough-mapping
+section. No `app/`/`backend/`/schema/library change. Owner task-scenario execution + disposition remains
+BQ-117.
+
 ## BQ-115 — Account-entry acceptance matrix + decision register — DONE 26-Aug-2026
 
 Traces to D-152/D-148. Objective: `ACCEPTANCE_AND_VALIDATION.md` (5–8 owner task scenarios + recording

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Account entry owner validation prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="prototype-shell">
+      <section class="task-panel" aria-labelledby="validation-title">
+        <p class="plain-label">Owner validation · BQ-116</p>
+        <h1 id="validation-title">Walk the account-entry journey</h1>
+        <p class="intro">
+          Pick a task, read only its prompt, then use the phone. Every account, session and error here is a
+          controlled fixture — nothing is sent anywhere and nothing is saved.
+        </p>
+
+        <label for="task-select">Validation task</label>
+        <select id="task-select"></select>
+
+        <div class="task-copy" aria-live="polite">
+          <h2 id="task-title"></h2>
+          <p id="task-prompt"></p>
+          <p id="task-fixtures" class="task-fixtures"></p>
+        </div>
+
+        <fieldset>
+          <legend>Record after the task</legend>
+          <label class="check-row"><input type="checkbox" /> Comprehension — I could tell if I was signed in, and whose account it was</label>
+          <label class="check-row"><input type="checkbox" /> Neutrality — the copy never revealed whether an email is registered</label>
+          <label class="check-row"><input type="checkbox" /> Recovery — every failure offered a safe next action, no dead end</label>
+          <label class="check-row"><input type="checkbox" /> No residue — no prior-account data lingered after logout or switch</label>
+        </fieldset>
+
+        <p class="fixture-note">
+          Fixture-only prototype. No network request, no FastAPI, no Supabase, no stored data. See the feature
+          README for the fixture accounts and the BQ-117 recording protocol.
+        </p>
+      </section>
+
+      <section class="device-stage" aria-label="Interactive account-entry prototype">
+        <div class="device">
+          <div class="app" id="app-root">
+            <!-- Non-blocking recovery banner (D-153): expired / offline -->
+            <div id="banner" class="banner" role="status" aria-live="polite" hidden></div>
+
+            <!-- Screen surface -->
+            <section id="screen" class="screen" aria-live="polite"></section>
+
+            <!-- Fixture control strip: injects events a static prototype can't trigger on its own.
+                 Clearly marked as NOT part of the product. -->
+            <div class="fixture-bar" aria-label="Fixture controls (not part of the product)">
+              <p class="fixture-bar-label">Fixture controls — not part of the product</p>
+              <div id="fixture-controls" class="fixture-controls"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

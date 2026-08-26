@@ -24,14 +24,6 @@ Rules for this file:
 > cleanup (D-095), backend hosting (BQ-092), and Supabase leaked-password protection. Package lives in
 > `docs/features/account-entry/`.
 
-### BQ-116 — Account-entry interactive fixture prototype
-
-Traces to D-152/D-148. Objective: a standalone HTML/CSS/JS journey (fixture-only — no FastAPI, Supabase or
-model), mirroring the Arya/baseline prototype pattern, exercising every task scenario including expired
-session, wrong password, offline, logout, account switch and not-configured. Accept: (a) all BQ-115 tasks
-clickable without code changes; (b) reuses existing design tokens; (c) no production schema/API mutation.
-Prototype only. Size L. Depends on BQ-115.
-
 ### BQ-117 — Account-entry owner validation walkthrough + disposition
 
 Traces to D-152/D-148. Objective: run the 5–8 tasks with the owner, record `VALIDATION_RESULT.md`, set
