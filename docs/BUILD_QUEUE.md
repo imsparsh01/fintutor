@@ -24,7 +24,7 @@ Rules for this file:
 > cleanup (D-095), backend hosting (BQ-092), and Supabase leaked-password protection. Package lives in
 > `docs/features/account-entry/`.
 
-### BQ-113 — Account-entry definition package (PRD + journey + state matrix) — WORKING NOW
+### BQ-113 — Account-entry definition package (PRD + journey + state matrix) — DONE 26-Aug (integrated to main 4d61449; archive-relocate in next D-081 housekeeping)
 
 Traces to D-152/D-148. Objective: produce `PRD.md` and `JOURNEY_AND_STATES.md` under
 `docs/features/account-entry/`, reconciling the existing auth screens/navigation as observed fact.
