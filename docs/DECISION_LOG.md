@@ -119,3 +119,25 @@
   BQ-113..BQ-117; both HARD-STOPs (frontend test harness; production CORS/hosting/leaked-password) stay
   DEFERRED. Full write-up: `docs/decisions/D-152-account-entry-next-workstream.md`.
 - **Date:** 26-Aug-2026
+
+### D-153 — Session-expiry / network-loss recovery UX is a non-blocking banner + manual retry
+- **Tier:** 2, owner-ruled (resolves account-entry open fork O-A). “The recovery UX is a **non-blocking
+  banner + manual retry**.” No forced logout and no silent re-auth on a transient blip; the expired subject is
+  treated as lost (no stale data behind the banner) and the user manually re-authenticates/retries. Full
+  write-up: `docs/decisions/D-153-account-entry-expiry-network-loss-banner-retry.md`.
+- **Date:** 26-Aug-2026
+
+### D-154 — Duplicate-registration / wrong-password copy is neutral and enumeration-safe
+- **Tier:** 2, owner-ruled (resolves account-entry open fork O-B; privacy angle). “Uniform wording that
+  **never reveals whether an email has an account**.” Wrong-password and unknown-email are indistinguishable;
+  duplicate registration does not confirm the email exists; this overrides Supabase's specific default
+  messages. Ratifies the enumeration-safety constraint already in `CONTRACTS.md`. Full write-up:
+  `docs/decisions/D-154-account-entry-neutral-enumeration-safe-auth-copy.md`.
+- **Date:** 26-Aug-2026
+
+### D-155 — Logout / account-switch actively clears device-local state
+- **Tier:** 2, owner-ruled (resolves account-entry open fork O-C). “On logout and account-switch, device-local
+  state is **actively cleared** — the strongest anti-bleed option.” Actively tears down cached UI/query/
+  AsyncStorage subject-scoped state, extending the BQ-112/D-149 load-time suppression. Full write-up:
+  `docs/decisions/D-155-account-entry-active-clear-device-local-state-on-logout.md`.
+- **Date:** 26-Aug-2026

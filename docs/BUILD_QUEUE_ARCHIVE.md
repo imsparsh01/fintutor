@@ -12,6 +12,25 @@
 
 ---
 
+## BQ-115 — Account-entry acceptance matrix + decision register — DONE 26-Aug-2026
+
+Traces to D-152/D-148. Objective: `ACCEPTANCE_AND_VALIDATION.md` (5–8 owner task scenarios + recording
+protocol) and `DECISION_REGISTER.md` routing the BQ-113 open forks through the tier protocol. Accept:
+(a) each requirement maps to a prototype task and eventual test; (b) every open UX fork gets a register row
+with its tier and escalation boundary; the owner rules on the forks here. Definition only. Size S/M.
+Depends on BQ-113/BQ-114.
+
+Delivered as refined by the orchestrator: the owner ruled the three open forks in this session (taking the
+orchestrator's recommendations), so the "decision register routing" step became **three real decision-log
+entries** rather than a routing table — **D-153** (O-A: session-expiry/network-loss = non-blocking banner +
+manual retry), **D-154** (O-B: neutral, enumeration-safe copy overriding Supabase defaults), **D-155** (O-C:
+active clear of device-local state on logout/switch), each with files + DECISION_LOG index rows + tracker
+rows. The acceptance layer was delivered as `docs/features/account-entry/ACCEPTANCE_MATRIX.md` (not
+`ACCEPTANCE_AND_VALIDATION.md`): enumerated Given/When/Then criteria covering every JOURNEY_AND_STATES state
+and transition, incorporating D-153/D-154/D-155 and the CONTRACTS.md contracts, with a coverage map and a
+BQ-116/BQ-117 mapping section (the 5–8 owner task scenarios + recording protocol live in Section E). Owner
+task-scenario execution itself remains BQ-117. No `app/`/`backend/`/schema/library change.
+
 ## BQ-114 — Account-entry functional + content + privacy/accessibility contracts — DONE 26-Aug-2026
 
 Traces to D-152/D-148. Objective: `CONTRACTS.md` covering inputs / outputs / persistence / API / privacy /

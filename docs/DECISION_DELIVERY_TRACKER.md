@@ -59,7 +59,10 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-149 | SHIPPED → BQ-112 | Full baseline lifecycle, durable stale reconfirmation and reminder-only recovery | Completed 24-Aug-2026 at migration `b112c152a001` |
 | D-150 | SHIPPED → BQ-112 | Backend-authored proportional progress provenance and partial/unknown UI | Completed 24-Aug-2026 |
 | D-151 | SHIPPED → BQ-111 | Round-half-up paise conversion implemented and verified | Completed 24-Aug-2026 |
-| D-152 | READY → BQ-115 | Account-entry product-definition deep dive selected; BQ-113..117 plan approved, both HARD-STOPs deferred | BQ-113 (PRD + journey/states) and BQ-114 (`CONTRACTS.md`) done; BQ-115 (acceptance + decision register, owner rules O-A/O-B/O-C) next; BQ-116..117 queued |
+| D-152 | READY → BQ-116 | Account-entry product-definition deep dive; BQ-113..117 plan approved, both HARD-STOPs deferred | BQ-113 (PRD + journey/states), BQ-114 (`CONTRACTS.md`) and BQ-115 (`ACCEPTANCE_MATRIX.md` + owner-ruled O-A/O-B/O-C as D-153/D-154/D-155) done; BQ-116 (fixture prototype) next; BQ-117 owner validation queued |
+| D-153 | READY → BQ-116 | Session-expiry/network-loss recovery UX = non-blocking banner + manual retry (O-A) | Behaviour realized in the BQ-116 fixture prototype and owner-validated at BQ-117; definition-only, no production code until a BQ-117 PASS |
+| D-154 | READY → BQ-116 | Neutral, enumeration-safe duplicate-registration / wrong-password copy (O-B) | Enumeration-safe copy shape exercised in the BQ-116 fixture and owner-validated at BQ-117; exact production strings bounded by the constraint, built only after a BQ-117 PASS |
+| D-155 | READY → BQ-116 | Active clear of device-local state on logout/account-switch (O-C) | Active-clear behaviour exercised in the BQ-116 fixture (no-residue) and owner-validated at BQ-117; production teardown built only after a BQ-117 PASS |
 
 ## Current-session decisions
 

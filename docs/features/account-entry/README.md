@@ -11,15 +11,17 @@ production `app/`/`backend/` code, schema, or new library until a BQ-117 PASS.
 | `PRD.md` | BQ-113 | Done — user/problem/outcome/principles/success/exclusions/deps |
 | `JOURNEY_AND_STATES.md` | BQ-113 | Done — journey, state matrix, and the three OPEN owner decisions |
 | `CONTRACTS.md` | BQ-114 | Done — functional + content + privacy/accessibility contracts |
-| `ACCEPTANCE_AND_VALIDATION.md`, `DECISION_REGISTER.md` | BQ-115 | Pending — acceptance matrix; owner rules the open forks |
+| `ACCEPTANCE_MATRIX.md` | BQ-115 | Done — enumerated Given/When/Then acceptance criteria for every state/transition; owner ruled O-A/O-B/O-C as D-153/D-154/D-155 |
 | `prototype/` | BQ-116 | Pending — clickable fixture-only journey |
 | `VALIDATION_RESULT.md` | BQ-117 | Pending — owner walkthrough + PASS/REVISE/PARK/ESCALATE |
 
-## Open owner decisions (surfaced at BQ-113, ruled at BQ-115)
+## Owner decisions (surfaced at BQ-113, ruled at BQ-115 — 26-Aug-2026)
 
-- **O-A** — session-expiry & network-loss recovery UX.
-- **O-B** — duplicate-registration / wrong-password copy & account-enumeration (privacy angle).
-- **O-C** — logout & account-switch device-local state.
+- **O-A → D-153** — session-expiry & network-loss recovery UX = **non-blocking banner + manual retry**.
+- **O-B → D-154** — duplicate-registration / wrong-password copy = **neutral, enumeration-safe** (overrides
+  Supabase defaults; privacy angle).
+- **O-C → D-155** — logout & account-switch device-local state = **active clear on logout** (extends the
+  BQ-112 load-time suppression).
 
 ## Deferred HARD-STOPs (out of this workstream)
 

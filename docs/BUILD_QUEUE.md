@@ -37,14 +37,6 @@ logout/account-switch device-local state) is surfaced as a clearly-listed OPEN D
 decided in this task. Fixture/definition only: no `app/` or `backend/` code, no schema, no new library.
 Size M. No deps.
 
-### BQ-115 — Account-entry acceptance matrix + decision register
-
-Traces to D-152/D-148. Objective: `ACCEPTANCE_AND_VALIDATION.md` (5–8 owner task scenarios + recording
-protocol) and `DECISION_REGISTER.md` routing the BQ-113 open forks through the tier protocol. Accept:
-(a) each requirement maps to a prototype task and eventual test; (b) every open UX fork gets a register row
-with its tier and escalation boundary; the owner rules on the forks here. Definition only. Size S/M.
-Depends on BQ-113/BQ-114.
-
 ### BQ-116 — Account-entry interactive fixture prototype
 
 Traces to D-152/D-148. Objective: a standalone HTML/CSS/JS journey (fixture-only — no FastAPI, Supabase or
