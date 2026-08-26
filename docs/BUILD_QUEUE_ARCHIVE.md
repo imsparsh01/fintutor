@@ -12,6 +12,20 @@
 
 ---
 
+## BQ-114 — Account-entry functional + content + privacy/accessibility contracts — DONE 26-Aug-2026
+
+Traces to D-152/D-148. Objective: `CONTRACTS.md` covering inputs / outputs / persistence / API / privacy /
+accessibility / progression / failure semantics, plus a neutral-wording and disclosure content contract.
+Accept: (a) every state defined in BQ-113 has a specified behaviour; (b) the auth/ownership contract
+references D-137/D-142 without restating them; (c) the error-copy contract addresses the account-enumeration
+concern. Definition only. Size M. Depends on BQ-113.
+
+Delivered `docs/features/account-entry/CONTRACTS.md`: inputs/outputs/persistence (this surface writes no
+application data of its own), a per-state functional contract row for every JOURNEY_AND_STATES.md state, an
+enumeration-safe content/copy contract, privacy/security (D-137/D-142/D-133 referenced, not restated),
+accessibility, failure and progression contracts. The three open forks O-A/O-B/O-C are referenced with
+clearly-labelled PENDING interim behaviour, not decided. No `app/`/`backend/`/schema/library change.
+
 ## BQ-112 — Baseline lifecycle, integrity and recovery UI — DONE 24-Aug-2026
 
 Implemented the frozen BQ-109 baseline journeys across holdings, Budgeting and Goals: complete supporting-record

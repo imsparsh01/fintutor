@@ -37,14 +37,6 @@ logout/account-switch device-local state) is surfaced as a clearly-listed OPEN D
 decided in this task. Fixture/definition only: no `app/` or `backend/` code, no schema, no new library.
 Size M. No deps.
 
-### BQ-114 — Account-entry functional + content + privacy/accessibility contracts
-
-Traces to D-152/D-148. Objective: `CONTRACTS.md` covering inputs / outputs / persistence / API / privacy /
-accessibility / progression / failure semantics, plus a neutral-wording and disclosure content contract.
-Accept: (a) every state defined in BQ-113 has a specified behaviour; (b) the auth/ownership contract
-references D-137/D-142 without restating them; (c) the error-copy contract addresses the account-enumeration
-concern. Definition only. Size M. Depends on BQ-113.
-
 ### BQ-115 — Account-entry acceptance matrix + decision register
 
 Traces to D-152/D-148. Objective: `ACCEPTANCE_AND_VALIDATION.md` (5–8 owner task scenarios + recording

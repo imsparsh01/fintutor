@@ -10,7 +10,7 @@ production `app/`/`backend/` code, schema, or new library until a BQ-117 PASS.
 |---|---|---|
 | `PRD.md` | BQ-113 | Done — user/problem/outcome/principles/success/exclusions/deps |
 | `JOURNEY_AND_STATES.md` | BQ-113 | Done — journey, state matrix, and the three OPEN owner decisions |
-| `CONTRACTS.md` | BQ-114 | Pending — functional + content + privacy/accessibility contracts |
+| `CONTRACTS.md` | BQ-114 | Done — functional + content + privacy/accessibility contracts |
 | `ACCEPTANCE_AND_VALIDATION.md`, `DECISION_REGISTER.md` | BQ-115 | Pending — acceptance matrix; owner rules the open forks |
 | `prototype/` | BQ-116 | Pending — clickable fixture-only journey |
 | `VALIDATION_RESULT.md` | BQ-117 | Pending — owner walkthrough + PASS/REVISE/PARK/ESCALATE |
