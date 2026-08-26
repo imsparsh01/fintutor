@@ -993,3 +993,46 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   and inclusion rules remain decision-gated. Full write-up:
   `docs/decisions/D-131-full-picture-term-insurance-needs-exploration-direction.md`.
 - **Date:** 12-Aug-2026
+
+### D-132 — Term-insurance exploration uses user-controlled household-support scenarios
+- **Tier:** 3, owner-decided. “The baseline contains financial facts, but facts alone do not determine which
+  future household obligations should be insured.” Users explicitly choose every inclusion, horizon, rate,
+  and offset; FinTutor shows transparent scenarios without a suitability verdict. Full write-up:
+  `docs/decisions/D-132-user-controlled-household-support-scenarios.md`.
+- **Date:** 12-Aug-2026
+
+### D-133 — Sensitive names and identifiers are masked locally before every model call and re-humanized for users
+- **Tier:** 3, owner-decided. “Users may see recognisable names, while external models never do.” Stored and
+  newly typed names plus high-confidence identifiers are locally aliased for every Sonnet/Haiku request, then
+  exact-token re-humanized for the app; unsafe masking fails closed. Full write-up:
+  `docs/decisions/D-133-local-pre-model-masking-and-user-facing-rehumanization.md`.
+- **Date:** 12-Aug-2026
+
+### D-134 — Household resilience context lives in a dedicated minimal financial-context record
+- **Tier:** 3, owner-decided. “Durable personal-finance context with no natural home in an existing
+  first-class object belongs in a dedicated, user-controlled context record.” The first fields are an
+  explicitly confirmed dependant count and self-reported emergency-fund months; onboarding never infers
+  them. Full write-up: `docs/decisions/D-134-dedicated-minimal-financial-context-record.md`.
+- **Date:** 14-Aug-2026
+
+### D-135 — Every decision requires an explicit delivery disposition
+- **Tier:** 3, owner-decided. “Decided and delivered are separate states.” Every new decision must be
+  recorded in `docs/DECISION_DELIVERY_TRACKER.md` as NO_BUILD, READY, BLOCKED, DEFERRED, SHIPPED, or
+  SUPERSEDED before the session closes. Full write-up:
+  `docs/decisions/D-135-mandatory-decision-delivery-disposition.md`.
+- **Date:** 14-Aug-2026
+
+### D-136 — Historical delivery audits remain exception-only and token-lean
+- **Tier:** 3, owner-confirmed. “Coverage is established by searchable traces plus explicit exceptions; it
+  does not require duplicating closed history into the live context window.” Audits index first, inspect
+  only suspicious traces, and persist only open exceptions. Full write-up:
+  `docs/decisions/D-136-token-lean-historical-delivery-audit.md`.
+- **Date:** 14-Aug-2026
+
+### D-137 — Backend ownership is derived from a verified Supabase JWT
+- **Tier:** 3, owner-decided. “For every user-owned backend resource, identity comes from verified
+  authentication context, never from a caller-selected user identifier.” The backend verifies each
+  protected request's Supabase token and uses its subject as the sole ownership identity; multiple test
+  accounts remain supported. Full write-up:
+  `docs/decisions/D-137-supabase-jwt-derived-backend-ownership.md`.
+- **Date:** 14-Aug-2026

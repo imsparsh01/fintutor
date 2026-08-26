@@ -59,6 +59,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-149 | SHIPPED → BQ-112 | Full baseline lifecycle, durable stale reconfirmation and reminder-only recovery | Completed 24-Aug-2026 at migration `b112c152a001` |
 | D-150 | SHIPPED → BQ-112 | Backend-authored proportional progress provenance and partial/unknown UI | Completed 24-Aug-2026 |
 | D-151 | SHIPPED → BQ-111 | Round-half-up paise conversion implemented and verified | Completed 24-Aug-2026 |
+| D-152 | READY → BQ-113 | Account-entry product-definition deep dive selected; BQ-113..117 plan approved, both HARD-STOPs deferred | BQ-113 working now (`docs/features/account-entry/` PRD + journey/states); BQ-114..117 queued behind it |
 
 ## Current-session decisions
 

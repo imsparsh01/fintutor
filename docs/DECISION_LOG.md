@@ -17,49 +17,6 @@
 
 ---
 
-### D-132 — Term-insurance exploration uses user-controlled household-support scenarios
-- **Tier:** 3, owner-decided. “The baseline contains financial facts, but facts alone do not determine which
-  future household obligations should be insured.” Users explicitly choose every inclusion, horizon, rate,
-  and offset; FinTutor shows transparent scenarios without a suitability verdict. Full write-up:
-  `docs/decisions/D-132-user-controlled-household-support-scenarios.md`.
-- **Date:** 12-Aug-2026
-
-### D-133 — Sensitive names and identifiers are masked locally before every model call and re-humanized for users
-- **Tier:** 3, owner-decided. “Users may see recognisable names, while external models never do.” Stored and
-  newly typed names plus high-confidence identifiers are locally aliased for every Sonnet/Haiku request, then
-  exact-token re-humanized for the app; unsafe masking fails closed. Full write-up:
-  `docs/decisions/D-133-local-pre-model-masking-and-user-facing-rehumanization.md`.
-- **Date:** 12-Aug-2026
-
-### D-134 — Household resilience context lives in a dedicated minimal financial-context record
-- **Tier:** 3, owner-decided. “Durable personal-finance context with no natural home in an existing
-  first-class object belongs in a dedicated, user-controlled context record.” The first fields are an
-  explicitly confirmed dependant count and self-reported emergency-fund months; onboarding never infers
-  them. Full write-up: `docs/decisions/D-134-dedicated-minimal-financial-context-record.md`.
-- **Date:** 14-Aug-2026
-
-### D-135 — Every decision requires an explicit delivery disposition
-- **Tier:** 3, owner-decided. “Decided and delivered are separate states.” Every new decision must be
-  recorded in `docs/DECISION_DELIVERY_TRACKER.md` as NO_BUILD, READY, BLOCKED, DEFERRED, SHIPPED, or
-  SUPERSEDED before the session closes. Full write-up:
-  `docs/decisions/D-135-mandatory-decision-delivery-disposition.md`.
-- **Date:** 14-Aug-2026
-
-### D-136 — Historical delivery audits remain exception-only and token-lean
-- **Tier:** 3, owner-confirmed. “Coverage is established by searchable traces plus explicit exceptions; it
-  does not require duplicating closed history into the live context window.” Audits index first, inspect
-  only suspicious traces, and persist only open exceptions. Full write-up:
-  `docs/decisions/D-136-token-lean-historical-delivery-audit.md`.
-- **Date:** 14-Aug-2026
-
-### D-137 — Backend ownership is derived from a verified Supabase JWT
-- **Tier:** 3, owner-decided. “For every user-owned backend resource, identity comes from verified
-  authentication context, never from a caller-selected user identifier.” The backend verifies each
-  protected request's Supabase token and uses its subject as the sole ownership identity; multiple test
-  accounts remain supported. Full write-up:
-  `docs/decisions/D-137-supabase-jwt-derived-backend-ownership.md`.
-- **Date:** 14-Aug-2026
-
 ### D-138 — MVP uses Supabase-managed at-rest protection with strict access controls
 - **Tier:** 3, owner-decided. “FinTutor will not introduce its own field-encryption keys for the MVP.”
   Supabase-managed database/backup encryption is paired with JWT ownership, TLS, production SSL enforcement,
@@ -155,3 +112,10 @@
   unknown and unsupported contributions remain partial, never zero. Full write-up:
   `docs/features/baseline/decisions/D-151-goal-progress-currency-rounding.md`.
 - **Date:** 24-Aug-2026
+
+### D-152 — Account entry and access is the next product-definition workstream; BQ-113..117 approved
+- **Tier:** 3, owner-decided sequencing. “The owner approved 'Account entry and access' — rank 3 (score 81)
+  … as the next product-definition deep dive under the D-148 programme,” plus the five-item bounded plan
+  BQ-113..BQ-117; both HARD-STOPs (frontend test harness; production CORS/hosting/leaked-password) stay
+  DEFERRED. Full write-up: `docs/decisions/D-152-account-entry-next-workstream.md`.
+- **Date:** 26-Aug-2026

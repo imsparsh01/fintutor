@@ -16,6 +16,58 @@ Rules for this file:
 
 ## READY — pick one of these
 
+> **Account entry and access workstream (D-152).** Owner approved "Account entry and access" (portfolio-audit
+> rank 3) as the next product-definition deep dive and this five-item plan. All five are definition/prototype
+> only — no production engineering, no schema, no new library, no MVP scope growth (account entry is already
+> MVP per `PROJECT_SPEC.md` §4.1). Both HARD-STOPs stay DEFERRED and out of this workstream: (a) a frontend
+> screen/navigation test harness (new library/architecture — owner-only), and (b) production CORS/dev-bypass
+> cleanup (D-095), backend hosting (BQ-092), and Supabase leaked-password protection. Package lives in
+> `docs/features/account-entry/`.
+
+### BQ-113 — Account-entry definition package (PRD + journey + state matrix) — WORKING NOW
+
+Traces to D-152/D-148. Objective: produce `PRD.md` and `JOURNEY_AND_STATES.md` under
+`docs/features/account-entry/`, reconciling the existing auth screens/navigation as observed fact.
+Accept: (a) PRD covers user / problem / desired outcome / standing-principle ties / success criteria /
+explicit exclusions / dependencies; (b) journey covers discovery → entry → primary/alternate → completion →
+return → exit; (c) state matrix covers at minimum loading, valid, invalid-credentials, expired-session,
+permission-denied, offline/network-loss, account-transition/switch, recovery, not-configured; (d) every open
+UX fork (session-expiry recovery, duplicate-registration/wrong-password copy & account-enumeration,
+logout/account-switch device-local state) is surfaced as a clearly-listed OPEN DECISION for the owner, not
+decided in this task. Fixture/definition only: no `app/` or `backend/` code, no schema, no new library.
+Size M. No deps.
+
+### BQ-114 — Account-entry functional + content + privacy/accessibility contracts
+
+Traces to D-152/D-148. Objective: `CONTRACTS.md` covering inputs / outputs / persistence / API / privacy /
+accessibility / progression / failure semantics, plus a neutral-wording and disclosure content contract.
+Accept: (a) every state defined in BQ-113 has a specified behaviour; (b) the auth/ownership contract
+references D-137/D-142 without restating them; (c) the error-copy contract addresses the account-enumeration
+concern. Definition only. Size M. Depends on BQ-113.
+
+### BQ-115 — Account-entry acceptance matrix + decision register
+
+Traces to D-152/D-148. Objective: `ACCEPTANCE_AND_VALIDATION.md` (5–8 owner task scenarios + recording
+protocol) and `DECISION_REGISTER.md` routing the BQ-113 open forks through the tier protocol. Accept:
+(a) each requirement maps to a prototype task and eventual test; (b) every open UX fork gets a register row
+with its tier and escalation boundary; the owner rules on the forks here. Definition only. Size S/M.
+Depends on BQ-113/BQ-114.
+
+### BQ-116 — Account-entry interactive fixture prototype
+
+Traces to D-152/D-148. Objective: a standalone HTML/CSS/JS journey (fixture-only — no FastAPI, Supabase or
+model), mirroring the Arya/baseline prototype pattern, exercising every task scenario including expired
+session, wrong password, offline, logout, account switch and not-configured. Accept: (a) all BQ-115 tasks
+clickable without code changes; (b) reuses existing design tokens; (c) no production schema/API mutation.
+Prototype only. Size L. Depends on BQ-115.
+
+### BQ-117 — Account-entry owner validation walkthrough + disposition
+
+Traces to D-152/D-148. Objective: run the 5–8 tasks with the owner, record `VALIDATION_RESULT.md`, set
+PASS / REVISE / PARK / ESCALATE per `PROGRAMME.md`. Accept: (a) every task has a coaching / comprehension /
+neutrality / recovery result; (b) a disposition is recorded; (c) on PASS the package is frozen at a prototype
+commit. Owner-gated. Size S. Depends on BQ-116. Production build items are separately bounded only after PASS.
+
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
