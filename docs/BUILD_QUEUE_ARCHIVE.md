@@ -45,6 +45,24 @@ enumeration-safe content/copy contract, privacy/security (D-137/D-142/D-133 refe
 accessibility, failure and progression contracts. The three open forks O-A/O-B/O-C are referenced with
 clearly-labelled PENDING interim behaviour, not decided. No `app/`/`backend/`/schema/library change.
 
+## BQ-113 — Account-entry definition package (PRD + journey + state matrix) — DONE 26-Aug-2026
+
+Traces to D-152/D-148. Objective: produce `PRD.md` and `JOURNEY_AND_STATES.md` under
+`docs/features/account-entry/`, reconciling the existing auth screens/navigation as observed fact.
+Accept: (a) PRD covers user / problem / desired outcome / standing-principle ties / success criteria /
+explicit exclusions / dependencies; (b) journey covers discovery → entry → primary/alternate → completion →
+return → exit; (c) state matrix covers at minimum loading, valid, invalid-credentials, expired-session,
+permission-denied, offline/network-loss, account-transition/switch, recovery, not-configured; (d) every open
+UX fork (session-expiry recovery, duplicate-registration/wrong-password copy & account-enumeration,
+logout/account-switch device-local state) is surfaced as a clearly-listed OPEN DECISION for the owner, not
+decided in this task. Fixture/definition only: no `app/` or `backend/` code, no schema, no new library.
+Size M. No deps.
+
+Delivered `docs/features/account-entry/{PRD.md, JOURNEY_AND_STATES.md, README.md}` and opened the workstream
+(D-152). Integrated to `main` at `4d61449`. The three open UX forks were surfaced as OPEN DECISIONS and later
+ruled by the owner at BQ-115 (D-153/D-154/D-155). Archive-relocated from READY in the BQ-115 integration
+session (26-Aug-2026). No `app/`/`backend/`/schema/library change.
+
 ## BQ-112 — Baseline lifecycle, integrity and recovery UI — DONE 24-Aug-2026
 
 Implemented the frozen BQ-109 baseline journeys across holdings, Budgeting and Goals: complete supporting-record

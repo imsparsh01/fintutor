@@ -24,19 +24,6 @@ Rules for this file:
 > cleanup (D-095), backend hosting (BQ-092), and Supabase leaked-password protection. Package lives in
 > `docs/features/account-entry/`.
 
-### BQ-113 — Account-entry definition package (PRD + journey + state matrix) — DONE 26-Aug (integrated to main 4d61449; archive-relocate in next D-081 housekeeping)
-
-Traces to D-152/D-148. Objective: produce `PRD.md` and `JOURNEY_AND_STATES.md` under
-`docs/features/account-entry/`, reconciling the existing auth screens/navigation as observed fact.
-Accept: (a) PRD covers user / problem / desired outcome / standing-principle ties / success criteria /
-explicit exclusions / dependencies; (b) journey covers discovery → entry → primary/alternate → completion →
-return → exit; (c) state matrix covers at minimum loading, valid, invalid-credentials, expired-session,
-permission-denied, offline/network-loss, account-transition/switch, recovery, not-configured; (d) every open
-UX fork (session-expiry recovery, duplicate-registration/wrong-password copy & account-enumeration,
-logout/account-switch device-local state) is surfaced as a clearly-listed OPEN DECISION for the owner, not
-decided in this task. Fixture/definition only: no `app/` or `backend/` code, no schema, no new library.
-Size M. No deps.
-
 ### BQ-116 — Account-entry interactive fixture prototype
 
 Traces to D-152/D-148. Objective: a standalone HTML/CSS/JS journey (fixture-only — no FastAPI, Supabase or
