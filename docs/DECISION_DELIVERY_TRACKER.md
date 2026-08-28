@@ -68,11 +68,11 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-158 | SHIPPED → BQ-124 / `docs/features/onboarding/VALIDATION_RESULT.md` | Onboarding definition package, clickable prototype and agent QA | Owner approved everything on 29-Aug-2026; package frozen at prototype commit `1bde4b1`; production remains separately bounded |
 | D-159 | SHIPPED → BQ-124 / validated definition | Pending local eligibility acknowledgement with limited offline Home | Owner approved the tested D-159 fixture behavior; production implementation remains separately bounded |
 | D-160 | SHIPPED → BQ-124 / validated definition | Initial Onboarding earns only onboarding-handled, no setup context-prompt events | Owner approved the tested single-event ledger behavior; production integration remains separately bounded |
-| D-161 | READY → BQ-129 | Portfolio and Portfolio Health definition/prototype/validation workstream | BQ-125..BQ-128 complete; owner walkthrough/disposition remains in BQ-129 |
-| D-162 | READY → BQ-129 | Portfolio Health insurance as transparent components, not one score | Realized and agent-tested 96/96 in BQ-128; owner validation remains before production is separately bounded |
-| D-163 | READY → BQ-129 | Portfolio Health has no composite score | Realized and agent-tested 96/96 in BQ-128; owner validation remains before production is separately bounded |
-| D-164 | READY → BQ-129 | Optional health-insurance context is account-owned | Simulated and agent-tested in memory; owner validation remains before separate production data/privacy work |
-| D-165 | READY → BQ-129 | Portfolio Health has no score bands or headline grade | Realized and agent-tested 96/96 in BQ-128; owner validation remains before production is separately bounded |
+| D-161 | SHIPPED → BQ-129 / `docs/features/portfolio/VALIDATION_RESULT.md` | Portfolio and Portfolio Health definition, prototype and validation workstream | Owner approved all ten scenarios and gave final PASS on 29-Aug-2026; package frozen at prototype commit `cdd162e`; production reconciliation remains separately bounded |
+| D-162 | SHIPPED → BQ-129 / validated definition | Portfolio Health insurance as transparent components, not one score | Realized, agent-tested 96/96 and owner-approved final PASS; production formula/UI replacement remains separate |
+| D-163 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no composite score | Realized, agent-tested 96/96 and owner-approved final PASS; production Home/Portfolio replacement remains separate |
+| D-164 | SHIPPED → BQ-129 / validated definition | Optional health-insurance context is account-owned | Simulated, agent-tested and owner-approved final PASS; production schema/API/privacy/export/deletion work remains separate |
+| D-165 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no score bands or headline grade | Realized, agent-tested 96/96 and owner-approved final PASS; production copy/UI replacement remains separate |
 
 ## Current-session decisions
 

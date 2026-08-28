@@ -12,6 +12,17 @@
 
 ---
 
+## BQ-129 — Portfolio owner validation walkthrough and disposition — DONE 29-Aug-2026
+
+Traces to D-161/D-148. Objective: present the already-tested Portfolio prototype and record PASS / REVISE /
+PARK / ESCALATE. Accept: every critical task records coaching, comprehension of units/unknowns/neutrality,
+recovery, confusion, trust surprises and dead ends; PASS freezes the package at its prototype commit.
+Owner-gated. Size S. Depends on BQ-128. Production implementation remains separately bounded.
+
+Owner explicitly approved all ten scenarios and gave Portfolio and Portfolio Health final PASS. No coaching,
+confusion, trust surprise, dead end or required package change was reported. The validated definition is
+frozen at prototype commit `cdd162e`; `docs/features/portfolio/VALIDATION_RESULT.md` records the evidence.
+
 ## BQ-128 — Portfolio clickable prototype and exhaustive agent QA — DONE 29-Aug-2026
 
 Traces to D-161/D-148. Objective: design and build a standalone controlled-data prototype for all approved

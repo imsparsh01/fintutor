@@ -1,6 +1,6 @@
 # Portfolio acceptance matrix
 
-**Status:** BQ-128 complete. D-162..D-165 are realized; `QA_EVIDENCE.md` records 96/96 PASS.
+**Status:** Validated. Agent QA records 96/96 PASS and the owner gave all ten scenarios final PASS.
 
 **Sources:** `PRD.md`, `JOURNEY_AND_STATES.md`, `CONTRACTS.md`, D-065, D-076, D-089, D-096,
 D-106, D-110, D-111 and D-161.

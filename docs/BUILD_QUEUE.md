@@ -16,13 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-129 — Portfolio owner validation walkthrough and disposition — READY (after BQ-128)
-
-Traces to D-161/D-148. Objective: present the already-tested Portfolio prototype and record PASS / REVISE /
-PARK / ESCALATE. Accept: every critical task records coaching, comprehension of units/unknowns/neutrality,
-recovery, confusion, trust surprises and dead ends; PASS freezes the package at its prototype commit.
-Owner-gated. Size S. Depends on BQ-128. Production implementation remains separately bounded.
-
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED

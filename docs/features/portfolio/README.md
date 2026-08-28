@@ -2,7 +2,7 @@
 
 **Workstream:** D-161 / BQ-125..BQ-129
 
-**Current gate:** BQ-128 complete with 96/96 agent QA PASS; BQ-129 owner walkthrough next
+**Current gate:** VALIDATED PASS. BQ-125..BQ-129 complete.
 
 **Production status:** A broad first implementation is shipped. This package defines and validates the
 coherent end-to-end product before any further production engineering is authorised.
@@ -16,11 +16,12 @@ coherent end-to-end product before any further production engineering is authori
 5. `DECISION_REGISTER.md` — settled rules and O-PF-1..O-PF-4 owner briefs.
 6. `prototype/` — clickable controlled-data fixture, ten validation tasks and static verifier.
 7. `QA_EVIDENCE.md` — direct PASS evidence for every acceptance criterion.
-8. D-161 — approved workstream sequence and prototype boundary.
-9. D-106 — Portfolio structure and category-concentration direction, as superseded where noted.
-10. D-065 — separate family totals, never a synthetic net-worth subtraction.
-11. D-076/D-089/D-096 — persistent family reachability and empty-section teaching behavior.
-12. D-110/D-111 — shared Portfolio Health snapshot, naming and drill-down behavior.
+8. `VALIDATION_RESULT.md` — owner final PASS across all ten scenarios.
+9. D-161 — approved workstream sequence and prototype boundary.
+10. D-106 — Portfolio structure and category-concentration direction, as superseded where noted.
+11. D-065 — separate family totals, never a synthetic net-worth subtraction.
+12. D-076/D-089/D-096 — persistent family reachability and empty-section teaching behavior.
+13. D-110/D-111 — shared Portfolio Health snapshot, naming and drill-down behavior.
 
 ## Workstream gates
 
@@ -35,3 +36,9 @@ coherent end-to-end product before any further production engineering is authori
 The shipped screen remains evidence, not automatically the final contract. D-162..D-165 resolve its material
 contradictions: transparent insurance components, no composite score, account-owned optional health context,
 and no score bands/headline grade. BQ-128 realizes these in a controlled fixture; production remains separate.
+
+## Validation result
+
+The owner approved all ten tested scenarios and gave Portfolio and Portfolio Health final PASS on 29-Aug-2026.
+The validated controlled-fixture package is frozen at prototype commit `cdd162e`. Production reconciliation
+remains separately bounded and is not implied by this definition-level PASS.
