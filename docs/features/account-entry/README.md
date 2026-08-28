@@ -1,8 +1,9 @@
 # Account entry and access — feature package
 
-Product-definition deep dive for FinTutor workstream 1 (portfolio-audit rank 3), approved as the next
-workstream by **D-152** under the **D-148** ten-workstream programme. Definition/prototype only — no
-production `app/`/`backend/` code, schema, or new library until a BQ-117 PASS.
+Product-definition deep dive for FinTutor workstream 1 (portfolio-audit rank 3), approved by **D-152** under
+the **D-148** ten-workstream programme. **Owner validation passed on 28-Aug-2026 (BQ-117).** The validated
+definition package is frozen at prototype commit `825c439`; production work requires separately bounded
+build items.
 
 ## Contents
 
@@ -13,7 +14,7 @@ production `app/`/`backend/` code, schema, or new library until a BQ-117 PASS.
 | `CONTRACTS.md` | BQ-114 | Done — functional + content + privacy/accessibility contracts |
 | `ACCEPTANCE_MATRIX.md` | BQ-115 | Done — enumerated Given/When/Then acceptance criteria for every state/transition; owner ruled O-A/O-B/O-C as D-153/D-154/D-155 |
 | `prototype/` | BQ-116 | Done — standalone, fixture-only clickable journey (`index.html` + `styles.css` + `app.js`) |
-| `VALIDATION_RESULT.md` | BQ-117 | Pending — owner walkthrough + PASS/REVISE/PARK/ESCALATE |
+| `VALIDATION_RESULT.md` | BQ-117 | Done — owner completed all twelve scenarios; PASS on 28-Aug-2026 |
 
 ## Owner decisions (surfaced at BQ-113, ruled at BQ-115 — 26-Aug-2026)
 
@@ -54,7 +55,7 @@ D-154 enumeration self-check line logged at load.
 
 Any other email is treated as "no account". A password is your choice when the task doesn't name one.
 
-### Owner walkthrough (feeds BQ-117 — `ACCEPTANCE_MATRIX.md` Section E)
+### Owner walkthrough (BQ-117 PASS — `ACCEPTANCE_MATRIX.md` Section E)
 
 The task dropdown carries the critical scenarios. Section E asks the owner to record, per task, a
 **coaching / comprehension / neutrality / recovery** result and a PASS / REVISE / PARK / ESCALATE
@@ -69,11 +70,10 @@ disposition. The four checkboxes under each task map to Section E's four recorde
 - **No residue (D-155)** — after *Log out* and *Switch accounts* on one device, no prior-account data
   lingers, and a late in-flight response is discarded (shown in the fixture log).
 
-Some criteria are only fully validated at BQ-117 by the owner's judgement, not shown by a static prototype:
-true assistive-technology conveyance, timing-invisibility of the enumeration paths under a real backend, the
-genuine D-137/D-142 server-side ownership guarantee, and the D-119 downstream routing. The prototype
-demonstrates the *behaviour and copy*; the security/ownership guarantees remain backend contracts referenced,
-not re-implemented, here.
+The owner validated the prototype's behaviour and copy at BQ-117. True assistive-technology conveyance,
+timing-invisibility of enumeration paths under a real backend, genuine D-137/D-142 server-side ownership and
+D-119 downstream routing cannot be proven by a static prototype; they remain production implementation/test
+obligations rather than claims of this PASS.
 
 ## Deferred HARD-STOPs (out of this workstream)
 

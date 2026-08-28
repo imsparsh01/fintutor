@@ -12,6 +12,20 @@
 
 ---
 
+## BQ-117 — Account-entry owner validation walkthrough + disposition — DONE 28-Aug-2026
+
+Traces to D-152/D-148. Objective: run the 5–8 tasks with the owner, record `VALIDATION_RESULT.md`, set
+PASS / REVISE / PARK / ESCALATE per `PROGRAMME.md`. Accept: (a) every task has a coaching / comprehension /
+neutrality / recovery result; (b) a disposition is recorded; (c) on PASS the package is frozen at a prototype
+commit. Owner-gated. Size S. Depends on BQ-116. Production build items are separately bounded only after PASS.
+
+Owner independently completed all twelve scenarios in the BQ-116 clickable prototype and approved the
+workstream with a PASS, reporting that every scenario worked as intended. Results are recorded in
+`docs/features/account-entry/VALIDATION_RESULT.md`; no confusion, intervention, trust surprise, dead end,
+stale state, package change or product-intent disagreement was reported. The validated definition package is
+frozen at prototype commit `825c439`. This PASS approves the controlled-fixture behaviour and permits
+separately bounded production work; it does not claim real-backend or assistive-technology verification.
+
 ## BQ-116 — Account-entry interactive fixture prototype — DONE 26-Aug-2026
 
 Traces to D-152/D-148. Objective: a standalone HTML/CSS/JS journey (fixture-only — no FastAPI, Supabase or

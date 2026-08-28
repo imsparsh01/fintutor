@@ -24,13 +24,6 @@ Rules for this file:
 > cleanup (D-095), backend hosting (BQ-092), and Supabase leaked-password protection. Package lives in
 > `docs/features/account-entry/`.
 
-### BQ-117 — Account-entry owner validation walkthrough + disposition
-
-Traces to D-152/D-148. Objective: run the 5–8 tasks with the owner, record `VALIDATION_RESULT.md`, set
-PASS / REVISE / PARK / ESCALATE per `PROGRAMME.md`. Accept: (a) every task has a coaching / comprehension /
-neutrality / recovery result; (b) a disposition is recorded; (c) on PASS the package is frozen at a prototype
-commit. Owner-gated. Size S. Depends on BQ-116. Production build items are separately bounded only after PASS.
-
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
