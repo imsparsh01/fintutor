@@ -2,7 +2,7 @@
 
 **Workstream:** D-158 / BQ-120..BQ-124
 
-**Current gate:** BQ-122 complete; BQ-123 prototype and exhaustive agent QA next
+**Current gate:** BQ-123 complete; BQ-124 owner validation walkthrough next
 
 **Production status:** v2 is shipped; this folder now distinguishes the current contract from superseded
 legacy material. No production change is authorised by this package.
@@ -16,10 +16,12 @@ Read these files in this order:
 3. `CONTRACTS.md` — functional, API, content, privacy, accessibility, progression and failure contracts.
 4. `ACCEPTANCE_MATRIX.md` — stable acceptance IDs, full coverage map and prototype/validation tasks.
 5. `DECISION_REGISTER.md` — preserved rules, bounded fixture mechanics and owner briefs O-ONB-1/O-ONB-2.
-6. `ASSESSMENT_V2.md` — approved question vocabulary and normalized values.
-7. `decisions/D-118-five-axis-onboarding-assessment-contract.md` — five-axis product decision.
-8. `decisions/D-119-assessment-v2-persistence-privacy-package.md` — eligibility, persistence and privacy.
-9. `../../decisions/D-126-optional-guided-onboarding-handoff.md` — optional first-action handoff.
+6. `prototype/` — nine-scenario controlled-data clickable prototype.
+7. `QA_EVIDENCE.md` — exhaustive BQ-123 agent evidence and repaired findings.
+8. `ASSESSMENT_V2.md` — approved question vocabulary and normalized values.
+9. `decisions/D-118-five-axis-onboarding-assessment-contract.md` — five-axis product decision.
+10. `decisions/D-119-assessment-v2-persistence-privacy-package.md` — eligibility, persistence and privacy.
+11. `../../decisions/D-126-optional-guided-onboarding-handoff.md` — optional first-action handoff.
 
 `PRD.md` documents the shipped legacy four-track conversation and is superseded for new users by D-118 and
 D-119. `docs/ux/journeys/onboarding.md` also describes that older baseline-capture journey; it is historical,
@@ -41,4 +43,5 @@ grandfathering, cross-device backend authority, and view/change/clear controls.
 
 D-159 resolves new-user backend outage with a subject-scoped pending acknowledgement and strictly limited
 offline Home until authoritative sync. D-160 resolves progression equivalence by giving every initial v2 path
-only the once-per-version onboarding-handled milestone. BQ-123 must realize and test both outcomes.
+only the once-per-version onboarding-handled milestone. BQ-123 realized and exhaustively tested both outcomes;
+the prototype is ready for the BQ-124 owner walkthrough.

@@ -12,6 +12,22 @@
 
 ---
 
+## BQ-123 — Onboarding clickable fixture prototype and exhaustive agent QA — DONE 29-Aug-2026
+
+Traces to D-158/D-148. Objective: build a standalone controlled-data prototype for all approved journeys and
+complete agent-led QA before asking the owner to validate it. Accept: all critical scenarios are clickable;
+state/recovery/account-transition behavior matches the contracts; syntax, forbidden APIs/storage, every route
+and interaction, responsive layouts, keyboard/accessibility semantics, contrast, themes, reduced motion and
+console integrity are tested and recorded; no network, model, production code, schema, API, dependency or
+money-logic mutation. Size L. Depends on BQ-122.
+
+Delivered the nine-scenario controlled-data prototype and `docs/features/onboarding/QA_EVIDENCE.md`. Agent QA
+passed the complete, skip/exit, resume, save/reconciliation, stale-write, legacy, manage/clear, permission,
+account-switch and D-159 offline-pending journeys; every first-action destination and the D-160 single-event
+ledger passed. Syntax, static safety, DOM/accessibility, themes, responsive/reflow CSS, reduced motion, contrast
+and console integrity passed after three repaired findings. No production code, schema, API, dependency,
+financial data or money logic changed. Owner disposition remains BQ-124.
+
 ## BQ-122 — Onboarding acceptance matrix and decision register — DONE 29-Aug-2026
 
 Traces to D-158/D-148. Objective: map each requirement and state to a prototype task plus eventual automated

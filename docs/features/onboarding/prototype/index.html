@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>FinTutor Onboarding validation prototype</title>
+  <script>document.documentElement.dataset.theme=new URLSearchParams(location.search).get('theme')||'auto'</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="validation-shell">
+    <aside class="task-panel" aria-labelledby="task-title">
+      <p class="kicker">Owner validation</p>
+      <h2 id="task-title">Test Onboarding without coaching</h2>
+      <p class="intro">Choose a scenario, read the task, then use the phone. Everything is controlled fixture data. Nothing is sent or saved.</p>
+      <label for="scenario">Validation scenario</label>
+      <select id="scenario">
+        <option value="complete">New user completes all questions</option>
+        <option value="skip-exit">Skip and continue to app</option>
+        <option value="resume">Interrupted and resumed</option>
+        <option value="failure">Save failure and retry</option>
+        <option value="lost">Lost response and stale conflict</option>
+        <option value="legacy">Legacy invitation and voluntary start</option>
+        <option value="manage">View, change and clear context</option>
+        <option value="auth-switch">Permission loss and account switch</option>
+        <option value="offline-new">New user offline acknowledgement</option>
+      </select>
+      <section class="task-copy" aria-live="polite">
+        <h2 id="scenario-title"></h2>
+        <p id="scenario-prompt"></p>
+        <p class="fixture-note" id="scenario-fixture"></p>
+      </section>
+      <fieldset>
+        <legend>Agent test record</legend>
+        <label><input type="checkbox" disabled> Optionality is understandable</label>
+        <label><input type="checkbox" disabled> Saved and unknown meanings are clear</label>
+        <label><input type="checkbox" disabled> Recovery has no dead end</label>
+        <label><input type="checkbox" disabled> No prior-account residue appears</label>
+      </fieldset>
+      <p class="prototype-note">Fixture-only prototype. No network, model, analytics, browser storage, Supabase, FastAPI or real user data.</p>
+    </aside>
+
+    <section class="stage" aria-label="Interactive Onboarding prototype">
+      <div class="device">
+        <div id="announcement" class="sr-only" aria-live="polite"></div>
+        <header class="app-bar">
+          <span class="wordmark">FinTutor</span>
+          <span class="account" id="account-label">Aarav's account</span>
+        </header>
+        <div id="app" class="app-content"></div>
+      </div>
+
+      <section class="fixture-controls" aria-label="Fixture controls, not part of the product">
+        <strong>Fixture controls, not part of the product</strong>
+        <button id="relaunch">Relaunch</button>
+        <button id="fail-next">Fail next save</button>
+        <button id="lose-response">Commit, lose response</button>
+        <button id="stale-write">Send stale write</button>
+        <button id="deny">Deny permission</button>
+        <button id="switch-account">Switch account</button>
+        <button id="toggle-connection">Go offline</button>
+        <button id="reset">Reset scenario</button>
+      </section>
+      <section class="evidence" aria-label="Fixture evidence">
+        <div><strong>Fixture log</strong><span id="fixture-log">Ready.</span></div>
+        <div><strong>Progression event ledger</strong><span id="event-log">No events.</span></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="route-dialog" aria-labelledby="route-title">
+    <form method="dialog">
+      <button class="dialog-close" aria-label="Close destination">Close</button>
+      <p class="kicker">Controlled destination</p>
+      <h2 id="route-title">Destination</h2>
+      <p id="route-body"></p>
+      <button class="primary">Done</button>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -16,15 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-123 — Onboarding clickable fixture prototype and exhaustive agent QA — READY (after BQ-122)
-
-Traces to D-158/D-148. Objective: build a standalone controlled-data prototype for all approved journeys and
-complete agent-led QA before asking the owner to validate it. Accept: all critical scenarios are clickable;
-state/recovery/account-transition behavior matches the contracts; syntax, forbidden APIs/storage, every route
-and interaction, responsive layouts, keyboard/accessibility semantics, contrast, themes, reduced motion and
-console integrity are tested and recorded; no network, model, production code, schema, API, dependency or
-money-logic mutation. Size L. Depends on BQ-122.
-
 ### BQ-124 — Onboarding owner validation walkthrough and disposition — READY (after BQ-123)
 
 Traces to D-158/D-148. Objective: present the already-tested prototype for owner validation and record PASS /
