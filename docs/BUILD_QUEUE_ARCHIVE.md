@@ -12,6 +12,21 @@
 
 ---
 
+## BQ-121 — Consolidate Onboarding functional, content and safety contracts — DONE 28-Aug-2026
+
+Traces to D-158/D-118/D-119/D-126. Objective: specify inputs, outputs, persistence, API ownership, privacy,
+accessibility, progression, analytics, content, neutral wording and failure semantics for every BQ-120 state.
+Accept: optionality and eligibility are unambiguous; skipped/unknown values are never inferred; disclosure is
+never rewarded or required; prohibited data and claims are explicit; account/cache races fail closed; and
+every contract traces to standing decisions. Size M. Definition only. Depends on BQ-120.
+
+Delivered `docs/features/onboarding/CONTRACTS.md`: transition/API/persistence rules, model-boundary and local
+state limits, content/disclosure/prohibited-claim rules, WCAG-oriented responsive/accessibility requirements,
+progression/analytics semantics, failure/recovery table and controlled-fixture requirements. Reconciliation
+surfaced O-ONB-2: global exit currently receives fewer total progression points than handling all prompts one
+by one, despite disclosure-equivalence intent. It joins O-ONB-1 in BQ-122 rather than being silently retuned.
+Verified against 3/3 assessment-vocabulary tests and 27/27 service/API tests. No production mutation.
+
 ## BQ-120 — Reconcile Onboarding PRD, journey and complete state matrix — DONE 28-Aug-2026
 
 Traces to D-158/D-148/D-118/D-119/D-126. Objective: reconcile the shipped v2 assessment, legacy access and

@@ -1,6 +1,7 @@
 # Onboarding journey and state matrix
 
-**Status:** BQ-120 reconciled.  
+**Status:** BQ-120 reconciled.
+
 **Scope:** first launch, assessment, handoff, legacy opt-in, context management, account transition and
 recovery. This describes current approved intent and observed shipped behavior; `OPEN` rows are not decisions.
 

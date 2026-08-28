@@ -1,7 +1,9 @@
 # Onboarding and first-action handoff — current PRD
 
-**Status:** BQ-120 reconciled definition; prototype pending.  
-**Decisions:** D-118, D-119, D-126, D-148, D-158.  
+**Status:** BQ-120 reconciled definition; prototype pending.
+
+**Decisions:** D-118, D-119, D-126, D-148, D-158.
+
 **Observed implementation:** `RootNavigator.tsx`, `OnboardingScreen.tsx`,
 `VoluntaryAssessmentScreen.tsx`, `AssessmentContextScreen.tsx`, `onboardingAssessment.ts`, and the
 `/onboarding-assessment/*` backend routes/services.

@@ -16,14 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-121 — Consolidate Onboarding functional, content and safety contracts — READY (after BQ-120)
-
-Traces to D-158/D-118/D-119/D-126. Objective: specify inputs, outputs, persistence, API ownership, privacy,
-accessibility, progression, analytics, content, neutral wording and failure semantics for every BQ-120 state.
-Accept: optionality and eligibility are unambiguous; skipped/unknown values are never inferred; disclosure is
-never rewarded or required; prohibited data and claims are explicit; account/cache races fail closed; and
-every contract traces to standing decisions. Size M. Definition only. Depends on BQ-120.
-
 ### BQ-122 — Onboarding acceptance matrix and decision register — READY (after BQ-121)
 
 Traces to D-158/D-148. Objective: map each requirement and state to a prototype task plus eventual automated
