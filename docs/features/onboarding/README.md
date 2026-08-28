@@ -2,7 +2,7 @@
 
 **Workstream:** D-158 / BQ-120..BQ-124
 
-**Current gate:** BQ-121 contracts complete; acceptance/decision routing next
+**Current gate:** BQ-122 acceptance ready; two owner outcomes pending
 
 **Production status:** v2 is shipped; this folder now distinguishes the current contract from superseded
 legacy material. No production change is authorised by this package.
@@ -14,10 +14,12 @@ Read these files in this order:
 1. `CURRENT_PRD.md` — current product purpose, boundaries and observable success.
 2. `JOURNEY_AND_STATES.md` — complete journey and state/recovery matrix.
 3. `CONTRACTS.md` — functional, API, content, privacy, accessibility, progression and failure contracts.
-4. `ASSESSMENT_V2.md` — approved question vocabulary and normalized values.
-5. `decisions/D-118-five-axis-onboarding-assessment-contract.md` — five-axis product decision.
-6. `decisions/D-119-assessment-v2-persistence-privacy-package.md` — eligibility, persistence and privacy.
-7. `../../decisions/D-126-optional-guided-onboarding-handoff.md` — optional first-action handoff.
+4. `ACCEPTANCE_MATRIX.md` — stable acceptance IDs, full coverage map and prototype/validation tasks.
+5. `DECISION_REGISTER.md` — preserved rules, bounded fixture mechanics and owner briefs O-ONB-1/O-ONB-2.
+6. `ASSESSMENT_V2.md` — approved question vocabulary and normalized values.
+7. `decisions/D-118-five-axis-onboarding-assessment-contract.md` — five-axis product decision.
+8. `decisions/D-119-assessment-v2-persistence-privacy-package.md` — eligibility, persistence and privacy.
+9. `../../decisions/D-126-optional-guided-onboarding-handoff.md` — optional first-action handoff.
 
 `PRD.md` documents the shipped legacy four-track conversation and is superseded for new users by D-118 and
 D-119. `docs/ux/journeys/onboarding.md` also describes that older baseline-capture journey; it is historical,
