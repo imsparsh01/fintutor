@@ -17,54 +17,6 @@
 
 ---
 
-### D-144 — Users receive a reauthenticated self-service JSON data export
-- **Tier:** 3, owner-decided. “A fresh password reauthentication is required before the verified JWT
-  subject's active data is assembled into one documented, dated JSON file.” Web downloads directly; native
-  uses temporary cache plus the share/save sheet. Full write-up:
-  `docs/decisions/D-144-reauthenticated-self-service-json-data-export.md`.
-- **Date:** 14-Aug-2026
-
-### D-145 — The remaining MVP backlog has explicit build contracts
-- **Tier:** 3, owner-decided. “Implementation may be split into bounded build-queue items without reopening
-  routine mechanics.” Ten formerly blocked items are READY; tax/HRA remains deliberately deferred. Full
-  write-up: `docs/decisions/D-145-consolidated-mvp-backlog-contracts.md`.
-- **Date:** 14-Aug-2026
-
-### D-146 — Imperative accessibility focus stays native-only
-- **Tier:** 1, bounded conformance repair. “Web keeps the existing accessible result announcements and
-  semantic headings, but does not call the native-only focus API.” Full write-up:
-  `docs/decisions/D-146-web-accessibility-focus-stays-native-only.md`.
-- **Date:** 14-Aug-2026
-
-### D-147 — Python 3.14 / Windows compatibility fixes in requirements.txt
-- **Tier:** 1, bounded conformance repair. “Pure compatibility shims with no effect on product
-  behaviour, data schema, money calculations, or API contracts.” Upgrades psycopg2-binary, SQLAlchemy,
-  and Alembic floor versions; adds tzdata for Windows zoneinfo. Full write-up:
-  `docs/decisions/D-147-python314-windows-compatibility-fixes.md`.
-- **Date:** 20-Aug-2026
-
-### D-148 — Ten-workstream product definition precedes further production engineering
-- **Tier:** 3, owner-decided. “Implementation breadth is not the current constraint.” Ten major workstreams
-  receive a comparable audit, decision-complete package, fixture prototype and owner validation before new
-  production engineering. Full write-up:
-  `docs/decisions/D-148-ten-workstream-product-definition-programme.md`.
-- **Date:** 23-Aug-2026
-
-### D-149 — Baseline lifecycle and integrity directions approved
-- **Tier:** 3, owner-decided. “The baseline is a user-correctable source of truth reused throughout FinTutor.”
-  Full edit/delete extends to income, discretionary categories and goals; direct edits use durable stale
-  comparison; committed holding saves remain authoritative across reminder failure; goal progress moves toward
-  live available value but its exact money rule remains blocked. Full write-up:
-  `docs/features/baseline/decisions/D-149-baseline-lifecycle-and-integrity-directions.md`.
-- **Date:** 23-Aug-2026
-
-### D-150 — Goal progress uses shared proportional live holding value
-- **Tier:** 3, owner-decided money logic. “For each recognized linked holding, goal progress uses at most that
-  holding's live recorded value once across all goals.” Over-allocation scales by earmark proportion; unknown
-  valuation remains unmeasured; exact currency totals and provenance are preserved. Full write-up:
-  `docs/features/baseline/decisions/D-150-shared-proportional-live-goal-progress.md`.
-- **Date:** 23-Aug-2026
-
 ### D-151 — Goal progress converts holding values to paise with round-half-up
 - **Tier:** 3, owner-decided money logic. “Before D-150 allocates a recognized live holding value across goals,
   convert that value to two decimal places using Decimal `ROUND_HALF_UP`.” Allocation then uses integer paise;
@@ -139,4 +91,28 @@
   rank 6 (score 78), as the next product-definition workstream and set the goal to design, build and test its
   prototype completely end to end.” The bounded plan is BQ-125..BQ-129. Full write-up:
   `docs/decisions/D-161-portfolio-is-next-product-definition-workstream.md`.
+- **Date:** 29-Aug-2026
+
+### D-162 — Portfolio Health presents insurance as transparent components
+- **Tier:** 3, owner-decided financial presentation. “Portfolio Health shows separate factual insurance
+  components rather than combining them into an insurance score.” Full write-up:
+  `docs/decisions/D-162-portfolio-health-insurance-is-transparent-components.md`.
+- **Date:** 29-Aug-2026
+
+### D-163 — Portfolio Health has no composite score
+- **Tier:** 3, owner-decided financial presentation. “Portfolio Health shows its individual recorded-data
+  mechanisms and measured/unknown states but no overall 0–100 number at any completeness level.” Full
+  write-up: `docs/decisions/D-163-portfolio-health-has-no-composite-score.md`.
+- **Date:** 29-Aug-2026
+
+### D-164 — Health-insurance context is account-owned
+- **Tier:** 3, owner-decided financial-data ownership. “Optional health-insurance presence belongs in the
+  authenticated account-owned financial-context record.” Full write-up:
+  `docs/decisions/D-164-health-insurance-context-is-account-owned.md`.
+- **Date:** 29-Aug-2026
+
+### D-165 — Portfolio Health uses no score bands
+- **Tier:** 3, owner-decided financial presentation. “Portfolio Health uses no categorical score bands and
+  no headline grade.” Full write-up:
+  `docs/decisions/D-165-portfolio-health-uses-no-score-bands.md`.
 - **Date:** 29-Aug-2026

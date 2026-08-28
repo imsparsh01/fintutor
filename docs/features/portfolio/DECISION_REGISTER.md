@@ -1,6 +1,6 @@
 # Portfolio decision register and owner briefs
 
-**Status:** Four Tier-3 owner decisions pending. BQ-128 remains gated until all four have explicit outcomes.
+**Status:** Complete. Owner approved O-PF-1C, O-PF-2C, O-PF-3A and O-PF-4C as D-162..D-165.
 
 ## Settled constraints preserved
 
@@ -52,6 +52,7 @@ single insurance points value; overall Portfolio Health would need a new aggrega
   whether a single score should encode recorded cover sufficiency.
 - **Rule extraction:** none apparent; financial score formulas require explicit source, unknown and meaning
   decisions per lever.
+- **Owner outcome:** **Path C approved — D-162.** Insurance becomes transparent factual components, not a score.
 
 ## Owner brief O-PF-2 — What happens to the overall score when some levers are unknown?
 
@@ -88,6 +89,7 @@ Keep the four lever values and source explanations permanently; remove the compo
   reading as a complete financial judgment.
 - **Rule extraction:** an aggregate with missing components must explicitly choose hide, partial-denominator
   average or no aggregate; unknown may never silently become zero.
+- **Owner outcome:** **Path C approved — D-163.** Portfolio Health has no composite score at any completeness.
 
 ## Owner brief O-PF-3 — Where should optional health-insurance presence live?
 
@@ -127,6 +129,7 @@ on app close/logout/switch.
   for this optional sensitive fact.
 - **Rule extraction:** every optional fact that feeds a persistent-looking financial score must declare its
   authority scope, lifetime, export/deletion behavior and cross-device meaning.
+- **Owner outcome:** **Path A approved — D-164.** Health-insurance presence is account-owned optional context.
 
 ## Owner brief O-PF-4 — Should Portfolio Health use score-band labels?
 
@@ -162,6 +165,7 @@ Show only four named lever values and measured states. This is viable only with 
   unavoidable evaluative tone.
 - **Rule extraction:** labels attached to financial scores are part of the advice/judgment boundary even when
   color is neutral; wording must be approved separately from arithmetic.
+- **Owner outcome:** **Path C approved — D-165.** No bands or headline grade; individual measures only.
 
 ## Prototype gate
 

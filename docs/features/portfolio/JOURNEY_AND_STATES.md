@@ -47,10 +47,10 @@
 | P-17 | Concentration empty | Mechanism teaching and limitation block | Open Investments | “0% diversified” or deficiency framing |
 | P-18 | Concentration populated | Category counts and same limitation block | Inspect contributing funds | Scheme overlap, value weighting or verdict |
 | P-19 | Trend unavailable by design | One-point explanation; no fabricated chart | Learn why snapshots are required | Performance line, benchmark or return claim |
-| P-20 | Health loading | Four stable lever rows with neutral placeholders | Wait/back | Zero scores or shifting layout |
-| P-21 | Health none measured | No composite value; four named unknown inputs | Inspect any lever or leave | Treat missing data as zero |
-| P-22 | Health partial | Explicit measured denominator and unresolved overall-score treatment | Inspect source/limit | Present partial composite as complete |
-| P-23 | Health fully measured | Four scores, sources, formula disclosures and non-judgment boundary | Expand any lever | Good/bad grade, recommendation or priority |
+| P-20 | Health loading | Four stable mechanism groups with neutral placeholders | Wait/back | Zero values or shifting layout |
+| P-21 | Health none measured | No composite; four named unknown mechanisms | Inspect any mechanism or leave | Treat missing data as zero |
+| P-22 | Health partial | Available and unknown measures named; no average/grade | Inspect source/limit | Present partial composite or completeness judgment |
+| P-23 | Health fully measured | Individual measures, sources, formulas and non-judgment boundary; no composite/band | Expand any mechanism | Good/bad grade, recommendation or priority |
 | P-24 | Health input save failure | Prior authoritative value and announced failure | Retry/cancel/back | Proposed value shown as current |
 | P-25 | Health context changed | Updated affected lever and visible provenance | Continue or clear/manage context | Celebration or claim finances improved |
 | P-26 | Stale snapshot | Last-known timestamp and stale label | Retry or continue knowingly | Present stale values as current |
@@ -73,11 +73,9 @@
 
 Every amount and identity is hypothetical, stays in browser memory and never leaves the fixture.
 
-## Reconciliation findings held for BQ-127
+## BQ-127 owner outcomes
 
-1. Insurance sub-score formula: D-106 and shipped code materially disagree.
-2. Partial overall score: four-area average versus measured-area average/visibility is unsettled.
-3. Optional health-insurance context: device-local versus account-owned cross-device behavior is unsettled.
-4. D-106 score bands versus the current non-judgment measured-area presentation is unsettled.
-
-These are owner-only or protocol-routed decisions. BQ-125 records them but does not choose an answer.
+1. D-162: insurance uses transparent factual components, not one score.
+2. D-163: no overall Portfolio Health score at any completeness level.
+3. D-164: optional health-insurance presence is account-owned.
+4. D-165: no score bands or headline grade.

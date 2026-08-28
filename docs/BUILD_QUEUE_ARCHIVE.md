@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-127 — Portfolio acceptance matrix and owner decision register — DONE 29-Aug-2026
+
+Traces to D-161/D-148. Objective: map every requirement and P-01..P-32 state to prototype/QA evidence and route
+all genuine unresolved formula, score-semantics and financial-context forks through the decision protocol.
+Accept: critical owner journeys cover complete, empty, partial, family, holding-management, health,
+failure/recovery and account isolation; every requirement has evidence; Tier-3 forks stop for owner ruling.
+Size M. Depends on BQ-126.
+
+Delivered 96 stable criteria, full P-01..P-32/journey coverage, ten prototype tasks and four owner briefs.
+Owner approved O-PF-1C/O-PF-2C/O-PF-3A/O-PF-4C: D-162 makes insurance transparent components; D-163 removes
+the composite; D-164 makes optional health-insurance context account-owned; D-165 removes score bands/headline
+grade. BQ-128 is executable. No production, schema, API, persistence or money-logic mutation.
+
 ## BQ-126 — Consolidate Portfolio functional, data and safety contracts — DONE 29-Aug-2026
 
 Traces to D-161/D-148. Objective: specify the complete Portfolio overview, Portfolio Health, persistent family,

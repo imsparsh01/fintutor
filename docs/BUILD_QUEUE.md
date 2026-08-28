@@ -16,14 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-127 — Portfolio acceptance matrix and owner decision register — READY (after BQ-126)
-
-Traces to D-161/D-148. Objective: map every requirement and P-01..P-32 state to prototype/QA evidence and route
-all genuine unresolved formula, score-semantics and financial-context forks through the decision protocol.
-Accept: critical owner journeys cover complete, empty, partial, family, holding-management, health,
-failure/recovery and account isolation; every requirement has evidence; Tier-3 forks stop for owner ruling.
-Size M. Depends on BQ-126.
-
 ### BQ-128 — Portfolio clickable prototype and exhaustive agent QA — READY (after BQ-127)
 
 Traces to D-161/D-148. Objective: design and build a standalone controlled-data prototype for all approved

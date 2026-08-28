@@ -1,7 +1,6 @@
 # Portfolio functional, data, content and safety contracts
 
-**Status:** BQ-126 complete. Four explicit owner forks remain held for BQ-127; this document does not select
-a Portfolio Health formula, partial-score rule, optional-context persistence rule or score-band treatment.
+**Status:** BQ-126 contract, updated with owner-approved D-162..D-165 outcomes from BQ-127.
 
 ## 1. Actors, authority and trust boundary
 
@@ -30,8 +29,8 @@ freshness**. If any property is unavailable, the interface says so instead of im
 | Family record count | Records | Consolidated metadata / owned holdings | Every classified record in that family, including excluded/unvalued records | Rupee weight or quality |
 | Portfolio allocation | Records | Owned holdings | Classified Investments/Loans/Insurance records, one count each | Rupee allocation, asset mix, risk weighting or net worth |
 | Category concentration | Funds | Owned equity/debt mutual-fund records | Broad supported mutual-fund categories | Hybrid category absent from taxonomy; scheme/stock overlap; rupee weighting |
-| Portfolio Health lever | Points out of 100 | Approved formula plus named owned/confirmed inputs | Only inputs the formula explicitly accepts | Suitability, performance, completeness, personal health or recommended action |
-| Overall Portfolio Health | Points plus measured denominator | Four lever outputs under owner-approved partial rule | Only as permitted by the BQ-127 ruling | A grade, wealth score, priority or prediction |
+| Portfolio Health measure | Percent, months, rupees or factual state/ratio | Approved calculation plus named owned/confirmed inputs | Only inputs that measure explicitly accepts | Suitability, performance, completeness, personal health or recommended action |
+| Portfolio Health availability | Measures available / unknown | Four mechanism groups under D-162/D-163 | Availability only; no arithmetic combination | Composite score, grade, wealth score, priority or prediction |
 | Trend teaching | No financial result | Static approved explanation | Requirement for comparable snapshots | Any chart, return, benchmark or inferred history |
 
 ### Status vocabulary
@@ -58,8 +57,8 @@ Zero is displayed only when the authoritative data proves a real numeric zero un
   data as text. Each included record counts exactly once.
 - Family routes retain their position across empty, partial and failed states; ordering is information
   architecture, not a recommendation or implied urgency.
-- Portfolio Health identifies its measured denominator and exposes all four levers. Unknown levers never
-  render zero.
+- Portfolio Health identifies available/unknown mechanisms and exposes all four groups. It has no composite
+  score or categorical band; unknown measures never render zero.
 - Category concentration uses only equity/debt mutual-fund counts, names its denominator, and shows the same
   “what this shows / cannot tell” limitation in empty and populated states.
 - The trend surface states that one balance cannot establish a trend and offers no fabricated graph.
@@ -118,25 +117,20 @@ Zero is displayed only when the authoritative data proves a real numeric zero un
 - Each lever exposes: current measured/unknown state, unit, plain-language mechanism, exact accepted sources,
   formula boundary, missing inputs and user-controlled correction/context route.
 - Null/unavailable is not zero. An API failure is not the user having no input.
-- All points use neutral ink and identical structural treatment. No green/red, pass/fail icon, celebration,
-  urgency or “improve/fix” language derives from the score.
+- All measures use neutral ink and identical structural treatment. No green/red, pass/fail icon, celebration,
+  urgency or “improve/fix” language derives from a value.
 - Updating or clearing a source may change a displayed lever; the interface says “recalculated from the saved
   inputs,” not that the portfolio improved or worsened.
 - Opening, viewing or changing Portfolio Health emits no financial-outcome/progression reward.
 
-### Held owner forks
+### Owner-approved BQ-127 outcomes
 
-The prototype cannot harden these until BQ-127 records the owner's decisions:
-
-1. **O-PF-1 — insurance formula:** D-106 formula versus shipped health-first formula.
-2. **O-PF-2 — partial overall:** hide the overall until four measured, or show an explicitly partial average
-   under a named denominator/rule.
-3. **O-PF-3 — health-insurance context:** device-local or account-owned persistence, including cross-device,
-   export, deletion, retention and account-switch semantics.
-4. **O-PF-4 — score bands:** retain, replace or omit D-106's “Getting started / Building up / On track /
-   Strong” labels under the non-judgment contract.
-
-Until ruled, contracts and fixtures may display the competing paths for decision but cannot call one current.
+- **D-162:** Insurance shows separate health-cover presence, term-cover presence and recorded cover-to-income
+  ratio. It has no combined points or adequacy threshold.
+- **D-163:** Portfolio Health has no composite score at any completeness level. Availability is descriptive.
+- **D-164:** Optional health-insurance presence is account-owned with view/change/clear, cross-device, export,
+  deletion, retention and account-isolation treatment.
+- **D-165:** No score bands or headline grade. Factual measure names/values and availability only.
 
 ## 7. Optional context and privacy contract
 
@@ -146,8 +140,8 @@ Until ruled, contracts and fixtures may display the competing paths for decision
 - No missing context is inferred from holdings, income, goals, onboarding answers or another context field.
 - Emergency months is not recomputed from balances. It remains the user's confirmed account-owned value under
   the existing financial-context contract.
-- Health-insurance persistence remains O-PF-3. The fixture uses in-memory state only and labels the competing
-  behavior rather than pretending persistence is decided.
+- Health-insurance presence follows D-164's account-owned contract. The fixture simulates this in memory;
+  production schema/API/privacy/export/deletion work remains separately bounded.
 - Protected responses, caches, drafts and local keys are subject-scoped. Permission loss/logout/account switch
   clears prior-subject presentation immediately; late responses fail closed.
 - Export and account deletion include every backend-owned Portfolio record/context required by the final
@@ -197,10 +191,10 @@ No recovery path changes hierarchy, duplicates cards/records or sends an analyti
 ## 10. Content and neutrality contract
 
 Use precise nouns: **recorded, known, unknown, unvalued, invalid, excluded, unavailable, last updated,
-by record count, rupees recorded, points measured, proposed, saved, recalculated, try again**.
+by record count, rupees recorded, measures available, proposed, saved, recalculated, try again**.
 
-Do not use: **healthy/unhealthy, good/bad, strong/weak** (pending O-PF-4), **optimal, diversified enough,
-too concentrated, fix, improve, urgent, priority, recommended, best, on/off track, complete your portfolio,
+Do not use: **healthy/unhealthy, good/bad, strong/weak, on/off track, optimal, diversified enough,
+too concentrated, fix, improve, urgent, priority, recommended, best, complete your portfolio,
 missing protection, underperforming, should buy/sell/repay/rebalance**.
 
 - Absence is described as “nothing recorded here,” never “you have no…” unless the user explicitly confirmed

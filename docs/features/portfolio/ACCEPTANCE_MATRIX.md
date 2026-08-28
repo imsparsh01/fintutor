@@ -1,12 +1,12 @@
 # Portfolio acceptance matrix
 
-**Status:** BQ-127 in progress. Acceptance coverage is complete; O-PF-1..O-PF-4 await owner decisions.
+**Status:** BQ-127 complete. D-162..D-165 lock the prototype direction.
 
 **Sources:** `PRD.md`, `JOURNEY_AND_STATES.md`, `CONTRACTS.md`, D-065, D-076, D-089, D-096,
 D-106, D-110, D-111 and D-161.
 
 Every criterion has a stable ID. BQ-128 must record direct evidence against all criteria after the owner
-closes the four pending criteria; a clickable happy path alone is insufficient.
+closes the four formerly pending criteria; a clickable happy path alone is insufficient.
 
 ## A. Access, ownership and account isolation
 
@@ -94,13 +94,13 @@ closes the four pending criteria; a clickable happy path alone is insufficient.
 | AC-H02 | No lever is measured | No composite is presented; four missing sources remain user-controlled and optional |
 | AC-H03 | A lever is expanded | Name, points/unknown state, unit, mechanism, sources, formula boundary and missing inputs are exposed |
 | AC-H04 | Investment rate is measured | Accepted income/outflow inputs and 10%-equals-100 rule are legible; result is not advice |
-| AC-H05 | Insurance is measured | Owner-approved O-PF-1 formula and every contributing/non-contributing input are legible |
+| AC-H05 | Insurance is inspected | D-162 health presence, term presence and recorded cover-to-income ratio are separate; sources/unknowns are legible |
 | AC-H06 | Emergency buffer is measured | Confirmed months and 12-month scale are legible; value is not inferred from balances |
 | AC-H07 | Tax utilisation is measured | Included types/cadences and ₹1.5L denominator are legible; no tax-savings claim appears |
-| AC-H08 | Some levers are unavailable | Owner-approved O-PF-2 rule governs composite; measured denominator and unknowns are unmistakable |
-| AC-H09 | All four levers are measured | Composite applies approved four-lever rule and remains traceable to each lever |
-| AC-H10 | Health display labels a score | Owner-approved O-PF-4 treatment appears without financial valence/priority |
-| AC-H11 | Input/context changes or clears | Only dependent lever/composite recalculates; copy says recalculated, not improved/worsened |
+| AC-H08 | Some measures are unavailable | Available/unknown mechanisms are unmistakable; D-163 forbids a partial/full composite |
+| AC-H09 | Every mechanism is measured | Individual values/sources remain visible; no composite, averaging or grade appears |
+| AC-H10 | Portfolio Health summary renders | D-165 uses availability and factual measure names only; no band/headline grade appears |
+| AC-H11 | Input/context changes or clears | Only dependent measures recalculate; copy says recalculated, not improved/worsened |
 | AC-H12 | Health input save fails | Prior authoritative state remains; alert and retry/cancel/back are available |
 | AC-H13 | Health/source read fails | Affected lever is unavailable, not zero; unaffected levers remain inspectable |
 | AC-H14 | User views/changes financial score/context | No learning/progression reward or celebration fires |
@@ -112,7 +112,7 @@ closes the four pending criteria; a clickable happy path alone is insufficient.
 | AC-P01 | Optional emergency/health context is requested | Storage/use/optional status are clear before save; cancel/prefer-not-to-answer costs nothing |
 | AC-P02 | Emergency months is absent | It is unknown; balances, holdings, budget and onboarding do not infer it |
 | AC-P03 | Health-insurance presence is absent | It is unknown; policy holdings or another account/device do not infer it |
-| AC-P04 | Health-insurance presence is saved/cleared | Owner-approved O-PF-3 persistence/export/deletion/account-switch semantics hold |
+| AC-P04 | Health-insurance presence is saved/cleared | D-164 account-owned cross-device/view/change/clear/export/deletion/account-switch semantics hold |
 | AC-P05 | Holding display name is shown in app | It remains inside authenticated UI and is replaced by alias before model boundary |
 | AC-P06 | Errors/logs/fixture evidence are inspected | No names, amounts, characteristics, drafts or context answers are emitted externally |
 | AC-P07 | User exports/deletes account | Every account-owned Portfolio record/final context follows existing registry/reauth contracts |

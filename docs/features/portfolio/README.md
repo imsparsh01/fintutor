@@ -2,7 +2,7 @@
 
 **Workstream:** D-161 / BQ-125..BQ-129
 
-**Current gate:** BQ-127 acceptance coverage complete; four owner decisions pending before prototype design
+**Current gate:** BQ-127 complete; BQ-128 prototype design and exhaustive agent QA next
 
 **Production status:** A broad first implementation is shipped. This package defines and validates the
 coherent end-to-end product before any further production engineering is authorised.
@@ -28,9 +28,8 @@ coherent end-to-end product before any further production engineering is authori
 - BQ-128: controlled-fixture clickable prototype and exhaustive agent QA.
 - BQ-129: owner validation and disposition.
 
-## Reconciliation warning
+## Reconciliation result
 
-The shipped screen is evidence, not automatically the final contract. BQ-125 found material contradictions
-between D-106 and the current Portfolio Health insurance calculation, plus unresolved semantics for partial
-overall scores and cross-device health-insurance context. They are explicitly held for BQ-127 owner routing;
-no formula or persistence behavior is silently changed in this definition phase.
+The shipped screen remains evidence, not automatically the final contract. D-162..D-165 resolve its material
+contradictions: transparent insurance components, no composite score, account-owned optional health context,
+and no score bands/headline grade. BQ-128 realizes these in a controlled fixture; production remains separate.

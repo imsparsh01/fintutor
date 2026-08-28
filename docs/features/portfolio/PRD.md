@@ -46,17 +46,13 @@ whether a number is an observation, a score, an estimate or a recommendation.
 - The hierarchy can expose structure, health, families, concentration and teaching without creating an
   implied order of financial priorities.
 
-### Material unknowns and contradictions
+### Resolved reconciliation outcomes
 
-- D-106 defines the insurance sub-score as term cover 50, health cover +25 and sufficient recorded sum
-  assured +25. The shipped calculation instead gives health-only 50, health-plus-term 75, term-only 0 and
-  ignores sum assured. This is a financial-data/formula hard stop for BQ-127, not a quiet implementation fix.
-- D-106 says the overall is the average of four sub-scores; shipped behavior averages only measured areas.
-  The partial-score meaning and whether to show an overall before all four are measured need owner ruling.
-- Health-insurance yes/no is device-local while emergency months are account-owned. Cross-device semantics,
-  retention and clearing for this optional financial context need explicit privacy/data treatment.
-- D-106 approved textual score bands; the shipped Portfolio Health screen instead shows measured-area copy.
-  Whether the bands survive the non-judgment contract is unresolved.
+- D-162 replaces the conflicting insurance formulas with separate health presence, term presence and recorded
+  cover-to-income ratio components; no combined insurance score or adequacy threshold.
+- D-163 removes the overall Portfolio Health score at every completeness level; individual mechanisms remain.
+- D-164 makes optional health-insurance presence account-owned with full privacy/user-control treatment.
+- D-165 removes categorical score bands and headline grades.
 
 ## Fundamental outcome
 
