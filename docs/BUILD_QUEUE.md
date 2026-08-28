@@ -16,17 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-120 — Reconcile Onboarding PRD, journey and complete state matrix — READY
-
-Traces to D-158/D-148/D-118/D-119/D-126. Objective: reconcile the shipped v2 assessment, legacy access and
-first-action handoff into one current product-definition package without rewriting settled source material.
-Accept: (a) PRD covers target user, problem, outcome, principles, success, exclusions and dependencies;
-(b) journey covers first launch, every answer/skip path, interruption/resume, global exit, completion,
-first-action handoff, legacy invitation, context management and return; (c) state matrix covers loading,
-empty/new, partial, valid, invalid, stale, permission denial, offline/backend failure, account transition and
-recovery; (d) contradictions between existing documents and shipped behaviour are surfaced, never silently
-resolved; (e) no production mutation. Size M. Definition only.
-
 ### BQ-121 — Consolidate Onboarding functional, content and safety contracts — READY (after BQ-120)
 
 Traces to D-158/D-118/D-119/D-126. Objective: specify inputs, outputs, persistence, API ownership, privacy,

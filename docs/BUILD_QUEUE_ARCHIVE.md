@@ -12,6 +12,23 @@
 
 ---
 
+## BQ-120 — Reconcile Onboarding PRD, journey and complete state matrix — DONE 28-Aug-2026
+
+Traces to D-158/D-148/D-118/D-119/D-126. Objective: reconcile the shipped v2 assessment, legacy access and
+first-action handoff into one current product-definition package without rewriting settled source material.
+Accept: (a) PRD covers target user, problem, outcome, principles, success, exclusions and dependencies;
+(b) journey covers first launch, every answer/skip path, interruption/resume, global exit, completion,
+first-action handoff, legacy invitation, context management and return; (c) state matrix covers loading,
+empty/new, partial, valid, invalid, stale, permission denial, offline/backend failure, account transition and
+recovery; (d) contradictions between existing documents and shipped behaviour are surfaced, never silently
+resolved; (e) no production mutation. Size M. Definition only.
+
+Delivered `docs/features/onboarding/CURRENT_PRD.md`, `JOURNEY_AND_STATES.md` and an authority-map `README.md`.
+The reconciliation covers eight end-to-end journeys and 36 explicit states, distinguishes current v2 from
+the preserved legacy PRD/journey, and verifies observed behavior against current frontend/backend code and 27
+passing onboarding service/API tests. It surfaces O-ONB-1 without deciding it: a genuinely new user with no
+cache cannot establish eligibility or exit when the backend is unavailable. No production code changed.
+
 ## BQ-119 — Home owner validation walkthrough + disposition — DONE 28-Aug-2026
 
 Traces to D-156/D-148. Objective: give the thoroughly tested prototype to the owner and record PASS / REVISE /
