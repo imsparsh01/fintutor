@@ -17,47 +17,6 @@
 
 ---
 
-### D-138 — MVP uses Supabase-managed at-rest protection with strict access controls
-- **Tier:** 3, owner-decided. “FinTutor will not introduce its own field-encryption keys for the MVP.”
-  Supabase-managed database/backup encryption is paired with JWT ownership, TLS, production SSL enforcement,
-  network restrictions once hosting is known, secret isolation, and security tests. Full write-up:
-  `docs/decisions/D-138-supabase-managed-at-rest-protection-for-mvp.md`.
-- **Date:** 14-Aug-2026
-
-### D-139 — Deleted account data may remain only in encrypted recovery backups for seven days
-- **Tier:** 3, owner-decided. “Deletion removes active data immediately.” Recovery-only encrypted copies
-  expire within seven days, cannot be used normally, and a restore must reapply later deletions before the
-  system serves users. Full write-up:
-  `docs/decisions/D-139-seven-day-backup-retention-after-deletion.md`.
-- **Date:** 14-Aug-2026
-
-### D-140 — Whole-account deletion requires re-authentication and is retry-safe
-- **Tier:** 3, owner-decided. “Repeated requests must converge on the same fully deleted state.” A fresh
-  login and separate confirmation precede data-first erasure, backend-only Auth deletion, and success only
-  after both stages complete. Full write-up:
-  `docs/decisions/D-140-reauthenticated-retry-safe-whole-account-deletion.md`.
-- **Date:** 14-Aug-2026
-
-### D-141 — Detailed sensitive-context disclosure lives in the privacy policy
-- **Tier:** 3, owner-decided. “The detailed explanation of how FinTutor collects, uses, protects, retains,
-  and deletes the dedicated financial-context values approved by D-134 will live in the privacy policy.”
-  Field labels remain clear, optional, explicitly entered, and user-controlled. Full write-up:
-  `docs/decisions/D-141-sensitive-context-disclosure-in-privacy-policy.md`.
-- **Date:** 14-Aug-2026
-
-### D-142 — Public financial tables are accessible only through FastAPI
-- **Tier:** 3, owner-decided. “FastAPI remains the sole application-data gateway.” RLS is enabled without
-  client policies and direct `anon`/`authenticated` table privileges are revoked. Full write-up:
-  `docs/decisions/D-142-fastapi-only-financial-table-access.md`.
-- **Date:** 14-Aug-2026
-
-### D-143 — Production FastAPI hosting is deferred until external access is required
-- **Tier:** 3, owner-decided. “FinTutor will keep FastAPI local during internal MVP completion and owner
-  validation.” Supabase remains the Postgres/Auth host; a Python backend host is selected only before a
-  workflow needs external reachability. Full write-up:
-  `docs/decisions/D-143-production-fastapi-hosting-deferred-until-required.md`.
-- **Date:** 14-Aug-2026
-
 ### D-144 — Users receive a reauthenticated self-service JSON data export
 - **Tier:** 3, owner-decided. “A fresh password reauthentication is required before the verified JWT
   subject's active data is assembled into one documented, dated JSON file.” Web downloads directly; native
@@ -153,4 +112,11 @@
   financial problems.” All eight Home areas remain reachable; Home shows one calculator and one scenario
   preview plus View all tools. Full write-up:
   `docs/decisions/D-157-home-hierarchy-and-tool-previews-approved.md`.
+- **Date:** 28-Aug-2026
+
+### D-158 — Onboarding and first-action handoff is the next product-definition workstream
+- **Tier:** 3, owner-decided sequencing. “The owner approved **Onboarding and first-action handoff**, rank 5
+  (score 78) in the D-148 portfolio audit, as the next product-definition deep dive after Home received
+  PASS.” The bounded plan is BQ-120..BQ-124. Full write-up:
+  `docs/decisions/D-158-onboarding-is-next-product-definition-workstream.md`.
 - **Date:** 28-Aug-2026

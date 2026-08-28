@@ -16,9 +16,49 @@ Rules for this file:
 
 ## READY — pick one of these
 
-> **Home and consolidated experience workstream (D-156).** Owner approved portfolio-audit rank 4 as the next
-> D-148 deep dive. Definition and fixture prototype only; no production code, schema, API, dependency or
-> money-logic change. Package lives in `docs/features/home/`.
+### BQ-120 — Reconcile Onboarding PRD, journey and complete state matrix — READY
+
+Traces to D-158/D-148/D-118/D-119/D-126. Objective: reconcile the shipped v2 assessment, legacy access and
+first-action handoff into one current product-definition package without rewriting settled source material.
+Accept: (a) PRD covers target user, problem, outcome, principles, success, exclusions and dependencies;
+(b) journey covers first launch, every answer/skip path, interruption/resume, global exit, completion,
+first-action handoff, legacy invitation, context management and return; (c) state matrix covers loading,
+empty/new, partial, valid, invalid, stale, permission denial, offline/backend failure, account transition and
+recovery; (d) contradictions between existing documents and shipped behaviour are surfaced, never silently
+resolved; (e) no production mutation. Size M. Definition only.
+
+### BQ-121 — Consolidate Onboarding functional, content and safety contracts — READY (after BQ-120)
+
+Traces to D-158/D-118/D-119/D-126. Objective: specify inputs, outputs, persistence, API ownership, privacy,
+accessibility, progression, analytics, content, neutral wording and failure semantics for every BQ-120 state.
+Accept: optionality and eligibility are unambiguous; skipped/unknown values are never inferred; disclosure is
+never rewarded or required; prohibited data and claims are explicit; account/cache races fail closed; and
+every contract traces to standing decisions. Size M. Definition only. Depends on BQ-120.
+
+### BQ-122 — Onboarding acceptance matrix and decision register — READY (after BQ-121)
+
+Traces to D-158/D-148. Objective: map each requirement and state to a prototype task plus eventual automated
+or manual evidence, and route every genuine unresolved fork through the tier protocol. Accept: 5–8 critical
+owner journeys cover new, interrupted, globally skipped, legacy, context-management and failure/recovery
+paths; every requirement has evidence; no settled D-118/D-119/D-126 rule is reopened without new information;
+and any Tier-3 fork stops for the owner before prototype assumptions harden. Size S/M. Definition only.
+Depends on BQ-121.
+
+### BQ-123 — Onboarding clickable fixture prototype and exhaustive agent QA — READY (after BQ-122)
+
+Traces to D-158/D-148. Objective: build a standalone controlled-data prototype for all approved journeys and
+complete agent-led QA before asking the owner to validate it. Accept: all critical scenarios are clickable;
+state/recovery/account-transition behavior matches the contracts; syntax, forbidden APIs/storage, every route
+and interaction, responsive layouts, keyboard/accessibility semantics, contrast, themes, reduced motion and
+console integrity are tested and recorded; no network, model, production code, schema, API, dependency or
+money-logic mutation. Size L. Depends on BQ-122.
+
+### BQ-124 — Onboarding owner validation walkthrough and disposition — READY (after BQ-123)
+
+Traces to D-158/D-148. Objective: present the already-tested prototype for owner validation and record PASS /
+REVISE / PARK / ESCALATE. Accept: every critical task records coaching, comprehension, optionality/neutrality,
+recovery, confusion, trust surprises and dead ends; PASS freezes the package at its prototype commit.
+Owner-gated. Size S. Depends on BQ-123. Production implementation remains separately bounded.
 
 ## BLOCKED — do not start
 
