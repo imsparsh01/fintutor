@@ -65,9 +65,9 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-155 | SHIPPED → BQ-117 / validated definition | Active clear of device-local state on logout/account-switch (O-C) | Realized in the BQ-116 fixture and owner-validated PASS on 28-Aug-2026; production implementation remains a separately bounded follow-on |
 | D-156 | SHIPPED → BQ-119 / `docs/features/home/VALIDATION_RESULT.md` | Home and consolidated experience definition package, clickable prototype and agent QA | Owner PASS on 28-Aug-2026; package frozen at prototype commit `f1c51a4`; production work remains separately bounded |
 | D-157 | SHIPPED → BQ-119 / validated definition | Seven-level Home hierarchy and representative calculator/scenario previews | Owner approved on 28-Aug-2026 after exhaustive BQ-118 QA; all eight Home areas remain reachable |
-| D-158 | READY → BQ-124 | Onboarding definition and agent-tested clickable prototype | BQ-123 passed; owner walkthrough/disposition is the remaining approved gate |
-| D-159 | READY → BQ-124 | Pending local eligibility acknowledgement with limited offline Home | Prototype passed agent QA; owner validation first, production remains separately bounded |
-| D-160 | READY → BQ-124 | Initial Onboarding earns only onboarding-handled, no setup context-prompt events | Prototype ledger passed agent QA; owner validation first, production remains separately bounded |
+| D-158 | SHIPPED → BQ-124 / `docs/features/onboarding/VALIDATION_RESULT.md` | Onboarding definition package, clickable prototype and agent QA | Owner approved everything on 29-Aug-2026; package frozen at prototype commit `1bde4b1`; production remains separately bounded |
+| D-159 | SHIPPED → BQ-124 / validated definition | Pending local eligibility acknowledgement with limited offline Home | Owner approved the tested D-159 fixture behavior; production implementation remains separately bounded |
+| D-160 | SHIPPED → BQ-124 / validated definition | Initial Onboarding earns only onboarding-handled, no setup context-prompt events | Owner approved the tested single-event ledger behavior; production integration remains separately bounded |
 
 ## Current-session decisions
 

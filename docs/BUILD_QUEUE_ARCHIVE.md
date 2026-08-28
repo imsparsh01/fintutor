@@ -12,6 +12,18 @@
 
 ---
 
+## BQ-124 — Onboarding owner validation walkthrough and disposition — DONE 29-Aug-2026
+
+Traces to D-158/D-148. Objective: present the already-tested prototype for owner validation and record PASS /
+REVISE / PARK / ESCALATE. Accept: every critical task records coaching, comprehension, optionality/neutrality,
+recovery, confusion, trust surprises and dead ends; PASS freezes the package at its prototype commit.
+Owner-gated. Size S. Depends on BQ-123. Production implementation remains separately bounded.
+
+Owner approved everything in the agent-tested Onboarding package without requested changes. Recorded PASS in
+`docs/features/onboarding/VALIDATION_RESULT.md`; the package is frozen at prototype commit `1bde4b1`. All nine
+critical tasks passed for coaching, comprehension, optionality/neutrality and recovery/isolation, with no
+reported confusion, trust surprise or dead end. Production implementation remains separately bounded.
+
 ## BQ-123 — Onboarding clickable fixture prototype and exhaustive agent QA — DONE 29-Aug-2026
 
 Traces to D-158/D-148. Objective: build a standalone controlled-data prototype for all approved journeys and
