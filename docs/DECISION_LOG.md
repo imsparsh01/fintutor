@@ -116,3 +116,10 @@
   no headline grade.” Full write-up:
   `docs/decisions/D-165-portfolio-health-uses-no-score-bands.md`.
 - **Date:** 29-Aug-2026
+
+### D-166 — Complete the four remaining workstreams; Scenarios is next
+- **Tier:** 3, owner-decided sequencing under D-148. “The owner approved completing the four remaining D-148
+  product-definition workstreams and their later, separately bounded production reconciliation” in the
+  recommended order, with Scenario and focused explorers next under BQ-130..BQ-134. Full write-up:
+  `docs/decisions/D-166-remaining-workstreams-and-scenarios-next.md`.
+- **Date:** 29-Aug-2026

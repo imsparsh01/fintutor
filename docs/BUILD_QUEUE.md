@@ -16,6 +16,42 @@ Rules for this file:
 
 ## READY — pick one of these
 
+### BQ-130 — Reconcile Scenario/focused-explorer PRD, journey and state matrix — READY
+
+Traces to D-166/D-148. Objective: audit shipped scenario and focused-explorer surfaces plus governing
+decisions, then create one current PRD, end-to-end journey and complete state matrix. Accept: target outcome,
+entry/return/exit, comparison neutrality, provenance, partial/invalid/stale prefill, every approved explorer,
+recovery, privacy and explicit exclusions are testable; contradictions/open forks remain visible rather than
+silently resolved. Size L.
+
+### BQ-131 — Consolidate Scenario functional, money and safety contracts — READY (after BQ-130)
+
+Traces to D-166/D-148. Objective: specify inputs/outputs, scenario ownership, calculations/provenance,
+comparison semantics, persistence, APIs, privacy, accessibility, content and failure/recovery behavior across
+the suite. Accept: each output has source/unit/rounding/unknown/stale rules; teaching never selects a winner;
+money/data forks stop for owner ruling; no production calculation changes. Size L. Depends on BQ-130.
+
+### BQ-132 — Scenario acceptance matrix and owner decision register — READY (after BQ-131)
+
+Traces to D-166/D-148. Objective: map every requirement/state/journey to prototype and QA evidence, and route
+all genuine unresolved formula, persistence, comparison or advice-boundary forks through the decision
+protocol. Accept: critical tasks cover all approved explorers, partial/invalid inputs, equal/crossing outcomes,
+stale data, save/recovery and account isolation; every requirement has evidence. Size M. Depends on BQ-131.
+
+### BQ-133 — Scenario clickable prototype and exhaustive agent QA — READY (after BQ-132)
+
+Traces to D-166/D-148. Objective: build the approved controlled-data scenario/focused-explorer prototype and
+complete exhaustive agent QA. Accept: every critical path/state is clickable; formulas and provenance match
+approved contracts; syntax, forbidden APIs/storage, responsive/zoom, keyboard/accessibility, contrast,
+themes, reduced motion, DOM and console integrity are tested and recorded. Size L. Depends on BQ-132.
+
+### BQ-134 — Scenario owner validation walkthrough and disposition — READY (after BQ-133)
+
+Traces to D-166/D-148. Objective: present the tested Scenario prototype and record PASS / REVISE / PARK /
+ESCALATE. Accept: every critical task records coaching, understanding of assumptions/provenance/neutrality,
+recovery, confusion, trust surprises and dead ends; PASS freezes the package and permits separately bounded
+production reconciliation planning. Owner-gated. Size S. Depends on BQ-133.
+
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
