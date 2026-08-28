@@ -147,3 +147,10 @@
   (score 80) in the D-148 portfolio audit, as the next product-definition deep dive.” Full write-up:
   `docs/decisions/D-156-home-is-next-product-definition-workstream.md`.
 - **Date:** 28-Aug-2026
+
+### D-157 — Home uses seven-level hierarchy and representative tool previews
+- **Tier:** 2, owner-ruled; interprets D-104. “This is interface hierarchy, not a ranking of the user's
+  financial problems.” All eight Home areas remain reachable; Home shows one calculator and one scenario
+  preview plus View all tools. Full write-up:
+  `docs/decisions/D-157-home-hierarchy-and-tool-previews-approved.md`.
+- **Date:** 28-Aug-2026

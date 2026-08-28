@@ -20,13 +20,6 @@ Rules for this file:
 > D-148 deep dive. Definition and fixture prototype only; no production code, schema, API, dependency or
 > money-logic change. Package lives in `docs/features/home/`.
 
-### BQ-119 — Home owner validation walkthrough + disposition
-
-Traces to D-156/D-148. Objective: give the thoroughly tested prototype to the owner and record PASS / REVISE /
-PARK / ESCALATE in `VALIDATION_RESULT.md`. Accept: every critical task has coaching, comprehension,
-neutrality and recovery results; confusion, trust surprises and dead ends are recorded; PASS freezes the
-package at its prototype commit. Owner-gated. Depends on BQ-118.
-
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED

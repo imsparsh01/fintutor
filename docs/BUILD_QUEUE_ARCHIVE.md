@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-119 — Home owner validation walkthrough + disposition — DONE 28-Aug-2026
+
+Traces to D-156/D-148. Objective: give the thoroughly tested prototype to the owner and record PASS / REVISE /
+PARK / ESCALATE in `VALIDATION_RESULT.md`. Accept: every critical task has coaching, comprehension,
+neutrality and recovery results; confusion, trust surprises and dead ends are recorded; PASS freezes the
+package at its prototype commit. Owner-gated. Depends on BQ-118.
+
+Owner approved Home and the tested seven-level hierarchy, representative calculator/scenario previews and
+View all tools while keeping every Home feature reachable. The owner directed the agent to execute the full
+test suite; all seven critical tasks and the broader QA matrix passed after eight repaired defects. Recorded
+PASS in `docs/features/home/VALIDATION_RESULT.md`; package frozen at prototype commit `f1c51a4`. D-157 records
+the approved hierarchy. Production implementation remains separately bounded.
+
 ## BQ-118 — Complete Home definition package, clickable prototype and agent QA — DONE 28-Aug-2026
 
 Traces to D-156/D-148/D-104/D-111. Objective: reconcile the live Home and standing decisions into the full
