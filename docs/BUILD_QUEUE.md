@@ -16,14 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-126 — Consolidate Portfolio functional, data and safety contracts — READY (after BQ-125)
-
-Traces to D-161/D-148. Objective: specify the complete Portfolio overview, Portfolio Health, persistent family,
-holding-management, teaching and recovery contracts without changing production behavior. Accept: every
-source/unit/unknown rule is explicit; financial and optional-context boundaries are named; partial/stale/error/
-account-transition behavior fails closed; accessibility and responsive requirements are testable; and all
-BQ-125 contradictions remain visible for BQ-127 rather than being silently resolved. Size M. Depends on BQ-125.
-
 ### BQ-127 — Portfolio acceptance matrix and owner decision register — READY (after BQ-126)
 
 Traces to D-161/D-148. Objective: map every requirement and P-01..P-32 state to prototype/QA evidence and route

@@ -12,6 +12,20 @@
 
 ---
 
+## BQ-126 — Consolidate Portfolio functional, data and safety contracts — DONE 29-Aug-2026
+
+Traces to D-161/D-148. Objective: specify the complete Portfolio overview, Portfolio Health, persistent family,
+holding-management, teaching and recovery contracts without changing production behavior. Accept: every
+source/unit/unknown rule is explicit; financial and optional-context boundaries are named; partial/stale/error/
+account-transition behavior fails closed; accessibility and responsive requirements are testable; and all
+BQ-125 contradictions remain visible for BQ-127 rather than being silently resolved. Size M. Depends on BQ-125.
+
+Delivered `docs/features/portfolio/CONTRACTS.md`: actor/authority boundaries; source/unit/status ledger;
+overview, family, holding-management and Portfolio Health behavior; optional-context privacy; authenticated API
+and concurrency rules; failure/recovery matrix; neutral content; responsive/accessibility requirements;
+progression/analytics limits; and ten prototype evidence groups. O-PF-1..O-PF-4 remain explicitly held for
+BQ-127. No production code, API, schema, dependency, persistence or money logic changed.
+
 ## BQ-125 — Reconcile Portfolio PRD, journey and complete state matrix — DONE 29-Aug-2026
 
 Traces to D-161/D-148/D-106/D-111. Objective: reconcile the shipped Portfolio, Portfolio Health and persistent

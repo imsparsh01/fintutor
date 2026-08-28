@@ -68,7 +68,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-158 | SHIPPED → BQ-124 / `docs/features/onboarding/VALIDATION_RESULT.md` | Onboarding definition package, clickable prototype and agent QA | Owner approved everything on 29-Aug-2026; package frozen at prototype commit `1bde4b1`; production remains separately bounded |
 | D-159 | SHIPPED → BQ-124 / validated definition | Pending local eligibility acknowledgement with limited offline Home | Owner approved the tested D-159 fixture behavior; production implementation remains separately bounded |
 | D-160 | SHIPPED → BQ-124 / validated definition | Initial Onboarding earns only onboarding-handled, no setup context-prompt events | Owner approved the tested single-event ledger behavior; production integration remains separately bounded |
-| D-161 | READY → BQ-126 | Portfolio and Portfolio Health definition/prototype/validation workstream | BQ-125 complete; contracts, acceptance/decisions, prototype/QA and owner validation remain in BQ-126..BQ-129 |
+| D-161 | READY → BQ-127 | Portfolio and Portfolio Health definition/prototype/validation workstream | BQ-125/BQ-126 complete; acceptance/decisions, prototype/QA and owner validation remain in BQ-127..BQ-129 |
 
 ## Current-session decisions
 
