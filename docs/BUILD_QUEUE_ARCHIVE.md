@@ -12,6 +12,22 @@
 
 ---
 
+## BQ-125 — Reconcile Portfolio PRD, journey and complete state matrix — DONE 29-Aug-2026
+
+Traces to D-161/D-148/D-106/D-111. Objective: reconcile the shipped Portfolio, Portfolio Health and persistent
+Investments/Loans/Insurance sections into one current product definition. Accept: PRD identifies the user job,
+first-principles mechanism, bottleneck, observable outcome, scope and exclusions; journey covers overview,
+health, every family, holding management, teaching and return; state matrix covers loading, empty, partial,
+invalid, stale, failure, offline, permission and account-transition recovery; contradictions are surfaced, not
+silently resolved; no production mutation. Size M.
+
+Delivered `docs/features/portfolio/PRD.md`, `JOURNEY_AND_STATES.md` and an authority-map `README.md`. The package
+defines Portfolio as an explainable map of recorded structure, not a quality verdict; covers a twelve-step
+journey and 32 explicit states; and separates record counts, rupee totals, category counts and health points.
+It surfaces four material forks for BQ-127: D-106 versus shipped insurance scoring, partial-overall semantics,
+device-local health context and score-band framing. No production code, API, schema, persistence or money logic
+changed.
+
 ## BQ-124 — Onboarding owner validation walkthrough and disposition — DONE 29-Aug-2026
 
 Traces to D-158/D-148. Objective: present the already-tested prototype for owner validation and record PASS /

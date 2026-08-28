@@ -1,0 +1,33 @@
+# Portfolio and Portfolio Health
+
+**Workstream:** D-161 / BQ-125..BQ-129
+
+**Current gate:** BQ-125 complete; BQ-126 contracts next
+
+**Production status:** A broad first implementation is shipped. This package defines and validates the
+coherent end-to-end product before any further production engineering is authorised.
+
+## Current authority map
+
+1. `PRD.md` — current purpose, first-principles model, boundaries and observable success.
+2. `JOURNEY_AND_STATES.md` — complete journey and state/recovery matrix.
+3. D-161 — approved workstream sequence and prototype boundary.
+4. D-106 — Portfolio structure, Portfolio Health formula and category-concentration direction.
+5. D-065 — separate family totals, never a synthetic net-worth subtraction.
+6. D-076/D-089/D-096 — persistent family reachability and empty-section teaching behavior.
+7. D-110/D-111 — shared Portfolio Health snapshot, naming and drill-down behavior.
+
+## Workstream gates
+
+- BQ-125: current PRD, journey and state matrix.
+- BQ-126: functional/data/content/privacy/accessibility/recovery contracts.
+- BQ-127: acceptance matrix and owner-only decision briefs.
+- BQ-128: controlled-fixture clickable prototype and exhaustive agent QA.
+- BQ-129: owner validation and disposition.
+
+## Reconciliation warning
+
+The shipped screen is evidence, not automatically the final contract. BQ-125 found material contradictions
+between D-106 and the current Portfolio Health insurance calculation, plus unresolved semantics for partial
+overall scores and cross-device health-insurance context. They are explicitly held for BQ-127 owner routing;
+no formula or persistence behavior is silently changed in this definition phase.

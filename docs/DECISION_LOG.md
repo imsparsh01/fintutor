@@ -133,3 +133,10 @@
   milestone, whether the user answers, individually skips, mixes the two, or chooses global exit.” Full
   write-up: `docs/decisions/D-160-initial-onboarding-earns-only-handled-milestone.md`.
 - **Date:** 29-Aug-2026
+
+### D-161 — Portfolio and Portfolio Health is the next product-definition workstream
+- **Tier:** 3, owner-decided sequencing under D-148. “The owner approved **Portfolio and Portfolio Health**,
+  rank 6 (score 78), as the next product-definition workstream and set the goal to design, build and test its
+  prototype completely end to end.” The bounded plan is BQ-125..BQ-129. Full write-up:
+  `docs/decisions/D-161-portfolio-is-next-product-definition-workstream.md`.
+- **Date:** 29-Aug-2026
