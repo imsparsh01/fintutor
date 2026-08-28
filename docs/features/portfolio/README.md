@@ -2,7 +2,7 @@
 
 **Workstream:** D-161 / BQ-125..BQ-129
 
-**Current gate:** BQ-127 complete; BQ-128 prototype design and exhaustive agent QA next
+**Current gate:** BQ-128 complete with 96/96 agent QA PASS; BQ-129 owner walkthrough next
 
 **Production status:** A broad first implementation is shipped. This package defines and validates the
 coherent end-to-end product before any further production engineering is authorised.
@@ -14,11 +14,13 @@ coherent end-to-end product before any further production engineering is authori
 3. `CONTRACTS.md` — functional, data, content, privacy, accessibility and recovery contracts.
 4. `ACCEPTANCE_MATRIX.md` — stable criteria, complete coverage map and prototype tasks.
 5. `DECISION_REGISTER.md` — settled rules and O-PF-1..O-PF-4 owner briefs.
-6. D-161 — approved workstream sequence and prototype boundary.
-7. D-106 — Portfolio structure, Portfolio Health formula and category-concentration direction.
-8. D-065 — separate family totals, never a synthetic net-worth subtraction.
-9. D-076/D-089/D-096 — persistent family reachability and empty-section teaching behavior.
-10. D-110/D-111 — shared Portfolio Health snapshot, naming and drill-down behavior.
+6. `prototype/` — clickable controlled-data fixture, ten validation tasks and static verifier.
+7. `QA_EVIDENCE.md` — direct PASS evidence for every acceptance criterion.
+8. D-161 — approved workstream sequence and prototype boundary.
+9. D-106 — Portfolio structure and category-concentration direction, as superseded where noted.
+10. D-065 — separate family totals, never a synthetic net-worth subtraction.
+11. D-076/D-089/D-096 — persistent family reachability and empty-section teaching behavior.
+12. D-110/D-111 — shared Portfolio Health snapshot, naming and drill-down behavior.
 
 ## Workstream gates
 

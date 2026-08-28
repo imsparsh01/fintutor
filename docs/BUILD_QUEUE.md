@@ -16,14 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-128 — Portfolio clickable prototype and exhaustive agent QA — READY (after BQ-127)
-
-Traces to D-161/D-148. Objective: design and build a standalone controlled-data prototype for all approved
-Portfolio journeys, then complete exhaustive agent QA before owner review. Accept: every critical scenario and
-route is clickable; state/recovery/account-transition behavior matches contracts; syntax, forbidden APIs/
-storage, responsive/zoom, keyboard/accessibility, contrast, themes, reduced motion, DOM and console integrity
-are tested and recorded; no production, schema, API, dependency or money-logic mutation. Size L. Depends on BQ-127.
-
 ### BQ-129 — Portfolio owner validation walkthrough and disposition — READY (after BQ-128)
 
 Traces to D-161/D-148. Objective: present the already-tested Portfolio prototype and record PASS / REVISE /

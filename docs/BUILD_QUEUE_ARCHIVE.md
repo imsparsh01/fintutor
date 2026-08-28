@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-128 — Portfolio clickable prototype and exhaustive agent QA — DONE 29-Aug-2026
+
+Traces to D-161/D-148. Objective: design and build a standalone controlled-data prototype for all approved
+Portfolio journeys, then complete exhaustive agent QA before owner review. Accept: every critical scenario and
+route is clickable; state/recovery/account-transition behavior matches contracts; syntax, forbidden APIs/
+storage, responsive/zoom, keyboard/accessibility, contrast, themes, reduced motion, DOM and console integrity
+are tested and recorded; no production, schema, API, dependency or money-logic mutation. Size L. Depends on BQ-127.
+
+Delivered the controlled-data prototype, ten owner tasks, four account fixtures, P-01..P-32 state coverage and
+all approved D-162..D-165 behavior. `QA_EVIDENCE.md` records 96/96 criteria PASS. Static, browser, keyboard,
+focus, responsive, zoom, theme, reduced-motion, DOM, console and forbidden-API checks pass. Two QA findings
+(explicit-theme cascade and Escape focus restoration) were fixed and retested. No production mutation.
+
 ## BQ-127 — Portfolio acceptance matrix and owner decision register — DONE 29-Aug-2026
 
 Traces to D-161/D-148. Objective: map every requirement and P-01..P-32 state to prototype/QA evidence and route
