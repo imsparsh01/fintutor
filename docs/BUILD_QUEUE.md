@@ -16,13 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-131 — Consolidate Scenario functional, money and safety contracts — READY (after BQ-130)
-
-Traces to D-166/D-148. Objective: specify inputs/outputs, scenario ownership, calculations/provenance,
-comparison semantics, persistence, APIs, privacy, accessibility, content and failure/recovery behavior across
-the suite. Accept: each output has source/unit/rounding/unknown/stale rules; teaching never selects a winner;
-money/data forks stop for owner ruling; no production calculation changes. Size L. Depends on BQ-130.
-
 ### BQ-132 — Scenario acceptance matrix and owner decision register — READY (after BQ-131)
 
 Traces to D-166/D-148. Objective: map every requirement/state/journey to prototype and QA evidence, and route

@@ -12,6 +12,18 @@
 
 ---
 
+## BQ-131 — Consolidate Scenario functional, money and safety contracts — DONE 29-Aug-2026
+
+Traces to D-166/D-148. Objective: specify inputs/outputs, scenario ownership, calculations/provenance,
+comparison semantics, persistence, APIs, privacy, accessibility, content and failure/recovery behavior across
+the suite. Accept: each output has source/unit/rounding/unknown/stale rules; teaching never selects a winner;
+money/data forks stop for owner ruling; no production calculation changes. Size L. Depends on BQ-130.
+
+Delivered `docs/features/scenarios/CONTRACTS.md`: binding suite ownership, lifecycle, provenance/freshness,
+formula/output, API/account isolation, privacy/model/progression, content neutrality, recovery, accessibility
+and responsive contracts for all nine entries. Recorded exact current formula conventions and retained every
+unsettled money/data/product choice for BQ-132. No production calculation or data path changed.
+
 ## BQ-130 — Reconcile Scenario/focused-explorer PRD, journey and state matrix — DONE 29-Aug-2026
 
 Traces to D-166/D-148. Objective: audit shipped scenario and focused-explorer surfaces plus governing

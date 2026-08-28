@@ -73,7 +73,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-163 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no composite score | Realized, agent-tested 96/96 and owner-approved final PASS; production Home/Portfolio replacement remains separate |
 | D-164 | SHIPPED → BQ-129 / validated definition | Optional health-insurance context is account-owned | Simulated, agent-tested and owner-approved final PASS; production schema/API/privacy/export/deletion work remains separate |
 | D-165 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no score bands or headline grade | Realized, agent-tested 96/96 and owner-approved final PASS; production copy/UI replacement remains separate |
-| D-166 | READY → BQ-131 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | BQ-130 complete; contracts, acceptance/decisions, prototype/QA and owner validation remain in BQ-131..BQ-134 |
+| D-166 | READY → BQ-132 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | BQ-130/BQ-131 complete; acceptance/decisions, prototype/QA and owner validation remain in BQ-132..BQ-134 |
 
 ## Current-session decisions
 
