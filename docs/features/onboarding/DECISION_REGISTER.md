@@ -1,6 +1,6 @@
 # Onboarding decision register
 
-**Status:** BQ-122 prepared; O-ONB-1 and O-ONB-2 await owner ruling before BQ-123.
+**Status:** BQ-122 complete; O-ONB-1 and O-ONB-2 owner-ruled as D-159 and D-160.
 
 ## Preserved decisions
 
@@ -64,7 +64,8 @@ The app treats acknowledgement as presentation-only and allows normal access des
   pending local acknowledgement is acceptable.
 - **Rule extraction:** when a mandatory eligibility acknowledgement cannot reach its authoritative store,
   access must either fail closed or be limited by an explicitly approved pending-evidence contract.
-- **Owner outcome:** PENDING.
+- **Owner outcome:** **Path B approved — D-159.** Subject-scoped pending acknowledgement opens only a limited
+  offline Home; ordinary data/actions remain locked until authoritative sync.
 
 ## Owner brief O-ONB-2 — Equivalent progression for global exit
 
@@ -106,9 +107,9 @@ handled plus onboarding-handled.
   total setup progression across global-exit and five-step paths, and how much historical change is acceptable.
 - **Rule extraction:** optional disclosure flows must define equivalence at both per-prompt and total-flow level;
   “skip equals answer” alone is insufficient when a global exit exists.
-- **Owner outcome:** PENDING.
+- **Owner outcome:** **Path B approved — D-160.** Initial v2 emits only the once-per-version
+  onboarding-handled milestone; no setup question emits context-prompt progression.
 
 ## Prototype gate
 
-BQ-123 cannot hard-code O-ONB-1 or O-ONB-2 until both owner outcomes are recorded as decisions. All other
-prototype mechanics are bounded by the existing contracts and can proceed immediately afterward.
+BQ-123 realizes D-159 and D-160. All other prototype mechanics are bounded by the existing contracts.

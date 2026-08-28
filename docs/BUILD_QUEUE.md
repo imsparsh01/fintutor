@@ -16,15 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-122 — Onboarding acceptance matrix and decision register — READY (after BQ-121)
-
-Traces to D-158/D-148. Objective: map each requirement and state to a prototype task plus eventual automated
-or manual evidence, and route every genuine unresolved fork through the tier protocol. Accept: 5–8 critical
-owner journeys cover new, interrupted, globally skipped, legacy, context-management and failure/recovery
-paths; every requirement has evidence; no settled D-118/D-119/D-126 rule is reopened without new information;
-and any Tier-3 fork stops for the owner before prototype assumptions harden. Size S/M. Definition only.
-Depends on BQ-121.
-
 ### BQ-123 — Onboarding clickable fixture prototype and exhaustive agent QA — READY (after BQ-122)
 
 Traces to D-158/D-148. Objective: build a standalone controlled-data prototype for all approved journeys and

@@ -120,3 +120,16 @@
   PASS.” The bounded plan is BQ-120..BQ-124. Full write-up:
   `docs/decisions/D-158-onboarding-is-next-product-definition-workstream.md`.
 - **Date:** 28-Aug-2026
+
+### D-159 — Pending local eligibility acknowledgement opens a limited offline Home
+- **Tier:** 3, owner-decided. “When a genuinely new verified user explicitly acknowledges that they are 18 or
+  older but the backend cannot persist the acknowledgement, FinTutor may retain a subject-scoped **pending
+  local acknowledgement** and open a clearly limited offline Home.” Full write-up:
+  `docs/decisions/D-159-pending-local-eligibility-opens-limited-offline-home.md`.
+- **Date:** 29-Aug-2026
+
+### D-160 — Initial Onboarding earns only the handled milestone
+- **Tier:** 3, owner-decided. “Initial Onboarding v2 emits only the once-per-version `onboarding_handled`
+  milestone, whether the user answers, individually skips, mixes the two, or chooses global exit.” Full
+  write-up: `docs/decisions/D-160-initial-onboarding-earns-only-handled-milestone.md`.
+- **Date:** 29-Aug-2026

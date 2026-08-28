@@ -3,7 +3,7 @@
 **Status:** BQ-121 complete contract draft; acceptance/decision routing pending BQ-122.
 
 **Traces to:** D-009, D-061, D-114, D-117, D-118, D-119, D-121, D-126, D-137, D-142,
-D-148, D-155 and D-158.
+D-148, D-155, D-158, D-159 and D-160.
 
 **Applies to:** new-user v2, voluntary legacy opt-in, first-action handoff, context management, outage fallback
 and account transitions.
@@ -28,9 +28,9 @@ Resolution is per verified JWT subject and follows this precedence:
 The UI must remain neutral while resolution is pending. It must not flash another branch, reuse the previous
 subject's state, infer a handled result from financial data, or create a record on read.
 
-`OPEN O-ONB-1` applies when branch 6 is reached during backend outage: the current implementation shows the
-intro but cannot persist eligibility/start or globally exit. No prototype recovery choice is authorised until
-BQ-122 owner routing.
+Under D-159, branch 6 may accept an explicit subject-scoped pending 18+ acknowledgement and open only a
+limited offline Home. It cannot load/mutate backend data, call Arya, calculate, capture or award progress.
+Ordinary access unlocks only after authoritative sync; sign-out/switch clears the pending state.
 
 ### 1.2 Assessment transition machine
 
@@ -245,24 +245,23 @@ In management, the user must understand:
 
 - `onboarding_handled` is awarded at most once per flow version whether completed, individually skipped or
   globally exited. It contributes the same setup milestone and cannot unlock content alone.
-- A context prompt award treats answer and individual skip identically; its subject key is prompt/version and
-  retries are deduplicated.
+- Outside initial v2, a later optional context-prompt award treats answer and skip identically; its subject key
+  is prompt/version and retries are deduplicated.
 - A progression-emitter failure never rolls back or visually fails a successful assessment write.
 - No event contains answer values, amounts, sensitive context, financial outcomes, raw text or route choice.
 - No third-party analytics/telemetry is introduced by this workstream or prototype.
 - Progress never visibly decreases when context changes or clears.
 
-`OPEN O-ONB-2`: observed shipped behavior emits one context-prompt event for each answered/individually skipped
-prompt, while global exit emits only onboarding-handled for remaining prompts. A five-step path can therefore
-receive more total progress than immediate global exit, despite D-118/D-119's disclosure-equivalence intent.
-Changing existing progression treatment is not a bounded documentation choice; BQ-122 must route owner paths.
+Under D-160, initial Onboarding v2 emits only the once-per-version onboarding-handled milestone. None of its
+five setup questions emits context-prompt progression, regardless of answer, individual skip or global exit.
+Later optional context prompts outside initial onboarding retain their existing event contract.
 
 ## 7. Failure and recovery contract
 
 | Failure | Must preserve | Must show | Recovery | Must never do |
 |---|---|---|---|---|
-| Initial state read transport/5xx | subject isolation; authoritative uncertainty | neutral loading then defined fallback | cached handled/legacy or O-ONB-1 path | infer handled from finances |
-| Start failure | no v2 success claim; intro inputs | stable alert | explicit retry / owner-ruled outage exit | write local eligibility as authoritative |
+| Initial state read transport/5xx | subject isolation; authoritative uncertainty | neutral loading then defined fallback | cached handled/legacy or D-159 limited offline path | infer handled from finances |
+| Start failure | no v2 success claim; intro inputs | stable alert | retry or D-159 limited offline Home | unlock ordinary data/actions before sync |
 | Answer/skip transport failure | current question + local unsaved choice | not-saved alert | explicit retry or reload | advance optimistically |
 | Lost response after commit | backend next question/handled state | reconciled authoritative state | idempotent retry/read | advance twice |
 | 409 stale/out-of-order | proposed choice separately from current | state-changed message | refresh then reselect | overwrite current silently |
@@ -285,17 +284,17 @@ BQ-123 must implement controlled fixtures for at least:
 6. legacy user invitation, dismiss and voluntary resume;
 7. handled context view/change/clear with failure recovery;
 8. permission/session denial and account-switch late-response discard;
-9. O-ONB-1 and O-ONB-2 using only the owner-approved outcomes from BQ-122.
+9. D-159 limited offline Home and D-160 single-milestone equivalence.
 
 The fixture must expose enough state/status evidence to verify no duplicate advance, no stale residue and no
 cross-account bleed. It must not call production services or persist fixture data.
 
-## 9. Open decisions carried to BQ-122
+## 9. Decisions resolved in BQ-122
 
-| ID | Conflict | Why not decided here |
+| ID | Owner outcome | Decision |
 |---|---|---|
-| O-ONB-1 | New user, no cache, backend unavailable: block on eligibility vs. allow an offline/temporary path | Eligibility/legal shape and interpretation of D-119 are owner-only |
-| O-ONB-2 | Global exit receives less total progression than handling five prompts one by one | Changes live progression meaning/treatment after data exists; owner-only |
+| O-ONB-1 | Pending local acknowledgement + limited offline Home | D-159 |
+| O-ONB-2 | Initial onboarding emits only onboarding-handled | D-160 |
 
 All other contract choices above are direct reconciliations of standing decisions and observed mechanics; they
 do not add MVP scope or reinterpret a compliance boundary.

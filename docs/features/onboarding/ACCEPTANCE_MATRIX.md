@@ -1,11 +1,11 @@
 # Onboarding acceptance matrix
 
-**Status:** BQ-122 evidence layer; prototype tasks are locked, O-ONB-1/O-ONB-2 await owner ruling.
+**Status:** BQ-122 complete; prototype tasks locked with D-159/D-160 outcomes.
 
 **Sources:** `CURRENT_PRD.md`, `JOURNEY_AND_STATES.md`, `CONTRACTS.md`, D-118, D-119 and D-126.
 
 Every criterion has a stable ID. BQ-123 must record evidence against all criteria, not merely show that the
-happy path clicks. `PENDING OWNER` criteria become executable only after the matching decision is ruled.
+happy path clicks. D-159 and D-160 resolve the two formerly pending owner criteria.
 
 ## A. Access and ownership
 
@@ -16,7 +16,7 @@ happy path clicks. `PENDING OWNER` criteria become executable only after the mat
 | AC-A03 | Backend returns in-progress v2 | Exact authoritative current question resumes |
 | AC-A04 | No v2; any legacy backend row exists | App opens; no legacy track/value is translated or exposed |
 | AC-A05 | Assessment read fails; handled/legacy subject cache exists | App opens using that subject-scoped outage fallback |
-| AC-A06 | Assessment read fails; no authoritative/cache evidence | Owner-ruled O-ONB-1 surface appears; emptiness is not called success |
+| AC-A06 | Assessment read fails; no authoritative/cache evidence; user acknowledges 18+ | D-159 subject-scoped pending state opens only limited offline Home; ordinary data/actions await sync |
 | AC-A07 | Protected request returns 401/403 | No assessment/context values remain; account-entry recovery appears, never new-user intro |
 | AC-A08 | Account changes during request | Old state clears immediately and every late prior-subject response is discarded |
 | AC-A09 | Any request is made | JWT subject is authoritative; fixture state cannot be selected through a user-id input |
@@ -89,7 +89,7 @@ happy path clicks. `PENDING OWNER` criteria become executable only after the mat
 | AC-P04 | Assessment is absent/in-progress/cleared | No learning context derives |
 | AC-P05 | User answers versus individually skips same prompt | Same prompt-handled progression treatment; answer value never enters event |
 | AC-P06 | Assessment completes or globally exits | One onboarding-handled milestone per flow version; emitter failure cannot block success |
-| AC-P07 | Global exit handles remaining prompts | Total treatment follows owner-ruled O-ONB-2 and is explicitly visible in fixture ledger |
+| AC-P07 | Any initial v2 path handles | D-160 event ledger shows only one onboarding-handled milestone; no setup context-prompt events |
 | AC-P08 | Context changes/clears | Progress never visibly decreases and no disclosure celebration appears |
 | AC-P09 | Fixture runs | No network, model, analytics or durable browser/device storage is used |
 
@@ -134,7 +134,7 @@ happy path clicks. `PENDING OWNER` criteria become executable only after the mat
 
 1. **New complete:** acknowledge, answer five including exposure exclusivity, verify suggested handoff and open
    every destination (AC-E01..04, AC-Q01..09, AC-H01..07).
-2. **Skip/exit:** individually skip, globally exit, verify undisclosed meanings and O-ONB-2 ledger behavior
+2. **Skip/exit:** individually skip, globally exit, verify undisclosed meanings and D-160 equal ledger behavior
    (AC-Q07..09, AC-P05..08).
 3. **Interrupt/resume:** save partial state, simulate relaunch and resume exact prompt (AC-A03, AC-Q13).
 4. **Failure/reconciliation:** fail save, retry; simulate committed/lost response; trigger stale conflict and
@@ -144,7 +144,7 @@ happy path clicks. `PENDING OWNER` criteria become executable only after the mat
 6. **Manage/clear:** inspect labels, change/cancel/fail/retry, confirm/cancel/fail/succeed clear (AC-M04..11).
 7. **Auth/switch:** deny permission and switch subjects while response is pending; prove zero residue
    (AC-A07..09).
-8. **New-user outage:** execute the owner-ruled O-ONB-1 recovery and prove eligibility/access semantics.
+8. **New-user outage:** execute D-159 pending acknowledgement, limited offline Home and authoritative sync.
 9. **Cross-cutting QA:** static/syntax/forbidden API/storage checks; all controls/routes; mobile/wide/zoom;
    keyboard/focus/semantics; contrast/themes/reduced motion; DOM/console integrity (AC-P09, AC-X01..12).
 

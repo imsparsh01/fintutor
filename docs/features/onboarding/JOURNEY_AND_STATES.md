@@ -75,7 +75,7 @@ recovery. This describes current approved intent and observed shipped behavior; 
 | S-02 | Assessment state loading | Neutral “Preparing your starting point…” loader | Wait | Do not infer new/handled | Shipped |
 | S-03 | New: no v2, legacy or local completion | 18+ intro; optionality and no-details copy | Acknowledge 18+ | Start creates v2 | Shipped |
 | S-04 | Intro start saving | Busy primary control; no duplicate start | Wait | Concurrent/repeated start is idempotent | Shipped |
-| S-05 | Intro start failure | Stable alert; intro remains | Retry | No local completion written | Shipped; see O-ONB-1 |
+| S-05 | Intro start failure | Stable alert; intro remains | Retry or D-159 pending acknowledgement | No durable completion until sync | D-159 prototype target |
 | S-06 | In progress, single-choice | Question n/5, radio options, skip, global exit | Answer/skip/exit | Successful response advances exactly once | Shipped |
 | S-07 | In progress, multi-choice empty | Checkboxes; Continue disabled | Select/skip/exit | Nothing saved until Continue | Shipped |
 | S-08 | In progress, multi-choice selected | Exclusive neutral choices cannot mix with specifics | Toggle/continue/skip/exit | Deterministic ordered list | Shipped |
@@ -90,7 +90,7 @@ recovery. This describes current approved intent and observed shipped behavior; 
 | S-17 | Handled backend state | App opens without onboarding | Use app | Best-effort subject cache refresh | Shipped |
 | S-18 | Assessment read outage + handled cache | App opens | Use app | Subject-scoped cache fallback | Shipped |
 | S-19 | Assessment read outage + legacy cache | App opens | Use app | Subject-scoped legacy fallback | Shipped |
-| S-20 | Assessment read outage + no cache | 18+ intro currently appears | Retry start only | Cannot establish eligibility/handled state | OPEN O-ONB-1 |
+| S-20 | Assessment read outage + no cache | 18+ intro; after explicit acknowledgement, limited offline Home | Retry/sync/sign out | Subject-scoped pending state; ordinary actions locked | D-159 |
 | S-21 | Any legacy backend row | App opens; no track translation | Use app / voluntary invite | Presence-only compatibility | Shipped |
 | S-22 | Voluntary route loading | Centered loader | Wait | Fresh backend read | Shipped |
 | S-23 | Voluntary route load failure | Plain failure + Back to Home | Return Home | No cached values shown as authoritative | Shipped |
@@ -119,9 +119,8 @@ recovery. This describes current approved intent and observed shipped behavior; 
 7. Save failure never masquerades as success; progression failure never blocks a successful assessment write.
 8. All five first-action destinations remain available and Home requires no context.
 
-## Open issue routed forward
+## BQ-122 resolution
 
-**O-ONB-1 — New-user access during backend outage.** This is not resolved in BQ-120. It combines the D-119
-18+ eligibility requirement with the standing ungated/fail-safe direction. Because eligibility has legal
-shape, BQ-122 must present owner paths rather than treating a fixture behavior as a Tier-1 implementation
-detail.
+O-ONB-1 is resolved by D-159: an explicit pending local acknowledgement may open only a limited offline Home.
+It is subject-scoped, cleared on sign-out/switch, grants no ordinary backend/model/financial/progression action,
+and must sync eligibility before ordinary access unlocks.

@@ -65,7 +65,9 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-155 | SHIPPED → BQ-117 / validated definition | Active clear of device-local state on logout/account-switch (O-C) | Realized in the BQ-116 fixture and owner-validated PASS on 28-Aug-2026; production implementation remains a separately bounded follow-on |
 | D-156 | SHIPPED → BQ-119 / `docs/features/home/VALIDATION_RESULT.md` | Home and consolidated experience definition package, clickable prototype and agent QA | Owner PASS on 28-Aug-2026; package frozen at prototype commit `f1c51a4`; production work remains separately bounded |
 | D-157 | SHIPPED → BQ-119 / validated definition | Seven-level Home hierarchy and representative calculator/scenario previews | Owner approved on 28-Aug-2026 after exhaustive BQ-118 QA; all eight Home areas remain reachable |
-| D-158 | READY → BQ-122 | Onboarding and first-action handoff definition deep dive; BQ-120/BQ-121 complete, BQ-122..BQ-124 approved | Acceptance and owner-decision routing are next; prototype follows resolved boundaries |
+| D-158 | READY → BQ-123 | Onboarding definition deep dive; BQ-120..BQ-122 complete, BQ-123/BQ-124 approved | Build and exhaustively test the controlled-fixture prototype next |
+| D-159 | READY → BQ-123 | Pending local eligibility acknowledgement with limited offline Home | Controlled-fixture realization/validation first; production remains separately bounded |
+| D-160 | READY → BQ-123 | Initial Onboarding earns only onboarding-handled, no setup context-prompt events | Controlled-fixture realization/validation first; production ledger change remains separately bounded |
 
 ## Current-session decisions
 

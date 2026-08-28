@@ -2,7 +2,7 @@
 
 **Workstream:** D-158 / BQ-120..BQ-124
 
-**Current gate:** BQ-122 acceptance ready; two owner outcomes pending
+**Current gate:** BQ-122 complete; BQ-123 prototype and exhaustive agent QA next
 
 **Production status:** v2 is shipped; this folder now distinguishes the current contract from superseded
 legacy material. No production change is authorised by this package.
@@ -39,10 +39,6 @@ The shipped v2 path substantially matches D-118/D-119/D-126: five optional norma
 18+ acknowledgement, per-question skip, global exit, deterministic progress, a user-chosen handoff, legacy
 grandfathering, cross-device backend authority, and view/change/clear controls.
 
-Two owner boundaries are deliberately open for BQ-122. First, when the backend is unavailable for a genuinely
-new account with no authoritative or cached handled state, the shipped UI cannot start or globally handle the
-assessment and therefore cannot enter the app. Granting access without the required eligibility acknowledgement
-would reinterpret D-119; trapping the user conflicts with the ungated/fail-safe product direction. The
-prototype must not silently choose either behavior before owner ruling. Second, global exit currently earns
-less total progression than individually handling all five prompts, which conflicts with disclosure-equivalence
-intent and cannot be retuned after live data without owner approval.
+D-159 resolves new-user backend outage with a subject-scoped pending acknowledgement and strictly limited
+offline Home until authoritative sync. D-160 resolves progression equivalence by giving every initial v2 path
+only the once-per-version onboarding-handled milestone. BQ-123 must realize and test both outcomes.

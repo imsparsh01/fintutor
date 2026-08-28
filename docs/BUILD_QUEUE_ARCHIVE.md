@@ -12,6 +12,20 @@
 
 ---
 
+## BQ-122 — Onboarding acceptance matrix and decision register — DONE 29-Aug-2026
+
+Traces to D-158/D-148. Objective: map each requirement and state to a prototype task plus eventual automated
+or manual evidence, and route every genuine unresolved fork through the tier protocol. Accept: 5–8 critical
+owner journeys cover new, interrupted, globally skipped, legacy, context-management and failure/recovery
+paths; every requirement has evidence; no settled D-118/D-119/D-126 rule is reopened without new information;
+and any Tier-3 fork stops for the owner before prototype assumptions harden. Size S/M. Definition only.
+Depends on BQ-121.
+
+Delivered 68 stable acceptance criteria covering S-01..S-36, J1..J8 and nine prototype/QA task groups, plus
+the complete decision register. Owner ruled O-ONB-1 as Path B (D-159: subject-scoped pending eligibility opens
+only limited offline Home until sync) and O-ONB-2 as Path B (D-160: initial v2 earns only onboarding-handled,
+not per-question context events). BQ-123 is now executable. No production mutation.
+
 ## BQ-121 — Consolidate Onboarding functional, content and safety contracts — DONE 28-Aug-2026
 
 Traces to D-158/D-118/D-119/D-126. Objective: specify inputs, outputs, persistence, API ownership, privacy,

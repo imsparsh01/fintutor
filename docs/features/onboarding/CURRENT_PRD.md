@@ -2,7 +2,7 @@
 
 **Status:** BQ-120 reconciled definition; prototype pending.
 
-**Decisions:** D-118, D-119, D-126, D-148, D-158.
+**Decisions:** D-118, D-119, D-126, D-148, D-158, D-159 and D-160.
 
 **Observed implementation:** `RootNavigator.tsx`, `OnboardingScreen.tsx`,
 `VoluntaryAssessmentScreen.tsx`, `AssessmentContextScreen.tsx`, `onboardingAssessment.ts`, and the
@@ -118,7 +118,6 @@ Without coaching, the user can:
 - `ASSESSMENT_V2.md` mentions optional typed clarification, but the shipped v2 UI exposes chips only. Typed
   clarification is therefore permitted direction, not current prototype scope; adding it to production would
   require a separate bounded implementation.
-- **OPEN O-ONB-1:** a new account with no cached/authoritative handled state and an unreachable backend cannot
-  persist eligibility, start or globally exit. Access without acknowledgement would reinterpret D-119's legal
-  boundary; blocking access conflicts with the fail-safe/ungated experience. BQ-122 must route this to the
-  owner before BQ-123 hardens a recovery behavior.
+- **Resolved O-ONB-1 / D-159:** after explicit 18+ acknowledgement fails to persist, a subject-scoped pending
+  state may open only a limited offline Home. Ordinary backend/model/financial/progression actions remain
+  locked until authoritative sync; sign-out/switch clears the pending state.
