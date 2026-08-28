@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-130 — Reconcile Scenario/focused-explorer PRD, journey and state matrix — DONE 29-Aug-2026
+
+Traces to D-166/D-148. Objective: audit shipped scenario and focused-explorer surfaces plus governing
+decisions, then create one current PRD, end-to-end journey and complete state matrix. Accept: target outcome,
+entry/return/exit, comparison neutrality, provenance, partial/invalid/stale prefill, every approved explorer,
+recovery, privacy and explicit exclusions are testable; contradictions/open forks remain visible rather than
+silently resolved. Size L.
+
+Delivered `docs/features/scenarios/PRD.md`, `JOURNEY_AND_STATES.md` and the authority-map README. Reconciled
+five dedicated scenarios plus loan, ESOP, 80C and term-insurance focused explorers into one user-authored
+consequence-modeling contract, 12-step journey, scenario branches, 50-state matrix and controlled fixture
+families. Retained O-SC-1..O-SC-3 for BQ-132. No production or money-logic mutation.
+
 ## BQ-129 — Portfolio owner validation walkthrough and disposition — DONE 29-Aug-2026
 
 Traces to D-161/D-148. Objective: present the already-tested Portfolio prototype and record PASS / REVISE /

@@ -16,14 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-130 — Reconcile Scenario/focused-explorer PRD, journey and state matrix — READY
-
-Traces to D-166/D-148. Objective: audit shipped scenario and focused-explorer surfaces plus governing
-decisions, then create one current PRD, end-to-end journey and complete state matrix. Accept: target outcome,
-entry/return/exit, comparison neutrality, provenance, partial/invalid/stale prefill, every approved explorer,
-recovery, privacy and explicit exclusions are testable; contradictions/open forks remain visible rather than
-silently resolved. Size L.
-
 ### BQ-131 — Consolidate Scenario functional, money and safety contracts — READY (after BQ-130)
 
 Traces to D-166/D-148. Objective: specify inputs/outputs, scenario ownership, calculations/provenance,
