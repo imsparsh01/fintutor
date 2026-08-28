@@ -63,6 +63,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-153 | SHIPPED → BQ-117 / validated definition | Session-expiry/network-loss recovery UX = non-blocking banner + manual retry (O-A) | Realized in the BQ-116 fixture and owner-validated PASS on 28-Aug-2026; production implementation remains a separately bounded follow-on |
 | D-154 | SHIPPED → BQ-117 / validated definition | Neutral, enumeration-safe duplicate-registration / wrong-password copy (O-B) | Realized in the BQ-116 fixture and owner-validated PASS on 28-Aug-2026; production implementation remains a separately bounded follow-on |
 | D-155 | SHIPPED → BQ-117 / validated definition | Active clear of device-local state on logout/account-switch (O-C) | Realized in the BQ-116 fixture and owner-validated PASS on 28-Aug-2026; production implementation remains a separately bounded follow-on |
+| D-156 | READY → BQ-119 | Home and consolidated experience definition package, clickable prototype and agent QA | BQ-118 complete with exhaustive QA PASS; BQ-119 is the owner validation gate before production work |
 
 ## Current-session decisions
 

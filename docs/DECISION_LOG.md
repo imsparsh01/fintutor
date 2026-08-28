@@ -141,3 +141,9 @@
   AsyncStorage subject-scoped state, extending the BQ-112/D-149 load-time suppression. Full write-up:
   `docs/decisions/D-155-account-entry-active-clear-device-local-state-on-logout.md`.
 - **Date:** 26-Aug-2026
+
+### D-156 — Home and consolidated experience is the next product-definition workstream
+- **Tier:** 3, owner-decided sequencing. “The owner approved **Home and consolidated experience**, rank 4
+  (score 80) in the D-148 portfolio audit, as the next product-definition deep dive.” Full write-up:
+  `docs/decisions/D-156-home-is-next-product-definition-workstream.md`.
+- **Date:** 28-Aug-2026

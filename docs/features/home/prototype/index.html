@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>FinTutor Home validation prototype</title>
+  <script>document.documentElement.dataset.theme=new URLSearchParams(location.search).get('theme')||'auto'</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="validation-shell">
+    <aside class="task-panel" aria-labelledby="task-title">
+      <p class="kicker">Owner validation · BQ-118</p>
+      <h2 class="validation-title" id="task-title">Test Home without coaching</h2>
+      <p class="intro">Choose a scenario, read its task, then use the phone. All accounts and amounts are controlled fixtures. Nothing is sent or saved.</p>
+      <label for="scenario">Validation scenario</label>
+      <select id="scenario">
+        <option value="mixed">Mixed financial picture</option>
+        <option value="empty">Nothing recorded yet</option>
+        <option value="failure">One section fails</option>
+        <option value="stale">Stale and offline</option>
+        <option value="denied">Permission is lost</option>
+        <option value="switch">Switch accounts during load</option>
+        <option value="all-actions">Find every destination</option>
+      </select>
+      <section class="task-copy" aria-live="polite">
+        <h3 id="scenario-title"></h3>
+        <p id="scenario-prompt"></p>
+        <p class="fixture-note" id="scenario-fixture"></p>
+      </section>
+      <fieldset>
+        <legend>Agent test record</legend>
+        <label><input type="checkbox" disabled> Meaning is clear without coaching</label>
+        <label><input type="checkbox" disabled> Unknown never looks like zero</label>
+        <label><input type="checkbox" disabled> Recovery is local and deliberate</label>
+        <label><input type="checkbox" disabled> No prior-account residue appears</label>
+      </fieldset>
+      <p class="prototype-note">Fixture-only prototype. No network, Supabase, FastAPI, storage, analytics or real financial data.</p>
+    </aside>
+
+    <section class="stage" aria-label="Interactive Home prototype">
+      <div class="device">
+        <div id="announcement" class="sr-only" aria-live="polite"></div>
+        <header class="app-bar">
+          <div>
+            <span class="wordmark">FinTutor</span>
+            <span class="account" id="account-label">Mira's account</span>
+          </div>
+          <button class="icon-button" id="refresh" aria-label="Refresh Home">↻</button>
+        </header>
+        <div id="banner" class="banner" hidden></div>
+        <div id="home-content" class="home-content"></div>
+        <nav class="tab-bar" aria-label="Primary navigation">
+          <button class="tab active" data-route="Home"><span aria-hidden="true">⌂</span>Home</button>
+          <button class="tab" data-route="Portfolio"><span aria-hidden="true">▦</span>Portfolio</button>
+          <button class="tab" data-route="Goals"><span aria-hidden="true">◎</span>Goals</button>
+          <button class="tab" data-route="Tools"><span aria-hidden="true">◇</span>Tools</button>
+          <button class="tab" data-route="Chat"><span aria-hidden="true">◌</span>Chat</button>
+        </nav>
+      </div>
+
+      <div class="fixture-controls" aria-label="Fixture controls, not part of the product">
+        <strong>Fixture controls, not part of the product</strong>
+        <button id="drop-connection">Drop connection</button>
+        <button id="fail-picture">Fail picture</button>
+        <button id="deny-request">Deny request</button>
+        <button id="switch-account">Switch account</button>
+        <button id="reset-fixture">Reset</button>
+      </div>
+      <div class="route-log" aria-live="polite"><strong>Fixture log</strong><span id="route-log">Ready.</span></div>
+    </section>
+  </main>
+  <dialog id="panel-dialog">
+    <form method="dialog">
+      <button class="dialog-close" aria-label="Close panel">Close</button>
+      <p class="kicker" id="dialog-label">Destination</p>
+      <h2 id="dialog-title">Destination</h2>
+      <p id="dialog-body"></p>
+      <button class="primary">Done</button>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>

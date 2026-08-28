@@ -16,13 +16,16 @@ Rules for this file:
 
 ## READY — pick one of these
 
-> **Account entry and access workstream (D-152).** Owner approved "Account entry and access" (portfolio-audit
-> rank 3) as the next product-definition deep dive and this five-item plan. All five are definition/prototype
-> only — no production engineering, no schema, no new library, no MVP scope growth (account entry is already
-> MVP per `PROJECT_SPEC.md` §4.1). Both HARD-STOPs stay DEFERRED and out of this workstream: (a) a frontend
-> screen/navigation test harness (new library/architecture — owner-only), and (b) production CORS/dev-bypass
-> cleanup (D-095), backend hosting (BQ-092), and Supabase leaked-password protection. Package lives in
-> `docs/features/account-entry/`.
+> **Home and consolidated experience workstream (D-156).** Owner approved portfolio-audit rank 4 as the next
+> D-148 deep dive. Definition and fixture prototype only; no production code, schema, API, dependency or
+> money-logic change. Package lives in `docs/features/home/`.
+
+### BQ-119 — Home owner validation walkthrough + disposition
+
+Traces to D-156/D-148. Objective: give the thoroughly tested prototype to the owner and record PASS / REVISE /
+PARK / ESCALATE in `VALIDATION_RESULT.md`. Accept: every critical task has coaching, comprehension,
+neutrality and recovery results; confusion, trust surprises and dead ends are recorded; PASS freezes the
+package at its prototype commit. Owner-gated. Depends on BQ-118.
 
 ## BLOCKED — do not start
 

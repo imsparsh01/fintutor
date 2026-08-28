@@ -12,6 +12,23 @@
 
 ---
 
+## BQ-118 — Complete Home definition package, clickable prototype and agent QA — DONE 28-Aug-2026
+
+Traces to D-156/D-148/D-104/D-111. Objective: reconcile the live Home and standing decisions into the full
+D-148 package (PRD, journey/state matrix, functional/content contract, acceptance matrix and decision
+register), then build and thoroughly test a controlled-data clickable prototype. Accept: (a) all eight
+D-104 Home areas remain reachable with a clear hierarchy; (b) loading, empty, partial, valid, invalid, stale,
+permission, offline, account-transition and recovery states are explicit; (c) every requirement maps to a
+prototype task and test; (d) agent evidence covers syntax, static contracts, every scenario/interaction,
+responsive layout, keyboard/accessibility semantics, both themes and reduced motion; (e) no production
+`app/`/`backend/`/schema/API/dependency/money-logic mutation. Size L. Owner validation is BQ-119.
+
+Delivered the complete package under `docs/features/home/`, including a seven-scenario interactive prototype
+and `QA_EVIDENCE.md`. Exhaustive agent QA exercised every state, 28 route controls, recovery, account-switch
+race, mobile/wide layouts, both themes, reduced-motion CSS, DOM/accessibility integrity, target size and
+contrast. Eight defects found during QA were fixed. No production code, schema, API, dependency or money
+logic changed. Owner disposition remains BQ-119.
+
 ## BQ-117 — Account-entry owner validation walkthrough + disposition — DONE 28-Aug-2026
 
 Traces to D-152/D-148. Objective: run the 5–8 tasks with the owner, record `VALIDATION_RESULT.md`, set
