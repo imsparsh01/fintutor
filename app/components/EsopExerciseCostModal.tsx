@@ -80,7 +80,7 @@ export function EsopExerciseCostModal({
             </View>
 
             <View style={styles.card}>
-              <Text style={styles.cardLabel}>Taxable spread if exercised today</Text>
+              <Text style={styles.cardLabel}>Paper spread using {result.fmv_basis_label}</Text>
               <Text style={styles.cardValue}>
                 {result.spread !== null ? formatRupees(result.spread) : '—'}
               </Text>

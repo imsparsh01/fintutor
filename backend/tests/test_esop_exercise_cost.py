@@ -1,6 +1,6 @@
 import unittest
 import uuid
-from datetime import date
+from datetime import date, datetime, timezone
 from unittest.mock import MagicMock
 
 from app.models import Holding
@@ -22,7 +22,7 @@ def _months_before_today(months: int) -> str:
     `_elapsed_months` from applying its partial-month decrement and makes the elapsed
     count exactly `months` on any calendar day the suite runs.
     """
-    today = date.today()
+    today = date(2026, 8, 29)
     absolute = today.year * 12 + (today.month - 1) - months
     year, month = divmod(absolute, 12)
     return date(year, month + 1, min(today.day, 28)).isoformat()
@@ -44,6 +44,7 @@ def _grant(product_type: str = "esop", **characteristics) -> Holding:
         product_type=product_type,
         alias="ESOP-1",
         characteristics=base,
+        version=1,
     )
 
 
@@ -54,7 +55,12 @@ def _db_returning(holding: Holding | None) -> MagicMock:
 
 
 def _compute(holding: Holding) -> dict:
-    return compute_esop_exercise_cost(_db_returning(holding), holding.user_id, holding.id)
+    return compute_esop_exercise_cost(
+        _db_returning(holding),
+        holding.user_id,
+        holding.id,
+        now=datetime(2026, 8, 29, 12, tzinfo=timezone.utc),
+    )
 
 
 class ElapsedMonthsTests(unittest.TestCase):
@@ -70,8 +76,8 @@ class ElapsedMonthsTests(unittest.TestCase):
     def test_same_day_is_zero(self) -> None:
         self.assertEqual(_elapsed_months(date(2026, 3, 9), date(2026, 3, 9)), 0)
 
-    def test_a_future_grant_date_never_goes_negative(self) -> None:
-        self.assertEqual(_elapsed_months(date(2027, 1, 1), date(2026, 1, 1)), 0)
+    def test_a_future_grant_date_is_visible_to_the_caller(self) -> None:
+        self.assertLess(_elapsed_months(date(2027, 1, 1), date(2026, 1, 1)), 0)
 
     def test_a_month_end_grant_clamps_to_a_shorter_month_end(self) -> None:
         self.assertEqual(_elapsed_months(date(2026, 1, 31), date(2026, 2, 28)), 1)
@@ -126,9 +132,9 @@ class EsopVestingTests(unittest.TestCase):
         )
         self.assertEqual(result["vested_units"], 600.0)
 
-    def test_a_future_grant_date_vests_nothing(self) -> None:
-        result = _compute(_grant(grant_date=_months_before_today(-6)))
-        self.assertEqual(result["vested_units"], 0.0)
+    def test_a_future_grant_date_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "grant_date cannot be in the future"):
+            _compute(_grant(grant_date=_months_before_today(-6)))
 
 
 class EsopExerciseCostTests(unittest.TestCase):
@@ -216,20 +222,20 @@ class EsopExerciseWindowNoteTests(unittest.TestCase):
 
     def test_window_months_produce_a_formatted_note(self) -> None:
         result = _compute(_grant(exercise_window_months=90))
-        self.assertEqual(
-            result["exercise_window_note"],
-            "Vested options typically must be exercised within 90 months of leaving the company.",
-        )
+        self.assertIn("records a post-termination exercise window of 90 months", result["exercise_window_note"])
+        self.assertIn("not a countdown", result["exercise_window_note"])
 
-    def test_a_fractional_window_is_rendered_as_a_whole_number(self) -> None:
-        result = _compute(_grant(exercise_window_months=12.9))
-        self.assertIn("within 12 months", result["exercise_window_note"])
+    def test_a_fractional_window_is_rejected_not_truncated(self) -> None:
+        with self.assertRaisesRegex(ValueError, "whole number"):
+            _compute(_grant(exercise_window_months=12.9))
 
     def test_no_window_recorded_means_no_note(self) -> None:
         self.assertIsNone(_compute(_grant())["exercise_window_note"])
 
-    def test_a_zero_window_produces_no_note(self) -> None:
-        self.assertIsNone(_compute(_grant(exercise_window_months=0))["exercise_window_note"])
+    def test_a_recorded_zero_window_is_not_treated_as_missing(self) -> None:
+        note = _compute(_grant(exercise_window_months=0))["exercise_window_note"]
+        self.assertIn("records a post-termination exercise window of 0 months", note)
+        self.assertIn("not a countdown", note)
 
 
 class EsopEligibilityAndGuardTests(unittest.TestCase):
@@ -268,11 +274,11 @@ class EsopEligibilityAndGuardTests(unittest.TestCase):
                     _compute(holding)
 
     def test_a_malformed_grant_date_is_reported_as_a_shape_problem(self) -> None:
-        with self.assertRaisesRegex(ValueError, "aren't in the expected shape"):
+        with self.assertRaisesRegex(ValueError, "valid ISO calendar date"):
             _compute(_grant(grant_date="last April"))
 
     def test_a_non_numeric_strike_is_reported_as_a_shape_problem(self) -> None:
-        with self.assertRaisesRegex(ValueError, "aren't in the expected shape"):
+        with self.assertRaisesRegex(ValueError, "finite number"):
             _compute(_grant(strike_price="ten rupees"))
 
     def test_zero_and_negative_vesting_periods_are_rejected(self) -> None:
@@ -280,6 +286,53 @@ class EsopEligibilityAndGuardTests(unittest.TestCase):
             with self.subTest(period=period):
                 with self.assertRaisesRegex(ValueError, "vesting_period_months must be"):
                     _compute(_grant(vesting_period_months=period))
+
+    def test_invalid_numeric_terms_are_rejected_before_math(self) -> None:
+        cases = [
+            ("total_units_granted", -1),
+            ("total_units_granted", 1.5),
+            ("total_units_granted", True),
+            ("vesting_cliff_months", -1),
+            ("vesting_cliff_months", 1.5),
+            ("vesting_period_months", float("inf")),
+            ("strike_price", -0.01),
+            ("strike_price", float("nan")),
+            ("current_fmv", -0.01),
+            ("current_fmv", float("inf")),
+            ("exercise_window_months", -1),
+            ("exercise_window_months", float("nan")),
+        ]
+        for field, value in cases:
+            with self.subTest(field=field, value=value):
+                with self.assertRaises(ValueError):
+                    _compute(_grant(**{field: value}))
+
+    def test_cliff_cannot_extend_beyond_the_vesting_period(self) -> None:
+        with self.assertRaisesRegex(ValueError, "cannot exceed"):
+            _compute(_grant(vesting_cliff_months=49, vesting_period_months=48))
+
+    def test_unsafe_monetary_outputs_are_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "₹1 quadrillion"):
+            _compute(_grant(total_units_granted=1_000_000_000, strike_price=3_000_000))
+
+        with self.assertRaisesRegex(ValueError, "₹1 quadrillion"):
+            _compute(
+                _grant(
+                    total_units_granted=1_000_000_000,
+                    strike_price=0,
+                    current_fmv=3_000_000,
+                )
+            )
+
+    def test_non_finite_vesting_intermediate_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "finite outputs"):
+            _compute(
+                _grant(
+                    total_units_granted=1e308,
+                    vesting_period_months=48,
+                    grant_date=_months_before_today(24),
+                )
+            )
 
     def test_zero_units_granted_reads_as_no_units(self) -> None:
         result = _compute(_grant(total_units_granted=0))
@@ -317,6 +370,68 @@ class EsopDisclosureTests(unittest.TestCase):
             _compute(plain)["exercise_cost"], _compute(partly_exercised)["exercise_cost"]
         )
         self.assertNotIn("units_already_exercised", _compute(partly_exercised))
+
+
+class EsopDateAndProvenanceTests(unittest.TestCase):
+    def test_india_date_boundary_controls_today(self) -> None:
+        holding = _grant(grant_date="2026-08-30")
+        with self.assertRaisesRegex(ValueError, "future"):
+            compute_esop_exercise_cost(
+                _db_returning(holding),
+                holding.user_id,
+                holding.id,
+                now=datetime(2026, 8, 29, 18, 29, 59, tzinfo=timezone.utc),
+            )
+
+        result = compute_esop_exercise_cost(
+            _db_returning(holding),
+            holding.user_id,
+            holding.id,
+            now=datetime(2026, 8, 29, 18, 30, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["calculation_date"], "2026-08-30")
+        self.assertEqual(result["calculation_timezone"], "Asia/Kolkata")
+
+    def test_recorded_fmv_language_and_authoritative_evidence(self) -> None:
+        holding = _grant(current_fmv=60)
+        holding.display_name = "Workplace options"
+        holding.version = 6
+        result = compute_esop_exercise_cost(
+            _db_returning(holding),
+            holding.user_id,
+            holding.id,
+            now=datetime(2026, 8, 29, 12, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["fmv_basis_label"], "Recorded FMV")
+        self.assertIn("recorded FMV", result["spread_note"])
+        self.assertEqual(result["source_evidence"], {
+            "source_kind": "holding",
+            "source_record_id": str(holding.id),
+            "source_label": "Workplace options",
+            "source_fields": [
+                "grant_type",
+                "grant_date",
+                "total_units_granted",
+                "vesting_cliff_months",
+                "vesting_period_months",
+                "strike_price",
+                "current_fmv",
+                "exercise_window_months",
+            ],
+            "source_version": 6,
+            "record_updated_at": None,
+            "retrieved_at": "2026-08-29T12:00:00+00:00",
+            "freshness": "unavailable",
+            "freshness_note": "Freshness unavailable",
+        })
+
+    def test_naive_clock_is_treated_as_utc_for_deterministic_evidence(self) -> None:
+        holding = _grant()
+        result = compute_esop_exercise_cost(
+            _db_returning(holding), holding.user_id, holding.id,
+            now=datetime(2026, 8, 29, 12),
+        )
+        self.assertEqual(result["source_evidence"]["retrieved_at"], "2026-08-29T12:00:00+00:00")
 
 
 if __name__ == "__main__":

@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-139 — ESOP date, safety and provenance reconciliation — DONE 29-Aug-2026
+
+Traces to D-170 O-SC-9B/O-SC-10/D-172. Objective: use India date, reject future/invalid/unsafe grants, label
+FMV as recorded and return backend-authoritative existing-version/retrieval provenance. Accept: no invented
+freshness/countdown, no schema/dependency, contradictory legacy tests replaced and boundary/provenance tests
+pass. Size M. Depends on BQ-138.
+
 ## BQ-138 — S-02 authenticated POST and authoritative guardrails — DONE 29-Aug-2026
 
 Traces to D-170 O-SC-9A/D-171/D-172. Objective: replace the financial GET query with authenticated POST and

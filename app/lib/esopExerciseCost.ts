@@ -7,9 +7,23 @@ export interface EsopExerciseCostResult {
   exercise_cost: number;
   exercised_units_assumption_note: string;
   vesting_timing_note: string;
+  calculation_date: string;
+  calculation_timezone: 'Asia/Kolkata';
+  fmv_basis_label: 'Recorded FMV';
   spread: number | null;
   spread_note: string | null;
   exercise_window_note: string | null;
+  source_evidence: {
+    source_kind: 'holding';
+    source_record_id: string;
+    source_label: string;
+    source_fields: string[];
+    source_version: number;
+    record_updated_at: null;
+    retrieved_at: string;
+    freshness: 'unavailable';
+    freshness_note: 'Freshness unavailable';
+  };
 }
 
 // D-069/BRIEF-015: cost of exercising today only, never a prediction of future valuation.

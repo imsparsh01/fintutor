@@ -45,7 +45,7 @@ GET/PUT/PATCH/DELETE /financial-context → view, replace, field-update or clear
                                       dependant/emergency context; first-write races retry safely
 GET  /budget                    → compute_budget(db, user_id)
 POST /loan-vs-invest            → authenticated body; refetch owned holding; bounded authoritative math
-GET  /esop-exercise-cost        → compute_esop_exercise_cost(…)
+GET  /esop-exercise-cost        → owned ESOP; India-date bounded math + recorded-FMV/source evidence
 NO ROUTE /tax-saving-room       → service/tests parked internal-only pending D-170 release gates (BQ-136)
 
 GET  /streak                    → get_streak(db, user_id)
@@ -155,7 +155,8 @@ services/rewards.py (22)        evaluate_reward(is_new_day) — returns reward s
 services/streaks.py             record_app_open() / get_streak(); future stored activity dates log and no-op.
 services/loan_vs_invest.py      Bounded prepayment-vs-invest hurdle-rate math (D-014/D-171); validates the
                                  owned stored record and returns ID/version/source-field/retrieval evidence.
-services/esop_exercise_cost.py  ESOP cost with clamped-anniversary vesting estimate, equal-FMV/zero-unit copy.
+services/esop_exercise_cost.py  Options-only ESOP cost using India date and clamped-anniversary vesting;
+                                 validates terms/outputs and returns recorded-FMV plus holding provenance.
 services/tax_saving_room.py     Parked internal 80C calculation evidence; no registered production route.
                                   Re-release is blocked by D-170's FY/source/reviewer/stale/counsel gates.
                                   Legacy invalid contributions are excluded. No NPS/80CCD
