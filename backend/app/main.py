@@ -8,7 +8,7 @@ import anthropic
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, StrictBool
+from pydantic import BaseModel, Field, StrictBool, field_validator
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -167,6 +167,18 @@ class HoldingUpdate(BaseModel):
     display_name: str | None = None
     characteristics: dict | None = None
     expected_version: int = Field(ge=1)
+
+
+class LoanVsInvestRequest(BaseModel):
+    holding_id: uuid.UUID
+    prepay_amount: float = Field(gt=0, le=1_000_000_000_000, allow_inf_nan=False)
+
+    @field_validator("prepay_amount", mode="before")
+    @classmethod
+    def reject_boolean_amount(cls, value):
+        if isinstance(value, bool):
+            raise ValueError("prepay_amount must be a number, not a boolean")
+        return value
 
 
 class HoldingReconciliationResolve(BaseModel):
@@ -658,15 +670,14 @@ def delete_financial_context(user_id: uuid.UUID, db: Session = Depends(get_db)) 
     return clear_financial_context(db, user_id)
 
 
-@app.get("/loan-vs-invest")
-def get_loan_vs_invest(
+@app.post("/loan-vs-invest")
+def post_loan_vs_invest(
+    body: LoanVsInvestRequest,
     user_id: uuid.UUID,
-    holding_id: uuid.UUID,
-    prepay_amount: float,
     db: Session = Depends(get_db),
 ) -> dict:
     try:
-        return compute_loan_vs_invest(db, user_id, holding_id, prepay_amount)
+        return compute_loan_vs_invest(db, user_id, body.holding_id, body.prepay_amount)
     except LookupError:
         raise HTTPException(status_code=404, detail="Holding not found")
     except ValueError as exc:

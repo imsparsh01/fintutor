@@ -73,13 +73,13 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-163 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no composite score | Realized, agent-tested 96/96 and owner-approved final PASS; production Home/Portfolio replacement remains separate |
 | D-164 | SHIPPED → BQ-129 / validated definition | Optional health-insurance context is account-owned | Simulated, agent-tested and owner-approved final PASS; production schema/API/privacy/export/deletion work remains separate |
 | D-165 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no score bands or headline grade | Realized, agent-tested 96/96 and owner-approved final PASS; production copy/UI replacement remains separate |
-| D-166 | READY → BQ-138 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | Local formula guardrails shipped; S-02 POST/privacy reconciliation is next |
+| D-166 | READY → BQ-139 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | S-02 POST/privacy reconciliation shipped; ESOP reconciliation is next |
 | D-167 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Scenario taxonomy and contextual focused-explorer discovery | Realized across nine entries and all 50 canonical states; owner disposition remains BQ-134 |
 | D-168 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Remove stale Scenario result immediately after dependent input edits | Realized and browser-tested in the controlled prototype |
 | D-169 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Conditional confirmed Arya teaching handoff from eligible current Scenario results | Realized as an explicit, masked, cancellable prototype handoff |
-| D-170 | READY → BQ-138 | Approved Scenario safety, eligibility, provenance and release package | D-171 local domains enforced; O-SC-9A authenticated POST is next |
-| D-171 | SHIPPED → BQ-137 / `app/lib/scenarios.test.ts` | Exact Scenario numeric domains and reject-before-render guardrails | Production local formulas now enforce exact inputs, intermediates and outputs; S-02 backend follows in BQ-138 |
-| D-172 | READY → BQ-138 | Scenario and focused-explorer package receives owner PASS | BQ-137 local formula safety shipped; continue with S-02 backend privacy/guards |
+| D-170 | READY → BQ-139 | Approved Scenario safety, eligibility, provenance and release package | O-SC-9A authenticated POST shipped; O-SC-9B/O-SC-10 ESOP reconciliation is next |
+| D-171 | SHIPPED → BQ-137/BQ-138 / Scenario and loan-vs-invest tests | Exact Scenario numeric domains and reject-before-render guardrails | Local and S-02 backend domains enforce finite bounded inputs, intermediates and outputs |
+| D-172 | READY → BQ-139 | Scenario and focused-explorer package receives owner PASS | BQ-138 privacy/guards shipped; continue with ESOP date, safety and provenance |
 
 ## Current-session decisions
 

@@ -169,7 +169,7 @@ walkthroughSteps.ts             Pure per-family plan builder: selects only mecha
                                 preserves real zeroes, labels provenance, and never fabricates unknown values
 rewardFacts.ts          9       Curated mechanism-fact array for app-open reward surface (D-100)
 taxSavingRoom.ts        24      Parked client for internal 80C evidence; unreachable in production (BQ-136)
-loanVsInvest.ts         30      fetchLoanVsInvest()
+loanVsInvest.ts                 Authenticated POST-body client + typed authoritative source evidence
 holdingReconciliation.ts       Resolve owned candidate/new choice and apply confirmed transient diff;
                                 exposes refreshed proposal on stale 409
 compoundGrowth.ts              Pure D-128/D-129 month-end contribution model with finite/safe bounds;

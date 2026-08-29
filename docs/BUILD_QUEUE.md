@@ -16,21 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-138 — S-02 authenticated POST and authoritative guardrails — READY (after BQ-137)
-
-Traces to D-170 O-SC-9A/D-171/D-172. Objective: replace the financial GET query with authenticated POST and
-enforce every stored/input/intermediate/output domain server-side. Accept: old GET unavailable; URL/log spy,
-ownership/non-disclosure, 400/404, provenance/version/retrieval and exact formula tests pass; no schema/new
-dependency. Size M. Depends on BQ-137.
-
-## BLOCKED — do not start
-
-### BQ-139 — ESOP date, safety and provenance reconciliation — BLOCKED (after BQ-138)
+### BQ-139 — ESOP date, safety and provenance reconciliation — READY (after BQ-138)
 
 Traces to D-170 O-SC-9B/O-SC-10/D-172. Objective: use India date, reject future/invalid/unsafe grants, label
 FMV as recorded and return backend-authoritative existing-version/retrieval provenance. Accept: no invented
 freshness/countdown, no schema/dependency, contradictory legacy tests replaced and boundary/provenance tests
 pass. Size M. Depends on BQ-138.
+
+## BLOCKED — do not start
 
 ### BQ-140 — Backend-authoritative Scenario candidate provenance — BLOCKED (after BQ-139)
 

@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-138 — S-02 authenticated POST and authoritative guardrails — DONE 29-Aug-2026
+
+Traces to D-170 O-SC-9A/D-171/D-172. Objective: replace the financial GET query with authenticated POST and
+enforce every stored/input/intermediate/output domain server-side. Accept: old GET unavailable; URL/log spy,
+ownership/non-disclosure, 400/404, provenance/version/retrieval and exact formula tests pass; no schema/new
+dependency. Size M. Depends on BQ-137.
+
 ## BQ-137 — Strict Scenario numeric parser and bounded local formula engine — DONE 29-Aug-2026
 
 Traces to D-170/D-171/D-172. Objective: implement the approved whole-string numeric grammar and exact local

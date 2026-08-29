@@ -1,5 +1,6 @@
 import unittest
 import uuid
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
 from app.models import Holding
@@ -63,6 +64,27 @@ class LoanVsInvestArithmeticTests(unittest.TestCase):
     def test_echoes_holding_and_prepay_amount(self) -> None:
         self.assertEqual(self.result["holding_id"], str(self.holding.id))
         self.assertEqual(self.result["prepay_amount"], 500_000.0)
+
+    def test_returns_backend_authoritative_record_and_retrieval_evidence(self) -> None:
+        holding = _loan()
+        holding.version = 7
+        holding.display_name = "My home loan"
+        retrieved = datetime(2026, 8, 29, 10, 30, tzinfo=timezone.utc)
+        result = compute_loan_vs_invest(
+            _db_returning(holding), holding.user_id, holding.id, 500_000,
+            retrieved_at=retrieved,
+        )
+        self.assertEqual(result["source_evidence"], {
+            "source_kind": "holding",
+            "source_record_id": str(holding.id),
+            "source_label": "My home loan",
+            "source_fields": ["outstanding_balance", "interest_rate", "emi_amount"],
+            "source_version": 7,
+            "record_updated_at": None,
+            "retrieved_at": "2026-08-29T10:30:00+00:00",
+            "freshness": "unavailable",
+            "freshness_note": "Freshness unavailable",
+        })
 
     def test_hurdle_rate_is_the_loans_own_rate_untouched(self) -> None:
         self.assertEqual(self.result["hurdle_rate_percent"], 8.5)
@@ -168,9 +190,9 @@ class LoanVsInvestEligibilityTests(unittest.TestCase):
 class LoanVsInvestGuardTests(unittest.TestCase):
     """Zero, negative, missing and out-of-range inputs are rejected before any math runs."""
 
-    def _expect_missing_fields(self, **characteristics) -> None:
+    def _expect_invalid_field(self, field: str, **characteristics) -> None:
         holding = _loan(**characteristics)
-        with self.assertRaisesRegex(ValueError, "missing outstanding_balance"):
+        with self.assertRaisesRegex(ValueError, f"missing {field}"):
             compute_loan_vs_invest(
                 _db_returning(holding), holding.user_id, holding.id, 1_000
             )
@@ -184,16 +206,16 @@ class LoanVsInvestGuardTests(unittest.TestCase):
             )
 
     def test_zero_and_negative_balance_are_rejected(self) -> None:
-        self._expect_missing_fields(outstanding_balance=0)
-        self._expect_missing_fields(outstanding_balance=-1)
+        self._expect_invalid_field("outstanding_balance", outstanding_balance=0)
+        self._expect_invalid_field("outstanding_balance", outstanding_balance=-1)
 
     def test_zero_and_negative_rate_are_rejected(self) -> None:
-        self._expect_missing_fields(interest_rate=0)
-        self._expect_missing_fields(interest_rate=-8.5)
+        self._expect_invalid_field("interest_rate", interest_rate=0)
+        self._expect_invalid_field("interest_rate", interest_rate=-8.5)
 
     def test_zero_and_negative_emi_are_rejected(self) -> None:
-        self._expect_missing_fields(emi_amount=0)
-        self._expect_missing_fields(emi_amount=-45_000)
+        self._expect_invalid_field("emi_amount", emi_amount=0)
+        self._expect_invalid_field("emi_amount", emi_amount=-45_000)
 
     def test_absent_fields_are_rejected(self) -> None:
         holding = _loan()
@@ -228,13 +250,40 @@ class LoanVsInvestGuardTests(unittest.TestCase):
                 _db_returning(holding), holding.user_id, holding.id, 100_000
             )
 
-    def test_a_barely_amortizing_loan_still_computes(self) -> None:
-        # Just above the interest-only threshold: the guard is strict, not defensive.
+    def test_a_barely_amortizing_loan_over_600_months_is_rejected(self) -> None:
         holding = _loan(outstanding_balance=1_000_000, interest_rate=12, emi_amount=10_001)
-        result = compute_loan_vs_invest(
-            _db_returning(holding), holding.user_id, holding.id, 100_000
-        )
-        self.assertGreater(result["tenure_reduction"]["new_remaining_months"], 0)
+        with self.assertRaisesRegex(ValueError, "exceeds 600 months"):
+            compute_loan_vs_invest(
+                _db_returning(holding), holding.user_id, holding.id, 100_000
+            )
+
+    def test_non_finite_and_exact_amount_rate_domains(self) -> None:
+        invalid_characteristics = [
+            {"outstanding_balance": float("nan")},
+            {"outstanding_balance": float("inf")},
+            {"outstanding_balance": 1_000_000_000_001},
+            {"interest_rate": 100.0001},
+            {"emi_amount": 1_000_000_000_001},
+        ]
+        for fields in invalid_characteristics:
+            with self.subTest(fields=fields):
+                holding = _loan(**fields)
+                with self.assertRaises(ValueError):
+                    compute_loan_vs_invest(
+                        _db_returning(holding), holding.user_id, holding.id, 100_000
+                    )
+
+        holding = _loan(outstanding_balance=1_000_000_000_000, interest_rate=100, emi_amount=1_000_000_000_000)
+        self.assertIsNotNone(compute_loan_vs_invest(
+            _db_returning(holding), holding.user_id, holding.id, 999_999_999_999
+        ))
+
+        for amount in (float("nan"), float("inf"), 1_000_000_000_001):
+            holding = _loan()
+            with self.assertRaisesRegex(ValueError, "prepay_amount must be finite"):
+                compute_loan_vs_invest(
+                    _db_returning(holding), holding.user_id, holding.id, amount
+                )
 
 
 class LoanVsInvestDisclosureTests(unittest.TestCase):

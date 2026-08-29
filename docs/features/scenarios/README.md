@@ -4,8 +4,8 @@
 
 **Current gate:** BQ-130..BQ-134 complete; owner PASS recorded in D-172 and `VALIDATION_RESULT.md`
 
-**Production reconciliation:** BQ-135 audit, BQ-136 EX-80C containment and BQ-137 strict local formula
-guardrails complete. `PRODUCTION_RECONCILIATION.md` maps the remaining dependency-ordered BQ-138..BQ-144
+**Production reconciliation:** BQ-135 audit through BQ-138 S-02 POST/privacy reconciliation complete.
+`PRODUCTION_RECONCILIATION.md` maps the remaining dependency-ordered BQ-139..BQ-144
 sequence; production parity is not yet achieved.
 
 **Production status:** A broad first implementation is shipped. This package reconciles and validates the
