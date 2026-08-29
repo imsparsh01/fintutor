@@ -135,3 +135,9 @@
   rerun state replaces it; stale output cannot be announced, handed off or rewarded. Full write-up:
   `docs/decisions/D-168-scenario-changed-input-removes-result.md`.
 - **Date:** 29-Aug-2026
+
+### D-169 — Scenario Arya handoff appears only for bounded current-result teaching
+- **Tier:** 2. “Show the secondary action ‘Explore the mechanism with Arya’ only on a current result whose
+  approved teaching handoff has a bounded mechanism prompt.” Full write-up:
+  `docs/decisions/D-169-scenario-arya-handoff-only-for-bounded-current-results.md`.
+- **Date:** 29-Aug-2026

@@ -40,8 +40,9 @@ tools” keeps every Home feature reachable. A contextual explorer opens only af
 eligible record/context, never from inferred urgency. Zero eligible records gives a neutral reason and normal
 back/add/view routes; one shows its source before opening; many use an equal-order chooser with cancel.
 
-O-SC-2 remains open: whether focused explorers also appear in Tools and what final taxonomy labels them.
-Until resolved, prototype both discovery variants without changing eligibility or formula behavior.
+D-167 resolves taxonomy/discovery: Tools lists the five dedicated scenarios under **Scenarios**. Focused
+explorers remain contextual deliberate actions from eligible records/contexts and are not duplicated as
+context-free Tools cards. “Focused explorer” is an internal term, not a third user-facing product category.
 
 Back from a dedicated scenario returns to Tools. Closing a contextual explorer restores its exact origin and
 opener. No route may dead-end or silently create, select or modify a financial record.
@@ -57,14 +58,12 @@ clear on close, logout, account change, permission loss and scenario-type change
 initial state. Reset clears edits, inclusions, results and errors while leaving recorded values available only
 as separately offered candidates; it never writes or deletes baseline data.
 
-Each dependent input edit immediately makes the old result non-current. O-SC-3 remains open between:
-
-1. remove the old result immediately; or
-2. retain it with prominent stale treatment and all handoff, announcement and progression disabled.
-
-Both variants require an explicit rerun before the result is current. Run is idempotent while busy and uses a
-stable visible input summary. A valid zero, equal result or negative signed comparison is a real result, not an
-error. No result renders unless every intermediate and output is finite.
+D-168 governs changed inputs: each dependent input edit immediately removes the prior result and shows
+**“Inputs changed — run again to see a result for these values.”** No stale result is announced, handed off or
+rewarded. Run is idempotent while busy and uses a stable visible input summary. Pure local calculations expose
+no fake Cancel action; remote requests show Cancel only when abort/generation invalidation is real. A valid
+zero, equal result or negative signed comparison is a real result, not an error. No result renders unless every
+intermediate and output is finite.
 
 ## 4. Candidate provenance and freshness
 
@@ -78,11 +77,12 @@ Every offered candidate carries, where the source can truthfully provide it:
 aggregate enumerates its components or explicitly says it is an aggregate source. Real display names may be
 shown to the authenticated person but are never sent to a model.
 
-Retrieval time is not record freshness. Holdings/goals currently expose versions but no update time; budget
+Retrieval time proves only when FinTutor loaded a candidate in this session; it is not record freshness.
+Holdings/goals currently expose versions but no update time; budget
 aggregates expose neither component IDs/versions nor update times; financial context alone exposes
-`updated_at`. Therefore the product may truthfully say “loaded this session at …” and show available version
-or source evidence, but must not call a record “current” without record-level evidence. BQ-132 must choose
-between that honest limited promise and later API/schema enrichment; schema enrichment remains a hard stop.
+`updated_at`. A candidate may be labelled stale only when authoritative record-level evidence and an approved
+freshness rule establish that status. Otherwise show **“Freshness unavailable · loaded this session at …”**
+plus available version/source evidence; never call it fresh/current/stale. O-SC-8 governs any enrichment.
 
 On refresh, an untouched field may accept a new candidate. A touched/manual field is never overwritten.
 Present recorded-new versus draft-old with accept-new, keep-manual and reset-to-recorded choices. Retrying one
@@ -107,8 +107,9 @@ that standing decisions do not set remain owner decisions for BQ-132; BQ-131 doe
 
 ### S-03 — Increase SIP
 
-- Inputs: current monthly SIP, additional monthly amount, annual rate and years. The rate is user-owned and
-  source-labelled when prefilled; the app never supplies an expected return.
+- Inputs: current monthly SIP, additional monthly amount, annual rate and years. The annual rate is always
+  entered by the user and is never populated from a holding, budget record, benchmark, historical return or
+  app default. Any future recorded rate candidate requires a separately approved source contract.
 - `n = round(years × 12)` and `r = annual_rate / 12 / 100`.
 - Ordinary-annuity future value with end-month contributions is
   `P × ((1+r)^n − 1) / r`; at zero rate it is `P × n`.
@@ -120,7 +121,8 @@ that standing decisions do not set remain owner decisions for BQ-132; BQ-131 doe
 ### S-06 — Debt cost
 
 - Inputs: selected eligible balance, annual interest rate and remaining months. Balance is positive, rate is
-  non-negative and months are positive; all are finite.
+  non-negative and months are positive; all are finite. Blank, nonnumeric, non-finite, negative, zero and
+  out-of-domain periods are invalid. A non-integral value follows O-SC-7 and is never silently transformed.
 - With monthly rate `r`, EMI = `P × r × (1+r)^n / ((1+r)^n − 1)`; total payable = EMI × n; total interest =
   total payable − P. Next-year interest is the month-by-month interest for `min(12,n)` months.
 - At zero rate, EMI = P/n, total payable = P and both interest outputs are zero. Display rupees whole.
@@ -187,8 +189,10 @@ that standing decisions do not set remain owner decisions for BQ-132; BQ-131 doe
 - Every debt, goal, asset offset and other component starts excluded. The user explicitly selects each one;
   recorded candidates are never auto-included. Existing production defaults for debts/goals contradict this
   binding rule and are BQ-133 reconciliation evidence.
-- Support stream for integer years 1–100 is `annual × Σ(1+g)^y`, `y=0..n−1`; optional user growth defaults to
-  zero only when omitted and is 0–100%. Amounts are finite, non-negative and no greater than `MAX_SAFE`.
+- Support years are user-entered integers 1–100. Before running, the user explicitly chooses **Model no annual
+  change** (`g = 0`) or **Enter an annual change assumption** (finite `g` in O-SC-4's approved domain); blank
+  treatment never becomes zero silently. Support stream is `annual × Σ(1+g)^y`, `y=0..n−1`. Amount ceilings
+  follow O-SC-4 and every intermediate/output must stay finite and safely representable.
 - Modelled amount = `max(0, support stream + selected debts + selected goals − selected asset offsets −
   selected survivor-income stream)`.
 - Entered cover = individual + group + other cover. Signed comparison = entered cover − modelled amount.
@@ -292,14 +296,17 @@ freshness or later uploads scenario data.
 The next gate must resolve or explicitly park these forks before prototype build:
 
 1. O-SC-1: final S-07 user-facing name.
-2. O-SC-2: suite taxonomy and focused-explorer discovery.
-3. O-SC-3: remove versus visibly stale-mark a result after dependent edits.
-4. Numeric safety ceilings across S-01/S-02/S-03/S-06/S-07 and reject-before-render overflow behavior.
-5. Whether S-03 accepts zero additional SIP as an equality case.
-6. Whether S-02 supports zero-rate loans.
-7. Whether S-06 months must be integer or round, and whether credit-card debt is eligible.
-8. Honest retrieval-time/version freshness versus later API/schema enrichment.
-9. Production follow-ups for S-02 query-string privacy, ESOP provenance and aggregate budget provenance.
+2. O-SC-4: complete numeric domains and reject-before-render behavior.
+3. O-SC-5: whether S-03 accepts zero additional SIP as equality.
+4. O-SC-6: whether S-02 supports zero-rate loans.
+5. O-SC-7: S-06 integer periods and home/personal-versus-credit-card eligibility.
+6. O-SC-8/O-SC-9: freshness promise and production privacy/provenance follow-ups.
+7. O-SC-10: ESOP date/valuation authority.
+8. O-SC-11: 80C statutory version authority (standing external gate).
+9. O-SC-12: recorded-candidate default inclusion.
+10. O-SC-13: accepted numeric grammar.
+
+D-167 and D-168 have already resolved former O-SC-2/O-SC-3.
 
 EX-80C statutory provenance/external release and EX-TERM counsel review stay gated by their standing decisions;
 they are not reopened as prototype design choices.

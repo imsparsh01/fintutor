@@ -47,7 +47,7 @@ existence of shipped behavior is not evidence of conformance.
 | AC-R04 | Valid finite calculation completes | Named result region shows units, formula/convention, current-input summary, attribution, rounding and omissions |
 | AC-R05 | Result is exactly zero/equal | It renders neutrally as a valid result, not an error or success |
 | AC-R06 | Signed comparison is negative/crosses | Sign and input order remain; paths are not reordered, recoloured or labelled winner/loser |
-| AC-R07 | A dependent input changes | Old result follows the approved O-SC-3 treatment and cannot announce, hand off or earn progress |
+| AC-R07 | A dependent input changes | D-168 removes the old result, shows the neutral rerun state, and prevents announcement, handoff or progress |
 | AC-R08 | User reruns | Only the newest current finite result is rendered/announced/reward-eligible |
 | AC-R09 | User resets | Draft, inclusions, errors and result clear; recorded values remain only as separately offered candidates |
 | AC-R10 | User closes/reopens | Safe initial state returns; no draft, consent, source, error or result survives |

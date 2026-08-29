@@ -54,14 +54,17 @@ month/year estimate, or not reached within the explicit 60-year cap. The app nev
 
 ### S-02 Prepay versus invest
 
-User chooses one eligible recorded loan, an amount and user-owned assumptions. The explorer shows transparent
-path arithmetic without selecting prepayment or investing. Zero/one/many eligible-loan and fetch-retry paths
-remain usable and account-scoped.
+User chooses one eligible recorded home/personal loan and enters only a prepayment amount. The backend
+refetches the loan and uses its stored outstanding principal, interest rate and EMI to show tenure-reduction
+and EMI-reduction consequences. The stored loan rate is shown only as the return an alternative would need to
+clear before costs; FinTutor does not ask for or model an investment return or investment horizon. Zero/one/
+many eligible-loan and fetch-retry paths remain usable and account-scoped.
 
 ### EX-ESOP exercise cost
 
-User opens from an eligible ESOP option record and sees recorded units/strike/FMV provenance. Result explains
-cash exercise cost and paper spread while excluding unmodeled tax, fees, vesting and actual grant controls.
+User opens from an eligible ESOP option record and sees recorded units/strike/FMV provenance. Result models
+cliff-gated linear vesting, exercise cash cost and optional paper spread. Taxes, fees, prior exercises,
+termination status, exercise-window countdown and actual grant controls remain unmodeled.
 
 ### EX-80C unused room
 
@@ -80,7 +83,7 @@ never “required,” “adequate,” “shortfall” or “surplus.” All edit
 | ID | State | What appears | Available action | Must never happen |
 |---|---|---|---|---|
 | SC-01 | Suite loading | Tools structure and shape-matched rows | Wait/back | Empty catalogue flash |
-| SC-02 | Suite ready | Calculators, scenarios and contextual-explorer discovery under O-SC-2 | Open one tool | Implied priority or recommendation |
+| SC-02 | Suite ready | Five Tools scenarios plus D-167 contextual focused-explorer actions | Open one tool | Implied priority, recommendation or third user-facing taxonomy |
 | SC-03 | Deferred item | Explicit unavailable/deferred boundary where referenced | Return/read why | Disabled tool presented as shipped |
 | SC-04 | Scenario initial | Question, scope, no result, manual fields | Enter assumptions/back | Default rate/target or automatic run |
 | SC-05 | Sources loading | Stable fields with named loading provenance | Manual entry where safe/back | Zero prefill or stale account flash |
@@ -88,7 +91,7 @@ never “required,” “adequate,” “shortfall” or “surplus.” All edit
 | SC-07 | Sources partial | Successful candidates plus named unavailable source | Continue manually/retry failed source | Partial presented as complete |
 | SC-08 | Sources failed | Source-specific unavailable state; manual route remains | Retry/manual/back | Treat failure as no holdings/budget |
 | SC-09 | No source records | Neutral “nothing recorded to offer” | Enter manually/leave | Confirm real-world absence |
-| SC-10 | Source stale | Last-known candidate and timestamp | Edit knowingly/retry | Present as current |
+| SC-10 | Source age known/stale | Candidate, authoritative record age/version evidence and retrieval time | Edit knowingly/retry | Infer staleness from retrieval time or present as current |
 | SC-11 | Candidate edited | User value replaces offered candidate for this draft | Continue/reset to recorded | Write back silently |
 | SC-12 | Candidate excluded | Named component stays visible as excluded | Re-include/continue | Count excluded amount |
 | SC-13 | Critical unknown | Exact missing field blocks honest calculation | Enter/leave | Infer or coerce zero |
@@ -102,7 +105,7 @@ never “required,” “adequate,” “shortfall” or “surplus.” All edit
 | SC-21 | Crossing/negative difference | Signed result and direction explained arithmetically | Inspect assumptions | Red/green or loss/opportunity judgment |
 | SC-22 | Target already reached | Zero time with explicit current≥target explanation | Edit target/leave | Celebration or financial outcome reward |
 | SC-23 | Target not reached by cap | Explicit 60-year boundary and “not on these inputs” | Edit/rerun | Infinite loop or impossible certainty |
-| SC-24 | Inputs changed after result | O-SC-3 changed-input state | Rerun/reset/exit | Old result looks current |
+| SC-24 | Inputs changed after result | D-168 removes result and shows “Inputs changed — run again to see a result for these values” | Rerun/reset/exit | Old result remains visible/current/announced/rewarded |
 | SC-25 | Reset | Manual/default-empty draft restored; recorded candidates remain offered separately | Start again/exit | Persistent deletion or write-back |
 | SC-26 | Source refresh changes candidate | Current recorded candidate and prior draft distinction | Accept new/keep manual/review | Overwrite touched field silently |
 | SC-27 | Source retry succeeds | Repaired source replaces only unavailable/stale candidate | Continue | Duplicate/reordered components |
@@ -144,8 +147,8 @@ All identities, records and amounts are hypothetical, held only in fixture memor
 
 ## BQ-130 open reconciliation items
 
-1. O-SC-1 name for S-07.
-2. O-SC-2 suite taxonomy/discovery for focused explorers.
-3. O-SC-3 changed-input result treatment.
-4. BQ-131 must reconcile exact formulas, units, rounding, finite/range guards, API/source contracts, privacy,
+1. O-SC-1 name for S-07 remains Tier 3.
+2. O-SC-2 taxonomy/discovery is resolved by D-167.
+3. O-SC-3 changed-input treatment is resolved by D-168.
+4. BQ-131 reconciled exact formulas, units, rounding, finite/range guards, API/source contracts, privacy,
    accessibility, progression and failure semantics without silently repairing production.

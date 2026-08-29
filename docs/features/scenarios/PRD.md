@@ -65,14 +65,14 @@ FinTutor forecast, an old result can survive changed inputs, and side-by-side ar
   result with a warning.
 - Contextual explorers can remain discoverable without duplicating every entry in Tools.
 
-### Open forks retained for BQ-132
+### Decision status for BQ-132
 
 1. **O-SC-1 — S-07 name:** keep D-106’s advice-adjacent “Inaction tax” label or use the already-shipped
    mechanism label “Idle cash over time.”
-2. **O-SC-2 — suite taxonomy/display:** final user-facing distinction among Calculator, Scenario and focused
-   Explorer, including whether focused explorers also receive a Tools index entry.
-3. **O-SC-3 — changed-input result treatment:** immediately remove the result or retain it with a prominent
-   “inputs changed; run again” state. BQ-131 must model both without picking silently.
+2. **O-SC-2 — RESOLVED by D-167:** Tools lists the five dedicated scenarios under **Scenarios**. Focused
+   explorers remain contextual deliberate actions and are not duplicated as context-free Tools cards.
+3. **O-SC-3 — RESOLVED by D-168:** editing a dependent input immediately removes the prior result and shows
+   “Inputs changed — run again to see a result for these values.”
 
 ## Fundamental outcome
 
@@ -121,7 +121,7 @@ or if presentation turns a mathematical difference into a preferred path.
 | S-06 | Debt cost | Understand remaining repayment interest | EMI, total payable/interest and next-year interest from entered loan terms |
 | S-07 | Idle cash over time | Compare one cash amount under two user-owned rates | Two future values and signed difference; no path verdict |
 | S-01 | Time to corpus | Find when current corpus/contribution reaches user target | Months/years or not reached within 60-year cap |
-| S-02 | Prepay versus invest | Compare loan prepayment effect with investing an amount | Two transparent paths using user-selected loan/amount/rate/horizon |
+| S-02 | Loan prepayment effects and investing hurdle | Inspect how a user-entered prepayment changes the selected loan under two fixed-amortisation modes | Tenure-reduction and EMI-reduction consequences plus the stored loan rate as a hurdle; no investment-return assumption, horizon or projected investment outcome |
 | EX-ESOP | ESOP exercise cost | Explain exercise cash requirement and current spread | Exercise cost, taxes/fees excluded, paper spread described neutrally |
 | EX-80C | 80C unused room | Explain recorded eligible contributions against statutory cap | Included recorded amount and clamped unused room; not tax advice |
 | EX-TERM | Household-support scenarios | Explore user-selected support components and cover | Component sum, entered cover and signed difference; no need verdict |
@@ -134,8 +134,8 @@ or if presentation turns a mathematical difference into a preferred path.
 4. Run action only when a finite honest result is possible.
 5. Result with unit, formula/provenance summary, omissions and non-recommendation boundary.
 6. User-selected edit/rerun/reset, mechanism teaching, relevant record, Arya or exit route.
-7. Contextual focused-explorer entry from a relevant holding/budget/insurance surface, with a discoverability
-   path governed by O-SC-2.
+7. Contextual focused-explorer entry from a relevant holding/budget/insurance surface under D-167; it is a
+   deliberate mechanism action and is not duplicated as a context-free Tools card.
 
 This order is information architecture, not a ranking of financial actions or scenario importance.
 
