@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-134 — Scenario owner validation walkthrough and disposition — DONE 29-Aug-2026
+
+Traces to D-166/D-148. Objective: present the tested Scenario prototype and record PASS / REVISE / PARK /
+ESCALATE. Accept: every critical task records coaching, understanding of assumptions/provenance/neutrality,
+recovery, confusion, trust surprises and dead ends; PASS freezes the package and permits separately bounded
+production reconciliation planning. Owner-gated. Size S. Depends on BQ-133.
+
 ## BQ-133 — Scenario clickable prototype and exhaustive agent QA — DONE 29-Aug-2026
 
 Traces to D-166/D-148. Objective: build the approved controlled-data scenario/focused-explorer prototype and

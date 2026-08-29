@@ -112,3 +112,10 @@
   Formula-specific amount/rate/period/output ceilings are now binding. Full write-up:
   `docs/decisions/D-171-scenario-exact-numeric-domains-approved.md`.
 - **Date:** 29-Aug-2026
+
+### D-172 — Scenario and focused-explorer package receives owner PASS
+- **Tier:** 3, owner-decided validation. “The owner gave every Scenario owner-validation task a PASS after
+  the controlled prototype and exhaustive QA package was presented.” The package is frozen at `e3b8543`;
+  production reconciliation remains separately bounded. Full write-up:
+  `docs/decisions/D-172-scenario-owner-validation-pass.md`.
+- **Date:** 29-Aug-2026

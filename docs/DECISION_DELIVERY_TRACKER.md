@@ -73,12 +73,13 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-163 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no composite score | Realized, agent-tested 96/96 and owner-approved final PASS; production Home/Portfolio replacement remains separate |
 | D-164 | SHIPPED → BQ-129 / validated definition | Optional health-insurance context is account-owned | Simulated, agent-tested and owner-approved final PASS; production schema/API/privacy/export/deletion work remains separate |
 | D-165 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no score bands or headline grade | Realized, agent-tested 96/96 and owner-approved final PASS; production copy/UI replacement remains separate |
-| D-166 | BLOCKED → BQ-134 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | Prototype and exhaustive QA complete; owner validation is the sole next gate |
+| D-166 | READY → BQ-135 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | Scenario owner PASS complete; separately bounded production-reconciliation planning is next |
 | D-167 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Scenario taxonomy and contextual focused-explorer discovery | Realized across nine entries and all 50 canonical states; owner disposition remains BQ-134 |
 | D-168 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Remove stale Scenario result immediately after dependent input edits | Realized and browser-tested in the controlled prototype |
 | D-169 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Conditional confirmed Arya teaching handoff from eligible current Scenario results | Realized as an explicit, masked, cancellable prototype handoff |
-| D-170 | BLOCKED → BQ-134 | Approved Scenario safety, eligibility, provenance and release package | Prototype evidence passes; owner validation precedes separately bounded O-SC-9A/B/C production work |
+| D-170 | READY → BQ-135 | Approved Scenario safety, eligibility, provenance and release package | Owner PASS complete; plan separately bounded O-SC-9A/B/C production work without implicit mutation |
 | D-171 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Exact Scenario numeric domains and reject-before-render guardrails | Exact fixtures and boundary rejection passed in the controlled prototype |
+| D-172 | READY → BQ-135 | Scenario and focused-explorer package receives owner PASS | Package frozen at `e3b8543`; production reconciliation planning is the next bounded gate |
 
 ## Current-session decisions
 

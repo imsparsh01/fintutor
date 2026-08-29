@@ -16,12 +16,13 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-134 — Scenario owner validation walkthrough and disposition — READY (after BQ-133)
+### BQ-135 — Scenario production-reconciliation plan — READY (after BQ-134 PASS)
 
-Traces to D-166/D-148. Objective: present the tested Scenario prototype and record PASS / REVISE / PARK /
-ESCALATE. Accept: every critical task records coaching, understanding of assumptions/provenance/neutrality,
-recovery, confusion, trust surprises and dead ends; PASS freezes the package and permits separately bounded
-production reconciliation planning. Owner-gated. Size S. Depends on BQ-133.
+Traces to D-166/D-170/D-172. Objective: compare the frozen Scenario contract with the current app/backend and
+produce bounded production build items, dependencies and verification gates. Accept: every gap maps to an
+existing approved outcome; O-SC-9A/B/C are separated from UI/formula work; every money/data/privacy/schema or
+new-architecture dependency is explicitly escalated rather than implemented; no production code changes.
+Size M. Depends on BQ-134 PASS.
 
 ## BLOCKED — do not start
 
