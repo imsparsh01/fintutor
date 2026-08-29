@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-133 — Scenario clickable prototype and exhaustive agent QA — DONE 29-Aug-2026
+
+Traces to D-166/D-148. Objective: build the approved controlled-data scenario/focused-explorer prototype and
+complete exhaustive agent QA. Accept: every critical path/state is clickable; formulas and provenance match
+approved contracts; syntax, forbidden APIs/storage, responsive/zoom, keyboard/accessibility, contrast,
+themes, reduced motion, DOM and console integrity are tested and recorded. Size L. Depends on BQ-132.
+
 ## BQ-132 — Scenario acceptance matrix and owner decision register — DONE 29-Aug-2026
 
 Traces to D-166/D-148. Objective: map every requirement/state/journey to prototype and QA evidence, and route

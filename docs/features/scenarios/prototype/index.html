@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>FinTutor Scenario validation prototype</title>
+  <script>document.documentElement.dataset.theme=new URLSearchParams(location.search).get('theme')||'auto'</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="validation-shell">
+    <aside class="task-panel" aria-labelledby="task-title">
+      <p class="kicker">Owner validation | BQ-133</p>
+      <h2 class="validation-title" id="task-title">Test scenarios without coaching</h2>
+      <p class="intro">Choose a task, then use the phone. Every identity and amount is hypothetical. Nothing is sent or saved.</p>
+      <label for="validation-task">Validation task</label>
+      <select id="validation-task">
+        <option value="discover">Discover and choose</option>
+        <option value="sources">Sources and authorship</option>
+        <option value="formulas">Formula boundaries</option>
+        <option value="changed">Changed inputs and reset</option>
+        <option value="focused">Focused explorers</option>
+        <option value="recovery">Failure and offline recovery</option>
+        <option value="isolation">Permission and account isolation</option>
+        <option value="accessibility">Accessibility and responsive behavior</option>
+      </select>
+      <section class="task-copy" aria-live="polite">
+        <h3 id="task-name"></h3>
+        <p id="task-prompt"></p>
+        <p class="fixture-note" id="task-fixture"></p>
+      </section>
+      <fieldset>
+        <legend>Validation record</legend>
+        <label><input type="checkbox"> Inputs and sources are authored clearly</label>
+        <label><input type="checkbox"> Results match the visible assumptions</label>
+        <label><input type="checkbox"> Difference never becomes a verdict</label>
+        <label><input type="checkbox"> Recovery is local and deliberate</label>
+        <label><input type="checkbox"> Nothing is stored or sent</label>
+      </fieldset>
+      <p class="prototype-note">Fixture-only prototype. No network, model, storage, cookies, analytics, service worker or real financial data.</p>
+    </aside>
+
+    <section class="stage" aria-label="Interactive Scenario prototype">
+      <div class="device">
+        <div id="polite-announcement" class="sr-only" aria-live="polite"></div>
+        <div id="urgent-announcement" class="sr-only" role="alert"></div>
+        <header class="app-bar">
+          <button class="icon-button" id="back" aria-label="Go back" hidden>‹</button>
+          <div class="app-identity"><span class="wordmark">FinTutor</span><span class="account" id="account-label"></span></div>
+          <button class="icon-button" id="close" aria-label="Close scenario" hidden>×</button>
+        </header>
+        <div id="banner" class="banner" hidden></div>
+        <div id="app-content" class="app-content" tabindex="-1"></div>
+        <nav class="tab-bar" aria-label="Primary navigation">
+          <button class="tab" data-route="Home"><span aria-hidden="true">⌂</span>Home</button>
+          <button class="tab" data-route="Portfolio"><span aria-hidden="true">▦</span>Portfolio</button>
+          <button class="tab" data-route="Goals"><span aria-hidden="true">◎</span>Goals</button>
+          <button class="tab active" data-action="tools"><span aria-hidden="true">◇</span>Tools</button>
+          <button class="tab" data-route="Arya"><span aria-hidden="true">◌</span>Arya</button>
+        </nav>
+      </div>
+
+      <div class="fixture-controls" aria-label="Fixture controls, not part of the product">
+        <strong>Fixture controls, not part of the product</strong>
+        <label for="state-fixture">Acceptance state</label>
+        <select id="state-fixture" aria-describedby="state-fixture-help"></select>
+        <span id="state-fixture-help" class="helper">Loads one of the 50 canonical acceptance states directly.</span>
+        <button data-fixture="loading">Loading</button>
+        <button data-fixture="partial">Partial sources</button>
+        <button data-fixture="failure">Source failure</button>
+        <button data-fixture="stale">Known stale</button>
+        <button data-fixture="overflow">Boundary overflow</button>
+        <button data-fixture="offline">Offline</button>
+        <button data-fixture="permission">Lose permission</button>
+        <button data-fixture="switch">Switch account</button>
+        <button data-fixture="progress-cap">Progress cap</button>
+        <button data-fixture="reset">Reset</button>
+      </div>
+      <div class="route-log" aria-live="polite"><strong>Fixture evidence</strong><span id="route-log">Ready.</span></div>
+    </section>
+  </main>
+
+  <dialog id="action-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-body">
+    <form method="dialog" id="dialog-form">
+      <button class="dialog-close" value="cancel" aria-label="Close dialog">Close</button>
+      <p class="kicker" id="dialog-label">Review</p>
+      <h2 id="dialog-title" tabindex="-1">Review</h2>
+      <div id="dialog-body"></div>
+      <div class="dialog-actions" id="dialog-actions"></div>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>

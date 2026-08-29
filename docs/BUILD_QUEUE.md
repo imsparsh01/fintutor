@@ -16,21 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-133 — Scenario clickable prototype and exhaustive agent QA — READY (after BQ-132)
-
-Traces to D-166/D-148. Objective: build the approved controlled-data scenario/focused-explorer prototype and
-complete exhaustive agent QA. Accept: every critical path/state is clickable; formulas and provenance match
-approved contracts; syntax, forbidden APIs/storage, responsive/zoom, keyboard/accessibility, contrast,
-themes, reduced motion, DOM and console integrity are tested and recorded. Size L. Depends on BQ-132.
-
-## BLOCKED — do not start
-
-### BQ-134 — Scenario owner validation walkthrough and disposition — BLOCKED (after BQ-133)
+### BQ-134 — Scenario owner validation walkthrough and disposition — READY (after BQ-133)
 
 Traces to D-166/D-148. Objective: present the tested Scenario prototype and record PASS / REVISE / PARK /
 ESCALATE. Accept: every critical task records coaching, understanding of assumptions/provenance/neutrality,
 recovery, confusion, trust surprises and dead ends; PASS freezes the package and permits separately bounded
 production reconciliation planning. Owner-gated. Size S. Depends on BQ-133.
+
+## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 
