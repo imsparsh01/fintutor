@@ -20,6 +20,8 @@ test('zero, negative, and non-finite inputs cannot produce a result', () => {
   assert.equal(calculateEmergencyCoverage({ cashAndBank: 1, fixedDeposits: 0, otherAccessible: 0, monthlyOutgoings: 0 }), null);
   assert.equal(calculateEmergencyCoverage({ cashAndBank: -1, fixedDeposits: 0, otherAccessible: 0, monthlyOutgoings: 1 }), null);
   assert.equal(calculateEmergencyCoverage({ cashAndBank: 1, fixedDeposits: 0, otherAccessible: Infinity, monthlyOutgoings: 1 }), null);
+  assert.equal(calculateEmergencyCoverage({ cashAndBank: 1_000_000_000_000_000, fixedDeposits: 1, otherAccessible: 0, monthlyOutgoings: 1 }), null);
+  assert.equal(calculateEmergencyCoverage({ cashAndBank: Number.MAX_VALUE, fixedDeposits: Number.MAX_VALUE, otherAccessible: 0, monthlyOutgoings: 1 }), null);
 });
 
 test('prefills count FD principal and budget outgoings, never retirement balances or RDs', () => {

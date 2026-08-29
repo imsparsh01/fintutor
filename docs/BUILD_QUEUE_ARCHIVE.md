@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-137 — Strict Scenario numeric parser and bounded local formula engine — DONE 29-Aug-2026
+
+Traces to D-170/D-171/D-172. Objective: implement the approved whole-string numeric grammar and exact local
+formula domains for S-01/S-03/S-05/S-06/S-07. Accept: every raw/intermediate/output finite guard, exact edge
+and just-outside fixture, S-06 integer/type boundary and S-01 overflow-before-reached rule pass; no UI/API/
+schema/dependency change. Size M. Depends on BQ-136.
+
 ## BQ-136 — Contain EX-80C production reachability — DONE 29-Aug-2026
 
 Traces to D-170/D-172. Objective: enforce the approved internal/fixture-only boundary immediately. Accept:

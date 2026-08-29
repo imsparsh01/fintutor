@@ -13,6 +13,10 @@ export interface EmergencyCoverageResult {
   months: number;
 }
 
+const MAX_SCENARIO_MONEY_OUTPUT = 1_000_000_000_000_000;
+const finiteMoneyOutput = (value: number) =>
+  Number.isFinite(value) && Math.abs(value) <= MAX_SCENARIO_MONEY_OUTPUT;
+
 function finiteNonNegative(value: unknown): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
@@ -40,7 +44,10 @@ export function calculateEmergencyCoverage(
   if (inputs.cashAndBank < 0 || inputs.fixedDeposits < 0 || inputs.otherAccessible < 0) return null;
   if (!(inputs.monthlyOutgoings > 0)) return null;
   const accessibleBalances = inputs.cashAndBank + inputs.fixedDeposits + inputs.otherAccessible;
-  return { accessibleBalances, months: accessibleBalances / inputs.monthlyOutgoings };
+  const months = accessibleBalances / inputs.monthlyOutgoings;
+  return finiteMoneyOutput(accessibleBalances) && Number.isFinite(months)
+    ? { accessibleBalances, months }
+    : null;
 }
 
 // Stable identity for one committed calculation. UI surfaces keep their own last-emitted

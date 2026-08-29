@@ -183,7 +183,10 @@ creditCardPayoff.ts            Pure fixed-payment month loop: interest then clam
 stepUpSip.ts                   D-129 pure month-end contribution loop; annual step-up starts with the
                                 first contribution of each new 12-month block
 emergencyCoverage.ts           Shared D-130 pure accessible-balances / monthly-outgoings calculation and
-                               liquidity-narrow budget/fixed-deposit prefill helpers; retirement excluded
+                               liquidity-narrow budget/fixed-deposit prefill helpers; retirement excluded;
+                               BQ-137 rejects unsafe/non-finite aggregate and quotient before result
+scenarioNumbers.ts             D-170 strict whole-string plain/Indian/international numeric parser with
+                               normalized value plus shared ₹1-quadrillion output guard; UI wiring is BQ-141
 termInsurance.ts               Pure D-145 support-stream/component model and source-visible recorded-context
                                projection; no inferred rate, persisted scenario, advice or outcome reward
 requestGeneration.ts           Tiny stale-async guard used when consented modal context requests outlive UI state
@@ -198,9 +201,11 @@ concentration.ts        55      computeCategoryConcentration(holdings) → {tota
                                 (D-106 rules that out: a by-value share reads as a weighting verdict).
 healthScoreSnapshot.ts  ~85     BQ-058/D-110 lightweight shared computed snapshot. Portfolio refreshes;
                                 HealthScore reuses; in-flight loads deduplicated; local answers recompute cache.
-scenarios.ts            ~250    BQ-056 scenario maths — derivePrefills(budget,holdings) plus emergencyRunway /
-                                sipIncrease / debtCost / idleCashOpportunity / monthsToTarget. Pure; every rate
-                                is a caller-supplied user input (the app never asserts a return rate).
+scenarios.ts            ~300    BQ-056/BQ-137 pure Scenario maths — derivePrefills plus sipIncrease / debtCost /
+                                idleCashOpportunity / monthsToTarget. D-171 exact amount/rate/period/output
+                                domains guard every input, intermediate and result; S-06 accepts only integer
+                                months and home/personal candidates; S-01 guards overflow before target reach.
+                                Every rate remains a caller-supplied user input.
 format.ts               3       Currency formatting util
 taxonomy.ts             45      Product-type → family mapping (investments / loans / insurance)
 discretionaryCategories.ts 33   fetchCategories / createCategory

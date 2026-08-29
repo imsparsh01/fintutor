@@ -17,7 +17,14 @@ import type { Holding } from './holdings';
 // This matches CalculatorScreen's C-04/C-22 so the two surfaces can't disagree on the same input.
 
 const SIP_TYPES = ['equity_mutual_fund', 'debt_mutual_fund'];
-const LOAN_TYPES = ['home_loan', 'personal_loan', 'credit_card_debt'];
+const LOAN_TYPES = ['home_loan', 'personal_loan'];
+const MAX_SCENARIO_MONTHLY_AMOUNT = 1_000_000_000;
+const MAX_SCENARIO_AMOUNT = 1_000_000_000_000;
+const MAX_SCENARIO_MONEY_OUTPUT = 1_000_000_000_000_000;
+const MAX_SCENARIO_RATE_PERCENT = 100;
+const finiteMoneyOutput = (...values: number[]) => values.every(
+  (value) => Number.isFinite(value) && Math.abs(value) <= MAX_SCENARIO_MONEY_OUTPUT
+);
 
 // `characteristics` is Record<string, unknown> — any field can be absent, a string, or junk.
 // Every read goes through this guard (the NaN trap BQ-054's review surfaced).
@@ -120,12 +127,23 @@ export function derivePrefills(
 // ─── Shared: future value of a monthly contribution ──────────────────────────
 // FV = P × ((1+r)^n − 1) / r, with r = annual/12/100 and n = months. Ordinary annuity.
 
-export function sipFutureValue(monthly: number, annualRatePct: number, years: number): number {
+export function sipFutureValue(monthly: number, annualRatePct: number, years: number): number | null {
   const n = Math.round(years * 12);
-  if (n <= 0 || monthly <= 0) return 0;
+  if (
+    ![monthly, annualRatePct, years].every(Number.isFinite)
+    || monthly < 0
+    || monthly > MAX_SCENARIO_MONTHLY_AMOUNT * 2
+    || annualRatePct < 0
+    || annualRatePct > MAX_SCENARIO_RATE_PERCENT
+    || years <= 0
+    || years > 60
+    || n < 1
+    || n > 720
+  ) return null;
+  if (monthly === 0) return 0;
   const r = annualRatePct / 12 / 100;
-  if (r === 0) return monthly * n;
-  return monthly * ((Math.pow(1 + r, n) - 1) / r);
+  const value = r === 0 ? monthly * n : monthly * ((Math.pow(1 + r, n) - 1) / r);
+  return finiteMoneyOutput(value) ? value : null;
 }
 
 // ─── S-03: What if I increase my SIP? ────────────────────────────────────────
@@ -143,14 +161,30 @@ export function sipIncrease(
   annualRatePct: number,
   years: number
 ): SipIncreaseResult | null {
-  if (!(years > 0) || !(extraSip > 0) || annualRatePct < 0) return null;
+  if (
+    ![currentSip, extraSip, annualRatePct, years].every(Number.isFinite)
+    || currentSip < 0
+    || currentSip > MAX_SCENARIO_MONTHLY_AMOUNT
+    || extraSip <= 0
+    || extraSip > MAX_SCENARIO_MONTHLY_AMOUNT
+    || annualRatePct < 0
+    || annualRatePct > MAX_SCENARIO_RATE_PERCENT
+    || years <= 0
+    || years > 60
+  ) return null;
+  const n = Math.round(years * 12);
+  if (n < 1 || n > 720) return null;
   const base = sipFutureValue(currentSip, annualRatePct, years);
   const raised = sipFutureValue(currentSip + extraSip, annualRatePct, years);
+  const extraInvested = extraSip * n;
+  if (base === null || raised === null) return null;
+  const difference = raised - base;
+  if (!finiteMoneyOutput(base, raised, difference, extraInvested)) return null;
   return {
     base,
     raised,
-    difference: raised - base,
-    extraInvested: extraSip * Math.round(years * 12),
+    difference,
+    extraInvested,
   };
 }
 
@@ -171,18 +205,32 @@ export function debtCost(
   annualRatePct: number,
   remainingMonths: number
 ): DebtCostResult | null {
-  const n = Math.round(remainingMonths);
-  if (!(outstanding > 0) || !(n > 0) || annualRatePct < 0) return null;
+  if (
+    ![outstanding, annualRatePct, remainingMonths].every(Number.isFinite)
+    || outstanding <= 0
+    || outstanding > MAX_SCENARIO_AMOUNT
+    || annualRatePct < 0
+    || annualRatePct > MAX_SCENARIO_RATE_PERCENT
+    || !Number.isInteger(remainingMonths)
+    || remainingMonths < 1
+    || remainingMonths > 600
+  ) return null;
+  const n = remainingMonths;
 
   const r = annualRatePct / 12 / 100;
   if (r === 0) {
     const emi = outstanding / n;
-    return { emi, totalPayable: outstanding, totalInterest: 0, nextYearInterest: 0 };
+    return finiteMoneyOutput(emi, outstanding)
+      ? { emi, totalPayable: outstanding, totalInterest: 0, nextYearInterest: 0 }
+      : null;
   }
 
   const growth = Math.pow(1 + r, n);
+  if (!Number.isFinite(growth)) return null;
   const emi = (outstanding * r * growth) / (growth - 1);
   const totalPayable = emi * n;
+  const totalInterest = totalPayable - outstanding;
+  if (!finiteMoneyOutput(emi, totalPayable, totalInterest)) return null;
 
   let balance = outstanding;
   let nextYearInterest = 0;
@@ -190,10 +238,11 @@ export function debtCost(
     const interest = balance * r;
     nextYearInterest += interest;
     balance = balance + interest - emi;
+    if (!finiteMoneyOutput(interest, nextYearInterest, balance)) return null;
     if (balance <= 0) break;
   }
 
-  return { emi, totalPayable, totalInterest: totalPayable - outstanding, nextYearInterest };
+  return { emi, totalPayable, totalInterest, nextYearInterest };
 }
 
 // ─── S-07: Idle cash over time ───────────────────────────────────────────────
@@ -213,10 +262,23 @@ export function idleCashOpportunity(
   alternateRatePct: number,
   years: number
 ): IdleCashResult | null {
-  if (!(cashAmount > 0) || !(years > 0) || savingsRatePct < 0 || alternateRatePct < 0) return null;
+  if (
+    ![cashAmount, savingsRatePct, alternateRatePct, years].every(Number.isFinite)
+    || cashAmount <= 0
+    || cashAmount > MAX_SCENARIO_AMOUNT
+    || savingsRatePct < 0
+    || savingsRatePct > MAX_SCENARIO_RATE_PERCENT
+    || alternateRatePct < 0
+    || alternateRatePct > MAX_SCENARIO_RATE_PERCENT
+    || years <= 0
+    || years > 60
+  ) return null;
   const atSavingsRate = cashAmount * Math.pow(1 + savingsRatePct / 100, years);
   const atAlternateRate = cashAmount * Math.pow(1 + alternateRatePct / 100, years);
-  return { atSavingsRate, atAlternateRate, difference: atAlternateRate - atSavingsRate };
+  const difference = atAlternateRate - atSavingsRate;
+  return finiteMoneyOutput(atSavingsRate, atAlternateRate, difference)
+    ? { atSavingsRate, atAlternateRate, difference }
+    : null;
 }
 
 // ─── S-01: When does my corpus reach my target? ──────────────────────────────
@@ -238,7 +300,17 @@ export function monthsToTarget(
   annualRatePct: number,
   target: number
 ): CorpusTargetResult | null {
-  if (!(target > 0) || currentCorpus < 0 || monthlySip < 0 || annualRatePct < 0) return null;
+  if (
+    ![currentCorpus, monthlySip, annualRatePct, target].every(Number.isFinite)
+    || currentCorpus < 0
+    || currentCorpus > MAX_SCENARIO_AMOUNT
+    || monthlySip < 0
+    || monthlySip > MAX_SCENARIO_AMOUNT
+    || annualRatePct < 0
+    || annualRatePct > MAX_SCENARIO_RATE_PERCENT
+    || target <= 0
+    || target > MAX_SCENARIO_MONEY_OUTPUT
+  ) return null;
   if (currentCorpus >= target) return { months: 0, years: 0, alreadyReached: true };
   // No contribution and no growth means the balance never moves — say so rather than looping.
   if (monthlySip === 0 && annualRatePct === 0) {
@@ -249,6 +321,7 @@ export function monthsToTarget(
   let balance = currentCorpus;
   for (let m = 1; m <= MAX_MONTHS; m++) {
     balance = balance * (1 + r) + monthlySip;
+    if (!finiteMoneyOutput(balance)) return null;
     if (balance >= target) return { months: m, years: m / 12, alreadyReached: false };
   }
   return { months: null, years: null, alreadyReached: false };
