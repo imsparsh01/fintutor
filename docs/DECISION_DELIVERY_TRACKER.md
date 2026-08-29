@@ -73,13 +73,13 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-163 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no composite score | Realized, agent-tested 96/96 and owner-approved final PASS; production Home/Portfolio replacement remains separate |
 | D-164 | SHIPPED → BQ-129 / validated definition | Optional health-insurance context is account-owned | Simulated, agent-tested and owner-approved final PASS; production schema/API/privacy/export/deletion work remains separate |
 | D-165 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no score bands or headline grade | Realized, agent-tested 96/96 and owner-approved final PASS; production copy/UI replacement remains separate |
-| D-166 | READY → BQ-142 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | Dedicated Scenarios shipped in BQ-141; focused explorer reconciliation is next |
+| D-166 | READY → BQ-143 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | Scenario and focused-explorer production reconciliation shipped through BQ-142; Arya/progression integration is next |
 | D-167 | SHIPPED → BQ-141 / production Tools + Scenario routes | Scenario taxonomy and contextual focused-explorer discovery | Tools exposes only the five dedicated Scenarios; focused explorers remain contextual |
-| D-168 | SHIPPED → BQ-141 / production lifecycle tests | Remove stale Scenario result immediately after dependent input edits | Exact invalidation, reset and clean-reopen behavior is production-wired and browser-tested |
+| D-168 | SHIPPED → BQ-141/BQ-142 / production lifecycle tests | Remove stale Scenario result immediately after dependent input edits | Exact invalidation, reset and clean-reopen behavior is wired across dedicated and focused Scenario surfaces |
 | D-169 | SHIPPED → BQ-133 / `docs/features/scenarios/QA_EVIDENCE.md` | Conditional confirmed Arya teaching handoff from eligible current Scenario results | Realized as an explicit, masked, cancellable prototype handoff |
-| D-170 | READY → BQ-142 | Approved Scenario safety, eligibility, provenance and release package | Dedicated candidate authorship/UI shipped; focused explorer UI/lifecycle is next |
+| D-170 | SHIPPED → BQ-136..BQ-142 / production formula, provenance and lifecycle tests | Approved Scenario safety, eligibility, provenance and release package | Dedicated and focused Scenario production reconciliation is shipped; EX-80C remains contained and TERM remains internal-only |
 | D-171 | SHIPPED → BQ-137/BQ-138 / Scenario and loan-vs-invest tests | Exact Scenario numeric domains and reject-before-render guardrails | Local and S-02 backend domains enforce finite bounded inputs, intermediates and outputs |
-| D-172 | READY → BQ-142 | Scenario and focused-explorer package receives owner PASS | Dedicated Scenario UI/lifecycle shipped in BQ-141; continue with focused explorers |
+| D-172 | READY → BQ-143 | Scenario and focused-explorer package receives owner PASS | Production now matches the approved UI/lifecycle package through BQ-142; Arya/progression and integrated parity remain |
 
 ## Current-session decisions
 

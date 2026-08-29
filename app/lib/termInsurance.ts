@@ -9,6 +9,9 @@ export interface TermInsuranceComponent {
   label: string;
   amount: number;
   source: string;
+  sourceRecordId?: string;
+  sourceVersion?: number;
+  sourceFields?: string[];
   included: boolean;
 }
 
@@ -41,6 +44,14 @@ export interface TermInsuranceResult {
   signedCoverDifference: number;
 }
 
+export interface TermInsuranceCoverEvidence {
+  sourceRecordId: string;
+  sourceLabel: string;
+  sourceVersion: number;
+  sourceFields: ['sum_assured'];
+  amount: number | null;
+}
+
 const LOAN_TYPES = new Set(['home_loan', 'personal_loan', 'credit_card_debt']);
 const ASSET_FIELDS: Record<string, string> = {
   equity_mutual_fund: 'current_value',
@@ -64,10 +75,11 @@ function sourceLabel(holding: Holding): string {
 export function recordedTermInsuranceContext(
   holdings: Holding[],
   goals: GoalRecord[],
-): { components: TermInsuranceComponent[]; individualCover: number; individualCoverSources: string[] } {
+): { components: TermInsuranceComponent[]; individualCover: number; individualCoverSources: string[]; individualCoverEvidence: TermInsuranceCoverEvidence[] } {
   const components: TermInsuranceComponent[] = [];
   let individualCover = 0;
   const individualCoverSources: string[] = [];
+  const individualCoverEvidence: TermInsuranceCoverEvidence[] = [];
 
   for (const holding of holdings) {
     const label = sourceLabel(holding);
@@ -75,7 +87,8 @@ export function recordedTermInsuranceContext(
       const amount = finiteNonNegative(holding.characteristics.outstanding_balance);
       if (amount !== null) components.push({
         id: `holding:${holding.id}:debt`, kind: 'debt', label, amount,
-        source: 'Recorded loan balance', included: true,
+        source: 'Recorded loan balance', sourceRecordId: holding.id,
+        sourceVersion: holding.version, sourceFields: ['outstanding_balance'], included: false,
       });
     }
 
@@ -89,12 +102,16 @@ export function recordedTermInsuranceContext(
       const amount = finiteNonNegative(holding.characteristics[assetField]);
       if (amount !== null) components.push({
         id: `holding:${holding.id}:asset`, kind: 'asset', label, amount,
-        source: 'Recorded holding value — include only if available to survivors', included: false,
+        source: 'Recorded holding value — include only if available to survivors',
+        sourceRecordId: holding.id, sourceVersion: holding.version,
+        sourceFields: [assetField], included: false,
       });
     }
 
     if (holding.product_type === 'term_insurance') {
       const amount = finiteNonNegative(holding.characteristics.sum_assured);
+      individualCoverEvidence.push({ sourceRecordId: holding.id, sourceLabel: label,
+        sourceVersion: holding.version, sourceFields: ['sum_assured'], amount });
       if (amount !== null) {
         individualCover += amount;
         individualCoverSources.push(`${label} · recorded sum assured`);
@@ -108,11 +125,12 @@ export function recordedTermInsuranceContext(
     const amount = finiteNonNegative(goal.target_amount);
     if (amount !== null) components.push({
       id: `goal:${goal.id}`, kind: 'goal', label: goal.category, amount,
-      source: 'Recorded goal target', included: true,
+      source: 'Recorded goal target', sourceRecordId: goal.id,
+      sourceVersion: goal.version, sourceFields: ['target_amount'], included: false,
     });
   }
 
-  return { components, individualCover, individualCoverSources };
+  return { components, individualCover, individualCoverSources, individualCoverEvidence };
 }
 
 function streamValue(stream: TermInsuranceStream): number | null {

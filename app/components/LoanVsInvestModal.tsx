@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, findNodeHandle, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, figure, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
 import { fetchLoanVsInvest, type LoanVsInvestResult } from '../lib/loanVsInvest';
 import { formatRupees } from '../lib/format';
+import { parseScenarioNumber } from '../lib/scenarioNumbers';
+import { INPUTS_CHANGED_NOTICE } from '../lib/scenarioSession';
 
 // D-067: user-triggered entry point (no auto-detection for v1) — reached from a loan's
 // detail screen. D-068/BRIEF-014: hurdle-rate only, both prepayment modes always shown,
@@ -37,32 +39,63 @@ export function LoanVsInvestModal({
   const [result, setResult] = useState<LoanVsInvestResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const requestGeneration = useRef(0);
+  const resultHeading = useRef<Text>(null);
+
+  useEffect(() => () => { requestGeneration.current += 1; }, [userId, holdingId]);
+
+  const invalidateResult = () => {
+    if (result) setNotice(INPUTS_CHANGED_NOTICE);
+    setResult(null);
+    setError(null);
+  };
+
+  const changeAmount = (value: string) => {
+    invalidateResult();
+    setAmount(value);
+  };
 
   const runCalculate = async (rawAmount: string) => {
-    const parsed = Number(rawAmount);
-    if (!parsed || parsed <= 0) {
+    const parsed = parseScenarioNumber(rawAmount);
+    if (!parsed || parsed.value <= 0) {
       setError('Enter an amount greater than 0');
       return;
     }
+    const generation = ++requestGeneration.current;
     setLoading(true);
     setError(null);
+    setNotice(null);
     setResult(null);
     try {
-      const r = await fetchLoanVsInvest(userId, holdingId, parsed);
+      const r = await fetchLoanVsInvest(userId, holdingId, parsed.value);
+      if (generation !== requestGeneration.current) return;
       setResult(r);
+      AccessibilityInfo.announceForAccessibility(`Prepayment comparison calculated at ${r.hurdle_rate_percent}% a year`);
+      requestAnimationFrame(() => {
+        if (Platform.OS === 'web') (resultHeading.current as unknown as { focus?: () => void } | null)?.focus?.();
+        else {
+          const handle = findNodeHandle(resultHeading.current);
+          if (handle) AccessibilityInfo.setAccessibilityFocus(handle);
+        }
+      });
     } catch (err) {
+      if (generation !== requestGeneration.current) return;
       setError(err instanceof Error ? err.message : 'Failed to calculate');
     } finally {
-      setLoading(false);
+      if (generation === requestGeneration.current) setLoading(false);
     }
   };
 
   const selectPreset = (preset: number) => {
-    setAmount(String(preset));
-    runCalculate(String(preset));
+    changeAmount(String(preset));
   };
 
   const calculate = () => runCalculate(amount);
+  const reset = () => {
+    requestGeneration.current += 1;
+    setAmount(''); setResult(null); setLoading(false); setError(null); setNotice(null);
+  };
 
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
@@ -91,7 +124,7 @@ export function LoanVsInvestModal({
         <TextInput
           style={styles.input}
           value={amount}
-          onChangeText={setAmount}
+          onChangeText={changeAmount}
           placeholder="Or enter a different amount (₹)"
           placeholderTextColor={colors.inkMuted}
           keyboardType="numeric"
@@ -101,10 +134,18 @@ export function LoanVsInvestModal({
           <Text style={styles.calculateButtonText}>{loading ? 'Calculating…' : 'Calculate'}</Text>
         </Pressable>
 
-        {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <><Text accessibilityRole="alert" style={styles.errorText}>{error}</Text><Pressable style={styles.retryButton} onPress={calculate} accessibilityRole="button"><Text style={styles.retryText}>Retry calculation</Text></Pressable></>}
+        {notice && <Text accessibilityRole="alert" style={styles.noticeText}>{notice}</Text>}
 
         {result && (
-          <View style={styles.results}>
+          <View style={styles.results} accessibilityLiveRegion="polite">
+            <Text ref={resultHeading} {...(Platform.OS === 'web' ? { tabIndex: -1 } : {})} accessibilityRole="header" style={styles.resultHeading}>Current result</Text>
+            <View style={styles.sourceCard}>
+              <Text style={styles.sourceTitle}>Recorded source</Text>
+              <Text style={styles.sourceText}>{result.source_evidence.source_label} · record v{result.source_evidence.source_version}</Text>
+              <Text style={styles.sourceText}>Fields: {result.source_evidence.source_fields.join(', ')}</Text>
+              <Text style={styles.sourceText}>{result.source_evidence.freshness_note} · loaded this session at {new Date(result.source_evidence.retrieved_at).toLocaleString()}</Text>
+            </View>
             <View style={styles.hurdleCard}>
               <Text style={styles.hurdleLabel}>The number to watch</Text>
               <Text style={styles.hurdleValue}>{result.hurdle_rate_percent}% a year</Text>
@@ -167,6 +208,8 @@ export function LoanVsInvestModal({
           </View>
         )}
 
+        <Pressable style={styles.resetButton} onPress={reset} accessibilityRole="button"><Text style={styles.resetText}>Reset explorer</Text></Pressable>
+
         <Pressable style={styles.cancel} onPress={onClose}>
           <Text style={styles.cancelText}>Close</Text>
         </Pressable>
@@ -228,7 +271,14 @@ const styles = StyleSheet.create({
   },
   calculateButtonText: typography.primaryButtonText,
   errorText: { fontFamily: font.ui, color: colors.danger, marginTop: spacing.md },
+  noticeText: { fontFamily: font.ui, color: colors.inkSecondary, marginTop: spacing.md, lineHeight: 20 },
+  retryButton: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center' },
+  retryText: { fontFamily: font.uiMedium, color: colors.tutor },
   results: { marginTop: spacing.xl },
+  resultHeading: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.ink, marginBottom: spacing.md },
+  sourceCard: { borderLeftWidth: 3, borderLeftColor: colors.tutor, paddingLeft: spacing.md, marginBottom: spacing.lg },
+  sourceTitle: { fontFamily: font.uiSemibold, fontSize: 13, color: colors.ink },
+  sourceText: { fontFamily: font.ui, fontSize: 12, lineHeight: 18, color: colors.inkMuted, marginTop: 2 },
   hurdleCard: {
     backgroundColor: colors.tutorSoft,
     borderRadius: radius.md,
@@ -332,4 +382,6 @@ const styles = StyleSheet.create({
   },
   cancel: { alignItems: 'center', marginTop: spacing.xl },
   cancelText: { fontFamily: font.ui, color: colors.inkMuted },
+  resetButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg },
+  resetText: { fontFamily: font.uiMedium, color: colors.inkSecondary },
 });

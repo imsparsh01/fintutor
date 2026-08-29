@@ -103,14 +103,16 @@ TeachingWalkthrough         components/        Full-screen P9-guarded own-number
                                                source-visible saved figures, explicit unknowns and an optional
                                                D-078-confirmed Chat handoff for only missing details.
 TeachingBlock               components/ (46)   Inline teaching paragraph (used inside family screens)
-LoanVsInvestModal           components/ (335)  Prepayment vs invest calculator (D-014)
+LoanVsInvestModal           components/        Authenticated S-02 prepayment explorer with strict amount,
+                                               current-result invalidation/focus, retry/reset and source evidence
 EmergencyCoverageTool      components/          Shared S-05/C-14 editable form, independent fail-open
                                                budget/FD prefills, disclosures, result and accessibility
-EsopExerciseCostModal       components/        ESOP cost today + clamped-anniversary estimate disclosure
+EsopExerciseCostModal       components/        ESOP cost today with generation-safe retry, India-date/
+                                               recorded-FMV provenance and accessible current-result focus
 TaxSavingRoomModal          components/        Parked internal 80C evidence; no production launcher (BQ-136)
-TermInsuranceExplorerModal components/        Consent-first transient component model: source-visible
-                                               recorded context, critical-input blocking, editable inclusion
-                                               and neutral cover difference
+TermInsuranceExplorerModal components/        Consent-first transient component model: every recorded component/
+                                               cover starts excluded, growth mode is explicit, provenance is visible,
+                                               and edit/reset/reopen lifecycle preserves only a current neutral result
 FinancialContextModal      components/        View/change/clear the two optional account-owned context values
 PrivacyPolicyModal         components/        Full internal-MVP v1 policy, linked before registration and Home
 LearningReminderManager components/           One-time post-learning opt-in offer plus foreground horizon
@@ -192,8 +194,8 @@ emergencyCoverage.ts           Shared D-130 pure accessible-balances / monthly-o
                                BQ-137 rejects unsafe/non-finite aggregate and quotient before result
 scenarioNumbers.ts             D-170 strict whole-string plain/Indian/international numeric parser with
                                normalized value plus shared ₹1-quadrillion output guard; UI wiring is BQ-141
-termInsurance.ts               Pure D-145 support-stream/component model and source-visible recorded-context
-                               projection; no inferred rate, persisted scenario, advice or outcome reward
+termInsurance.ts               Pure D-145 support-stream/component model and excluded-by-default source-visible
+                               recorded-context projection; no inferred rate, persisted scenario, advice or reward
 requestGeneration.ts           Tiny stale-async guard used when consented modal context requests outlive UI state
 esopExerciseCost.ts     26      fetchEsopExerciseCost()
 healthScore.ts          ~135    computeSubScores(budget,holdings,months,hasHealthIns) → {investmentRate,insurance,emergency,taxUtil}
@@ -261,7 +263,7 @@ ScenarioType (navigation/types.ts):
   'corpus_target'     S-01 — years until the corpus reaches a user-set target
 ```
 S-04 (rent vs buy) parked — needs schema fields. S-02 (prepay vs invest) is LoanVsInvestModal (D-014),
-launched from Tools with direct-open for one eligible loan or a neutral owned-loan chooser for many.
+launched contextually from an eligible owned home/personal-loan detail; it is not duplicated in Tools.
 
 ## Key patterns
 

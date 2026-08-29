@@ -12,6 +12,12 @@
 
 ---
 
+## BQ-142 — Focused explorer UI and lifecycle reconciliation — DONE 30-Aug-2026
+
+Traces to D-168/D-170/D-172. Objective: reconcile S-02, ESOP and TERM UI/lifecycle while keeping 80C unavailable.
+Accept: contextual provenance/recovery/clean reopen; TERM all candidates excluded and explicit growth mode;
+current-result/accessibility tests pass; no external TERM release claim. Size L. Depends on BQ-138/BQ-139/BQ-141.
+
 ## BQ-141 — Dedicated Scenario discovery, candidates and result lifecycle — DONE 29-Aug-2026
 
 Traces to D-167/D-168/D-170/D-172. Objective: reconcile five dedicated Scenario screens with approved

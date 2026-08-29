@@ -16,20 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-142 — Focused explorer UI and lifecycle reconciliation — READY (after BQ-141)
-
-Traces to D-168/D-170/D-172. Objective: reconcile S-02, ESOP and TERM UI/lifecycle while keeping 80C unavailable.
-Accept: contextual provenance/recovery/clean reopen; TERM all candidates excluded and explicit growth mode;
-current-result/accessibility tests pass; no external TERM release claim. Size L. Depends on BQ-138/BQ-139/BQ-141.
-
-## BLOCKED — do not start
-
-### BQ-143 — Scenario Arya and progression integration — BLOCKED (after BQ-142)
+### BQ-143 — Scenario Arya and progression integration — READY (after BQ-142)
 
 Traces to D-117/D-169/D-170/D-172. Objective: add confirmed masked Arya handoff and participation-only
 progression to every eligible current Scenario/focused result. Accept: exact payload/cancel/recovery spies,
 stable type-only keys, one/type/day and two/day cap evidence; no nonqualifying event; event failure/cap leaves
 the result unchanged. Size M. Depends on BQ-142.
+
+## BLOCKED — do not start
 
 ### BQ-144 — Production Scenario exhaustive verification and parity gate — BLOCKED (after BQ-143)
 

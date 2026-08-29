@@ -1,6 +1,9 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Modal,
+  AccessibilityInfo,
+  findNodeHandle,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,6 +17,8 @@ import { typography } from '../design/typography';
 import { formatRupees } from '../lib/format';
 import { fetchFinancialContext, type FinancialContext } from '../lib/financialContext';
 import { RequestGeneration } from '../lib/requestGeneration';
+import { INPUTS_CHANGED_NOTICE } from '../lib/scenarioSession';
+import { parseScenarioNumber } from '../lib/scenarioNumbers';
 import type { GoalRecord } from '../lib/goals';
 import type { Holding } from '../lib/holdings';
 import {
@@ -22,6 +27,8 @@ import {
   type TermInsuranceComponent,
   type TermInsuranceResult,
 } from '../lib/termInsurance';
+
+type GrowthMode = 'zero' | 'custom' | null;
 
 export function TermInsuranceExplorerModal({
   visible,
@@ -43,16 +50,23 @@ export function TermInsuranceExplorerModal({
   const [supportAnnual, setSupportAnnual] = useState('');
   const [supportYears, setSupportYears] = useState('');
   const [supportGrowth, setSupportGrowth] = useState('');
+  const [supportGrowthMode, setSupportGrowthMode] = useState<GrowthMode>(null);
   const [includeSurvivorIncome, setIncludeSurvivorIncome] = useState(false);
   const [survivorAnnual, setSurvivorAnnual] = useState('');
   const [survivorYears, setSurvivorYears] = useState('');
   const [survivorGrowth, setSurvivorGrowth] = useState('');
+  const [survivorGrowthMode, setSurvivorGrowthMode] = useState<GrowthMode>(null);
   const [individualCover, setIndividualCover] = useState('');
+  const [includeIndividualCover, setIncludeIndividualCover] = useState(false);
   const [groupCover, setGroupCover] = useState('');
+  const [includeGroupCover, setIncludeGroupCover] = useState(false);
   const [otherCover, setOtherCover] = useState('');
+  const [includeOtherCover, setIncludeOtherCover] = useState(false);
   const [result, setResult] = useState<TermInsuranceResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmedContext, setConfirmedContext] = useState<FinancialContext | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [retrievedAt, setRetrievedAt] = useState<string | null>(null);
   const contextRequest = useRef(new RequestGeneration());
 
   const dismiss = () => {
@@ -63,26 +77,37 @@ export function TermInsuranceExplorerModal({
     setSupportAnnual('');
     setSupportYears('');
     setSupportGrowth('');
+    setSupportGrowthMode(null);
     setIncludeSurvivorIncome(false);
     setSurvivorAnnual('');
     setSurvivorYears('');
     setSurvivorGrowth('');
+    setSurvivorGrowthMode(null);
     setIndividualCover('');
+    setIncludeIndividualCover(false);
     setGroupCover('');
+    setIncludeGroupCover(false);
     setOtherCover('');
+    setIncludeOtherCover(false);
     setResult(null);
     setError(null);
     setConfirmedContext(null);
+    setNotice(null);
+    setRetrievedAt(null);
     onDismiss();
   };
+
+  useEffect(() => () => { contextRequest.current.cancel(); }, []);
 
   const useRecordedContext = async () => {
     const request = contextRequest.current.begin();
     setComponents(recorded.components);
+    setRetrievedAt(new Date().toISOString());
     setAmountDrafts(Object.fromEntries(recorded.components.map((item) => [item.id, String(item.amount)])));
     const everyRecordedCoverKnown = recorded.individualCoverSources.length > 0
       && recorded.individualCoverSources.every((source) => !source.includes('needs confirmation'));
     setIndividualCover(everyRecordedCoverKnown ? String(recorded.individualCover) : '');
+    setIncludeIndividualCover(false);
     setConsented(true);
     const context = await fetchFinancialContext().catch(() => null);
     if (contextRequest.current.isCurrent(request)) setConfirmedContext(context);
@@ -90,8 +115,10 @@ export function TermInsuranceExplorerModal({
   const startBlank = () => {
     contextRequest.current.cancel();
     setComponents([]);
+    setRetrievedAt(null);
     setAmountDrafts({});
     setIndividualCover('');
+    setIncludeIndividualCover(false);
     setConsented(true);
   };
 
@@ -112,43 +139,54 @@ export function TermInsuranceExplorerModal({
 
   const updateComponent = (id: string, included: boolean) => {
     setComponents((current) => current.map((item) => item.id === id ? { ...item, included } : item));
+    invalidateResult();
+  };
+  const invalidateResult = () => {
+    if (result) setNotice(INPUTS_CHANGED_NOTICE);
     setResult(null);
+    setError(null);
   };
   const changeDraft = (setter: (value: string) => void) => (value: string) => {
     setter(value);
-    setResult(null);
+    invalidateResult();
   };
 
   const calculate = () => {
-    const parseDraft = (value: string) => value.trim() === '' ? Number.NaN : Number(value);
+    const parseDraft = (value: string) => value.trim() === '' ? Number.NaN : parseScenarioNumber(value)?.value ?? Number.NaN;
     const parsedComponents = components.map((item) => ({ ...item, amount: parseDraft(amountDrafts[item.id] ?? '') }));
     const next = calculateTermInsuranceExploration({
       householdSupport: {
         annualAmount: parseDraft(supportAnnual),
         years: parseDraft(supportYears),
-        ...(supportGrowth.trim() === '' ? {} : { growthPercent: parseDraft(supportGrowth) }),
+        growthPercent: supportGrowthMode === 'zero' ? 0 : parseDraft(supportGrowth),
       },
       survivorIncome: includeSurvivorIncome ? {
         annualAmount: parseDraft(survivorAnnual),
         years: parseDraft(survivorYears),
-        ...(survivorGrowth.trim() === '' ? {} : { growthPercent: parseDraft(survivorGrowth) }),
+        growthPercent: survivorGrowthMode === 'zero' ? 0 : parseDraft(survivorGrowth),
       } : null,
       components: parsedComponents,
-      existingIndividualCover: parseDraft(individualCover),
-      existingGroupCover: parseDraft(groupCover),
-      existingOtherCover: parseDraft(otherCover),
+      existingIndividualCover: includeIndividualCover ? parseDraft(individualCover) : 0,
+      existingGroupCover: includeGroupCover ? parseDraft(groupCover) : 0,
+      existingOtherCover: includeOtherCover ? parseDraft(otherCover) : 0,
     });
-    if (!next || [supportAnnual, supportYears, individualCover, groupCover, otherCover].some((v) => v.trim() === '')) {
+    if (!next || !supportGrowthMode || [supportAnnual, supportYears].some((v) => v.trim() === '')
+      || (supportGrowthMode === 'custom' && supportGrowth.trim() === '')
+      || (includeIndividualCover && individualCover.trim() === '')
+      || (includeGroupCover && groupCover.trim() === '')
+      || (includeOtherCover && otherCover.trim() === '')) {
       setResult(null);
       setError('Complete every required field with valid non-negative values. Years must be 1–100 and growth 0–100%.');
       return;
     }
-    if (includeSurvivorIncome && [survivorAnnual, survivorYears].some((v) => v.trim() === '')) {
+    if (includeSurvivorIncome && (!survivorGrowthMode || [survivorAnnual, survivorYears].some((v) => v.trim() === '')
+      || (survivorGrowthMode === 'custom' && survivorGrowth.trim() === ''))) {
       setResult(null);
       setError('Enter the survivor-income amount and years, or exclude that stream.');
       return;
     }
     setError(null);
+    setNotice(null);
     setResult(next);
   };
 
@@ -201,10 +239,11 @@ export function TermInsuranceExplorerModal({
               </View>
             ) : null}
             <Text style={styles.sectionTitle}>Household support · required</Text>
-            <Text style={styles.help}>Enter the annual support amount and how many years to model. No rate is assumed.</Text>
+            <Text style={styles.help}>Enter the annual support amount and how many years to model, then explicitly choose 0% growth or your own growth assumption.</Text>
             <Field label="Annual household support (₹)" value={supportAnnual} onChange={changeDraft(setSupportAnnual)} />
             <Field label="Years (1–100)" value={supportYears} onChange={changeDraft(setSupportYears)} />
-            <Field label="Annual growth / inflation % (optional)" value={supportGrowth} onChange={changeDraft(setSupportGrowth)} />
+            <GrowthModeChoice label="Household-support growth mode" value={supportGrowthMode} onChange={(value) => { setSupportGrowthMode(value); invalidateResult(); }} />
+            {supportGrowthMode === 'custom' ? <Field label="Your annual growth assumption (%)" value={supportGrowth} onChange={changeDraft(setSupportGrowth)} /> : null}
 
             <Text style={styles.sectionTitle}>Recorded components</Text>
             {components.length === 0 ? <Text style={styles.help}>No usable recorded debts, goals or assets were found.</Text> : null}
@@ -214,6 +253,7 @@ export function TermInsuranceExplorerModal({
                   <View style={styles.componentCopy}>
                     <Text style={styles.componentLabel}>{item.label}</Text>
                     <Text style={styles.source}>{item.source}</Text>
+                    {item.sourceRecordId ? <Text style={styles.source}>Record {item.sourceRecordId} · v{item.sourceVersion ?? 'unknown'} · fields: {item.sourceFields?.join(', ') ?? 'unknown'} · freshness unavailable · loaded {retrievedAt ? new Date(retrievedAt).toLocaleString() : 'this session'}</Text> : null}
                   </View>
                   <Switch accessibilityLabel={`Include ${item.label}`} value={item.included} onValueChange={(value) => updateComponent(item.id, value)} />
                 </View>
@@ -223,7 +263,7 @@ export function TermInsuranceExplorerModal({
                   keyboardType="decimal-pad"
                   editable={item.included}
                   value={amountDrafts[item.id] ?? ''}
-                  onChangeText={(value) => { setAmountDrafts((drafts) => ({ ...drafts, [item.id]: value })); setResult(null); }}
+                  onChangeText={(value) => { setAmountDrafts((drafts) => ({ ...drafts, [item.id]: value })); invalidateResult(); }}
                 />
               </View>
             ))}
@@ -238,29 +278,33 @@ export function TermInsuranceExplorerModal({
                 <Text style={styles.componentLabel}>Include survivor income</Text>
                 <Text style={styles.source}>Only if you choose to model this offset</Text>
               </View>
-              <Switch accessibilityLabel="Include survivor income" value={includeSurvivorIncome} onValueChange={(value) => { setIncludeSurvivorIncome(value); setResult(null); }} />
+              <Switch accessibilityLabel="Include survivor income" value={includeSurvivorIncome} onValueChange={(value) => { setIncludeSurvivorIncome(value); setSurvivorGrowthMode(null); invalidateResult(); }} />
             </View>
             {includeSurvivorIncome ? (
               <>
                 <Field label="Annual survivor income (₹)" value={survivorAnnual} onChange={changeDraft(setSurvivorAnnual)} />
                 <Field label="Years (1–100)" value={survivorYears} onChange={changeDraft(setSurvivorYears)} />
-                <Field label="Annual growth % (optional)" value={survivorGrowth} onChange={changeDraft(setSurvivorGrowth)} />
+                <GrowthModeChoice label="Survivor-income growth mode" value={survivorGrowthMode} onChange={(value) => { setSurvivorGrowthMode(value); invalidateResult(); }} />
+                {survivorGrowthMode === 'custom' ? <Field label="Your survivor-income growth assumption (%)" value={survivorGrowth} onChange={changeDraft(setSurvivorGrowth)} /> : null}
               </>
             ) : null}
 
-            <Text style={styles.sectionTitle}>Existing cover · required</Text>
+            <Text style={styles.sectionTitle}>Existing cover</Text>
             {recorded.individualCoverSources.map((source) => <Text key={source} style={styles.source}>Source: {source}</Text>)}
-            <Field label="Individual cover (₹)" value={individualCover} onChange={changeDraft(setIndividualCover)} />
-            <Field label="Group / employer cover (₹)" value={groupCover} onChange={changeDraft(setGroupCover)} />
-            <Field label="Other cover (₹)" value={otherCover} onChange={changeDraft(setOtherCover)} />
-            <Text style={styles.help}>Enter 0 only when you have confirmed there is no cover in that category.</Text>
+            {recorded.individualCoverEvidence.map((source) => <Text key={source.sourceRecordId} style={styles.source}>Record {source.sourceRecordId} · v{source.sourceVersion ?? 'unknown'} · field: sum_assured · freshness unavailable · loaded {retrievedAt ? new Date(retrievedAt).toLocaleString() : 'this session'}</Text>)}
+            <CoverField label="Individual cover" included={includeIndividualCover} onIncluded={(value) => { setIncludeIndividualCover(value); invalidateResult(); }} value={individualCover} onChange={changeDraft(setIndividualCover)} />
+            <CoverField label="Group / employer cover" included={includeGroupCover} onIncluded={(value) => { setIncludeGroupCover(value); invalidateResult(); }} value={groupCover} onChange={changeDraft(setGroupCover)} />
+            <CoverField label="Other cover" included={includeOtherCover} onIncluded={(value) => { setIncludeOtherCover(value); invalidateResult(); }} value={otherCover} onChange={changeDraft(setOtherCover)} />
+            <Text style={styles.help}>Every cover candidate starts excluded. Include only categories you deliberately want in this temporary comparison; enter 0 only after confirming none.</Text>
 
             {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
+            {notice ? <Text accessibilityRole="alert" style={styles.notice}>{notice}</Text> : null}
             <Pressable style={styles.primaryButton} onPress={calculate}>
               <Text style={styles.primaryButtonText}>Model this scenario</Text>
             </Pressable>
 
             {result ? <Result result={result} /> : null}
+            <Pressable style={styles.resetButton} onPress={() => { contextRequest.current.cancel(); setComponents([]); setAmountDrafts({}); setSupportAnnual(''); setSupportYears(''); setSupportGrowth(''); setSupportGrowthMode(null); setIncludeSurvivorIncome(false); setSurvivorAnnual(''); setSurvivorYears(''); setSurvivorGrowth(''); setSurvivorGrowthMode(null); setIndividualCover(''); setIncludeIndividualCover(false); setGroupCover(''); setIncludeGroupCover(false); setOtherCover(''); setIncludeOtherCover(false); setResult(null); setError(null); setNotice(null); setConfirmedContext(null); setRetrievedAt(null); setConsented(false); }} accessibilityRole="button"><Text style={styles.resetText}>Reset explorer</Text></Pressable>
             <Text style={styles.disclosure}>
               Formula: support stream + selected debts + selected goals − selected available assets − selected
               survivor-income stream, floored at zero. Growth compounds annually from year zero only when you
@@ -289,7 +333,23 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
   );
 }
 
+function GrowthModeChoice({ label, value, onChange }: { label: string; value: GrowthMode; onChange: (value: Exclude<GrowthMode, null>) => void }) {
+  return <View style={styles.field}><Text style={styles.fieldLabel}>{label} · required</Text><View style={styles.choiceRow}>
+    {([['zero', 'Use 0% growth'], ['custom', 'Enter my own rate']] as const).map(([mode, copy]) => <Pressable key={mode} accessibilityRole="radio" accessibilityState={{ checked: value === mode }} style={[styles.choice, value === mode && styles.choiceSelected]} onPress={() => onChange(mode)}><Text style={[styles.choiceText, value === mode && styles.choiceTextSelected]}>{copy}</Text></Pressable>)}
+  </View></View>;
+}
+
+function CoverField({ label, included, onIncluded, value, onChange }: { label: string; included: boolean; onIncluded: (value: boolean) => void; value: string; onChange: (value: string) => void }) {
+  return <View style={styles.componentRow}><View style={styles.componentHeading}><Text style={styles.componentLabel}>{label}</Text><Switch accessibilityLabel={`Include ${label}`} value={included} onValueChange={onIncluded} /></View><TextInput accessibilityLabel={`${label} amount`} style={[styles.input, !included && styles.inputDisabled]} keyboardType="decimal-pad" editable={included} value={value} onChangeText={onChange} /></View>;
+}
+
 function Result({ result }: { result: TermInsuranceResult }) {
+  const heading = useRef<Text>(null);
+  useEffect(() => {
+    AccessibilityInfo.announceForAccessibility(`Term-cover component result: ${formatRupees(result.modeledAmount)}`);
+    if (Platform.OS === 'web') (heading.current as unknown as { focus?: () => void } | null)?.focus?.();
+    else { const handle = findNodeHandle(heading.current); if (handle) AccessibilityInfo.setAccessibilityFocus(handle); }
+  }, [result]);
   const rows: [string, number][] = [
     ['Household-support stream', result.householdSupportStream],
     ['Selected debts', result.selectedDebts],
@@ -299,7 +359,7 @@ function Result({ result }: { result: TermInsuranceResult }) {
   ];
   return (
     <View style={styles.resultBox} accessibilityLiveRegion="polite">
-      <Text style={styles.sectionTitle}>Component result</Text>
+      <Text ref={heading} {...(Platform.OS === 'web' ? { tabIndex: -1 } : {})} accessibilityRole="header" style={styles.sectionTitle}>Current component result</Text>
       {rows.map(([label, amount]) => (
         <View key={label} style={styles.resultRow}><Text style={styles.resultLabel}>{label}</Text><Text style={styles.resultValue}>{formatRupees(amount)}</Text></View>
       ))}
@@ -335,6 +395,11 @@ const styles = StyleSheet.create({
   fieldLabel: { fontFamily: font.uiMedium, color: colors.inkSecondary, fontSize: 13, marginBottom: spacing.xs },
   input: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: spacing.md, paddingVertical: 11, fontFamily: font.mono, color: colors.ink, backgroundColor: colors.screen },
   inputDisabled: { color: colors.inkMuted, backgroundColor: colors.canvas },
+  choiceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  choice: { minHeight: 44, justifyContent: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingHorizontal: spacing.md },
+  choiceSelected: { backgroundColor: colors.tutor, borderColor: colors.tutor },
+  choiceText: { fontFamily: font.uiMedium, color: colors.ink, fontSize: 13 },
+  choiceTextSelected: { color: colors.screen },
   componentRow: { paddingVertical: spacing.md, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.lineSoft },
   componentHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },
   toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.lg },
@@ -348,9 +413,12 @@ const styles = StyleSheet.create({
   addComponentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.lg, marginTop: spacing.md },
   addComponent: { fontFamily: font.uiMedium, color: colors.tutor, fontSize: 13 },
   error: { fontFamily: font.ui, color: colors.danger, marginTop: spacing.md },
+  notice: { fontFamily: font.ui, color: colors.inkSecondary, marginTop: spacing.md, lineHeight: 20 },
   resultBox: { marginTop: spacing.xl, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
   resultRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md, paddingVertical: spacing.sm },
   resultLabel: { flex: 1, fontFamily: font.ui, color: colors.inkSecondary },
   resultValue: typography.ledgerValue,
   disclosure: { fontFamily: font.ui, color: colors.inkMuted, fontSize: 12, lineHeight: 18, marginTop: spacing.xl },
+  resetButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg },
+  resetText: { fontFamily: font.uiMedium, color: colors.inkSecondary },
 });

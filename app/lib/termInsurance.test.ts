@@ -55,7 +55,7 @@ test('excluded components do not need valid amounts but included ones do', () =>
   assert.equal(calculateTermInsuranceExploration({ ...base, components: [{ ...component, included: true }] }), null);
 });
 
-test('context prefills expose sources, include debts/goals and require asset opt-in', () => {
+test('context prefills expose sources and every recorded component starts excluded', () => {
   const holdings = [
     { id: 'l', product_type: 'home_loan', alias: 'Loan-A', display_name: null, characteristics: { outstanding_balance: 1000 } },
     { id: 'a', product_type: 'fd_rd', alias: 'FD-A', display_name: 'Deposit', characteristics: { deposit_mode: 'FD', principal_or_monthly_amount: 500 } },
@@ -64,9 +64,14 @@ test('context prefills expose sources, include debts/goals and require asset opt
   const goals = [{ id: 'g', category: 'Education', target_amount: 3000 }];
   const context = recordedTermInsuranceContext(holdings, goals);
   assert.deepEqual(context.components.map(({ kind, included, source }) => ({ kind, included, source })), [
-    { kind: 'debt', included: true, source: 'Recorded loan balance' },
+    { kind: 'debt', included: false, source: 'Recorded loan balance' },
     { kind: 'asset', included: false, source: 'Recorded holding value — include only if available to survivors' },
-    { kind: 'goal', included: true, source: 'Recorded goal target' },
+    { kind: 'goal', included: false, source: 'Recorded goal target' },
+  ]);
+  assert.deepEqual(context.components.map(({ sourceRecordId, sourceVersion, sourceFields }) => ({ sourceRecordId, sourceVersion, sourceFields })), [
+    { sourceRecordId: 'l', sourceVersion: undefined, sourceFields: ['outstanding_balance'] },
+    { sourceRecordId: 'a', sourceVersion: undefined, sourceFields: ['principal_or_monthly_amount'] },
+    { sourceRecordId: 'g', sourceVersion: undefined, sourceFields: ['target_amount'] },
   ]);
   assert.equal(context.individualCover, 2000);
   assert.deepEqual(context.individualCoverSources, ['Policy-A · recorded sum assured']);

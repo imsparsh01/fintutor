@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, ActivityIndicator, findNodeHandle, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TeachingBlock } from './TeachingBlock';
 import { colors, figure, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
@@ -45,24 +45,52 @@ export function EsopExerciseCostModal({
 }) {
   const [result, setResult] = useState<EsopExerciseCostResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const generation = useRef(0);
+  const resultHeading = useRef<Text>(null);
 
-  useEffect(() => {
-    fetchEsopExerciseCost(userId, holdingId)
-      .then(setResult)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to calculate'));
-  }, [userId, holdingId]);
+  const load = useCallback(async () => {
+    const active = ++generation.current;
+    setLoading(true); setError(null); setResult(null);
+    try {
+      const next = await fetchEsopExerciseCost(userId, holdingId);
+      if (active !== generation.current) return;
+      setResult(next);
+      AccessibilityInfo.announceForAccessibility(`Exercise-cost result: ${formatRupees(next.exercise_cost)}`);
+      requestAnimationFrame(() => {
+        if (Platform.OS === 'web') (resultHeading.current as unknown as { focus?: () => void } | null)?.focus?.();
+        else { const handle = findNodeHandle(resultHeading.current); if (handle) AccessibilityInfo.setAccessibilityFocus(handle); }
+      });
+    } catch (err) {
+      if (active === generation.current) setError(err instanceof Error ? err.message : 'Failed to calculate');
+    } finally {
+      if (active === generation.current) setLoading(false);
+    }
+  }, [holdingId, userId]);
+
+  useEffect(() => { load(); return () => { generation.current += 1; }; }, [load]);
 
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>What exercising costs today</Text>
 
-        {error && <Text style={styles.errorText}>{error}</Text>}
+        <Text style={styles.scope}>This uses the selected recorded grant for a read-only, temporary calculation. It does not save a scenario or decide whether to exercise.</Text>
 
-        {!error && !result && <ActivityIndicator style={styles.spinner} color={colors.ink} />}
+        {error && <><Text accessibilityRole="alert" style={styles.errorText}>{error}</Text><Pressable style={styles.retryButton} onPress={load} accessibilityRole="button"><Text style={styles.retryText}>Retry recorded grant</Text></Pressable></>}
+
+        {loading && <View accessibilityLiveRegion="polite"><ActivityIndicator style={styles.spinner} color={colors.ink} /><Text style={styles.loadingText}>Loading the selected recorded grant…</Text></View>}
 
         {result && (
-          <View style={styles.results}>
+          <View style={styles.results} accessibilityLiveRegion="polite">
+            <Text ref={resultHeading} {...(Platform.OS === 'web' ? { tabIndex: -1 } : {})} accessibilityRole="header" style={styles.resultHeading}>Current result</Text>
+            <View style={styles.sourceCard}>
+              <Text style={styles.sourceTitle}>Recorded source</Text>
+              <Text style={styles.sourceText}>{result.source_evidence.source_label} · record v{result.source_evidence.source_version}</Text>
+              <Text style={styles.sourceText}>Fields: {result.source_evidence.source_fields.join(', ')}</Text>
+              <Text style={styles.sourceText}>{result.source_evidence.freshness_note} · loaded this session at {new Date(result.source_evidence.retrieved_at).toLocaleString()}</Text>
+              <Text style={styles.sourceText}>Calculated {result.calculation_date} using {result.calculation_timezone}.</Text>
+            </View>
             <View style={styles.card}>
               <Text style={styles.cardLabel}>Vested units</Text>
               <Text style={styles.cardValue}>
@@ -117,9 +145,17 @@ export function EsopExerciseCostModal({
 const styles = StyleSheet.create({
   container: { padding: spacing.xl, paddingTop: spacing.xxxl, backgroundColor: colors.screen },
   title: typography.pageTitle,
+  scope: { fontFamily: font.tutor, fontSize: 14, lineHeight: 20, color: colors.inkSecondary, marginTop: spacing.sm },
   errorText: { fontFamily: font.ui, color: colors.danger },
   spinner: { marginTop: spacing.xl },
+  loadingText: { fontFamily: font.ui, color: colors.inkSecondary, textAlign: 'center', marginTop: spacing.sm },
+  retryButton: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center' },
+  retryText: { fontFamily: font.uiMedium, color: colors.tutor },
   results: { gap: spacing.md },
+  resultHeading: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.ink, marginTop: spacing.lg },
+  sourceCard: { borderLeftWidth: 3, borderLeftColor: colors.tutor, paddingLeft: spacing.md },
+  sourceTitle: { fontFamily: font.uiSemibold, fontSize: 13, color: colors.ink },
+  sourceText: { fontFamily: font.ui, fontSize: 12, lineHeight: 18, color: colors.inkMuted, marginTop: 2 },
   card: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.lineSoft,
