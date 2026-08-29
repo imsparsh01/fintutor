@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-135 — Scenario production-reconciliation plan — DONE 29-Aug-2026
+
+Traces to D-166/D-170/D-172. Objective: compare the frozen Scenario contract with the current app/backend and
+produce bounded production build items, dependencies and verification gates. Accept: every gap maps to an
+existing approved outcome; O-SC-9A/B/C are separated from UI/formula work; every money/data/privacy/schema or
+new-architecture dependency is explicitly escalated rather than implemented; no production code changes.
+Size M. Depends on BQ-134 PASS.
+
 ## BQ-134 — Scenario owner validation walkthrough and disposition — DONE 29-Aug-2026
 
 Traces to D-166/D-148. Objective: present the tested Scenario prototype and record PASS / REVISE / PARK /

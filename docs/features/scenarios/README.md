@@ -4,6 +4,9 @@
 
 **Current gate:** BQ-130..BQ-134 complete; owner PASS recorded in D-172 and `VALIDATION_RESULT.md`
 
+**Production reconciliation:** BQ-135 audit complete. `PRODUCTION_RECONCILIATION.md` maps material gaps and
+the dependency-ordered BQ-136..BQ-144 sequence; production parity is not yet achieved.
+
 **Production status:** A broad first implementation is shipped. This package reconciles and validates the
 coherent end-to-end product before any production reconciliation is authorised.
 

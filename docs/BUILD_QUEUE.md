@@ -16,15 +16,70 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-135 — Scenario production-reconciliation plan — READY (after BQ-134 PASS)
+### BQ-136 — Contain EX-80C production reachability — READY (after BQ-135)
 
-Traces to D-166/D-170/D-172. Objective: compare the frozen Scenario contract with the current app/backend and
-produce bounded production build items, dependencies and verification gates. Accept: every gap maps to an
-existing approved outcome; O-SC-9A/B/C are separated from UI/formula work; every money/data/privacy/schema or
-new-architecture dependency is explicitly escalated rather than implemented; no production code changes.
-Size M. Depends on BQ-134 PASS.
+Traces to D-170/D-172. Objective: enforce the approved internal/fixture-only boundary immediately. Accept:
+ordinary production UI has no 80C launcher; the non-fixture route cannot return a tax number; existing pure
+service/tests remain parked internal evidence; no feature-flag framework or new dependency; documented FY,
+official-source, reviewer/date, stale-shutdown and counsel gates remain required for re-release. Size S.
+Depends on BQ-135.
 
 ## BLOCKED — do not start
+
+### BQ-137 — Strict Scenario numeric parser and bounded local formula engine — BLOCKED (after BQ-136)
+
+Traces to D-170/D-171/D-172. Objective: implement the approved whole-string numeric grammar and exact local
+formula domains for S-01/S-03/S-05/S-06/S-07. Accept: every raw/intermediate/output finite guard, exact edge
+and just-outside fixture, S-06 integer/type boundary and S-01 overflow-before-reached rule pass; no UI/API/
+schema/dependency change. Size M. Depends on BQ-136.
+
+### BQ-138 — S-02 authenticated POST and authoritative guardrails — BLOCKED (after BQ-137)
+
+Traces to D-170 O-SC-9A/D-171/D-172. Objective: replace the financial GET query with authenticated POST and
+enforce every stored/input/intermediate/output domain server-side. Accept: old GET unavailable; URL/log spy,
+ownership/non-disclosure, 400/404, provenance/version/retrieval and exact formula tests pass; no schema/new
+dependency. Size M. Depends on BQ-137.
+
+### BQ-139 — ESOP date, safety and provenance reconciliation — BLOCKED (after BQ-138)
+
+Traces to D-170 O-SC-9B/O-SC-10/D-172. Objective: use India date, reject future/invalid/unsafe grants, label
+FMV as recorded and return backend-authoritative existing-version/retrieval provenance. Accept: no invented
+freshness/countdown, no schema/dependency, contradictory legacy tests replaced and boundary/provenance tests
+pass. Size M. Depends on BQ-138.
+
+### BQ-140 — Backend-authoritative Scenario candidate provenance — BLOCKED (after BQ-139)
+
+Traces to D-170 O-SC-9C/D-172. Objective: enumerate owned components for outgoings, SIPs, corpus and FD
+principal using existing IDs/versions/source fields/retrieval evidence. Accept: malformed/unavailable values
+never become zero; ownership/determinism/component tests pass; no timestamp schema/freshness claim/new pattern.
+Size L. Depends on BQ-139.
+
+### BQ-141 — Dedicated Scenario discovery, candidates and result lifecycle — BLOCKED (after BQ-140)
+
+Traces to D-167/D-168/D-170/D-172. Objective: reconcile five dedicated Scenario screens with approved
+discovery, excluded candidate authorship, typed source recovery, account generation, current-result/reset/
+reopen and accessibility contracts. Accept: approved names/routes, D-168 invalidation, provenance/input summary,
+announcement/focus and formula integration tests pass. Size L. Depends on BQ-137/BQ-140.
+
+### BQ-142 — Focused explorer UI and lifecycle reconciliation — BLOCKED (after BQ-141)
+
+Traces to D-168/D-170/D-172. Objective: reconcile S-02, ESOP and TERM UI/lifecycle while keeping 80C unavailable.
+Accept: contextual provenance/recovery/clean reopen; TERM all candidates excluded and explicit growth mode;
+current-result/accessibility tests pass; no external TERM release claim. Size L. Depends on BQ-138/BQ-139/BQ-141.
+
+### BQ-143 — Scenario Arya and progression integration — BLOCKED (after BQ-142)
+
+Traces to D-117/D-169/D-170/D-172. Objective: add confirmed masked Arya handoff and participation-only
+progression to every eligible current Scenario/focused result. Accept: exact payload/cancel/recovery spies,
+stable type-only keys, one/type/day and two/day cap evidence; no nonqualifying event; event failure/cap leaves
+the result unchanged. Size M. Depends on BQ-142.
+
+### BQ-144 — Production Scenario exhaustive verification and parity gate — BLOCKED (after BQ-143)
+
+Traces to D-166/D-172. Objective: prove production parity against all 96 AC IDs and 50 canonical states.
+Accept: configured frontend/backend, API security/privacy, lifecycle/isolation/offline, accessibility/keyboard,
+320/390/1440/200%, themes/high contrast/reduced motion, native best-effort and console/DOM evidence all pass;
+no prototype evidence substituted for production evidence. Owner disposition follows. Size L. Depends on BQ-143.
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED
 
