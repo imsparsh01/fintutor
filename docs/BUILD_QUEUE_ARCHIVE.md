@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-140 — Backend-authoritative Scenario candidate provenance — DONE 29-Aug-2026
+
+Traces to D-170 O-SC-9C/D-172. Objective: enumerate owned components for outgoings, SIPs, corpus and FD
+principal using existing IDs/versions/source fields/retrieval evidence. Accept: malformed/unavailable values
+never become zero; ownership/determinism/component tests pass; no timestamp schema/freshness claim/new pattern.
+Size L. Depends on BQ-139.
+
 ## BQ-139 — ESOP date, safety and provenance reconciliation — DONE 29-Aug-2026
 
 Traces to D-170 O-SC-9B/O-SC-10/D-172. Objective: use India date, reject future/invalid/unsafe grants, label

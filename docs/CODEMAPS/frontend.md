@@ -171,6 +171,7 @@ rewardFacts.ts          9       Curated mechanism-fact array for app-open reward
 taxSavingRoom.ts        24      Parked client for internal 80C evidence; unreachable in production (BQ-136)
 loanVsInvest.ts                 Authenticated POST-body client + typed authoritative source evidence
 esopExerciseCost.ts             Typed India-date/recorded-FMV result + authoritative source evidence client
+scenarioCandidates.ts           Typed authenticated four-group component/provenance client; BQ-141 consumes it
 holdingReconciliation.ts       Resolve owned candidate/new choice and apply confirmed transient diff;
                                 exposes refreshed proposal on stale 409
 compoundGrowth.ts              Pure D-128/D-129 month-end contribution model with finite/safe bounds;

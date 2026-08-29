@@ -16,21 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-140 — Backend-authoritative Scenario candidate provenance — READY (after BQ-139)
-
-Traces to D-170 O-SC-9C/D-172. Objective: enumerate owned components for outgoings, SIPs, corpus and FD
-principal using existing IDs/versions/source fields/retrieval evidence. Accept: malformed/unavailable values
-never become zero; ownership/determinism/component tests pass; no timestamp schema/freshness claim/new pattern.
-Size L. Depends on BQ-139.
-
-## BLOCKED — do not start
-
-### BQ-141 — Dedicated Scenario discovery, candidates and result lifecycle — BLOCKED (after BQ-140)
+### BQ-141 — Dedicated Scenario discovery, candidates and result lifecycle — READY (after BQ-140)
 
 Traces to D-167/D-168/D-170/D-172. Objective: reconcile five dedicated Scenario screens with approved
 discovery, excluded candidate authorship, typed source recovery, account generation, current-result/reset/
 reopen and accessibility contracts. Accept: approved names/routes, D-168 invalidation, provenance/input summary,
 announcement/focus and formula integration tests pass. Size L. Depends on BQ-137/BQ-140.
+
+## BLOCKED — do not start
 
 ### BQ-142 — Focused explorer UI and lifecycle reconciliation — BLOCKED (after BQ-141)
 

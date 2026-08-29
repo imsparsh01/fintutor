@@ -79,6 +79,21 @@ writes commit — and BQ-070 added the reading surfaces (ProgressScreen, plus Co
 and Scenario). The loop is closed end to end.
 ```
 
+## Data flow: Scenario candidate evidence (BQ-140)
+
+```
+authenticated app → GET /scenario-candidates
+    scenario_candidates.py ← owned Holdings + DiscretionaryCategory rows
+        monthly outgoings  ← EMI / confirmed MF SIP / premium cadence + discretionary components
+        monthly SIPs       ← confirmed equity/debt MF SIP components
+        invested corpus    ← MF/stocks current value + PPF/EPF balance + confirmed FD principal
+        FD principal       ← confirmed FD only; RD/unconfirmed mode excluded
+  ← deterministic unsummed components with record ID/version/source fields/retrieval evidence
+```
+
+No candidate is selected or persisted here: every candidate starts `included=false`; BQ-141 owns transient
+UI authorship and formula integration. Missing/malformed values remain explicit null evidence, never zero.
+
 ## Navigation structure
 
 ```

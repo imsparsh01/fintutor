@@ -4,8 +4,8 @@
 
 **Current gate:** BQ-130..BQ-134 complete; owner PASS recorded in D-172 and `VALIDATION_RESULT.md`
 
-**Production reconciliation:** BQ-135 audit through BQ-139 ESOP date/safety/provenance reconciliation
-complete. `PRODUCTION_RECONCILIATION.md` maps the remaining dependency-ordered BQ-140..BQ-144
+**Production reconciliation:** BQ-135 audit through BQ-140 backend-authoritative candidate provenance
+complete. `PRODUCTION_RECONCILIATION.md` maps the remaining dependency-ordered BQ-141..BQ-144
 sequence; production parity is not yet achieved.
 
 **Production status:** A broad first implementation is shipped. This package reconciles and validates the

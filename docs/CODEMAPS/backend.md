@@ -44,6 +44,7 @@ GET  /consolidated              → compute_consolidated(db, user_id)
 GET/PUT/PATCH/DELETE /financial-context → view, replace, field-update or clear optional confirmed
                                       dependant/emergency context; first-write races retry safely
 GET  /budget                    → compute_budget(db, user_id)
+GET  /scenario-candidates       → owned unsummed outgoings/SIP/corpus/FD components + source evidence
 POST /loan-vs-invest            → authenticated body; refetch owned holding; bounded authoritative math
 GET  /esop-exercise-cost        → owned ESOP; India-date bounded math + recorded-FMV/source evidence
 NO ROUTE /tax-saving-room       → service/tests parked internal-only pending D-170 release gates (BQ-136)
@@ -157,6 +158,8 @@ services/loan_vs_invest.py      Bounded prepayment-vs-invest hurdle-rate math (D
                                  owned stored record and returns ID/version/source-field/retrieval evidence.
 services/esop_exercise_cost.py  Options-only ESOP cost using India date and clamped-anniversary vesting;
                                  validates terms/outputs and returns recorded-FMV plus holding provenance.
+services/scenario_candidates.py Enumerates deterministic owned Scenario components without summing/selecting;
+                                 explicit zero/unavailable/malformed values, versions and retrieval evidence.
 services/tax_saving_room.py     Parked internal 80C calculation evidence; no registered production route.
                                   Re-release is blocked by D-170's FY/source/reviewer/stale/counsel gates.
                                   Legacy invalid contributions are excluded. No NPS/80CCD

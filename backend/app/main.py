@@ -25,6 +25,7 @@ from app.services.data_export import build_data_export
 from app.services.budget import compute_budget
 from app.services.consolidated import compute_consolidated
 from app.services.deepen_classifier import classify_deepen
+from app.services.scenario_candidates import enumerate_scenario_candidates
 from app.services.discretionary_categories import (
     create_discretionary_category,
     delete_discretionary_category,
@@ -367,6 +368,11 @@ async def export_account_data(
 @app.get("/budget")
 def get_budget(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     return compute_budget(db, user_id)
+
+
+@app.get("/scenario-candidates")
+def get_scenario_candidates(user_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+    return enumerate_scenario_candidates(db, user_id)
 
 
 @app.get("/holdings")
