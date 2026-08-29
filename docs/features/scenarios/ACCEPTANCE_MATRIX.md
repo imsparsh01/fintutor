@@ -1,7 +1,6 @@
 # Scenario suite acceptance and evidence matrix
 
-**Status:** Candidate for BQ-132. Criteria and D-170 path rulings are complete; only O-SC-4's exact numeric
-domain table remains owner-gated before prototype implementation.
+**Status:** Approved and frozen for BQ-132. D-167..D-171 settle every fork and exact numeric domain.
 
 **Sources:** `PRD.md`, `JOURNEY_AND_STATES.md`, `CONTRACTS.md`, D-009, D-091, D-092, D-106, D-124,
 D-128, D-130, D-131, D-132, D-148 and D-166.
@@ -63,17 +62,21 @@ existence of shipped behavior is not evidence of conformance.
 | AC-S03-01 | Increase-SIP valid inputs | End-month ordinary-annuity base/raised paths, difference and additional invested match the ledger |
 | AC-S03-02 | Annual rate is zero | FV uses `P × n`; no divide-by-zero or hidden fallback |
 | AC-S03-03 | Years convert to months | `n = round(years × 12)` is visible and tested at half/crossing boundaries |
-| AC-S03-04 | Additional SIP is zero | Behavior matches the explicit BQ-132 ruling; negative SIP is always rejected |
+| AC-S03-04 | Additional SIP is zero/negative or above ₹1B/month | Reject; current SIP must be ₹0..₹1B/month and additional SIP >₹0..₹1B/month |
+| AC-S03-05 | Rate/period/output reaches a boundary | Accept 0..100%, rounded 1..720 months and outputs ≤₹1 quadrillion; reject outside/unsafe |
 | AC-S06-01 | Debt-cost valid amortising inputs | EMI, total payable, total interest and first `min(12,n)` months' interest match month-by-month evidence |
 | AC-S06-02 | Loan rate is zero | EMI = P/n and both interest outputs are zero |
-| AC-S06-03 | Months are fractional or debt is credit-card type | Acceptance/normalization follows the explicit BQ-132 ruling and is disclosed |
+| AC-S06-03 | Months are fractional/outside 1..600 or debt is credit-card type | Reject; only positive integer months and home/personal loans are eligible |
+| AC-S06-04 | Amount/rate/output reaches a boundary | Accept outstanding >₹0..₹1T, rate 0..100% and outputs ≤₹1 quadrillion; reject outside/unsafe |
 | AC-S07-01 | Idle-cash valid inputs | Both annual-compounding paths and signed difference match formula and remain in input order |
 | AC-S07-02 | Paths are equal or alternate-lower | Zero/negative difference renders neutrally with symmetric styling |
-| AC-S07-03 | Catalogue/result renders | Approved O-SC-1 name is used consistently; no “tax,” winner or lost-opportunity verdict leaks unless explicitly approved |
+| AC-S07-03 | Catalogue/result renders | “Idle cash over time” is used consistently; no “tax,” winner or lost-opportunity verdict leaks |
+| AC-S07-04 | Input/output reaches a boundary | Accept cash >₹0..₹1T, each rate 0..100%, period >0..60 years and outputs ≤₹1 quadrillion |
 | AC-S01-01 | Corpus valid inputs | Return-then-end-month-contribution simulation reaches target or stops at 720 months |
 | AC-S01-02 | Target already reached | Valid 0 months renders |
 | AC-S01-03 | Zero contribution and zero rate cannot reach target | Explicit “not reached” renders, not zero/error/infinite loop |
 | AC-S01-04 | Any iteration becomes unsafe | Guard stops before a false reached result |
+| AC-S01-05 | Input/output reaches a boundary | Accept corpus/monthly contribution ₹0..₹1T, target >₹0..₹1 quadrillion, rate 0..100%, 720 iterations and balances ≤₹1 quadrillion |
 
 ## E. Focused-explorer formula evidence
 
@@ -81,8 +84,9 @@ existence of shipped behavior is not evidence of conformance.
 |---|---|---|
 | AC-E02-01 | Owned home/personal loan selected | Backend refetches verified-subject record; `0 < prepayment < principal` |
 | AC-E02-02 | Stored amortisation values valid | Hurdle, implied tenure, same-EMI and same-tenure outputs match backend ledger |
-| AC-E02-03 | Loan rate is zero | Behavior matches explicit BQ-132 ruling without fabricated log formula |
+| AC-E02-03 | Loan rate is zero/nonpositive | Reject as outside S-02; no fabricated logarithmic branch |
 | AC-E02-04 | Result renders | Charges-zero assumption and break-even-not-forecast boundary are visible |
+| AC-E02-05 | Input/tenure/output reaches a boundary | Accept values >₹0..₹1T with X<P, rate >0..100%, implied tenures >0..600 months and outputs ≤₹1 quadrillion |
 | AC-ESOP-01 | Grant timing crosses anniversary/month-end | Whole-month clamping, cliff, floor and total-unit cap match fixtures |
 | AC-ESOP-02 | Units/strike are zero or FMV equals/below strike | Valid zero/negative spread states render neutrally; missing FMV stays unknown |
 | AC-ESOP-03 | Result renders | Cost/spread use two decimals and grant timing/provenance limitation is visible |

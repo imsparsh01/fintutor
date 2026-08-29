@@ -67,12 +67,15 @@ FinTutor forecast, an old result can survive changed inputs, and side-by-side ar
 
 ### Decision status for BQ-132
 
-1. **O-SC-1 — S-07 name:** keep D-106’s advice-adjacent “Inaction tax” label or use the already-shipped
-   mechanism label “Idle cash over time.”
+1. **O-SC-1 — RESOLVED by D-170:** use **Idle cash over time**.
 2. **O-SC-2 — RESOLVED by D-167:** Tools lists the five dedicated scenarios under **Scenarios**. Focused
    explorers remain contextual deliberate actions and are not duplicated as context-free Tools cards.
 3. **O-SC-3 — RESOLVED by D-168:** editing a dependent input immediately removes the prior result and shows
    “Inputs changed — run again to see a result for these values.”
+4. **O-SC-4..O-SC-13 — RESOLVED by D-170/D-171:** eligibility, freshness, privacy/provenance, ESOP date,
+   80C release, candidate inclusion, numeric grammar and exact formula-specific domains are binding.
+
+No BQ-132 fork remains open.
 
 ## Fundamental outcome
 

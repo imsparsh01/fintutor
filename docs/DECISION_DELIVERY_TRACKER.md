@@ -73,11 +73,12 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-163 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no composite score | Realized, agent-tested 96/96 and owner-approved final PASS; production Home/Portfolio replacement remains separate |
 | D-164 | SHIPPED → BQ-129 / validated definition | Optional health-insurance context is account-owned | Simulated, agent-tested and owner-approved final PASS; production schema/API/privacy/export/deletion work remains separate |
 | D-165 | SHIPPED → BQ-129 / validated definition | Portfolio Health has no score bands or headline grade | Realized, agent-tested 96/96 and owner-approved final PASS; production copy/UI replacement remains separate |
-| D-166 | BLOCKED → BQ-132 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | Acceptance matrix and briefs drafted; Tier-3 owner rulings block prototype work |
-| D-167 | READY → BQ-133 | Scenario taxonomy and contextual focused-explorer discovery | Implement only after BQ-132's Tier-3 gates close |
-| D-168 | READY → BQ-133 | Remove stale Scenario result immediately after dependent input edits | Implement only after BQ-132's Tier-3 gates close |
-| D-169 | READY → BQ-133 | Conditional confirmed Arya teaching handoff from eligible current Scenario results | Implement only after BQ-132's Tier-3 gates close |
-| D-170 | BLOCKED → BQ-132 | Approved Scenario safety, eligibility, provenance and release package | Exact O-SC-4 numeric-domain table remains unstated; after approval prototype delivery moves to BQ-133 and O-SC-9A/B/C receive later production BQs |
+| D-166 | READY → BQ-133 | Four remaining D-148 workstreams in recommended order; Scenario/focused explorers next | Definition and decisions complete; controlled prototype/QA is next |
+| D-167 | READY → BQ-133 | Scenario taxonomy and contextual focused-explorer discovery | Realize and validate in controlled prototype |
+| D-168 | READY → BQ-133 | Remove stale Scenario result immediately after dependent input edits | Realize and validate in controlled prototype |
+| D-169 | READY → BQ-133 | Conditional confirmed Arya teaching handoff from eligible current Scenario results | Realize and validate in controlled prototype |
+| D-170 | READY → BQ-133 | Approved Scenario safety, eligibility, provenance and release package | Prototype delivery next; O-SC-9A/B/C receive later production BQs after PASS |
+| D-171 | READY → BQ-133 | Exact Scenario numeric domains and reject-before-render guardrails | Realize and validate every boundary in controlled prototype |
 
 ## Current-session decisions
 

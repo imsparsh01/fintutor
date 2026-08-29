@@ -1,7 +1,7 @@
 # Scenario suite decision register and owner briefs
 
-**Status:** Owner approved the recommended Tier-3 package as D-170. Every path is settled except the exact
-O-SC-4 numeric ceilings, which were not stated in the package and remain the sole BQ-132 blocker.
+**Status:** Complete. D-170 approved the recommended package and D-171 approved the exact O-SC-4 domains.
+Every BQ-132 fork is settled; BQ-133 implements the controlled prototype.
 
 ## Autonomous decision O-SC-2 — taxonomy and discovery
 
@@ -56,8 +56,7 @@ O-SC-4 numeric ceilings, which were not stated in the package and remain the sol
 
 ## Tier-3 brief O-SC-4 — What numeric domain is supported?
 
-- **Owner outcome:** Path B policy approved by D-170; exact ceilings remain unstated and must be approved
-  before BQ-133. No code precedent is silently promoted into the decision.
+- **Owner outcome:** Path B policy approved by D-170 and the exact table approved by D-171.
 
 - **Trigger fired:** money calculations users may rely on.
 - **Question:** which explicit rupee/rate/horizon ceilings govern S-01/S-02/S-03/S-06/S-07 before finite math?
@@ -73,13 +72,13 @@ O-SC-4 numeric ceilings, which were not stated in the package and remain the sol
 - **Team recommendation:** Path B. Define separate ceilings for rupee inputs, rates, periods, units and derived
   outputs; reject every unsafe intermediate/output before render. Do not silently reuse another calculator's domain.
 
-### Proposed exact O-SC-4 table — awaiting owner approval
+### Approved exact O-SC-4 table — D-171
 
 | Entry | Amount domain | Annual rate | Period domain | Output ceiling |
 |---|---|---|---|---|
 | S-03 Increase SIP | current SIP ₹0..₹1B/month; additional SIP >₹0..₹1B/month | 0..100% | 1 month..60 years; `round(years×12)` must be 1..720 | every monetary output ≤₹1 quadrillion |
 | S-07 Idle cash | cash >₹0..₹1T | each rate 0..100% | >0..60 years | each path/difference magnitude ≤₹1 quadrillion |
-| S-01 Time to corpus | corpus/contribution ₹0..₹1T; target >₹0..₹1 quadrillion | 0..100% | fixed maximum 720 monthly iterations | every balance ≤₹1 quadrillion |
+| S-01 Time to corpus | corpus/monthly contribution ₹0..₹1T; target >₹0..₹1 quadrillion | 0..100% | fixed maximum 720 monthly iterations | every balance ≤₹1 quadrillion |
 | S-06 Debt cost | outstanding >₹0..₹1T | 0..100% | integer 1..600 months | EMI/payable/interest magnitudes ≤₹1 quadrillion |
 | S-02 Loan prepayment | principal/EMI/prepayment >₹0..₹1T and `X<P` | >0..100% | implied original/new tenure >0..600 months | EMI/savings magnitudes ≤₹1 quadrillion |
 

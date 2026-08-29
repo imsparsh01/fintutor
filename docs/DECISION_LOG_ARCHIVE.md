@@ -1125,3 +1125,45 @@ is ever built. Reversibility: High. Date: 04-Aug-2026.
   valuation remains unmeasured; exact currency totals and provenance are preserved. Full write-up:
   `docs/features/baseline/decisions/D-150-shared-proportional-live-goal-progress.md`.
 - **Date:** 23-Aug-2026
+
+### D-151 — Goal progress converts holding values to paise with round-half-up
+- **Tier:** 3, owner-decided money logic. “Before D-150 allocates a recognized live holding value across goals,
+  convert that value to two decimal places using Decimal `ROUND_HALF_UP`.” Allocation then uses integer paise;
+  unknown and unsupported contributions remain partial, never zero. Full write-up:
+  `docs/features/baseline/decisions/D-151-goal-progress-currency-rounding.md`.
+- **Date:** 24-Aug-2026
+
+### D-152 — Account entry and access is the next product-definition workstream; BQ-113..117 approved
+- **Tier:** 3, owner-decided sequencing. “The owner approved 'Account entry and access' — rank 3 (score 81)
+  … as the next product-definition deep dive under the D-148 programme,” plus the five-item bounded plan
+  BQ-113..BQ-117; both HARD-STOPs (frontend test harness; production CORS/hosting/leaked-password) stay
+  DEFERRED. Full write-up: `docs/decisions/D-152-account-entry-next-workstream.md`.
+- **Date:** 26-Aug-2026
+
+### D-153 — Session-expiry / network-loss recovery UX is a non-blocking banner + manual retry
+- **Tier:** 2, owner-ruled (resolves account-entry open fork O-A). “The recovery UX is a **non-blocking
+  banner + manual retry**.” No forced logout and no silent re-auth on a transient blip; the expired subject is
+  treated as lost (no stale data behind the banner) and the user manually re-authenticates/retries. Full
+  write-up: `docs/decisions/D-153-account-entry-expiry-network-loss-banner-retry.md`.
+- **Date:** 26-Aug-2026
+
+### D-154 — Duplicate-registration / wrong-password copy is neutral and enumeration-safe
+- **Tier:** 2, owner-ruled (resolves account-entry open fork O-B; privacy angle). “Uniform wording that
+  **never reveals whether an email has an account**.” Wrong-password and unknown-email are indistinguishable;
+  duplicate registration does not confirm the email exists; this overrides Supabase's specific default
+  messages. Ratifies the enumeration-safety constraint already in `CONTRACTS.md`. Full write-up:
+  `docs/decisions/D-154-account-entry-neutral-enumeration-safe-auth-copy.md`.
+- **Date:** 26-Aug-2026
+
+### D-155 — Logout / account-switch actively clears device-local state
+- **Tier:** 2, owner-ruled (resolves account-entry open fork O-C). “On logout and account-switch, device-local
+  state is **actively cleared** — the strongest anti-bleed option.” Actively tears down cached UI/query/
+  AsyncStorage subject-scoped state, extending the BQ-112/D-149 load-time suppression. Full write-up:
+  `docs/decisions/D-155-account-entry-active-clear-device-local-state-on-logout.md`.
+- **Date:** 26-Aug-2026
+
+### D-156 — Home and consolidated experience is the next product-definition workstream
+- **Tier:** 3, owner-decided sequencing. “The owner approved **Home and consolidated experience**, rank 4
+  (score 80) in the D-148 portfolio audit, as the next product-definition deep dive.” Full write-up:
+  `docs/decisions/D-156-home-is-next-product-definition-workstream.md`.
+- **Date:** 28-Aug-2026

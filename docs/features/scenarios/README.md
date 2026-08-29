@@ -2,8 +2,7 @@
 
 **Workstream:** D-166 / BQ-130..BQ-134
 
-**Current gate:** BQ-130/BQ-131 complete; D-170 approved the Scenario package; BQ-132 now awaits only the
-exact O-SC-4 numeric-domain table before BQ-133
+**Current gate:** BQ-130/BQ-131/BQ-132 complete under D-170/D-171; BQ-133 is READY
 
 **Production status:** A broad first implementation is shipped. This package reconciles and validates the
 coherent end-to-end product before any production reconciliation is authorised.
@@ -26,7 +25,7 @@ coherent end-to-end product before any production reconciliation is authorised.
 
 - BQ-130: current PRD, journey and complete state matrix.
 - BQ-131: functional/money/content/privacy/accessibility/recovery contracts — complete.
-- BQ-132: acceptance matrix and owner-only decision briefs.
+- BQ-132: acceptance matrix and owner-only decisions — complete under D-167..D-171.
 - BQ-133: controlled-fixture clickable prototype and exhaustive agent QA.
 - BQ-134: owner validation and disposition.
 

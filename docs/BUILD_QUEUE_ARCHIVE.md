@@ -12,6 +12,19 @@
 
 ---
 
+## BQ-132 — Scenario acceptance matrix and owner decision register — DONE 29-Aug-2026
+
+Traces to D-166/D-148. Objective: map every requirement/state/journey to prototype and QA evidence, and route
+all genuine unresolved formula, persistence, comparison or advice-boundary forks through the decision
+protocol. Accept: critical tasks cover all approved explorers, partial/invalid inputs, equal/crossing outcomes,
+stale data, save/recovery and account isolation; every requirement has evidence. Size M. Depends on BQ-131.
+
+Delivered `docs/features/scenarios/ACCEPTANCE_MATRIX.md` and `DECISION_REGISTER.md`: stable criteria for all
+nine entries and all 50 states, direct evidence requirements, formula/provenance/privacy/recovery/accessibility
+coverage and critical owner tasks. D-167..D-169 resolved reversible UX/IA behavior; owner approved the complete
+Tier-3 package in D-170 and exact numeric domains in D-171. Every BQ-132 gate is closed. No production code,
+schema, API, persistence or formula changed.
+
 ## BQ-131 — Consolidate Scenario functional, money and safety contracts — DONE 29-Aug-2026
 
 Traces to D-166/D-148. Objective: specify inputs/outputs, scenario ownership, calculations/provenance,

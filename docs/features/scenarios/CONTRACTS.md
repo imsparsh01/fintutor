@@ -91,8 +91,9 @@ source replaces only that source.
 ## 5. Formula and output ledger
 
 All rupee outputs are display-rounded as stated; calculations retain full finite precision until formatting.
-“Reject” means no result, no progression event and an associated validation message. Exact numeric ceilings
-that standing decisions do not set remain owner decisions for BQ-132; BQ-131 does not invent them.
+“Reject” means no result, announcement, handoff or progression event and an associated validation message.
+D-171 sets the exact S-01/S-02/S-03/S-06/S-07 domains below. Every raw input, intermediate and output must be
+finite; monetary outputs above ₹1 quadrillion reject. These are support guardrails, never normal/recommended values.
 
 ### S-05 — Emergency runway
 
@@ -115,37 +116,36 @@ that standing decisions do not set remain owner decisions for BQ-132; BQ-131 doe
   `P × ((1+r)^n − 1) / r`; at zero rate it is `P × n`.
 - Calculate base with current SIP, raised path with current plus additional SIP, difference as raised minus
   base, and additional invested as additional SIP × n. Display rupees to whole units.
-- Reject non-finite inputs/intermediates/outputs. BQ-132 must set safe ceilings and decide whether zero
-  additional SIP is a valid equality path; current negative SIP behavior is not approved.
+- Current SIP is ₹0..₹1B/month; additional SIP is >₹0..₹1B/month; rate is 0..100%; rounded months must be
+  1..720 (1 month..60 years); every monetary output is ≤₹1 quadrillion. Zero/negative additional SIP rejects.
 
 ### S-06 — Debt cost
 
-- Inputs: selected eligible balance, annual interest rate and remaining months. Balance is positive, rate is
+- Inputs: selected owned home/personal-loan balance, annual interest rate and remaining months. Balance is positive, rate is
   non-negative and months are positive; all are finite. Blank, nonnumeric, non-finite, negative, zero and
   out-of-domain periods are invalid. A non-integral value follows O-SC-7 and is never silently transformed.
 - With monthly rate `r`, EMI = `P × r × (1+r)^n / ((1+r)^n − 1)`; total payable = EMI × n; total interest =
   total payable − P. Next-year interest is the month-by-month interest for `min(12,n)` months.
 - At zero rate, EMI = P/n, total payable = P and both interest outputs are zero. Display rupees whole.
-- Reject unsafe/non-finite values. BQ-132 must set ceilings, decide whether months must be an integer or round
-  to nearest, and reconcile whether credit-card debt is eligible for this fixed-amortisation model.
+- Outstanding is >₹0..₹1T; rate is 0..100%; months are integers 1..600; every monetary output is
+  ≤₹1 quadrillion. Credit-card debt and fractional months reject.
 
 ### S-07 — Idle-cash comparison
 
-- Inputs are manual cash amount, two user-owned annual rates and years. Amount/years are positive, rates are
-  non-negative, and all are finite.
+- Inputs are manual cash >₹0..₹1T, two user-owned annual rates each 0..100%, and years >0..60.
 - Each path compounds annually: `A = P × (1 + rate/100)^years`. Difference = alternate path minus savings
   path. Equal (zero) and alternate-lower (negative) results are valid arithmetic.
 - Preserve input order and symmetric presentation; never reorder by outcome or call a winner. Display rupees
-  whole. Reject unsafe/non-finite values. BQ-132 sets safe ceilings.
-- O-SC-1 remains open between “Inaction tax” and “Idle cash over time”; ID/formula stay unchanged.
+  whole. Each path/difference magnitude must be ≤₹1 quadrillion. The approved name is **Idle cash over time**.
 
 ### S-01 — Time to user-set corpus
 
-- Inputs: current corpus, monthly contribution, annual rate and user-set target. All are finite and
-  non-negative; target is positive. The app supplies neither target nor rate.
+- Inputs: current corpus/monthly contribution ₹0..₹1T, annual rate 0..100% and user-set target
+  >₹0..₹1 quadrillion. The app supplies neither target nor rate.
 - Simulate monthly, applying return then an end-month contribution:
   `balance = balance × (1 + annual_rate/1200) + monthly_contribution`.
-- Stop on reaching the target or at the existing 720-month horizon. Already reached returns 0 months. With
+- Stop on reaching the target or at the approved 720-month horizon. Every balance must be ≤₹1 quadrillion.
+  Already reached returns 0 months. With
   zero contribution and zero rate, return “not reached”, not zero.
 - Display years as months/12 to one decimal; any optional age is nearest whole year. Guard every iteration
   against non-finite/unsafe values so overflow cannot produce a false reached result. BQ-132 sets ceilings.
@@ -160,8 +160,9 @@ that standing decisions do not set remain owner decisions for BQ-132; BQ-131 doe
   disclosed. This is a break-even mechanism, not a projected investment outcome or recommendation.
 - Amount/EMI/savings display to two decimals; new months to one decimal. Reject non-positive, non-finite or
   non-amortising stored values and all unsafe outputs.
-- BQ-132 must set safety ceilings and decide whether zero-rate loans are supported. Production reconciliation
-  must separately consider moving prepayment out of the GET query string to reduce log exposure.
+- Principal, EMI and prepayment are >₹0..₹1T with `X<P`; rate is >0..100%; implied original/new tenure must
+  be >0..600 months; monetary outputs are ≤₹1 quadrillion. Zero-rate loans reject. D-170 requires later
+  production reconciliation to move inputs from GET query to an authenticated POST body.
 
 ### EX-ESOP — Exercise cost
 
@@ -171,7 +172,8 @@ that standing decisions do not set remain owner decisions for BQ-132; BQ-131 doe
 - Zero units and zero strike are valid. Equal FMV/strike returns zero spread; FMV below strike retains a
   negative spread with neutral “underwater” explanation. Missing FMV is unknown, not zero.
 - Cost/spread display to two decimals. Reject negative or non-finite units, price, FMV, cliff/window inputs and
-  unsafe outputs. State whether grant timing is recorded or estimated. Response provenance gaps remain BQ-132.
+  unsafe outputs. State whether grant timing is recorded or estimated. D-170 approves backend-authoritative
+  version/retrieval provenance for later production reconciliation; prototype uses honest fixture evidence.
 
 ### EX-80C — Unused room
 
@@ -190,9 +192,9 @@ that standing decisions do not set remain owner decisions for BQ-132; BQ-131 doe
   recorded candidates are never auto-included. Existing production defaults for debts/goals contradict this
   binding rule and are BQ-133 reconciliation evidence.
 - Support years are user-entered integers 1–100. Before running, the user explicitly chooses **Model no annual
-  change** (`g = 0`) or **Enter an annual change assumption** (finite `g` in O-SC-4's approved domain); blank
+  change** (`g = 0`) or **Enter an annual change assumption** (finite 0..100% under D-145); blank
   treatment never becomes zero silently. Support stream is `annual × Σ(1+g)^y`, `y=0..n−1`. Amount ceilings
-  follow O-SC-4 and every intermediate/output must stay finite and safely representable.
+  retain D-145's finite/non-negative contract; every intermediate/output must stay finite and safely representable.
 - Modelled amount = `max(0, support stream + selected debts + selected goals − selected asset offsets −
   selected survivor-income stream)`.
 - Entered cover = individual + group + other cover. Signed comparison = entered cover − modelled amount.
@@ -215,7 +217,7 @@ The source mapping is binding:
 - S-05: `/holdings` for confirmed FD principal only; `/budget` for recurring plus discretionary outgoings.
   Cash/bank and other accessible amounts are manual.
 - S-03: `/budget` recurring equity/debt mutual-fund outflows only.
-- S-06: `/holdings` eligible loan fields, subject to the BQ-132 credit-card ruling.
+- S-06: `/holdings` eligible home/personal-loan fields; credit-card debt is ineligible under D-170.
 - S-07: no account read.
 - S-01: `/holdings` for MF/stocks current value, FD principal, PPF/EPF balance; `/budget` for MF SIPs. RD is
   excluded.
@@ -291,22 +293,15 @@ freshness or later uploads scenario data.
 - Light, dark and high-contrast themes preserve meaning and contrast. Reduced motion removes nonessential
   transitions; motion is never required to understand state.
 
-## 11. BQ-132 owner-decision register seed
+## 11. BQ-132 resolved-decision ledger
 
-The next gate must resolve or explicitly park these forks before prototype build:
+- D-167: two-level taxonomy and contextual focused-explorer discovery.
+- D-168: dependent edits remove the prior result immediately.
+- D-169: conditional confirmed Arya handoff for bounded current-result teaching.
+- D-170: Idle cash naming, equality/eligibility/freshness/privacy/provenance/date/release/inclusion/input-grammar package.
+- D-171: exact S-01/S-02/S-03/S-06/S-07 numeric domains and reject-before-render guardrails.
 
-1. O-SC-1: final S-07 user-facing name.
-2. O-SC-4: complete numeric domains and reject-before-render behavior.
-3. O-SC-5: whether S-03 accepts zero additional SIP as equality.
-4. O-SC-6: whether S-02 supports zero-rate loans.
-5. O-SC-7: S-06 integer periods and home/personal-versus-credit-card eligibility.
-6. O-SC-8/O-SC-9: freshness promise and production privacy/provenance follow-ups.
-7. O-SC-10: ESOP date/valuation authority.
-8. O-SC-11: 80C statutory version authority (standing external gate).
-9. O-SC-12: recorded-candidate default inclusion.
-10. O-SC-13: accepted numeric grammar.
-
-D-167 and D-168 have already resolved former O-SC-2/O-SC-3.
+No BQ-132 fork remains open. O-SC-9A/B/C are approved later production obligations, not BQ-133 network/API work.
 
 EX-80C statutory provenance/external release and EX-TERM counsel review stay gated by their standing decisions;
 they are not reopened as prototype design choices.

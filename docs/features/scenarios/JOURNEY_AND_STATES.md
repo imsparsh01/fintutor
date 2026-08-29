@@ -45,7 +45,7 @@ interest, EMI and next-year interest. No repay/refinance/invest instruction foll
 ### S-07 Idle cash over time
 
 User enters one amount plus two rates and a horizon. Both paths receive equal visual treatment; a negative,
-positive or zero signed difference is allowed. The final label remains O-SC-1.
+positive or zero signed difference is allowed. D-170 fixes the final label as **Idle cash over time**.
 
 ### S-01 Time to corpus
 

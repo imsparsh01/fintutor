@@ -16,28 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-No item is currently executable. BQ-132 is blocked on the consolidated Tier-3 owner rulings below; BQ-133
-and BQ-134 remain dependency-blocked behind it.
-
-## BLOCKED — do not start
-
-### BQ-132 — Scenario acceptance matrix and owner decision register — BLOCKED ON TIER-3 RULINGS
-
-Traces to D-166/D-148. Objective: map every requirement/state/journey to prototype and QA evidence, and route
-all genuine unresolved formula, persistence, comparison or advice-boundary forks through the decision
-protocol. Accept: critical tasks cover all approved explorers, partial/invalid inputs, equal/crossing outcomes,
-stale data, save/recovery and account isolation; every requirement has evidence. Size M. Depends on BQ-131.
-
-Acceptance/evidence artifacts are complete. `docs/features/scenarios/DECISION_REGISTER.md` resolves the two
-Tier-2 forks (D-167/D-168) and contains neutral briefs for the remaining money, advice-boundary, financial-data,
-privacy and API/schema rulings. BQ-132 completes when those Tier-3 briefs have owner outcomes.
-
-### BQ-133 — Scenario clickable prototype and exhaustive agent QA — BLOCKED (after BQ-132)
+### BQ-133 — Scenario clickable prototype and exhaustive agent QA — READY (after BQ-132)
 
 Traces to D-166/D-148. Objective: build the approved controlled-data scenario/focused-explorer prototype and
 complete exhaustive agent QA. Accept: every critical path/state is clickable; formulas and provenance match
 approved contracts; syntax, forbidden APIs/storage, responsive/zoom, keyboard/accessibility, contrast,
 themes, reduced motion, DOM and console integrity are tested and recorded. Size L. Depends on BQ-132.
+
+## BLOCKED — do not start
 
 ### BQ-134 — Scenario owner validation walkthrough and disposition — BLOCKED (after BQ-133)
 
