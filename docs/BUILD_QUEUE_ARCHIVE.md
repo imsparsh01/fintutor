@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-136 — Contain EX-80C production reachability — DONE 29-Aug-2026
+
+Traces to D-170/D-172. Objective: enforce the approved internal/fixture-only boundary immediately. Accept:
+ordinary production UI has no 80C launcher; the non-fixture route cannot return a tax number; existing pure
+service/tests remain parked internal evidence; no feature-flag framework or new dependency; documented FY,
+official-source, reviewer/date, stale-shutdown and counsel gates remain required for re-release. Size S.
+Depends on BQ-135.
+
 ## BQ-135 — Scenario production-reconciliation plan — DONE 29-Aug-2026
 
 Traces to D-166/D-170/D-172. Objective: compare the frozen Scenario contract with the current app/backend and

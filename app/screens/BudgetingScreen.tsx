@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { TaxSavingRoomModal } from '../components/TaxSavingRoomModal';
 import { GoalFundingFields } from '../components/GoalFundingFields';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
@@ -52,7 +51,6 @@ export function BudgetingScreen() {
     goals: loadingState(), holdings: loadingState(),
   });
   const generation = useRef(0);
-  const [checkingTaxSaving, setCheckingTaxSaving] = useState(false);
   const [addingDiscretionary, setAddingDiscretionary] = useState(false);
   const [editingIncomeSourceId, setEditingIncomeSourceId] = useState<string | null>(null);
 
@@ -169,10 +167,6 @@ export function BudgetingScreen() {
         </>}
       </View>
 
-      <Pressable style={styles.taxSavingButton} onPress={() => setCheckingTaxSaving(true)}>
-        <Text style={styles.taxSavingButtonText}>Check my 80C room</Text>
-      </Pressable>
-
       {/* DISCRETIONARY card — section label + inline "+ Add" (6.1), not a full-width
           button under the list. */}
       <View style={[styles.card, styles.cardSpaced]}>
@@ -275,9 +269,6 @@ export function BudgetingScreen() {
       </View>
       {sectionState.goals.status === 'ready' && <AddGoalForm userId={userId} holdings={holdings} holdingsError={sectionState.holdings.status === 'error'} onAdded={() => { void loadSection('goals'); void loadSection('budget'); }} />}
 
-      {checkingTaxSaving && (
-        <TaxSavingRoomModal userId={userId} onClose={() => setCheckingTaxSaving(false)} />
-      )}
     </ScrollView>
   );
 }
@@ -840,16 +831,6 @@ const styles = StyleSheet.create({
     color: colors.inkMuted,
   },
   addInlineText: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.tutor },
-  taxSavingButton: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.tutor,
-    borderRadius: radius.md,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  taxSavingButtonText: { fontFamily: font.uiSemibold, color: colors.tutor },
   emptyText: { fontFamily: font.ui, color: colors.inkMuted, fontSize: 13 },
   row: {
     flexDirection: 'row',

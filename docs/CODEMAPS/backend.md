@@ -46,7 +46,7 @@ GET/PUT/PATCH/DELETE /financial-context → view, replace, field-update or clear
 GET  /budget                    → compute_budget(db, user_id)
 GET  /loan-vs-invest            → compute_loan_vs_invest(…, prepay_amount)
 GET  /esop-exercise-cost        → compute_esop_exercise_cost(…)
-GET  /tax-saving-room           → compute_tax_saving_room(…, tax_regime)
+NO ROUTE /tax-saving-room       → service/tests parked internal-only pending D-170 release gates (BQ-136)
 
 GET  /streak                    → get_streak(db, user_id)
 POST /streak/open               → record_app_open(…) + evaluate_reward(is_new_day)
@@ -155,8 +155,9 @@ services/rewards.py (22)        evaluate_reward(is_new_day) — returns reward s
 services/streaks.py             record_app_open() / get_streak(); future stored activity dates log and no-op.
 services/loan_vs_invest.py (102) Math: prepayment vs invest decision; uses hurdle rate (D-014).
 services/esop_exercise_cost.py  ESOP cost with clamped-anniversary vesting estimate, equal-FMV/zero-unit copy.
-services/tax_saving_room.py     80C room left under old/new regime (D-016), always clamped to ₹0–₹1.5L;
-                                  legacy invalid contributions are excluded and visibly flagged. No NPS/80CCD
+services/tax_saving_room.py     Parked internal 80C calculation evidence; no registered production route.
+                                  Re-release is blocked by D-170's FY/source/reviewer/stale/counsel gates.
+                                  Legacy invalid contributions are excluded. No NPS/80CCD
                                   exists — D-070's formula is ppf_epf annual_contribution plus annualised
                                   insurance premiums only. D-112 strict cadence:
                                   blank/unknown premium frequency excluded; six-month variants count ×2/year.

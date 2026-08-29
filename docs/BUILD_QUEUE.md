@@ -16,22 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-136 — Contain EX-80C production reachability — READY (after BQ-135)
-
-Traces to D-170/D-172. Objective: enforce the approved internal/fixture-only boundary immediately. Accept:
-ordinary production UI has no 80C launcher; the non-fixture route cannot return a tax number; existing pure
-service/tests remain parked internal evidence; no feature-flag framework or new dependency; documented FY,
-official-source, reviewer/date, stale-shutdown and counsel gates remain required for re-release. Size S.
-Depends on BQ-135.
-
-## BLOCKED — do not start
-
-### BQ-137 — Strict Scenario numeric parser and bounded local formula engine — BLOCKED (after BQ-136)
+### BQ-137 — Strict Scenario numeric parser and bounded local formula engine — READY (after BQ-136)
 
 Traces to D-170/D-171/D-172. Objective: implement the approved whole-string numeric grammar and exact local
 formula domains for S-01/S-03/S-05/S-06/S-07. Accept: every raw/intermediate/output finite guard, exact edge
 and just-outside fixture, S-06 integer/type boundary and S-01 overflow-before-reached rule pass; no UI/API/
 schema/dependency change. Size M. Depends on BQ-136.
+
+## BLOCKED — do not start
 
 ### BQ-138 — S-02 authenticated POST and authoritative guardrails — BLOCKED (after BQ-137)
 

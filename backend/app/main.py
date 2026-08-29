@@ -107,7 +107,6 @@ from app.services.onboarding_assessment import (
 )
 from app.services.rewards import evaluate_reward
 from app.services.streaks import get_streak, record_app_open
-from app.services.tax_saving_room import compute_tax_saving_room
 from app.services.teaching import TeachingEngineNotConfigured, ask_teaching_engine
 
 logger = logging.getLogger("fintutor.health")
@@ -682,16 +681,6 @@ def get_esop_exercise_cost(
         return compute_esop_exercise_cost(db, user_id, holding_id)
     except LookupError:
         raise HTTPException(status_code=404, detail="Holding not found")
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-
-
-@app.get("/tax-saving-room")
-def get_tax_saving_room(
-    user_id: uuid.UUID, tax_regime: str, db: Session = Depends(get_db)
-) -> dict:
-    try:
-        return compute_tax_saving_room(db, user_id, tax_regime)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 

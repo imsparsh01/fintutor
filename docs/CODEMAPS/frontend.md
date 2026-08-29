@@ -106,7 +106,7 @@ LoanVsInvestModal           components/ (335)  Prepayment vs invest calculator (
 EmergencyCoverageTool      components/          Shared S-05/C-14 editable form, independent fail-open
                                                budget/FD prefills, disclosures, result and accessibility
 EsopExerciseCostModal       components/        ESOP cost today + clamped-anniversary estimate disclosure
-TaxSavingRoomModal          components/        80C headroom + visible legacy-invalid exclusion warning
+TaxSavingRoomModal          components/        Parked internal 80C evidence; no production launcher (BQ-136)
 TermInsuranceExplorerModal components/        Consent-first transient component model: source-visible
                                                recorded context, critical-input blocking, editable inclusion
                                                and neutral cover difference
@@ -168,7 +168,7 @@ characteristicsSchema.ts 94     CHARACTERISTICS_SCHEMA — per-product-type fiel
 walkthroughSteps.ts             Pure per-family plan builder: selects only mechanism-relevant saved fields,
                                 preserves real zeroes, labels provenance, and never fabricates unknown values
 rewardFacts.ts          9       Curated mechanism-fact array for app-open reward surface (D-100)
-taxSavingRoom.ts        24      fetchTaxSavingRoom()
+taxSavingRoom.ts        24      Parked client for internal 80C evidence; unreachable in production (BQ-136)
 loanVsInvest.ts         30      fetchLoanVsInvest()
 holdingReconciliation.ts       Resolve owned candidate/new choice and apply confirmed transient diff;
                                 exposes refreshed proposal on stale 409
@@ -273,8 +273,8 @@ launched from Tools with direct-open for one eligible loan or a neutral owned-lo
   read by both HealthScoreScreen and GoalsScreen. One answer, two surfaces — do not add a second prompt
   for either question. No vector-icon library is installed: GoalsScreen's goal-type marks are drawn from
   plain Views (rotated squares, a CSS-triangle roof, bordered circles).
-- **80C is computed in two places.** `TaxSavingRoomModal` shows the backend figure
-  (`services/tax_saving_room.py`); `healthScore.ts` recomputes taxUtil client-side because the backend
-  route requires a `tax_regime` input this screen never asks for. D-112 supersedes D-109's accepted
-  cadence mismatch: both now exclude blank/unknown premium cadence and recognise the same six-month
-  variants as two payments yearly. Keep the two cadence tables in lockstep.
+- **The focused 80C room explorer is production-unreachable (BQ-136/D-170).** Its component/client and pure
+  backend service/tests remain parked internal evidence, but Budget has no launcher and FastAPI registers no
+  `/tax-saving-room` route. Re-release requires a named financial year, official sources, verification
+  owner/date, stale shutdown and qualified India review. `healthScore.ts` still contains Portfolio Health's
+  separate legacy tax-utilisation mechanism; BQ-136 does not reinterpret that owner-validated workstream.
