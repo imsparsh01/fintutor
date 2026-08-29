@@ -16,20 +16,13 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-141 — Dedicated Scenario discovery, candidates and result lifecycle — READY (after BQ-140)
-
-Traces to D-167/D-168/D-170/D-172. Objective: reconcile five dedicated Scenario screens with approved
-discovery, excluded candidate authorship, typed source recovery, account generation, current-result/reset/
-reopen and accessibility contracts. Accept: approved names/routes, D-168 invalidation, provenance/input summary,
-announcement/focus and formula integration tests pass. Size L. Depends on BQ-137/BQ-140.
-
-## BLOCKED — do not start
-
-### BQ-142 — Focused explorer UI and lifecycle reconciliation — BLOCKED (after BQ-141)
+### BQ-142 — Focused explorer UI and lifecycle reconciliation — READY (after BQ-141)
 
 Traces to D-168/D-170/D-172. Objective: reconcile S-02, ESOP and TERM UI/lifecycle while keeping 80C unavailable.
 Accept: contextual provenance/recovery/clean reopen; TERM all candidates excluded and explicit growth mode;
 current-result/accessibility tests pass; no external TERM release claim. Size L. Depends on BQ-138/BQ-139/BQ-141.
+
+## BLOCKED — do not start
 
 ### BQ-143 — Scenario Arya and progression integration — BLOCKED (after BQ-142)
 

@@ -57,13 +57,14 @@ HealthScoreScreen       screens/ (~260)            Hidden “Portfolio Health”
 GoalsScreen             screens/                   Goals tab — explicit load/failure/retry, live partial goal
                                                    progress with valuation provenance, full versioned edit/delete,
                                                    4 goal-type create cards, insurance and emergency summaries
-ToolsScreen             screens/ (~310)            Tools tab — 8 calculators + scenarios; S-02 loads eligible
-                                                   owned loans and reuses LoanVsInvestModal (BQ-075)
+ToolsScreen             screens/                   Tools tab — 9 calculators + the five approved dedicated
+                                                   Scenarios; focused explorers remain contextual (BQ-141)
 CalculatorScreen        screens/ (~580)            Hidden tab — prior 5 + Compound Growth + Credit-card Payoff
                                                    + shared Emergency Coverage;
                                                    primary ResultCard emits after a valid result renders
-ScenarioScreen          screens/ (~620)            Hidden tab — 5 "What if…" scenarios: S-05/S-03/S-06/S-07/S-01.
-                                                   Prefills inputs from budget+holdings; every field editable.
+ScenarioScreen          screens/                   Hidden tab — S-05/S-03/S-06/S-07/S-01 with excluded-by-default
+                                                   typed candidates, strict input, clean reopen/reset, D-168
+                                                   invalidation and frozen accessible provenance/results (BQ-141)
 InvestmentsScreen       screens/                   Hidden tab — account-guarded holdings list; partial totals named
 LoansScreen             screens/                   Hidden tab — account-guarded loan list; partial totals named
 InsuranceScreen         screens/                   Hidden tab — account-guarded policy list; partial totals named
@@ -172,6 +173,8 @@ taxSavingRoom.ts        24      Parked client for internal 80C evidence; unreach
 loanVsInvest.ts                 Authenticated POST-body client + typed authoritative source evidence
 esopExerciseCost.ts             Typed India-date/recorded-FMV result + authoritative source evidence client
 scenarioCandidates.ts           Typed authenticated four-group component/provenance client; BQ-141 consumes it
+scenarioSession.ts              Pure excluded candidate draft, untouched/edited refresh, reset, total,
+                                strict eligible-loan evidence and permission/retry classification lifecycle
 holdingReconciliation.ts       Resolve owned candidate/new choice and apply confirmed transient diff;
                                 exposes refreshed proposal on stale 409
 compoundGrowth.ts              Pure D-128/D-129 month-end contribution model with finite/safe bounds;

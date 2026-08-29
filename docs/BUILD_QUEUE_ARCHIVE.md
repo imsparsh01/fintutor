@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-141 — Dedicated Scenario discovery, candidates and result lifecycle — DONE 29-Aug-2026
+
+Traces to D-167/D-168/D-170/D-172. Objective: reconcile five dedicated Scenario screens with approved
+discovery, excluded candidate authorship, typed source recovery, account generation, current-result/reset/
+reopen and accessibility contracts. Accept: approved names/routes, D-168 invalidation, provenance/input summary,
+announcement/focus and formula integration tests pass. Size L. Depends on BQ-137/BQ-140.
+
 ## BQ-140 — Backend-authoritative Scenario candidate provenance — DONE 29-Aug-2026
 
 Traces to D-170 O-SC-9C/D-172. Objective: enumerate owned components for outgoings, SIPs, corpus and FD
