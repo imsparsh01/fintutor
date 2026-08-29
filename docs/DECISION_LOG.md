@@ -141,3 +141,10 @@
   approved teaching handoff has a bounded mechanism prompt.” Full write-up:
   `docs/decisions/D-169-scenario-arya-handoff-only-for-bounded-current-results.md`.
 - **Date:** 29-Aug-2026
+
+### D-170 — Scenario safety, eligibility, provenance and release package approved
+- **Tier:** 3, owner-decided. “The owner approved the complete recommended Scenario package presented after
+  the BQ-132 team audit.” All recommended paths are binding; O-SC-4's exact numerical ceilings remain the sole
+  unstated detail. Full write-up:
+  `docs/decisions/D-170-scenario-safety-eligibility-provenance-package-approved.md`.
+- **Date:** 29-Aug-2026

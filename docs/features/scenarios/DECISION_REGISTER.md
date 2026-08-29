@@ -1,7 +1,7 @@
 # Scenario suite decision register and owner briefs
 
-**Status:** Two reversible UX/IA forks resolved autonomously under Tier 2. Money, advice-boundary,
-financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
+**Status:** Owner approved the recommended Tier-3 package as D-170. Every path is settled except the exact
+O-SC-4 numeric ceilings, which were not stated in the package and remain the sole BQ-132 blocker.
 
 ## Autonomous decision O-SC-2 — taxonomy and discovery
 
@@ -33,6 +33,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ## Tier-3 brief O-SC-1 — What is S-07 called?
 
+- **Owner outcome:** Path B approved by D-170 — **Idle cash over time**.
+
 - **Trigger fired:** standing teach-never-advise principle; “Inaction tax” can frame one path as a loss.
 - **Question:** retain **Inaction tax** or use mechanism-first **Idle cash over time**?
 - **Path A — Inaction tax:** memorable and consistent with older D-106 wording; rhetorically valenced and may
@@ -54,6 +56,9 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ## Tier-3 brief O-SC-4 — What numeric domain is supported?
 
+- **Owner outcome:** Path B policy approved by D-170; exact ceilings remain unstated and must be approved
+  before BQ-133. No code precedent is silently promoted into the decision.
+
 - **Trigger fired:** money calculations users may rely on.
 - **Question:** which explicit rupee/rate/horizon ceilings govern S-01/S-02/S-03/S-06/S-07 before finite math?
 - **Path A — uniform conservative caps:** simple and predictable but rejects some legitimate large cases.
@@ -68,7 +73,24 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 - **Team recommendation:** Path B. Define separate ceilings for rupee inputs, rates, periods, units and derived
   outputs; reject every unsafe intermediate/output before render. Do not silently reuse another calculator's domain.
 
+### Proposed exact O-SC-4 table — awaiting owner approval
+
+| Entry | Amount domain | Annual rate | Period domain | Output ceiling |
+|---|---|---|---|---|
+| S-03 Increase SIP | current SIP ₹0..₹1B/month; additional SIP >₹0..₹1B/month | 0..100% | 1 month..60 years; `round(years×12)` must be 1..720 | every monetary output ≤₹1 quadrillion |
+| S-07 Idle cash | cash >₹0..₹1T | each rate 0..100% | >0..60 years | each path/difference magnitude ≤₹1 quadrillion |
+| S-01 Time to corpus | corpus/contribution ₹0..₹1T; target >₹0..₹1 quadrillion | 0..100% | fixed maximum 720 monthly iterations | every balance ≤₹1 quadrillion |
+| S-06 Debt cost | outstanding >₹0..₹1T | 0..100% | integer 1..600 months | EMI/payable/interest magnitudes ≤₹1 quadrillion |
+| S-02 Loan prepayment | principal/EMI/prepayment >₹0..₹1T and `X<P` | >0..100% | implied original/new tenure >0..600 months | EMI/savings magnitudes ≤₹1 quadrillion |
+
+`₹1B = ₹1,000,000,000`, `₹1T = ₹1,000,000,000,000`, and `₹1 quadrillion =
+₹1,000,000,000,000,000`. Every raw input, intermediate and output must be finite; a formula-specific lower
+stability bound may reject earlier but may never expand this approved domain. Rejection produces no result,
+announcement, handoff or progression event. These are guardrails, not “normal,” “recommended” or forecast values.
+
 ## Tier-3 brief O-SC-5 — Is zero additional SIP valid?
+
+- **Owner outcome:** Path B approved by D-170 — additional SIP must be greater than zero.
 
 - **Trigger fired:** money-calculation semantics.
 - **Path A:** accept zero and show equal paths, teaching that unchanged input produces unchanged outcome.
@@ -80,6 +102,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
   other explicit comparison fixtures rather than turning no change into a successful increase.
 
 ## Tier-3 brief O-SC-6 — Does S-02 support a zero-rate loan?
+
+- **Owner outcome:** Path B approved by D-170 — positive-rate loans only.
 
 - **Trigger fired:** financial-model eligibility and formula semantics.
 - **Path A:** define `remaining_months = P/E`, tenure reduction `X/E`, new EMI `(P-X)/remaining_months`, and
@@ -93,6 +117,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ## Tier-3 brief O-SC-7 — What debt periods and types are eligible?
 
+- **Owner outcome:** Path A approved by D-170 — positive integer months; home/personal loans only.
+
 - **Trigger fired:** money formula normalization and financial-product eligibility.
 - **Path A:** positive integer months only; home/personal loans only under the existing fixed-amortisation model.
 - **Path B:** accept fractional months with an explicit rounding rule and/or add credit-card debt after defining
@@ -104,6 +130,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
   transform fractional input silently; revolving credit-card payoff belongs to its existing dedicated calculator.
 
 ## Tier-3 brief O-SC-8 — What freshness can the suite promise?
+
+- **Owner outcome:** Path C operationally with Path A wording approved by D-170.
 
 - **Trigger fired:** financial-data provenance and low-reversibility API/schema enrichment.
 - **Path A:** promise retrieval time and available record version only; never label a value current/fresh.
@@ -117,6 +145,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ### O-SC-9A — S-02 request privacy
 
+- **Owner outcome:** Path A approved by D-170 — authenticated POST body in production reconciliation.
+
 - **Trigger fired:** financial-data privacy.
 - **Path A:** move selection/prepayment from GET query to an authenticated POST body.
 - **Path B:** exchange selection for an opaque short-lived token before calculation.
@@ -127,6 +157,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ### O-SC-9B — ESOP provenance authority
 
+- **Owner outcome:** Path A approved by D-170 — backend authority using existing version/retrieval evidence.
+
 - **Trigger fired:** financial-data handling/API contract.
 - **Path A:** backend response carries authoritative record ID/version, source fields and retrieval time; absent
   update time is explicit and never described as current/fresh.
@@ -136,6 +168,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
   label a result from version N+1 with stale metadata from version N.
 
 ### O-SC-9C — Budget aggregate provenance
+
+- **Owner outcome:** Path A approved by D-170 — backend-enumerated components using existing metadata.
 
 - **Trigger fired:** financial-data handling and possible API/schema change.
 - **Path A:** backend aggregate enumerates component IDs/versions/source fields and retrieval time; absent update
@@ -148,6 +182,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ## Tier-3 brief O-SC-10 — What makes an ESOP result true “today”?
 
+- **Owner outcome:** Path A approved by D-170.
+
 - **Trigger fired:** employment-linked money calculation and valuation/date provenance.
 - **Path A:** backend server date under the approved account/India-time convention; reject future grant dates;
   show FMV as recorded, never current without update evidence; exercise-window months remain disclosure-only.
@@ -158,6 +194,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ## Tier-3 brief O-SC-11 — What version authority governs EX-80C?
 
+- **Owner outcome:** Path B approved for now by D-170; Path A conditions remain the external unpark gate.
+
 - **Trigger fired:** tax/legal exposure.
 - **Path A:** before non-fixture/external use, bind ₹150,000 and eligible-source rules to a named financial year,
   official primary sources, verified date, accountable reviewer and stale shutdown.
@@ -167,6 +205,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
 
 ## Tier-3 brief O-SC-12 — May recorded candidates begin included?
 
+- **Owner outcome:** Path A approved by D-170 — candidates start offered but excluded.
+
 - **Trigger fired:** consequential use of personal financial data and authorship interpretation.
 - **Path A:** every recorded candidate starts offered but excluded; user includes it before Run.
 - **Path B:** formula-natural candidates may start included when visibly source-labelled/editable and repeated
@@ -175,6 +215,8 @@ financial-data/privacy and schema/API forks remain Tier 3 and block BQ-133.
   an app-authored assumption, and it produces one consistent rule across the suite.
 
 ## Tier-3 brief O-SC-13 — What numeric input grammar is accepted?
+
+- **Owner outcome:** Path B approved by D-170 — strict validated Indian/international grouping.
 
 - **Trigger fired:** personal-money parsing semantics and India locale ambiguity.
 - **Path A:** canonical digits plus optional decimal separator; reject grouping symbols; format output `en-IN`.

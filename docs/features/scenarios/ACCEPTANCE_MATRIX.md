@@ -1,7 +1,7 @@
 # Scenario suite acceptance and evidence matrix
 
-**Status:** Candidate for BQ-132. Criteria are complete; Tier-3 rulings in `DECISION_REGISTER.md` remain
-owner-gated before prototype implementation.
+**Status:** Candidate for BQ-132. Criteria and D-170 path rulings are complete; only O-SC-4's exact numeric
+domain table remains owner-gated before prototype implementation.
 
 **Sources:** `PRD.md`, `JOURNEY_AND_STATES.md`, `CONTRACTS.md`, D-009, D-091, D-092, D-106, D-124,
 D-128, D-130, D-131, D-132, D-148 and D-166.

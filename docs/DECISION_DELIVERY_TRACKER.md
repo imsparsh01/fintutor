@@ -77,6 +77,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-167 | READY → BQ-133 | Scenario taxonomy and contextual focused-explorer discovery | Implement only after BQ-132's Tier-3 gates close |
 | D-168 | READY → BQ-133 | Remove stale Scenario result immediately after dependent input edits | Implement only after BQ-132's Tier-3 gates close |
 | D-169 | READY → BQ-133 | Conditional confirmed Arya teaching handoff from eligible current Scenario results | Implement only after BQ-132's Tier-3 gates close |
+| D-170 | BLOCKED → BQ-132 | Approved Scenario safety, eligibility, provenance and release package | Exact O-SC-4 numeric-domain table remains unstated; after approval prototype delivery moves to BQ-133 and O-SC-9A/B/C receive later production BQs |
 
 ## Current-session decisions
 

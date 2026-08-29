@@ -2,8 +2,8 @@
 
 **Workstream:** D-166 / BQ-130..BQ-134
 
-**Current gate:** BQ-130/BQ-131 complete; BQ-132 acceptance artifacts complete and consolidated Tier-3
-rulings remain before BQ-133
+**Current gate:** BQ-130/BQ-131 complete; D-170 approved the Scenario package; BQ-132 now awaits only the
+exact O-SC-4 numeric-domain table before BQ-133
 
 **Production status:** A broad first implementation is shipped. This package reconciles and validates the
 coherent end-to-end product before any production reconciliation is authorised.
