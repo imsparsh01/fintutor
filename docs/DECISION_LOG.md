@@ -123,3 +123,15 @@
   recommended order, with Scenario and focused explorers next under BQ-130..BQ-134. Full write-up:
   `docs/decisions/D-166-remaining-workstreams-and-scenarios-next.md`.
 - **Date:** 29-Aug-2026
+
+### D-167 — Scenario taxonomy stays two-level; focused explorers remain contextual
+- **Tier:** 2 — REVIEW-FLAGGED. “Tools uses the user-facing category ‘Scenarios’ for the five dedicated
+  scenarios.” Focused explorers remain deliberate actions from eligible context rather than duplicated
+  context-free Tools cards. Full write-up: `docs/decisions/D-167-scenario-taxonomy-and-contextual-discovery.md`.
+- **Date:** 29-Aug-2026
+
+### D-168 — A changed Scenario input immediately removes the prior result
+- **Tier:** 2. “Editing any dependent input immediately removes the prior numeric/component result.” A neutral
+  rerun state replaces it; stale output cannot be announced, handed off or rewarded. Full write-up:
+  `docs/decisions/D-168-scenario-changed-input-removes-result.md`.
+- **Date:** 29-Aug-2026
