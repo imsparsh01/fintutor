@@ -80,6 +80,7 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-170 | SHIPPED → BQ-136..BQ-142 / production formula, provenance and lifecycle tests | Approved Scenario safety, eligibility, provenance and release package | Dedicated and focused Scenario production reconciliation is shipped; EX-80C remains contained and TERM remains internal-only |
 | D-171 | SHIPPED → BQ-137/BQ-138 / Scenario and loan-vs-invest tests | Exact Scenario numeric domains and reject-before-render guardrails | Local and S-02 backend domains enforce finite bounded inputs, intermediates and outputs |
 | D-172 | SHIPPED → BQ-144 / `docs/features/scenarios/PRODUCTION_QA_EVIDENCE.md` | Scenario and focused-explorer package receives owner PASS | Exhaustive production parity completed and owner recorded PASS on 30-Aug-2026 |
+| D-173 | READY → BQ-145 | Calculator suite is the next complete workstream | Reconcile the current nine-tool suite before contracts, acceptance, prototype QA and owner validation |
 
 ## Current-session decisions
 

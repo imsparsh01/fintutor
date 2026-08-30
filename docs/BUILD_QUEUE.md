@@ -16,6 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
+### BQ-145 — Reconcile Calculator PRD, journey and state matrix — READY
+
+Traces to D-173/D-148. Objective: audit the nine shipped Calculator surfaces and governing decisions, then
+create one current PRD, end-to-end journey and complete state matrix. Accept: target outcome, entry/return/exit,
+assumption ownership, formulas/timing/rounding, prefill provenance, invalid/edge/current-result lifecycle,
+recovery, privacy, accessibility and explicit exclusions are testable; contradictions and money-logic forks
+remain visible rather than silently resolved. Size L.
+
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED

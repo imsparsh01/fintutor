@@ -119,3 +119,10 @@
   production reconciliation remains separately bounded. Full write-up:
   `docs/decisions/D-172-scenario-owner-validation-pass.md`.
 - **Date:** 29-Aug-2026
+
+### D-173 — Calculator suite is the next complete workstream
+- **Tier:** 3, owner-decided sequencing under D-148/D-166. “The owner directed FinTutor to move to the
+  **Calculator suite** and complete the workstream end to end after Scenario production parity received
+  PASS.” The bounded definition/validation plan is BQ-145..BQ-149. Full write-up:
+  `docs/decisions/D-173-calculators-next-workstream.md`.
+- **Date:** 30-Aug-2026
