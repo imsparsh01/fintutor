@@ -126,3 +126,10 @@
   PASS.” The bounded definition/validation plan is BQ-145..BQ-149. Full write-up:
   `docs/decisions/D-173-calculators-next-workstream.md`.
 - **Date:** 30-Aug-2026
+
+### D-174 — Calculator safety, formula and teaching package approved
+- **Tier:** 3, owner-decided money logic, data scope and teaching boundary. “The owner approved the complete
+  recommended Calculator package in `docs/features/calculators/DECISION_REGISTER.md`.” O-CA-1..O-CA-9 are
+  binding for prototype and later production reconciliation. Full write-up:
+  `docs/decisions/D-174-calculator-safety-package-approved.md`.
+- **Date:** 30-Aug-2026

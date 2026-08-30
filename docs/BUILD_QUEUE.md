@@ -16,13 +16,13 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-147 — Calculator acceptance matrix and owner decision register — READY
+### BQ-148 — Calculator clickable prototype and exhaustive agent QA — READY
 
-Traces to D-173/D-148. Objective: map every Calculator contract/state/journey to acceptance evidence and route
-all unresolved formula, numeric-domain, candidate-data, handoff and advice-boundary forks through the decision
-protocol. Accept: critical tasks cover all nine tools, exact boundaries, zero/equality/loss/cap/overflow,
-partial/failed/stale sources, current-result lifecycle, account isolation, privacy, progression and accessibility;
-every requirement has evidence and every Tier-3 fork has an explicit owner recommendation. Size L. Depends on BQ-146.
+Traces to D-173/D-174/D-148. Objective: build the approved controlled-data nine-Calculator prototype and
+complete exhaustive agent QA. Accept: every critical path and all 51 states are clickable; exact formulas,
+domains, provenance, invalidation, confirmed handoff and progression isolation match contracts; syntax,
+forbidden APIs/storage, 320/390/1440/200%, keyboard/accessibility, contrast, themes, reduced motion, DOM and
+console evidence all pass. Size L. Depends on BQ-147.
 
 ## BLOCKED — do not start
 

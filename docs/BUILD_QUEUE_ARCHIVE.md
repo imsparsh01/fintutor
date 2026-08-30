@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-147 — Calculator acceptance matrix and owner decision register — DONE 30-Aug-2026
+
+Traces to D-173/D-148. Objective: map every Calculator contract/state/journey to acceptance evidence and route
+all unresolved formula, numeric-domain, candidate-data, handoff and advice-boundary forks through the decision
+protocol. Accept: critical tasks cover all nine tools, exact boundaries, zero/equality/loss/cap/overflow,
+partial/failed/stale sources, current-result lifecycle, account isolation, privacy, progression and accessibility;
+every requirement has evidence and every Tier-3 fork has an explicit owner recommendation. Size L. Depends on BQ-146.
+
 ## BQ-146 — Consolidate Calculator functional, money and safety contracts — DONE 30-Aug-2026
 
 Traces to D-173/D-148. Objective: specify suite-wide inputs/outputs, assumption authorship, formula/timing,
