@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-149 — Calculator owner validation walkthrough and disposition — DONE 31-Aug-2026
+
+Traces to D-173/D-174/D-148. Objective: present the tested Calculator prototype and record PASS / REVISE /
+PARK / ESCALATE. Accept: every critical task records assumption/formula/provenance understanding, neutral
+zero/equality/loss/cap interpretation, recovery, privacy handoff, confusion, trust surprises and dead ends;
+PASS freezes the package and permits separately bounded production reconciliation. Owner-gated. Size S.
+Depends on BQ-148.
+
 ## BQ-148 — Calculator clickable prototype and exhaustive agent QA — DONE 30-Aug-2026
 
 Traces to D-173/D-174/D-148. Objective: build the approved controlled-data nine-Calculator prototype and

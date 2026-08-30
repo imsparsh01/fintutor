@@ -133,3 +133,10 @@
   binding for prototype and later production reconciliation. Full write-up:
   `docs/decisions/D-174-calculator-safety-package-approved.md`.
 - **Date:** 30-Aug-2026
+
+### D-175 — Calculator package receives owner PASS
+- **Tier:** 3, owner-decided validation. “The owner gave the complete Calculator definition,
+  formula/safety package, controlled prototype and exhaustive QA package **PASS**.” The package is frozen at
+  `4f83dfb`; production reconciliation is separately bounded. Full write-up:
+  `docs/decisions/D-175-calculator-owner-validation-pass.md`.
+- **Date:** 31-Aug-2026
