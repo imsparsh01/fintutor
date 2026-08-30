@@ -16,13 +16,6 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-144 — Production Scenario exhaustive verification and parity gate — READY (after BQ-143)
-
-Traces to D-166/D-172. Objective: prove production parity against all 96 AC IDs and 50 canonical states.
-Accept: configured frontend/backend, API security/privacy, lifecycle/isolation/offline, accessibility/keyboard,
-320/390/1440/200%, themes/high contrast/reduced motion, native best-effort and console/DOM evidence all pass;
-no prototype evidence substituted for production evidence. Owner disposition follows. Size L. Depends on BQ-143.
-
 ## BLOCKED — do not start
 
 ### BQ-092 — Production hosting/deployment target — DEFERRED UNTIL EXTERNAL ACCESS IS REQUIRED

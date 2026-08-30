@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-144 — Production Scenario exhaustive verification and parity gate — DONE 30-Aug-2026
+
+Traces to D-166/D-172. Objective: prove production parity against all 96 AC IDs and 50 canonical states.
+Accept: configured frontend/backend, API security/privacy, lifecycle/isolation/offline, accessibility/keyboard,
+320/390/1440/200%, themes/high contrast/reduced motion, native best-effort and console/DOM evidence all pass;
+no prototype evidence substituted for production evidence. Owner disposition follows. Size L. Depends on BQ-143.
+
 ## BQ-143 — Scenario Arya and progression integration — DONE 30-Aug-2026
 
 Traces to D-117/D-169/D-170/D-172. Objective: add confirmed masked Arya handoff and participation-only
