@@ -80,8 +80,8 @@ Absence is an error, not an implicit `NO_BUILD`. A blocked or deferred row must 
 | D-170 | SHIPPED → BQ-136..BQ-142 / production formula, provenance and lifecycle tests | Approved Scenario safety, eligibility, provenance and release package | Dedicated and focused Scenario production reconciliation is shipped; EX-80C remains contained and TERM remains internal-only |
 | D-171 | SHIPPED → BQ-137/BQ-138 / Scenario and loan-vs-invest tests | Exact Scenario numeric domains and reject-before-render guardrails | Local and S-02 backend domains enforce finite bounded inputs, intermediates and outputs |
 | D-172 | SHIPPED → BQ-144 / `docs/features/scenarios/PRODUCTION_QA_EVIDENCE.md` | Scenario and focused-explorer package receives owner PASS | Exhaustive production parity completed and owner recorded PASS on 30-Aug-2026 |
-| D-173 | READY → BQ-148 | Calculator suite is the next complete workstream | BQ-145..BQ-147 complete; approved controlled prototype and exhaustive QA are next |
-| D-174 | READY → BQ-148 | Calculator safety, formula and teaching package approved | Implement O-CA-1..O-CA-9 in the controlled prototype and exhaustive QA evidence |
+| D-173 | READY → BQ-149 | Calculator suite is the next complete workstream | BQ-145..BQ-148 complete; tested owner walkthrough and disposition are next |
+| D-174 | SHIPPED → BQ-148 / `docs/features/calculators/QA_EVIDENCE.md` | Calculator safety, formula and teaching package approved | O-CA-1..O-CA-9 are implemented in the controlled prototype and exhaustive QA passed |
 
 ## Current-session decisions
 

@@ -16,13 +16,13 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-148 — Calculator clickable prototype and exhaustive agent QA — READY
+### BQ-149 — Calculator owner validation walkthrough and disposition — READY
 
-Traces to D-173/D-174/D-148. Objective: build the approved controlled-data nine-Calculator prototype and
-complete exhaustive agent QA. Accept: every critical path and all 51 states are clickable; exact formulas,
-domains, provenance, invalidation, confirmed handoff and progression isolation match contracts; syntax,
-forbidden APIs/storage, 320/390/1440/200%, keyboard/accessibility, contrast, themes, reduced motion, DOM and
-console evidence all pass. Size L. Depends on BQ-147.
+Traces to D-173/D-174/D-148. Objective: present the tested Calculator prototype and record PASS / REVISE /
+PARK / ESCALATE. Accept: every critical task records assumption/formula/provenance understanding, neutral
+zero/equality/loss/cap interpretation, recovery, privacy handoff, confusion, trust surprises and dead ends;
+PASS freezes the package and permits separately bounded production reconciliation. Owner-gated. Size S.
+Depends on BQ-148.
 
 ## BLOCKED — do not start
 
