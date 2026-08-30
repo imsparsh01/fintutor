@@ -126,6 +126,8 @@ This ledger verifies the production `app/` and `backend/` implementation. The co
 - Frontend TypeScript: PASS.
 - Frontend production library/contract tests: 137/137 PASS at this checkpoint.
 - Backend unit/API suite: 401/401 PASS.
+- Configured local FastAPI `/health`: PASS; configured Supabase `/health/db`: PASS.
+- Configured `/scenario-candidates` without a bearer token: HTTP 401 `Authentication required` PASS.
 - Production web export: PASS after the current parity fixes.
 - Prototype evidence used: **none**.
 
