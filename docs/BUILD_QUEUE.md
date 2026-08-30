@@ -16,14 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-152 — Calculator UI lifecycle, evidence and candidate-boundary reconciliation — READY
+### BQ-153 — Calculator Arya and progression integration — READY
 
-Traces to D-174/D-175/BQ-150. Objective: wire all nine production Calculators to strict raw inputs,
-current-result invalidation, reset/clean reopen, associated typed errors, frozen input authorship,
-formula/timing/rounding/caps/omissions and native-safe result focus; remove Credit-card recorded-candidate
-fetching so it is manual-only; reconcile Emergency candidates to explicit source-labelled inclusion without
-changing its backend data/formula. Accept: lifecycle/content/candidate/accessibility contracts pass; no Arya,
-progression rule, backend, schema, dependency or persistence change. Size L. Depends on BQ-151.
+Traces to D-174/D-175/BQ-150. Objective: add the exact confirmed privacy-minimised Arya handoff to every
+eligible current Calculator result using calculator type, normalized finite inputs, formula boundary and
+omissions only. Cancel sends nothing. Ensure stable type-only completion after valid render, no events from
+invalid/changed/capped/handoff paths, and cap/failure isolation. Reuse existing Chat recovery and shared modal
+architecture. Accept: handoff and progression contracts pass; no model, backend, schema, dependency or
+persistence change. Size L. Depends on BQ-152.
 
 ## BLOCKED — do not start
 

@@ -21,7 +21,6 @@ import { calculateCagr, calculateHomeLoanEmi, calculateInflationImpact, calculat
 import { calculateCreditCardPayoff, PAYOFF_MONTH_CAP } from '../lib/creditCardPayoff';
 import { calculateGoalAffordability } from '../lib/goalAffordability';
 import { calculateStepUpSip } from '../lib/stepUpSip';
-import { fetchHoldings, type Holding } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
 import { recordCalculatorCompleted } from '../lib/progression';
 import { parseScenarioNumber } from '../lib/scenarioNumbers';
@@ -56,7 +55,7 @@ export function CalculatorScreen() {
       {type === 'stepup_sip' && <StepUpSipCalc onComputed={onComputed} />}
       {type === 'cagr_backward' && <CagrCalc onComputed={onComputed} />}
       {type === 'compound_growth' && <CompoundGrowthCalc onComputed={onComputed} />}
-      {type === 'credit_card_payoff' && <CreditCardPayoffCalc userId={userId} onComputed={onComputed} />}
+      {type === 'credit_card_payoff' && <CreditCardPayoffCalc onComputed={onComputed} />}
       {type === 'emergency_coverage' && <EmergencyCoverageTool key={userId ?? 'signed-out'} userId={userId} surface="calculator" onComputed={onComputed} />}
       {type === 'goal_affordability' && <GoalAffordabilityCalc onComputed={onComputed} />}
     </KeyboardAvoidingView>
@@ -66,6 +65,7 @@ export function CalculatorScreen() {
 // Every calculator passes this to its primary ResultCard. The card emits from an effect,
 // after React has committed the valid result to the screen.
 type CalcProps = { onComputed: () => void };
+const INPUTS_CHANGED_NOTICE = 'Inputs changed — run again to see a result for these values.';
 
 const parseCalculatorInputs = (...raw: string[]): number[] | null => {
   const parsed = raw.map((value) => parseScenarioNumber(value)?.value);
@@ -110,31 +110,42 @@ function CalcInput({
   );
 }
 
-function CalcButton({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) {
+function CalcButton({ onPress, onReset, disabled }: { onPress: () => void; onReset: () => void; disabled?: boolean }) {
   return (
-    <Pressable
-      style={[styles.calcBtn, disabled && styles.calcBtnDisabled]}
-      onPress={onPress}
-      disabled={disabled}
-      accessibilityRole="button"
-      accessibilityState={{ disabled: Boolean(disabled) }}
-    >
-      <Text style={[styles.calcBtnText, disabled && styles.calcBtnTextDisabled]}>
-        Calculate
-      </Text>
-    </Pressable>
+    <View style={styles.calcActions}>
+      <Pressable
+        style={[styles.calcBtn, disabled && styles.calcBtnDisabled]}
+        onPress={onPress}
+        disabled={disabled}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: Boolean(disabled) }}
+      >
+        <Text style={[styles.calcBtnText, disabled && styles.calcBtnTextDisabled]}>Calculate</Text>
+      </Pressable>
+      <Pressable style={styles.resetBtn} onPress={onReset} accessibilityRole="button">
+        <Text style={styles.resetBtnText}>Reset scenario</Text>
+      </Pressable>
+    </View>
   );
+}
+
+function editAndInvalidate(setter: (value: string) => void, clear: () => void) {
+  return (value: string) => { setter(value); clear(); };
 }
 
 function ResultCard({
   value,
   unit,
+  inputsUsed,
   mechanismNote,
+  roundingAndOmissions,
   onRendered,
 }: {
   value: string;
   unit: string;
+  inputsUsed: string;
   mechanismNote: string;
+  roundingAndOmissions: string;
   onRendered?: () => void;
 }) {
   const headingRef = useRef<Text>(null);
@@ -150,7 +161,12 @@ function ResultCard({
     <View style={styles.resultCard} accessibilityLiveRegion="polite">
       <Text ref={headingRef} style={styles.resultUnit} accessibilityRole="header">{unit}</Text>
       <Text style={styles.resultValue}>{value}</Text>
+      <Text style={styles.evidenceHeading}>Inputs used</Text>
+      <Text style={styles.resultNote}>{inputsUsed}</Text>
+      <Text style={styles.evidenceHeading}>Formula and convention</Text>
       <Text style={styles.resultNote}>{mechanismNote}</Text>
+      <Text style={styles.evidenceHeading}>Rounding, caps and omissions</Text>
+      <Text style={styles.resultNote}>{roundingAndOmissions}</Text>
     </View>
   );
 }
@@ -173,27 +189,33 @@ function SipGoalCalc({ onComputed }: CalcProps) {
   const [years, setYears] = useState('');
   const [rate, setRate] = useState('');
   const [result, setResult] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
     const values = parseCalculatorInputs(target, rate, years);
-    if (!values) return setResult(null);
+    if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const outcome = calculateSipGoal(values[0], values[1], values[2]);
     setResult(outcome.ok ? outcome.result.monthlyContribution : null);
+    setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use a target above zero, a rate from 0% to 1,000%, and a horizon that rounds to 1–2,400 months.');
   }
 
   const ready = target !== '' && years !== '' && rate !== '';
 
   return (
     <CalcWrapper title="SIP Goal Planner">
-      <CalcInput label="Target amount" prefix="₹" value={target} onChange={setTarget} hint="e.g. 5000000" />
-      <CalcInput label="Time horizon" suffix="years" value={years} onChange={setYears} hint="e.g. 10" />
-      <CalcInput label="Expected annual return" suffix="%" value={rate} onChange={setRate} hint="e.g. 12" />
-      <CalcButton onPress={calculate} disabled={!ready} />
+      <CalcInput label="Target amount" prefix="₹" value={target} onChange={editAndInvalidate(setTarget, invalidate)} hint="e.g. 5000000" />
+      <CalcInput label="Time horizon" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 10" />
+      <CalcInput label="Expected annual return" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 12" />
+      <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setTarget(''); setYears(''); setRate(''); setResult(null); setError(null); }} />
+      {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
         <ResultCard
           unit="Monthly SIP needed"
           value={formatRupees(result)}
+          inputsUsed={`${formatRupees(parseScenarioNumber(target)!.value)} target · ${rate}% annual return · ${years} years — all entered by you.`}
           mechanismNote={`At ${rate}% annual return over ${years} years, this monthly SIP compounds to your target. Contributions are modeled at each month end and begin compounding in the following month. The formula is the inverse of the standard SIP corpus formula — it works backwards from your goal.`}
+          roundingAndOmissions="The horizon rounds to modeled months and rupees display to two decimals. Tax, fees, volatility, rate changes and missed contributions are omitted."
           onRendered={onComputed}
         />
       )}
@@ -209,28 +231,34 @@ function EmiCalc({ onComputed }: CalcProps) {
   const [rate, setRate] = useState('');
   const [tenure, setTenure] = useState('');
   const [result, setResult] = useState<{ emi: number; totalInterest: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
     const values = parseCalculatorInputs(principal, rate, tenure);
-    if (!values) return setResult(null);
+    if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const outcome = calculateHomeLoanEmi(values[0], values[1], values[2]);
     setResult(outcome.ok ? outcome.result : null);
+    setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use a principal above zero, a rate from 0% to 1,000%, and a tenure that rounds to 1–600 months.');
   }
 
   const ready = principal !== '' && rate !== '' && tenure !== '';
 
   return (
     <CalcWrapper title="Home Loan EMI">
-      <CalcInput label="Loan amount" prefix="₹" value={principal} onChange={setPrincipal} hint="e.g. 5000000" />
-      <CalcInput label="Annual interest rate" suffix="%" value={rate} onChange={setRate} hint="e.g. 8.5" />
-      <CalcInput label="Loan tenure" suffix="years" value={tenure} onChange={setTenure} hint="e.g. 20" />
-      <CalcButton onPress={calculate} disabled={!ready} />
+      <CalcInput label="Loan amount" prefix="₹" value={principal} onChange={editAndInvalidate(setPrincipal, invalidate)} hint="e.g. 5000000" />
+      <CalcInput label="Annual interest rate" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 8.5" />
+      <CalcInput label="Loan tenure" suffix="years" value={tenure} onChange={editAndInvalidate(setTenure, invalidate)} hint="e.g. 20" />
+      <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setPrincipal(''); setRate(''); setTenure(''); setResult(null); setError(null); }} />
+      {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
         <>
           <ResultCard
             unit="Monthly EMI"
             value={formatRupees(result.emi)}
+            inputsUsed={`${formatRupees(parseScenarioNumber(principal)!.value)} principal · ${rate}% annual rate · ${tenure} years — all entered by you.`}
             mechanismNote={`Each EMI pays the interest accrued that month first; the remainder reduces the principal. Early in the tenure most of each payment goes toward interest.`}
+            roundingAndOmissions="Tenure rounds to modeled months and rupees display to two decimals. Fees, prepayment, changing rates and lender-specific daily rounding are omitted."
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
@@ -251,27 +279,33 @@ function InflationCalc({ onComputed }: CalcProps) {
   const [inflationRate, setInflationRate] = useState('');
   const [years, setYears] = useState('');
   const [result, setResult] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
     const values = parseCalculatorInputs(present, inflationRate, years);
-    if (!values) return setResult(null);
+    if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const outcome = calculateInflationImpact(values[0], values[1], values[2]);
     setResult(outcome.ok ? outcome.result.futureCost : null);
+    setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use a present cost above zero, an annual rate from −100% to 1,000%, and a horizon from 0 to 200 years.');
   }
 
   const ready = present !== '' && inflationRate !== '' && years !== '';
 
   return (
     <CalcWrapper title="Inflation Impact">
-      <CalcInput label="Today's cost" prefix="₹" value={present} onChange={setPresent} hint="e.g. 50000" />
-      <CalcInput label="Annual inflation rate" suffix="%" value={inflationRate} onChange={setInflationRate} hint="e.g. 6" />
-      <CalcInput label="Years from now" suffix="years" value={years} onChange={setYears} hint="e.g. 10" />
-      <CalcButton onPress={calculate} disabled={!ready} />
+      <CalcInput label="Today's cost" prefix="₹" value={present} onChange={editAndInvalidate(setPresent, invalidate)} hint="e.g. 50000" />
+      <CalcInput label="Annual inflation rate" suffix="%" value={inflationRate} onChange={editAndInvalidate(setInflationRate, invalidate)} hint="e.g. 6" />
+      <CalcInput label="Years from now" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 10" />
+      <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setPresent(''); setInflationRate(''); setYears(''); setResult(null); setError(null); }} />
+      {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
         <ResultCard
           unit={`Equivalent cost in ${years} years`}
           value={formatRupees(result)}
+          inputsUsed={`${formatRupees(parseScenarioNumber(present)!.value)} present cost · ${inflationRate}% annual inflation · ${years} years — all entered by you.`}
           mechanismNote={`At ${inflationRate}% annual inflation, purchasing power falls by roughly ${inflationRate}% a year. This is the same amount of money's worth, not the same rupee amount.`}
+          roundingAndOmissions="The entered fractional-year horizon is preserved and rupees display to two decimals. Category variation and tax are omitted; the rate stays fixed."
           onRendered={onComputed}
         />
       )}
@@ -288,28 +322,34 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
   const [rate, setRate] = useState('');
   const [years, setYears] = useState('');
   const [result, setResult] = useState<{ corpus: number; invested: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
     const values = parseCalculatorInputs(sip, stepup, rate, years);
-    if (!values) return setResult(null);
-    setResult(calculateStepUpSip(values[0], values[1], values[2], values[3]));
+    if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
+    const next = calculateStepUpSip(values[0], values[1], values[2], values[3]);
+    setResult(next); setError(next ? null : 'Use a positive starting contribution, rates from 0% to 1,000%, and a whole-year horizon from 1 to 200.');
   }
 
   const ready = sip !== '' && stepup !== '' && rate !== '' && years !== '';
 
   return (
     <CalcWrapper title="Step-up SIP">
-      <CalcInput label="Starting monthly SIP" prefix="₹" value={sip} onChange={setSip} hint="e.g. 5000" />
-      <CalcInput label="Annual step-up" suffix="%" value={stepup} onChange={setStepup} hint="e.g. 10" />
-      <CalcInput label="Expected annual return" suffix="%" value={rate} onChange={setRate} hint="e.g. 12" />
-      <CalcInput label="Investment period" suffix="years" value={years} onChange={setYears} hint="e.g. 15" />
-      <CalcButton onPress={calculate} disabled={!ready} />
+      <CalcInput label="Starting monthly SIP" prefix="₹" value={sip} onChange={editAndInvalidate(setSip, invalidate)} hint="e.g. 5000" />
+      <CalcInput label="Annual step-up" suffix="%" value={stepup} onChange={editAndInvalidate(setStepup, invalidate)} hint="e.g. 10" />
+      <CalcInput label="Expected annual return" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 12" />
+      <CalcInput label="Investment period" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 15" />
+      <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setSip(''); setStepup(''); setRate(''); setYears(''); setResult(null); setError(null); }} />
+      {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
         <>
           <ResultCard
             unit="Corpus at end of period"
             value={formatRupees(result.corpus)}
+            inputsUsed={`${formatRupees(parseScenarioNumber(sip)!.value)} starting monthly contribution · ${stepup}% yearly step · ${rate}% annual return · ${years} whole years — all entered by you.`}
             mechanismNote={`Your SIP starts at ${formatRupees(parseScenarioNumber(sip)?.value ?? 0)}/month and increases by ${stepup}% each year. Contributions are modeled at each month end and begin compounding in the following month; each annual step-up starts with the first contribution of the new 12-month block.`}
+            roundingAndOmissions="Only whole years are modeled; rupees display to two decimals. Fees, tax, volatility, rate/step changes and missed contributions are omitted."
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
@@ -330,27 +370,33 @@ function CagrCalc({ onComputed }: CalcProps) {
   const [final, setFinal] = useState('');
   const [years, setYears] = useState('');
   const [result, setResult] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
     const values = parseCalculatorInputs(initial, final, years);
-    if (!values) return setResult(null);
+    if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const outcome = calculateCagr(values[0], values[1], values[2]);
     setResult(outcome.ok ? outcome.result.annualRatePercent : null);
+    setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use positive initial and final values and a horizon above zero up to 200 years.');
   }
 
   const ready = initial !== '' && final !== '' && years !== '';
 
   return (
     <CalcWrapper title="CAGR Calculator">
-      <CalcInput label="Initial investment" prefix="₹" value={initial} onChange={setInitial} hint="e.g. 100000" />
-      <CalcInput label="Current value" prefix="₹" value={final} onChange={setFinal} hint="e.g. 185000" />
-      <CalcInput label="Years held" suffix="years" value={years} onChange={setYears} hint="e.g. 5" />
-      <CalcButton onPress={calculate} disabled={!ready} />
+      <CalcInput label="Initial investment" prefix="₹" value={initial} onChange={editAndInvalidate(setInitial, invalidate)} hint="e.g. 100000" />
+      <CalcInput label="Current value" prefix="₹" value={final} onChange={editAndInvalidate(setFinal, invalidate)} hint="e.g. 185000" />
+      <CalcInput label="Years held" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 5" />
+      <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setInitial(''); setFinal(''); setYears(''); setResult(null); setError(null); }} />
+      {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
         <ResultCard
           unit="Annualised return (CAGR)"
           value={`${result.toFixed(2)}%`}
+          inputsUsed={`${formatRupees(parseScenarioNumber(initial)!.value)} initial value · ${formatRupees(parseScenarioNumber(final)!.value)} final value · ${years} years — all entered by you.`}
           mechanismNote={`CAGR (Compound Annual Growth Rate) is the year-on-year rate at which an investment grew as if it compounded smoothly. It describes what happened, not what will happen next.`}
+          roundingAndOmissions="The percentage displays to two decimals. Interim cash flows, fees and tax are omitted; this is not a forecast."
           onRendered={onComputed}
         />
       )}
@@ -366,9 +412,15 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
   const [years, setYears] = useState('');
   const [result, setResult] = useState<Extract<ReturnType<typeof calculateCompoundGrowth>, { ok: true }>['result'] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const edit = (setter: (value: string) => void) => (value: string) => {
+    setter(value); setError(result ? INPUTS_CHANGED_NOTICE : null); setResult(null);
+  };
 
   function calculate() {
-    const next = calculateCompoundGrowth(Number(lumpSum), Number(monthly), Number(rate), Number(years));
+    const values = parseCalculatorInputs(lumpSum, monthly, rate, years);
+    const next = values
+      ? calculateCompoundGrowth(values[0], values[1], values[2], values[3])
+      : { ok: false as const, error: 'non_finite' as const };
     if (!next.ok) {
       setResult(null);
       const messages = {
@@ -391,18 +443,20 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
   const ready = lumpSum !== '' && monthly !== '' && rate !== '' && years !== '';
   return (
     <CalcWrapper title="Compound Growth">
-      <CalcInput label="Starting lump sum" prefix="₹" value={lumpSum} onChange={setLumpSum} />
-      <CalcInput label="Monthly contribution" prefix="₹" value={monthly} onChange={setMonthly} />
-      <CalcInput label="Annual rate" suffix="%" value={rate} onChange={setRate} />
-      <CalcInput label="Time horizon" suffix="years" value={years} onChange={setYears} />
-      <CalcButton onPress={calculate} disabled={!ready} />
+      <CalcInput label="Starting lump sum" prefix="₹" value={lumpSum} onChange={edit(setLumpSum)} />
+      <CalcInput label="Monthly contribution" prefix="₹" value={monthly} onChange={edit(setMonthly)} />
+      <CalcInput label="Annual rate" suffix="%" value={rate} onChange={edit(setRate)} />
+      <CalcInput label="Time horizon" suffix="years" value={years} onChange={edit(setYears)} />
+      <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setLumpSum(''); setMonthly(''); setRate(''); setYears(''); setResult(null); setError(null); }} />
       {error ? <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text> : null}
       {result ? (
         <>
           <ResultCard
             unit="Modeled amount at end"
             value={formatRupees(result.endingAmount)}
+            inputsUsed={`${formatRupees(parseScenarioNumber(lumpSum)!.value)} starting amount · ${formatRupees(parseScenarioNumber(monthly)!.value)} monthly contribution · ${rate}% annual rate · ${years} years — all entered by you.`}
             mechanismNote={`This is a conditional model using your fixed ${rate}% annual rate, compounded monthly. Contributions are added at each month end and begin compounding in the following month.`}
+            roundingAndOmissions="The horizon rounds to modeled months and rupees display to two decimals. Volatility, fees, tax, missed contributions and changing rates are omitted."
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total contributed</Text><Text style={styles.secondaryValue}>{formatRupees(result.totalContributed)}</Text></View>
@@ -422,14 +476,20 @@ function GoalAffordabilityCalc({ onComputed }: CalcProps) {
   const [rate, setRate] = useState('');
   const [years, setYears] = useState('');
   const [outcome, setOutcome] = useState<ReturnType<typeof calculateGoalAffordability> | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const edit = (setter: (value: string) => void) => (value: string) => {
     setter(value);
+    setNotice(outcome?.ok ? INPUTS_CHANGED_NOTICE : null);
     setOutcome(null);
   };
 
-  const calculate = () => setOutcome(calculateGoalAffordability(
-    Number(target), Number(current), Number(plannedMonthly), Number(rate), Number(years)
-  ));
+  const calculate = () => {
+    const values = parseCalculatorInputs(target, current, plannedMonthly, rate, years);
+    setOutcome(values
+      ? calculateGoalAffordability(values[0], values[1], values[2], values[3], values[4])
+      : { ok: false, error: 'non_finite' });
+    setNotice(null);
+  };
   const result = outcome?.ok ? outcome.result : null;
   const errorCopy = outcome && !outcome.ok ? {
     non_finite: 'Enter ordinary finite numbers in every field.',
@@ -462,14 +522,17 @@ function GoalAffordabilityCalc({ onComputed }: CalcProps) {
       <CalcInput label="Planned monthly contribution" prefix="₹" value={plannedMonthly} onChange={edit(setPlannedMonthly)} />
       <CalcInput label="Annual assumed return" suffix="%" value={rate} onChange={edit(setRate)} />
       <CalcInput label="Time horizon" suffix="years" value={years} onChange={edit(setYears)} />
-      <CalcButton onPress={calculate} disabled={[target, current, plannedMonthly, rate, years].some((value) => value === '')} />
+      <CalcButton onPress={calculate} disabled={[target, current, plannedMonthly, rate, years].some((value) => value === '')} onReset={() => { setTarget(''); setCurrent(''); setPlannedMonthly(''); setRate(''); setYears(''); setOutcome(null); setNotice(null); }} />
+      {notice ? <Text accessibilityRole="alert" style={styles.calcError}>{notice}</Text> : null}
       {errorCopy ? <Text accessibilityRole="alert" style={styles.calcError}>{errorCopy}</Text> : null}
       {result ? (
         <>
           <ResultCard
             unit="Modeled amount at end"
             value={formatRupees(result.endingValue)}
+            inputsUsed={`${formatRupees(parseScenarioNumber(target)!.value)} target · ${formatRupees(parseScenarioNumber(current)!.value)} current amount · ${formatRupees(parseScenarioNumber(plannedMonthly)!.value)} planned monthly contribution · ${rate}% annual rate · ${years} years — all entered by you.`}
             mechanismNote={`Your current amount compounds for ${result.months} months. Each planned contribution enters at month end and begins compounding the following month.`}
+            roundingAndOmissions="The horizon rounds to modeled months and rupees display to two decimals. Volatility, fees, tax, inflation, misses and changing rates are omitted."
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
@@ -487,63 +550,36 @@ function GoalAffordabilityCalc({ onComputed }: CalcProps) {
 }
 
 // ─── D-128: Credit-card Payoff ────────────────────────────────────────────
-function CreditCardPayoffCalc({ userId, onComputed }: CalcProps & { userId: string | null }) {
-  const [cards, setCards] = useState<Holding[]>([]);
-  const [cardsLoading, setCardsLoading] = useState(Boolean(userId));
-  const [cardsFailed, setCardsFailed] = useState(false);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+function CreditCardPayoffCalc({ onComputed }: CalcProps) {
   const [balance, setBalance] = useState('');
   const [rate, setRate] = useState('');
   const [payment, setPayment] = useState('');
   const [outcome, setOutcome] = useState<ReturnType<typeof calculateCreditCardPayoff> | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    // Auth identity is a hard data boundary: synchronously invalidate every
-    // prior-user prefill, manual input, and result before starting the new fetch.
-    setCards([]);
-    setCardsFailed(false);
-    setCardsLoading(Boolean(userId));
-    setSelectedCardId(null);
-    setBalance('');
-    setRate('');
-    setPayment('');
-    setOutcome(null);
-    if (!userId) return () => { active = false; };
-    fetchHoldings(userId)
-      .then((holdings) => {
-        if (active) setCards(holdings.filter((holding) => holding.product_type === 'credit_card_debt'));
-      })
-      .catch(() => { if (active) setCardsFailed(true); })
-      .finally(() => { if (active) setCardsLoading(false); });
-    return () => { active = false; };
-  }, [userId]);
-
-  const selectCard = (card: Holding) => {
-    setSelectedCardId(card.id);
-    const storedBalance = card.characteristics.outstanding_balance;
-    const storedRate = card.characteristics.interest_rate;
-    setBalance(typeof storedBalance === 'number' ? String(storedBalance) : '');
-    setRate(typeof storedRate === 'number' ? String(storedRate) : '');
-    setOutcome(null);
-  };
+  const [notice, setNotice] = useState<string | null>(null);
 
   const editBalance = (value: string) => {
     setBalance(value);
-    setSelectedCardId(null);
+    setNotice(outcome?.kind === 'paid_off' ? INPUTS_CHANGED_NOTICE : null);
     setOutcome(null);
   };
   const editRate = (value: string) => {
     setRate(value);
-    setSelectedCardId(null);
+    setNotice(outcome?.kind === 'paid_off' ? INPUTS_CHANGED_NOTICE : null);
     setOutcome(null);
   };
   const editPayment = (value: string) => {
     setPayment(value);
+    setNotice(outcome?.kind === 'paid_off' ? INPUTS_CHANGED_NOTICE : null);
     setOutcome(null);
   };
 
-  const calculate = () => setOutcome(calculateCreditCardPayoff(Number(balance), Number(rate), Number(payment)));
+  const calculate = () => {
+    const values = parseCalculatorInputs(balance, rate, payment);
+    setOutcome(values
+      ? calculateCreditCardPayoff(values[0], values[1], values[2])
+      : { kind: 'invalid', reason: 'non_finite' });
+    setNotice(null);
+  };
   const validResult = outcome?.kind === 'paid_off' ? outcome : null;
   const errorCopy = outcome?.kind === 'invalid' ? {
     non_finite: 'Enter ordinary finite numbers in every field.',
@@ -555,30 +591,18 @@ function CreditCardPayoffCalc({ userId, onComputed }: CalcProps & { userId: stri
 
   return (
     <CalcWrapper title="Credit-card Payoff">
-      <Text style={styles.prefillIntro}>Recorded cards are optional starting points. Selecting one fills only its recorded balance and rate; every field remains editable. Editing either prefilled value clears the selected-card marker because the numbers are then your manual inputs.</Text>
-      {cardsLoading ? <Text style={styles.prefillStatus} accessibilityLiveRegion="polite">Loading recorded cards…</Text> : null}
-      {cardsFailed ? <Text style={styles.prefillStatus} accessibilityLiveRegion="polite">Recorded cards could not be loaded. Manual entry is still available.</Text> : null}
-      {!cardsLoading && !cardsFailed && cards.length === 0 ? <Text style={styles.prefillStatus}>No recorded cards found. Enter values manually.</Text> : null}
-      {cards.length > 0 ? (
-        <View accessibilityRole="radiogroup" style={styles.cardChoices}>
-          {cards.map((card) => (
-            <Pressable key={card.id} accessibilityRole="radio" accessibilityState={{ checked: selectedCardId === card.id }} style={[styles.cardChoice, selectedCardId === card.id && styles.cardChoiceSelected]} onPress={() => selectCard(card)}>
-              <Text style={styles.cardChoiceLabel}>{card.display_name ?? card.alias}</Text>
-              <Text style={styles.cardChoiceHint}>Use recorded balance and rate</Text>
-            </Pressable>
-          ))}
-        </View>
-      ) : null}
+      <Text style={styles.prefillIntro}>Enter the balance, annual rate, and one fixed monthly payment you want to model. FinTutor does not select a card or payment for you.</Text>
       <CalcInput label="Outstanding balance" prefix="₹" value={balance} onChange={editBalance} />
       <CalcInput label="Annual interest rate" suffix="%" value={rate} onChange={editRate} />
       <CalcInput label="Fixed monthly payment" prefix="₹" value={payment} onChange={editPayment} />
-      <CalcButton onPress={calculate} disabled={balance === '' || rate === '' || payment === ''} />
+      <CalcButton onPress={calculate} disabled={balance === '' || rate === '' || payment === ''} onReset={() => { setBalance(''); setRate(''); setPayment(''); setOutcome(null); setNotice(null); }} />
+      {notice ? <Text accessibilityRole="alert" style={styles.calcError}>{notice}</Text> : null}
       {errorCopy ? <Text accessibilityRole="alert" style={styles.calcError}>{errorCopy}</Text> : null}
       {outcome?.kind === 'non_clearing' ? <Text accessibilityRole="alert" style={styles.calcError}>With these inputs, the first month’s interest is at least the fixed payment, so the modeled balance does not reach zero.</Text> : null}
       {outcome?.kind === 'capped' ? <Text accessibilityRole="alert" style={styles.calcError}>This balance does not reach zero within the model’s {PAYOFF_MONTH_CAP.toLocaleString('en-IN')}-month safety limit, so no payoff result is shown.</Text> : null}
       {validResult ? (
         <>
-          <ResultCard unit="Modeled payoff time" value={`${validResult.months} months`} mechanismNote="Each month applies interest to the remaining balance first, then subtracts your fixed payment, clamped to the amount due in the final month." onRendered={onComputed} />
+          <ResultCard unit="Modeled payoff time" value={`${validResult.months} months`} inputsUsed={`${formatRupees(parseScenarioNumber(balance)!.value)} balance · ${rate}% annual rate · ${formatRupees(parseScenarioNumber(payment)!.value)} fixed monthly payment — all entered by you.`} mechanismNote="Each month applies interest to the remaining balance first, then subtracts your fixed payment, clamped to the amount due in the final month." roundingAndOmissions={`The model stops without a result after ${PAYOFF_MONTH_CAP.toLocaleString('en-IN')} months. Rupees display to two decimals; new spending, fees, penalty interest, changes and issuer-specific daily rules are omitted.`} onRendered={onComputed} />
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total paid</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.totalPaid)}</Text></View>
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total interest</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.totalInterest)}</Text></View>
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Final payment</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.finalPayment)}</Text></View>
@@ -634,17 +658,18 @@ const styles = StyleSheet.create({
   },
   inputWithPrefix: { borderLeftWidth: 0 },
   inputWithSuffix: { borderRightWidth: 0 },
+  calcActions: { marginTop: spacing.lg, marginBottom: spacing.xl },
   calcBtn: {
     backgroundColor: colors.tutor,
     borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
   },
   calcBtnDisabled: { backgroundColor: colors.line },
   calcBtnText: { fontFamily: font.uiSemibold, fontSize: 15, color: colors.canvas },
   calcBtnTextDisabled: { color: colors.inkMuted },
+  resetBtn: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  resetBtnText: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.tutor },
   resultCard: {
     backgroundColor: colors.canvas,
     borderRadius: radius.lg,
@@ -669,6 +694,7 @@ const styles = StyleSheet.create({
     color: colors.inkSecondary,
     marginTop: spacing.md,
   },
+  evidenceHeading: { fontFamily: font.mono, fontSize: 11, letterSpacing: 0.8, textTransform: 'uppercase', color: colors.ink, marginTop: spacing.lg },
   secondaryResult: {
     marginTop: spacing.lg,
     paddingTop: spacing.lg,

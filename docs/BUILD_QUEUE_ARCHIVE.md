@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-152 — Calculator UI lifecycle, evidence and candidate-boundary reconciliation — DONE 31-Aug-2026
+
+Traces to D-174/D-175/BQ-150. Objective: wire all nine production Calculators to strict raw inputs,
+current-result invalidation, reset/clean reopen, associated typed errors, frozen input authorship,
+formula/timing/rounding/caps/omissions and native-safe result focus; remove Credit-card recorded-candidate
+fetching so it is manual-only; reconcile Emergency candidates to explicit source-labelled inclusion without
+changing its backend data/formula. Accept: lifecycle/content/candidate/accessibility contracts pass; no Arya,
+progression rule, backend, schema, dependency or persistence change. Size L. Depends on BQ-151.
+
 ## BQ-151 — Exact Calculator engine and numeric-domain reconciliation — DONE 31-Aug-2026
 
 Traces to D-174/D-175/BQ-150. Objective: extract or reconcile pure SIP Goal, Home Loan EMI, Inflation Impact,
