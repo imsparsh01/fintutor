@@ -21,8 +21,10 @@ test('handoff requires exact-payload confirmation and cancel performs no navigat
   assert.match(modal, /Nothing is sent until you confirm/);
   assert.match(modal, /onPress=\{onCancel\}/);
   assert.doesNotMatch(modal, /navigate|authenticatedFetch|askQuestion/);
-  assert.match(calculator, /onCancel=\{\(\) => setConfirming\(false\)\}/);
-  assert.match(emergency, /onCancel=\{\(\) => setConfirming\(false\)\}/);
+  assert.match(calculator, /onCancel=\{cancelHandoff\}/);
+  assert.match(emergency, /onCancel=\{cancelHandoff\}/);
+  assert.match(calculator, /handoffOpener\.current/);
+  assert.match(emergency, /handoffOpener\.current/);
 });
 
 test('Calculator progression remains stable type-only and result-render gated', () => {

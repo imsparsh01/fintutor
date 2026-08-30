@@ -68,6 +68,7 @@ CalculatorScreen        screens/ (~670)            Hidden tab — 8 manual calcu
                                                    result evidence; every current valid result has an exact
                                                    confirmed privacy-minimised Arya mechanism handoff;
                                                    Credit-card Payoff is manual-only;
+                                                   focus-session keys guarantee clean reopen/account isolation;
                                                    primary ResultCard emits after a valid result renders
 ScenarioScreen          screens/                   Hidden tab — S-05/S-03/S-06/S-07/S-01 with excluded-by-default
                                                    typed candidates, strict input, clean reopen/reset, D-168
@@ -119,7 +120,8 @@ EmergencyCoverageTool      components/          Shared S-05/C-14 editable form; 
                                                component evidence comes from the authenticated Scenario-candidate
                                                API with source/version/field/retrieval metadata; values remain
                                                excluded until explicit inclusion; typed permission/retry recovery,
-                                               strict input, reset, frozen evidence, Arya handoff and accessibility
+                                               explicit refresh/exclude, strict input, reset, frozen evidence,
+                                               Arya handoff and guarded result/modal focus accessibility
 EsopExerciseCostModal       components/        ESOP cost today with generation-safe retry, India-date/
                                                recorded-FMV provenance and accessible current-result focus
 TaxSavingRoomModal          components/        Parked internal 80C evidence; no production launcher (BQ-136)

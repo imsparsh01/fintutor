@@ -22,6 +22,9 @@ test('all manual calculators have reset and strict whole-string parsing', () => 
   assert.doesNotMatch(calculatorSource, /(?<!Scenario)Number\((balance|target|principal|present|sip|initial|lumpSum)\)/);
   assert.match(emergencySource, /Reset scenario/);
   assert.match(emergencySource, /parseScenarioNumber/);
+  assert.match(calculatorSource, /refs\.current\[invalidIndex\]\?\.focus\(\)/);
+  assert.match(calculatorSource, /accessibilityLabel=\{error \? `\$\{label\}\. Error:/);
+  assert.match(emergencySource, /invalid\[1\]\.current\?\.focus\(\)/);
 });
 
 test('current results invalidate with the approved neutral notice', () => {
@@ -30,12 +33,20 @@ test('current results invalidate with the approved neutral notice', () => {
   assert.match(emergencySource, new RegExp(notice.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 });
 
+test('focus sessions guarantee clean reopen and an explicit caller return', () => {
+  assert.match(calculatorSource, /useFocusEffect\(useCallback/);
+  assert.match(calculatorSource, /const sessionKey =/);
+  assert.equal((calculatorSource.match(/key=\{sessionKey\}/g) ?? []).length, 9);
+  assert.match(calculatorSource, /accessibilityLabel="Back to Tools"/);
+  assert.match(emergencySource, /accessibilityLabel="Back to Tools"/);
+});
+
 test('credit-card payoff is manual-only and Emergency candidates require inclusion', () => {
   const cardBlock = calculatorSource.slice(calculatorSource.indexOf('function CreditCardPayoffCalc'));
   assert.doesNotMatch(cardBlock, /fetchHoldings|selectedCard|recorded candidate/i);
   assert.match(cardBlock, /FinTutor does not select a card or payment for you/);
-  assert.match(emergencySource, /FROM YOUR RECORDED DATA · EXCLUDED/);
-  assert.match(emergencySource, />Include</);
+  assert.match(emergencySource, /FROM YOUR RECORDED DATA · \{included \? 'INCLUDED' : 'EXCLUDED'\}/);
+  assert.match(emergencySource, /included \? 'Included' : 'Include'/);
   assert.match(emergencySource, /fdCandidateIncluded/);
   assert.match(emergencySource, /outgoingsCandidateIncluded/);
   assert.match(emergencySource, /fetchScenarioCandidates/);

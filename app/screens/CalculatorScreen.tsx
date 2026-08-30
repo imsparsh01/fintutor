@@ -11,7 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, font, radius, spacing } from '../design/tokens';
@@ -38,6 +38,13 @@ export function CalculatorScreen() {
   const route = useRoute<RouteProp<MainTabsParamList, 'Calculator'>>();
   const { type } = route.params;
   const { userId } = useAuth();
+  const [focused, setFocused] = useState(false);
+  const [session, setSession] = useState(0);
+  useFocusEffect(useCallback(() => {
+    setSession((value) => value + 1);
+    setFocused(true);
+    return () => setFocused(false);
+  }, [type, userId]));
 
   // BQ-071: fires only when a calculator actually produced a result, never on screen
   // entry — D-117 awards the result, not the visit. Fire-and-forget: nothing below
@@ -47,20 +54,23 @@ export function CalculatorScreen() {
     recordCalculatorCompleted(userId, type);
   }, [userId, type]);
 
+  if (!focused) return <View style={styles.flex} />;
+  const sessionKey = `${userId ?? 'signed-out'}:${type}:${session}`;
+
   return (
     <KeyboardAvoidingView
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {type === 'sip_goal' && <SipGoalCalc onComputed={onComputed} />}
-      {type === 'emi' && <EmiCalc onComputed={onComputed} />}
-      {type === 'inflation' && <InflationCalc onComputed={onComputed} />}
-      {type === 'stepup_sip' && <StepUpSipCalc onComputed={onComputed} />}
-      {type === 'cagr_backward' && <CagrCalc onComputed={onComputed} />}
-      {type === 'compound_growth' && <CompoundGrowthCalc onComputed={onComputed} />}
-      {type === 'credit_card_payoff' && <CreditCardPayoffCalc onComputed={onComputed} />}
-      {type === 'emergency_coverage' && <EmergencyCoverageTool key={userId ?? 'signed-out'} userId={userId} surface="calculator" onComputed={onComputed} />}
-      {type === 'goal_affordability' && <GoalAffordabilityCalc onComputed={onComputed} />}
+      {type === 'sip_goal' && <SipGoalCalc key={sessionKey} onComputed={onComputed} />}
+      {type === 'emi' && <EmiCalc key={sessionKey} onComputed={onComputed} />}
+      {type === 'inflation' && <InflationCalc key={sessionKey} onComputed={onComputed} />}
+      {type === 'stepup_sip' && <StepUpSipCalc key={sessionKey} onComputed={onComputed} />}
+      {type === 'cagr_backward' && <CagrCalc key={sessionKey} onComputed={onComputed} />}
+      {type === 'compound_growth' && <CompoundGrowthCalc key={sessionKey} onComputed={onComputed} />}
+      {type === 'credit_card_payoff' && <CreditCardPayoffCalc key={sessionKey} onComputed={onComputed} />}
+      {type === 'emergency_coverage' && <EmergencyCoverageTool key={sessionKey} userId={userId} surface="calculator" onComputed={onComputed} />}
+      {type === 'goal_affordability' && <GoalAffordabilityCalc key={sessionKey} onComputed={onComputed} />}
     </KeyboardAvoidingView>
   );
 }
@@ -70,10 +80,21 @@ export function CalculatorScreen() {
 type CalcProps = { onComputed: () => void };
 const INPUTS_CHANGED_NOTICE = 'Inputs changed — run again to see a result for these values.';
 
-const parseCalculatorInputs = (...raw: string[]): number[] | null => {
-  const parsed = raw.map((value) => parseScenarioNumber(value)?.value);
-  return parsed.every((value): value is number => value !== undefined) ? parsed : null;
-};
+function useCalculatorInputFocus() {
+  const refs = useRef<Array<TextInput | null>>([]);
+  const inputRef = (index: number) => (node: TextInput | null) => { refs.current[index] = node; };
+  const focusInput = (index: number) => refs.current[index]?.focus();
+  const parseInputs = (...raw: string[]): number[] | null => {
+    const parsed = raw.map((value) => parseScenarioNumber(value)?.value);
+    const invalidIndex = parsed.findIndex((value) => value === undefined);
+    if (invalidIndex >= 0) {
+      refs.current[invalidIndex]?.focus();
+      return null;
+    }
+    return parsed as number[];
+  };
+  return { focusInput, inputRef, parseInputs };
+}
 
 // ─── Shared sub-components ────────────────────────────────────────────────────
 
@@ -84,6 +105,8 @@ function CalcInput({
   onChange,
   prefix,
   suffix,
+  inputRef,
+  error,
 }: {
   label: string;
   hint?: string;
@@ -91,6 +114,8 @@ function CalcInput({
   onChange: (v: string) => void;
   prefix?: string;
   suffix?: string;
+  inputRef?: (node: TextInput | null) => void;
+  error?: string | null;
 }) {
   return (
     <View style={styles.fieldGroup}>
@@ -98,13 +123,14 @@ function CalcInput({
       <View style={styles.inputRow}>
         {prefix && <Text style={styles.inputAdorn}>{prefix}</Text>}
         <TextInput
+          ref={inputRef}
           style={[styles.input, prefix && styles.inputWithPrefix, suffix && styles.inputWithSuffix]}
           value={value}
           onChangeText={onChange}
           keyboardType="decimal-pad"
           placeholder={hint ?? '0'}
           placeholderTextColor={colors.inkMuted}
-          accessibilityLabel={label}
+          accessibilityLabel={error ? `${label}. Error: ${error}` : label}
           accessibilityHint={hint ? `Example: ${hint.replace(/^e\.g\.\s*/, '')}` : undefined}
         />
         {suffix && <Text style={styles.inputAdorn}>{suffix}</Text>}
@@ -154,19 +180,30 @@ function ResultCard({
   onRendered?: () => void;
 }) {
   const headingRef = useRef<Text>(null);
+  const handoffOpener = useRef<View>(null);
   const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
   const [confirming, setConfirming] = useState(false);
+  const webFocusProps = Platform.OS === 'web' ? { tabIndex: -1 } : {};
   useEffect(() => {
     AccessibilityInfo.announceForAccessibility(`${unit}: ${value}`);
-    if (Platform.OS !== 'web') {
+    if (Platform.OS === 'web') {
+      (headingRef.current as unknown as { focus?: () => void } | null)?.focus?.();
+    } else {
       const handle = findNodeHandle(headingRef.current);
       if (handle) AccessibilityInfo.setAccessibilityFocus(handle);
     }
     onRendered?.();
   }, [onRendered, unit, value]);
+  const cancelHandoff = () => {
+    setConfirming(false);
+    setTimeout(() => {
+      if (Platform.OS === 'web') (handoffOpener.current as unknown as { focus?: () => void } | null)?.focus?.();
+      else { const handle = findNodeHandle(handoffOpener.current); if (handle) AccessibilityInfo.setAccessibilityFocus(handle); }
+    }, 0);
+  };
   return (
     <View style={styles.resultCard} accessibilityLiveRegion="polite">
-      <Text ref={headingRef} style={styles.resultUnit} accessibilityRole="header">{unit}</Text>
+      <Text ref={headingRef} {...webFocusProps} style={styles.resultUnit} accessibilityRole="header">{unit}</Text>
       <Text style={styles.resultValue}>{value}</Text>
       <Text style={styles.evidenceHeading}>Inputs used</Text>
       <Text style={styles.resultNote}>{inputsUsed}</Text>
@@ -174,10 +211,10 @@ function ResultCard({
       <Text style={styles.resultNote}>{mechanismNote}</Text>
       <Text style={styles.evidenceHeading}>Rounding, caps and omissions</Text>
       <Text style={styles.resultNote}>{roundingAndOmissions}</Text>
-      <Pressable style={styles.aryaBtn} accessibilityRole="button" onPress={() => setConfirming(true)}>
+      <Pressable ref={handoffOpener} style={styles.aryaBtn} accessibilityRole="button" onPress={() => setConfirming(true)}>
         <Text style={styles.aryaBtnText}>Explore the mechanism with Arya</Text>
       </Pressable>
-      <ScenarioHandoffModal visible={confirming} prompt={handoffPrompt} onCancel={() => setConfirming(false)} onConfirm={() => { setConfirming(false); navigation.navigate('Chat', { prefillQuestion: handoffPrompt }); }} />
+      <ScenarioHandoffModal visible={confirming} prompt={handoffPrompt} onCancel={cancelHandoff} onConfirm={() => { setConfirming(false); navigation.navigate('Chat', { prefillQuestion: handoffPrompt }); }} />
     </View>
   );
 }
@@ -187,9 +224,12 @@ function calculatorHandoff(calculatorType: CalculatorType, normalizedInputs: Rec
 }
 
 function CalcWrapper({ title, children }: { title: string; children: React.ReactNode }) {
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.heading}>{title}</Text>
+      <Pressable style={styles.backBtn} onPress={() => navigation.navigate('Tools')} accessibilityRole="button" accessibilityLabel="Back to Tools"><Text style={styles.backBtnText}>‹ Tools</Text></Pressable>
+      <Text style={styles.heading} accessibilityRole="header">{title}</Text>
+      <View style={styles.scopeCard}><Text style={styles.scopeTitle}>You author every assumption</Text><Text style={styles.scopeBody}>FinTutor calculates only from values you enter or explicitly include. It does not choose a target, rate, payment, horizon or action for you.</Text></View>
       {children}
     </ScrollView>
   );
@@ -200,6 +240,7 @@ function CalcWrapper({ title, children }: { title: string; children: React.React
 // where r = annual_rate / 12 / 100, n = years × 12
 
 function SipGoalCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [target, setTarget] = useState('');
   const [years, setYears] = useState('');
   const [rate, setRate] = useState('');
@@ -208,20 +249,21 @@ function SipGoalCalc({ onComputed }: CalcProps) {
   const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
-    const values = parseCalculatorInputs(target, rate, years);
+    const values = parseInputs(target, years, rate);
     if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
-    const outcome = calculateSipGoal(values[0], values[1], values[2]);
+    const outcome = calculateSipGoal(values[0], values[2], values[1]);
     setResult(outcome.ok ? outcome.result.monthlyContribution : null);
     setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use a target above zero, a rate from 0% to 1,000%, and a horizon that rounds to 1–2,400 months.');
+    if (!outcome.ok) focusInput(0);
   }
 
   const ready = target !== '' && years !== '' && rate !== '';
 
   return (
     <CalcWrapper title="SIP Goal Planner">
-      <CalcInput label="Target amount" prefix="₹" value={target} onChange={editAndInvalidate(setTarget, invalidate)} hint="e.g. 5000000" />
-      <CalcInput label="Time horizon" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 10" />
-      <CalcInput label="Expected annual return" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 12" />
+      <CalcInput inputRef={inputRef(0)} error={error} label="Target amount" prefix="₹" value={target} onChange={editAndInvalidate(setTarget, invalidate)} hint="e.g. 5000000" />
+      <CalcInput inputRef={inputRef(1)} label="Time horizon" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 10" />
+      <CalcInput inputRef={inputRef(2)} label="Expected annual return" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 12" />
       <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setTarget(''); setYears(''); setRate(''); setResult(null); setError(null); }} />
       {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
@@ -243,6 +285,7 @@ function SipGoalCalc({ onComputed }: CalcProps) {
 // Formula: EMI = P × r × (1+r)^n / ((1+r)^n − 1)
 
 function EmiCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [principal, setPrincipal] = useState('');
   const [rate, setRate] = useState('');
   const [tenure, setTenure] = useState('');
@@ -251,20 +294,21 @@ function EmiCalc({ onComputed }: CalcProps) {
   const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
-    const values = parseCalculatorInputs(principal, rate, tenure);
+    const values = parseInputs(principal, rate, tenure);
     if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const outcome = calculateHomeLoanEmi(values[0], values[1], values[2]);
     setResult(outcome.ok ? outcome.result : null);
     setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use a principal above zero, a rate from 0% to 1,000%, and a tenure that rounds to 1–600 months.');
+    if (!outcome.ok) focusInput(0);
   }
 
   const ready = principal !== '' && rate !== '' && tenure !== '';
 
   return (
     <CalcWrapper title="Home Loan EMI">
-      <CalcInput label="Loan amount" prefix="₹" value={principal} onChange={editAndInvalidate(setPrincipal, invalidate)} hint="e.g. 5000000" />
-      <CalcInput label="Annual interest rate" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 8.5" />
-      <CalcInput label="Loan tenure" suffix="years" value={tenure} onChange={editAndInvalidate(setTenure, invalidate)} hint="e.g. 20" />
+      <CalcInput inputRef={inputRef(0)} error={error} label="Loan amount" prefix="₹" value={principal} onChange={editAndInvalidate(setPrincipal, invalidate)} hint="e.g. 5000000" />
+      <CalcInput inputRef={inputRef(1)} label="Annual interest rate" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 8.5" />
+      <CalcInput inputRef={inputRef(2)} label="Loan tenure" suffix="years" value={tenure} onChange={editAndInvalidate(setTenure, invalidate)} hint="e.g. 20" />
       <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setPrincipal(''); setRate(''); setTenure(''); setResult(null); setError(null); }} />
       {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
@@ -292,6 +336,7 @@ function EmiCalc({ onComputed }: CalcProps) {
 // Formula: future = present × (1 + inflation/100)^years
 
 function InflationCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [present, setPresent] = useState('');
   const [inflationRate, setInflationRate] = useState('');
   const [years, setYears] = useState('');
@@ -300,20 +345,21 @@ function InflationCalc({ onComputed }: CalcProps) {
   const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
-    const values = parseCalculatorInputs(present, inflationRate, years);
+    const values = parseInputs(present, inflationRate, years);
     if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const outcome = calculateInflationImpact(values[0], values[1], values[2]);
     setResult(outcome.ok ? outcome.result.futureCost : null);
     setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use a present cost above zero, an annual rate from −100% to 1,000%, and a horizon from 0 to 200 years.');
+    if (!outcome.ok) focusInput(0);
   }
 
   const ready = present !== '' && inflationRate !== '' && years !== '';
 
   return (
     <CalcWrapper title="Inflation Impact">
-      <CalcInput label="Today's cost" prefix="₹" value={present} onChange={editAndInvalidate(setPresent, invalidate)} hint="e.g. 50000" />
-      <CalcInput label="Annual inflation rate" suffix="%" value={inflationRate} onChange={editAndInvalidate(setInflationRate, invalidate)} hint="e.g. 6" />
-      <CalcInput label="Years from now" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 10" />
+      <CalcInput inputRef={inputRef(0)} error={error} label="Today's cost" prefix="₹" value={present} onChange={editAndInvalidate(setPresent, invalidate)} hint="e.g. 50000" />
+      <CalcInput inputRef={inputRef(1)} label="Annual inflation rate" suffix="%" value={inflationRate} onChange={editAndInvalidate(setInflationRate, invalidate)} hint="e.g. 6" />
+      <CalcInput inputRef={inputRef(2)} label="Years from now" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 10" />
       <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setPresent(''); setInflationRate(''); setYears(''); setResult(null); setError(null); }} />
       {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
@@ -335,6 +381,7 @@ function InflationCalc({ onComputed }: CalcProps) {
 // Year-by-year iteration: SIP increases by step-up% each year, compounding monthly.
 
 function StepUpSipCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [sip, setSip] = useState('');
   const [stepup, setStepup] = useState('');
   const [rate, setRate] = useState('');
@@ -344,20 +391,21 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
   const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
-    const values = parseCalculatorInputs(sip, stepup, rate, years);
+    const values = parseInputs(sip, stepup, rate, years);
     if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const next = calculateStepUpSip(values[0], values[1], values[2], values[3]);
     setResult(next); setError(next ? null : 'Use a positive starting contribution, rates from 0% to 1,000%, and a whole-year horizon from 1 to 200.');
+    if (!next) focusInput(0);
   }
 
   const ready = sip !== '' && stepup !== '' && rate !== '' && years !== '';
 
   return (
     <CalcWrapper title="Step-up SIP">
-      <CalcInput label="Starting monthly SIP" prefix="₹" value={sip} onChange={editAndInvalidate(setSip, invalidate)} hint="e.g. 5000" />
-      <CalcInput label="Annual step-up" suffix="%" value={stepup} onChange={editAndInvalidate(setStepup, invalidate)} hint="e.g. 10" />
-      <CalcInput label="Expected annual return" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 12" />
-      <CalcInput label="Investment period" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 15" />
+      <CalcInput inputRef={inputRef(0)} error={error} label="Starting monthly SIP" prefix="₹" value={sip} onChange={editAndInvalidate(setSip, invalidate)} hint="e.g. 5000" />
+      <CalcInput inputRef={inputRef(1)} label="Annual step-up" suffix="%" value={stepup} onChange={editAndInvalidate(setStepup, invalidate)} hint="e.g. 10" />
+      <CalcInput inputRef={inputRef(2)} label="Expected annual return" suffix="%" value={rate} onChange={editAndInvalidate(setRate, invalidate)} hint="e.g. 12" />
+      <CalcInput inputRef={inputRef(3)} label="Investment period" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 15" />
       <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setSip(''); setStepup(''); setRate(''); setYears(''); setResult(null); setError(null); }} />
       {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
@@ -385,6 +433,7 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
 // Formula: CAGR = (final / initial)^(1/years) − 1
 
 function CagrCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [initial, setInitial] = useState('');
   const [final, setFinal] = useState('');
   const [years, setYears] = useState('');
@@ -393,20 +442,21 @@ function CagrCalc({ onComputed }: CalcProps) {
   const invalidate = () => { setError(result !== null ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
 
   function calculate() {
-    const values = parseCalculatorInputs(initial, final, years);
+    const values = parseInputs(initial, final, years);
     if (!values) { setResult(null); setError('Enter ordinary finite numbers in every field.'); return; }
     const outcome = calculateCagr(values[0], values[1], values[2]);
     setResult(outcome.ok ? outcome.result.annualRatePercent : null);
     setError(outcome.ok ? null : outcome.error === 'overflow' ? 'This combination exceeds the calculator’s safe numeric range.' : 'Use positive initial and final values and a horizon above zero up to 200 years.');
+    if (!outcome.ok) focusInput(0);
   }
 
   const ready = initial !== '' && final !== '' && years !== '';
 
   return (
     <CalcWrapper title="CAGR Calculator">
-      <CalcInput label="Initial investment" prefix="₹" value={initial} onChange={editAndInvalidate(setInitial, invalidate)} hint="e.g. 100000" />
-      <CalcInput label="Current value" prefix="₹" value={final} onChange={editAndInvalidate(setFinal, invalidate)} hint="e.g. 185000" />
-      <CalcInput label="Years held" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 5" />
+      <CalcInput inputRef={inputRef(0)} error={error} label="Initial investment" prefix="₹" value={initial} onChange={editAndInvalidate(setInitial, invalidate)} hint="e.g. 100000" />
+      <CalcInput inputRef={inputRef(1)} label="Current value" prefix="₹" value={final} onChange={editAndInvalidate(setFinal, invalidate)} hint="e.g. 185000" />
+      <CalcInput inputRef={inputRef(2)} label="Years held" suffix="years" value={years} onChange={editAndInvalidate(setYears, invalidate)} hint="e.g. 5" />
       <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setInitial(''); setFinal(''); setYears(''); setResult(null); setError(null); }} />
       {error && <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text>}
       {result !== null && (
@@ -426,6 +476,7 @@ function CagrCalc({ onComputed }: CalcProps) {
 
 // ─── D-128: Compound Growth ───────────────────────────────────────────────
 function CompoundGrowthCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [lumpSum, setLumpSum] = useState('');
   const [monthly, setMonthly] = useState('');
   const [rate, setRate] = useState('');
@@ -437,7 +488,7 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
   };
 
   function calculate() {
-    const values = parseCalculatorInputs(lumpSum, monthly, rate, years);
+    const values = parseInputs(lumpSum, monthly, rate, years);
     const next = values
       ? calculateCompoundGrowth(values[0], values[1], values[2], values[3])
       : { ok: false as const, error: 'non_finite' as const };
@@ -454,6 +505,7 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
         numeric_overflow: 'This combination grows beyond the calculator’s safe numeric range. Reduce an amount, rate, or horizon.',
       } as const;
       setError(messages[next.error]);
+      focusInput(0);
       return;
     }
     setError(null);
@@ -463,10 +515,10 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
   const ready = lumpSum !== '' && monthly !== '' && rate !== '' && years !== '';
   return (
     <CalcWrapper title="Compound Growth">
-      <CalcInput label="Starting lump sum" prefix="₹" value={lumpSum} onChange={edit(setLumpSum)} />
-      <CalcInput label="Monthly contribution" prefix="₹" value={monthly} onChange={edit(setMonthly)} />
-      <CalcInput label="Annual rate" suffix="%" value={rate} onChange={edit(setRate)} />
-      <CalcInput label="Time horizon" suffix="years" value={years} onChange={edit(setYears)} />
+      <CalcInput inputRef={inputRef(0)} error={error} label="Starting lump sum" prefix="₹" value={lumpSum} onChange={edit(setLumpSum)} />
+      <CalcInput inputRef={inputRef(1)} label="Monthly contribution" prefix="₹" value={monthly} onChange={edit(setMonthly)} />
+      <CalcInput inputRef={inputRef(2)} label="Annual rate" suffix="%" value={rate} onChange={edit(setRate)} />
+      <CalcInput inputRef={inputRef(3)} label="Time horizon" suffix="years" value={years} onChange={edit(setYears)} />
       <CalcButton onPress={calculate} disabled={!ready} onReset={() => { setLumpSum(''); setMonthly(''); setRate(''); setYears(''); setResult(null); setError(null); }} />
       {error ? <Text accessibilityRole="alert" style={styles.calcError}>{error}</Text> : null}
       {result ? (
@@ -491,6 +543,7 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
 
 // ─── D-145: Neutral goal contribution gap ─────────────────────────────────
 function GoalAffordabilityCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [target, setTarget] = useState('');
   const [current, setCurrent] = useState('');
   const [plannedMonthly, setPlannedMonthly] = useState('');
@@ -505,10 +558,12 @@ function GoalAffordabilityCalc({ onComputed }: CalcProps) {
   };
 
   const calculate = () => {
-    const values = parseCalculatorInputs(target, current, plannedMonthly, rate, years);
-    setOutcome(values
+    const values = parseInputs(target, current, plannedMonthly, rate, years);
+    const next = values
       ? calculateGoalAffordability(values[0], values[1], values[2], values[3], values[4])
-      : { ok: false, error: 'non_finite' });
+      : { ok: false as const, error: 'non_finite' as const };
+    setOutcome(next);
+    if (!next.ok) focusInput(0);
     setNotice(null);
   };
   const result = outcome?.ok ? outcome.result : null;
@@ -538,11 +593,11 @@ function GoalAffordabilityCalc({ onComputed }: CalcProps) {
       <Text style={styles.prefillIntro}>
         Enter one possible goal scenario. Change any value and calculate again to compare a different scenario.
       </Text>
-      <CalcInput label="Goal target" prefix="₹" value={target} onChange={edit(setTarget)} />
-      <CalcInput label="Current amount earmarked" prefix="₹" value={current} onChange={edit(setCurrent)} />
-      <CalcInput label="Planned monthly contribution" prefix="₹" value={plannedMonthly} onChange={edit(setPlannedMonthly)} />
-      <CalcInput label="Annual assumed return" suffix="%" value={rate} onChange={edit(setRate)} />
-      <CalcInput label="Time horizon" suffix="years" value={years} onChange={edit(setYears)} />
+      <CalcInput inputRef={inputRef(0)} error={errorCopy} label="Goal target" prefix="₹" value={target} onChange={edit(setTarget)} />
+      <CalcInput inputRef={inputRef(1)} label="Current amount earmarked" prefix="₹" value={current} onChange={edit(setCurrent)} />
+      <CalcInput inputRef={inputRef(2)} label="Planned monthly contribution" prefix="₹" value={plannedMonthly} onChange={edit(setPlannedMonthly)} />
+      <CalcInput inputRef={inputRef(3)} label="Annual assumed return" suffix="%" value={rate} onChange={edit(setRate)} />
+      <CalcInput inputRef={inputRef(4)} label="Time horizon" suffix="years" value={years} onChange={edit(setYears)} />
       <CalcButton onPress={calculate} disabled={[target, current, plannedMonthly, rate, years].some((value) => value === '')} onReset={() => { setTarget(''); setCurrent(''); setPlannedMonthly(''); setRate(''); setYears(''); setOutcome(null); setNotice(null); }} />
       {notice ? <Text accessibilityRole="alert" style={styles.calcError}>{notice}</Text> : null}
       {errorCopy ? <Text accessibilityRole="alert" style={styles.calcError}>{errorCopy}</Text> : null}
@@ -573,6 +628,7 @@ function GoalAffordabilityCalc({ onComputed }: CalcProps) {
 
 // ─── D-128: Credit-card Payoff ────────────────────────────────────────────
 function CreditCardPayoffCalc({ onComputed }: CalcProps) {
+  const { focusInput, inputRef, parseInputs } = useCalculatorInputFocus();
   const [balance, setBalance] = useState('');
   const [rate, setRate] = useState('');
   const [payment, setPayment] = useState('');
@@ -596,10 +652,13 @@ function CreditCardPayoffCalc({ onComputed }: CalcProps) {
   };
 
   const calculate = () => {
-    const values = parseCalculatorInputs(balance, rate, payment);
-    setOutcome(values
+    const values = parseInputs(balance, rate, payment);
+    const next = values
       ? calculateCreditCardPayoff(values[0], values[1], values[2])
-      : { kind: 'invalid', reason: 'non_finite' });
+      : { kind: 'invalid' as const, reason: 'non_finite' as const };
+    setOutcome(next);
+    if (next.kind === 'invalid') focusInput(0);
+    if (next.kind === 'non_clearing' || next.kind === 'capped') focusInput(2);
     setNotice(null);
   };
   const validResult = outcome?.kind === 'paid_off' ? outcome : null;
@@ -614,9 +673,9 @@ function CreditCardPayoffCalc({ onComputed }: CalcProps) {
   return (
     <CalcWrapper title="Credit-card Payoff">
       <Text style={styles.prefillIntro}>Enter the balance, annual rate, and one fixed monthly payment you want to model. FinTutor does not select a card or payment for you.</Text>
-      <CalcInput label="Outstanding balance" prefix="₹" value={balance} onChange={editBalance} />
-      <CalcInput label="Annual interest rate" suffix="%" value={rate} onChange={editRate} />
-      <CalcInput label="Fixed monthly payment" prefix="₹" value={payment} onChange={editPayment} />
+      <CalcInput inputRef={inputRef(0)} error={errorCopy} label="Outstanding balance" prefix="₹" value={balance} onChange={editBalance} />
+      <CalcInput inputRef={inputRef(1)} label="Annual interest rate" suffix="%" value={rate} onChange={editRate} />
+      <CalcInput inputRef={inputRef(2)} label="Fixed monthly payment" prefix="₹" value={payment} onChange={editPayment} />
       <CalcButton onPress={calculate} disabled={balance === '' || rate === '' || payment === ''} onReset={() => { setBalance(''); setRate(''); setPayment(''); setOutcome(null); setNotice(null); }} />
       {notice ? <Text accessibilityRole="alert" style={styles.calcError}>{notice}</Text> : null}
       {errorCopy ? <Text accessibilityRole="alert" style={styles.calcError}>{errorCopy}</Text> : null}
@@ -647,6 +706,11 @@ const styles = StyleSheet.create({
     color: colors.ink,
     marginBottom: spacing.xl,
   },
+  backBtn: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center', marginBottom: spacing.sm },
+  backBtnText: { fontFamily: font.uiSemibold, color: colors.tutor, fontSize: 16 },
+  scopeCard: { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line, borderRadius: radius.md, backgroundColor: colors.canvas, padding: spacing.md, marginBottom: spacing.lg },
+  scopeTitle: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.ink, marginBottom: spacing.xs },
+  scopeBody: { fontFamily: font.tutor, fontSize: 14, lineHeight: 20, color: colors.inkSecondary },
   fieldGroup: { marginBottom: spacing.lg },
   fieldLabel: {
     fontFamily: font.mono,
