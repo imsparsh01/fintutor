@@ -299,6 +299,7 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
           userId={userId}
           holdingId={holding.id}
           onClose={() => setComparing(false)}
+          onExploreWithArya={(prompt) => { setComparing(false); parentNavigation?.navigate('Chat', { prefillQuestion: prompt }); }}
         />
       )}
 
@@ -307,6 +308,7 @@ export function HoldingDetailScreen({ route, navigation }: Props) {
           userId={userId}
           holdingId={holding.id}
           onClose={() => setCheckingExerciseCost(false)}
+          onExploreWithArya={(prompt) => { setCheckingExerciseCost(false); parentNavigation?.navigate('Chat', { prefillQuestion: prompt }); }}
         />
       )}
     </>

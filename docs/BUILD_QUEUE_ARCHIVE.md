@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-143 — Scenario Arya and progression integration — DONE 30-Aug-2026
+
+Traces to D-117/D-169/D-170/D-172. Objective: add confirmed masked Arya handoff and participation-only
+progression to every eligible current Scenario/focused result. Accept: exact payload/cancel/recovery spies,
+stable type-only keys, one/type/day and two/day cap evidence; no nonqualifying event; event failure/cap leaves
+the result unchanged. Size M. Depends on BQ-142.
+
 ## BQ-142 — Focused explorer UI and lifecycle reconciliation — DONE 30-Aug-2026
 
 Traces to D-168/D-170/D-172. Objective: reconcile S-02, ESOP and TERM UI/lifecycle while keeping 80C unavailable.

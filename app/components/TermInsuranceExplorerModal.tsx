@@ -19,6 +19,9 @@ import { fetchFinancialContext, type FinancialContext } from '../lib/financialCo
 import { RequestGeneration } from '../lib/requestGeneration';
 import { INPUTS_CHANGED_NOTICE } from '../lib/scenarioSession';
 import { parseScenarioNumber } from '../lib/scenarioNumbers';
+import { buildScenarioHandoffPrompt } from '../lib/scenarioHandoff';
+import { recordScenarioCompleted } from '../lib/progression';
+import { ScenarioHandoffModal } from './ScenarioHandoffModal';
 import type { GoalRecord } from '../lib/goals';
 import type { Holding } from '../lib/holdings';
 import {
@@ -36,12 +39,16 @@ export function TermInsuranceExplorerModal({
   goals,
   recordedContextAvailable,
   onDismiss,
+  userId,
+  onExploreWithArya,
 }: {
   visible: boolean;
   holdings: Holding[];
   goals: GoalRecord[];
   recordedContextAvailable: boolean;
   onDismiss: () => void;
+  userId: string;
+  onExploreWithArya: (prompt: string) => void;
 }) {
   const recorded = useMemo(() => recordedTermInsuranceContext(holdings, goals), [holdings, goals]);
   const [consented, setConsented] = useState(false);
@@ -67,6 +74,9 @@ export function TermInsuranceExplorerModal({
   const [confirmedContext, setConfirmedContext] = useState<FinancialContext | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [retrievedAt, setRetrievedAt] = useState<string | null>(null);
+  const [handoffPrompt, setHandoffPrompt] = useState<string | null>(null);
+  const [confirmingHandoff, setConfirmingHandoff] = useState(false);
+  const progressionEmitted = useRef(false);
   const contextRequest = useRef(new RequestGeneration());
 
   const dismiss = () => {
@@ -94,6 +104,8 @@ export function TermInsuranceExplorerModal({
     setConfirmedContext(null);
     setNotice(null);
     setRetrievedAt(null);
+    setHandoffPrompt(null);
+    setConfirmingHandoff(false);
     onDismiss();
   };
 
@@ -134,7 +146,7 @@ export function TermInsuranceExplorerModal({
       included: true,
     }]);
     setAmountDrafts((current) => ({ ...current, [id]: '' }));
-    setResult(null);
+    invalidateResult();
   };
 
   const updateComponent = (id: string, included: boolean) => {
@@ -145,6 +157,7 @@ export function TermInsuranceExplorerModal({
     if (result) setNotice(INPUTS_CHANGED_NOTICE);
     setResult(null);
     setError(null);
+    setHandoffPrompt(null);
   };
   const changeDraft = (setter: (value: string) => void) => (value: string) => {
     setter(value);
@@ -176,18 +189,38 @@ export function TermInsuranceExplorerModal({
       || (includeGroupCover && groupCover.trim() === '')
       || (includeOtherCover && otherCover.trim() === '')) {
       setResult(null);
+      setHandoffPrompt(null);
       setError('Complete every required field with valid non-negative values. Years must be 1–100 and growth 0–100%.');
       return;
     }
     if (includeSurvivorIncome && (!survivorGrowthMode || [survivorAnnual, survivorYears].some((v) => v.trim() === '')
       || (survivorGrowthMode === 'custom' && survivorGrowth.trim() === ''))) {
       setResult(null);
+      setHandoffPrompt(null);
       setError('Enter the survivor-income amount and years, or exclude that stream.');
       return;
     }
     setError(null);
     setNotice(null);
     setResult(next);
+    setHandoffPrompt(buildScenarioHandoffPrompt({
+      scenarioType: 'term_household_support',
+      normalizedInputs: {
+        annual_household_support: parseDraft(supportAnnual), support_years: parseDraft(supportYears),
+        support_growth_percent: supportGrowthMode === 'zero' ? 0 : parseDraft(supportGrowth),
+        selected_debts_total: next.selectedDebts, selected_goals_total: next.selectedGoals,
+        selected_available_asset_offsets: next.selectedAssetOffsets,
+        survivor_income_stream: next.survivorIncomeStream, entered_cover_total: next.enteredCoverTotal,
+      },
+      formulaBoundary: 'Household-support stream plus deliberately selected debts and goals, minus selected available assets and survivor-income stream, floored at zero; entered cover is compared arithmetically.',
+      omissions: 'Taxes, policy terms, underwriting, future changes and any adequacy or purchase verdict.',
+    }));
+  };
+
+  const onResultRendered = () => {
+    if (progressionEmitted.current) return;
+    progressionEmitted.current = true;
+    recordScenarioCompleted(userId, 'term_household_support');
   };
 
   return (
@@ -303,8 +336,10 @@ export function TermInsuranceExplorerModal({
               <Text style={styles.primaryButtonText}>Model this scenario</Text>
             </Pressable>
 
-            {result ? <Result result={result} /> : null}
-            <Pressable style={styles.resetButton} onPress={() => { contextRequest.current.cancel(); setComponents([]); setAmountDrafts({}); setSupportAnnual(''); setSupportYears(''); setSupportGrowth(''); setSupportGrowthMode(null); setIncludeSurvivorIncome(false); setSurvivorAnnual(''); setSurvivorYears(''); setSurvivorGrowth(''); setSurvivorGrowthMode(null); setIndividualCover(''); setIncludeIndividualCover(false); setGroupCover(''); setIncludeGroupCover(false); setOtherCover(''); setIncludeOtherCover(false); setResult(null); setError(null); setNotice(null); setConfirmedContext(null); setRetrievedAt(null); setConsented(false); }} accessibilityRole="button"><Text style={styles.resetText}>Reset explorer</Text></Pressable>
+            {result ? <Result result={result} onRendered={onResultRendered} /> : null}
+            {result && handoffPrompt ? <Pressable style={styles.aryaButton} accessibilityRole="button" onPress={() => setConfirmingHandoff(true)}><Text style={styles.aryaButtonText}>Explore the mechanism with Arya</Text></Pressable> : null}
+            {result && handoffPrompt ? <ScenarioHandoffModal visible={confirmingHandoff} prompt={handoffPrompt} onCancel={() => setConfirmingHandoff(false)} onConfirm={() => { setConfirmingHandoff(false); onExploreWithArya(handoffPrompt); }} /> : null}
+            <Pressable style={styles.resetButton} onPress={() => { contextRequest.current.cancel(); setComponents([]); setAmountDrafts({}); setSupportAnnual(''); setSupportYears(''); setSupportGrowth(''); setSupportGrowthMode(null); setIncludeSurvivorIncome(false); setSurvivorAnnual(''); setSurvivorYears(''); setSurvivorGrowth(''); setSurvivorGrowthMode(null); setIndividualCover(''); setIncludeIndividualCover(false); setGroupCover(''); setIncludeGroupCover(false); setOtherCover(''); setIncludeOtherCover(false); setResult(null); setError(null); setNotice(null); setConfirmedContext(null); setRetrievedAt(null); setHandoffPrompt(null); setConfirmingHandoff(false); setConsented(false); }} accessibilityRole="button"><Text style={styles.resetText}>Reset explorer</Text></Pressable>
             <Text style={styles.disclosure}>
               Formula: support stream + selected debts + selected goals − selected available assets − selected
               survivor-income stream, floored at zero. Growth compounds annually from year zero only when you
@@ -343,13 +378,14 @@ function CoverField({ label, included, onIncluded, value, onChange }: { label: s
   return <View style={styles.componentRow}><View style={styles.componentHeading}><Text style={styles.componentLabel}>{label}</Text><Switch accessibilityLabel={`Include ${label}`} value={included} onValueChange={onIncluded} /></View><TextInput accessibilityLabel={`${label} amount`} style={[styles.input, !included && styles.inputDisabled]} keyboardType="decimal-pad" editable={included} value={value} onChangeText={onChange} /></View>;
 }
 
-function Result({ result }: { result: TermInsuranceResult }) {
+function Result({ result, onRendered }: { result: TermInsuranceResult; onRendered: () => void }) {
   const heading = useRef<Text>(null);
   useEffect(() => {
     AccessibilityInfo.announceForAccessibility(`Term-cover component result: ${formatRupees(result.modeledAmount)}`);
     if (Platform.OS === 'web') (heading.current as unknown as { focus?: () => void } | null)?.focus?.();
     else { const handle = findNodeHandle(heading.current); if (handle) AccessibilityInfo.setAccessibilityFocus(handle); }
-  }, [result]);
+    onRendered();
+  }, [onRendered, result]);
   const rows: [string, number][] = [
     ['Household-support stream', result.householdSupportStream],
     ['Selected debts', result.selectedDebts],
@@ -421,4 +457,6 @@ const styles = StyleSheet.create({
   disclosure: { fontFamily: font.ui, color: colors.inkMuted, fontSize: 12, lineHeight: 18, marginTop: spacing.xl },
   resetButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg },
   resetText: { fontFamily: font.uiMedium, color: colors.inkSecondary },
+  aryaButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.lg, paddingHorizontal: spacing.md },
+  aryaButtonText: { fontFamily: font.uiSemibold, color: colors.tutor, fontSize: 14 },
 });

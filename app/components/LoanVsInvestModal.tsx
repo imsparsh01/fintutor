@@ -6,6 +6,9 @@ import { fetchLoanVsInvest, type LoanVsInvestResult } from '../lib/loanVsInvest'
 import { formatRupees } from '../lib/format';
 import { parseScenarioNumber } from '../lib/scenarioNumbers';
 import { INPUTS_CHANGED_NOTICE } from '../lib/scenarioSession';
+import { buildScenarioHandoffPrompt } from '../lib/scenarioHandoff';
+import { recordScenarioCompleted } from '../lib/progression';
+import { ScenarioHandoffModal } from './ScenarioHandoffModal';
 
 // D-067: user-triggered entry point (no auto-detection for v1) — reached from a loan's
 // detail screen. D-068/BRIEF-014: hurdle-rate only, both prepayment modes always shown,
@@ -30,10 +33,12 @@ export function LoanVsInvestModal({
   userId,
   holdingId,
   onClose,
+  onExploreWithArya,
 }: {
   userId: string;
   holdingId: string;
   onClose: () => void;
+  onExploreWithArya: (prompt: string) => void;
 }) {
   const [amount, setAmount] = useState('');
   const [result, setResult] = useState<LoanVsInvestResult | null>(null);
@@ -42,8 +47,16 @@ export function LoanVsInvestModal({
   const [notice, setNotice] = useState<string | null>(null);
   const requestGeneration = useRef(0);
   const resultHeading = useRef<Text>(null);
+  const progressionEmitted = useRef(false);
+  const [confirmingHandoff, setConfirmingHandoff] = useState(false);
 
   useEffect(() => () => { requestGeneration.current += 1; }, [userId, holdingId]);
+  useEffect(() => {
+    if (result && !progressionEmitted.current) {
+      progressionEmitted.current = true;
+      recordScenarioCompleted(userId, 'loan_vs_invest');
+    }
+  }, [result, userId]);
 
   const invalidateResult = () => {
     if (result) setNotice(INPUTS_CHANGED_NOTICE);
@@ -92,6 +105,12 @@ export function LoanVsInvestModal({
   };
 
   const calculate = () => runCalculate(amount);
+  const handoffPrompt = result ? buildScenarioHandoffPrompt({
+    scenarioType: 'loan_vs_invest',
+    normalizedInputs: { prepayment_amount: result.prepay_amount, recorded_loan_rate_percent: result.hurdle_rate_percent },
+    formulaBoundary: 'Backend-authoritative fixed-amortisation loan comparison: same EMI versus same tenure; the stored loan rate is a break-even hurdle, not a forecast.',
+    omissions: 'Investment return, investment horizon, taxes and prepayment charges; charges are assumed zero.',
+  }) : null;
   const reset = () => {
     requestGeneration.current += 1;
     setAmount(''); setResult(null); setLoading(false); setError(null); setNotice(null);
@@ -205,6 +224,8 @@ export function LoanVsInvestModal({
                 That's a real option and it doesn't show up in either column.
               </Text>
             </View>
+            {handoffPrompt ? <Pressable style={styles.aryaButton} accessibilityRole="button" onPress={() => setConfirmingHandoff(true)}><Text style={styles.aryaButtonText}>Explore the mechanism with Arya</Text></Pressable> : null}
+            {handoffPrompt ? <ScenarioHandoffModal visible={confirmingHandoff} prompt={handoffPrompt} onCancel={() => setConfirmingHandoff(false)} onConfirm={() => { setConfirmingHandoff(false); onExploreWithArya(handoffPrompt); }} /> : null}
           </View>
         )}
 
@@ -384,4 +405,6 @@ const styles = StyleSheet.create({
   cancelText: { fontFamily: font.ui, color: colors.inkMuted },
   resetButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg },
   resetText: { fontFamily: font.uiMedium, color: colors.inkSecondary },
+  aryaButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.lg, paddingHorizontal: spacing.md },
+  aryaButtonText: { fontFamily: font.uiSemibold, color: colors.tutor, fontSize: 14 },
 });

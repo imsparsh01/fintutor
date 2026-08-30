@@ -5,6 +5,9 @@ import { colors, figure, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
 import { formatRupees } from '../lib/format';
 import { fetchEsopExerciseCost, type EsopExerciseCostResult } from '../lib/esopExerciseCost';
+import { buildScenarioHandoffPrompt } from '../lib/scenarioHandoff';
+import { recordScenarioCompleted } from '../lib/progression';
+import { ScenarioHandoffModal } from './ScenarioHandoffModal';
 
 // D-067's user-triggered entry point (opened from the ESOP holding's detail screen) +
 // D-069/BRIEF-015's cost-of-exercising-today math. No input needed — the figures are
@@ -38,16 +41,20 @@ export function EsopExerciseCostModal({
   userId,
   holdingId,
   onClose,
+  onExploreWithArya,
 }: {
   userId: string;
   holdingId: string;
   onClose: () => void;
+  onExploreWithArya: (prompt: string) => void;
 }) {
   const [result, setResult] = useState<EsopExerciseCostResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const generation = useRef(0);
   const resultHeading = useRef<Text>(null);
+  const progressionEmitted = useRef(false);
+  const [confirmingHandoff, setConfirmingHandoff] = useState(false);
 
   const load = useCallback(async () => {
     const active = ++generation.current;
@@ -69,6 +76,19 @@ export function EsopExerciseCostModal({
   }, [holdingId, userId]);
 
   useEffect(() => { load(); return () => { generation.current += 1; }; }, [load]);
+  useEffect(() => {
+    if (result && !progressionEmitted.current) {
+      progressionEmitted.current = true;
+      recordScenarioCompleted(userId, 'esop_exercise_cost');
+    }
+  }, [result, userId]);
+
+  const handoffPrompt = result ? buildScenarioHandoffPrompt({
+    scenarioType: 'esop_exercise_cost',
+    normalizedInputs: { vested_units: result.vested_units, total_units_granted: result.total_units_granted, calculation_date: result.calculation_date, fmv_basis: 'recorded_fmv' },
+    formulaBoundary: 'Exercise cash cost is vested units times strike price; paper spread uses recorded FMV and is not a valuation forecast.',
+    omissions: 'Taxes, fees, prior exercises, termination status, a termination countdown and future company value.',
+  }) : null;
 
   return (
     <Modal visible animationType="slide" onRequestClose={onClose}>
@@ -131,6 +151,8 @@ export function EsopExerciseCostModal({
             {result.exercise_window_note && (
               <Text style={styles.caveat}>{result.exercise_window_note}</Text>
             )}
+            {handoffPrompt ? <Pressable style={styles.aryaButton} accessibilityRole="button" onPress={() => setConfirmingHandoff(true)}><Text style={styles.aryaButtonText}>Explore the mechanism with Arya</Text></Pressable> : null}
+            {handoffPrompt ? <ScenarioHandoffModal visible={confirmingHandoff} prompt={handoffPrompt} onCancel={() => setConfirmingHandoff(false)} onConfirm={() => { setConfirmingHandoff(false); onExploreWithArya(handoffPrompt); }} /> : null}
           </View>
         )}
 
@@ -201,4 +223,6 @@ const styles = StyleSheet.create({
   caveat: { fontFamily: font.tutor, fontSize: 12, color: colors.inkMuted, fontStyle: 'italic' },
   cancel: { alignItems: 'center', marginTop: spacing.xl },
   cancelText: { fontFamily: font.ui, color: colors.inkMuted },
+  aryaButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.md, paddingHorizontal: spacing.md },
+  aryaButtonText: { fontFamily: font.uiSemibold, color: colors.tutor, fontSize: 14 },
 });

@@ -64,7 +64,8 @@ CalculatorScreen        screens/ (~580)            Hidden tab — prior 5 + Comp
                                                    primary ResultCard emits after a valid result renders
 ScenarioScreen          screens/                   Hidden tab — S-05/S-03/S-06/S-07/S-01 with excluded-by-default
                                                    typed candidates, strict input, clean reopen/reset, D-168
-                                                   invalidation and frozen accessible provenance/results (BQ-141)
+                                                   invalidation, frozen accessible results, confirmed Arya handoff
+                                                   and stable participation-only progression (BQ-141/BQ-143)
 InvestmentsScreen       screens/                   Hidden tab — account-guarded holdings list; partial totals named
 LoansScreen             screens/                   Hidden tab — account-guarded loan list; partial totals named
 InsuranceScreen         screens/                   Hidden tab — account-guarded policy list; partial totals named
@@ -103,6 +104,8 @@ TeachingWalkthrough         components/        Full-screen P9-guarded own-number
                                                source-visible saved figures, explicit unknowns and an optional
                                                D-078-confirmed Chat handoff for only missing details.
 TeachingBlock               components/ (46)   Inline teaching paragraph (used inside family screens)
+ScenarioHandoffModal        components/        Exact privacy-minimised payload confirmation; cancel is local,
+                                               confirm alone hands the mechanism prompt to existing Chat recovery
 LoanVsInvestModal           components/        Authenticated S-02 prepayment explorer with strict amount,
                                                current-result invalidation/focus, retry/reset and source evidence
 EmergencyCoverageTool      components/          Shared S-05/C-14 editable form, independent fail-open
@@ -164,7 +167,8 @@ progression.ts          ~95     BQ-071 emitters: recordCalculatorCompleted / rec
                                 its own failures — a ledger outage must never surface on a screen the
                                 user came to for an answer. Keys use the fixed Asia/Kolkata ledger day;
                                 each completion asks the backend to couple its first-capability award.
-                                ResultCard effects emit only after a valid result commits to the screen.
+                                Result effects emit only after a valid result commits to the screen; BQ-143
+                                covers all eligible dedicated/focused Scenario types with type-only keys.
                                 These live in the app because calculators and scenarios compute client-side.
                                 BQ-070 also fetches the backend-authored summary/history projections.
 characteristicsSchema.ts 94     CHARACTERISTICS_SCHEMA — per-product-type field definitions for HoldingEditModal
@@ -177,6 +181,8 @@ esopExerciseCost.ts             Typed India-date/recorded-FMV result + authorita
 scenarioCandidates.ts           Typed authenticated four-group component/provenance client; BQ-141 consumes it
 scenarioSession.ts              Pure excluded candidate draft, untouched/edited refresh, reset, total,
                                 strict eligible-loan evidence and permission/retry classification lifecycle
+scenarioHandoff.ts              Pure stable-type/normalized-input mechanism prompt builder; rejects names,
+                                aliases, institutions, source/record identifiers and non-finite values
 holdingReconciliation.ts       Resolve owned candidate/new choice and apply confirmed transient diff;
                                 exposes refreshed proposal on stale 409
 compoundGrowth.ts              Pure D-128/D-129 month-end contribution model with finite/safe bounds;

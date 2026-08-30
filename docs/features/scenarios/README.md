@@ -4,9 +4,9 @@
 
 **Current gate:** BQ-130..BQ-134 complete; owner PASS recorded in D-172 and `VALIDATION_RESULT.md`
 
-**Production reconciliation:** BQ-135 audit through BQ-142 dedicated Scenario and focused-explorer
-UI/lifecycle are complete. `PRODUCTION_RECONCILIATION.md` maps the remaining dependency-ordered BQ-143..BQ-144
-sequence; Arya/progression integration and integrated production parity are not yet achieved.
+**Production reconciliation:** BQ-135 audit through BQ-143 implementation are complete across dedicated
+Scenarios and focused explorers, including confirmed Arya handoff and participation-only progression.
+`PRODUCTION_RECONCILIATION.md` leaves BQ-144’s exhaustive integrated production parity gate.
 
 **Production status:** A broad first implementation is shipped. This package reconciles and validates the
 coherent end-to-end product before any production reconciliation is authorised.

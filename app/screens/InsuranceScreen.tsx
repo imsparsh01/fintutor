@@ -204,7 +204,7 @@ function InsuranceList({ navigation }: ListProps) {
 
         {modal}
         <TeachingWalkthrough visible={showWalkthrough} steps={walkthroughPlan.steps} onDismiss={() => setShowWalkthrough(false)} onAskMissing={walkthroughPlan.missingQuestion ? askMissingWalkthroughDetails : undefined} />
-        {allHoldings ? <TermInsuranceExplorerModal visible={showTermExplorer} holdings={allHoldings} goals={goals ?? []} recordedContextAvailable={goals !== null} onDismiss={() => setShowTermExplorer(false)} /> : null}
+        {allHoldings && userId ? <TermInsuranceExplorerModal visible={showTermExplorer} holdings={allHoldings} goals={goals ?? []} recordedContextAvailable={goals !== null} userId={userId} onDismiss={() => setShowTermExplorer(false)} onExploreWithArya={(prompt) => { setShowTermExplorer(false); parentNavigation?.navigate('Chat', { prefillQuestion: prompt }); }} /> : null}
       </ScrollView>
     );
   }
@@ -256,7 +256,7 @@ function InsuranceList({ navigation }: ListProps) {
       </Pressable>
       {modal}
       <TeachingWalkthrough visible={showWalkthrough} steps={walkthroughPlan.steps} onDismiss={() => setShowWalkthrough(false)} onAskMissing={walkthroughPlan.missingQuestion ? askMissingWalkthroughDetails : undefined} />
-      {allHoldings ? <TermInsuranceExplorerModal visible={showTermExplorer} holdings={allHoldings} goals={goals ?? []} recordedContextAvailable={goals !== null} onDismiss={() => setShowTermExplorer(false)} /> : null}
+      {allHoldings && userId ? <TermInsuranceExplorerModal visible={showTermExplorer} holdings={allHoldings} goals={goals ?? []} recordedContextAvailable={goals !== null} userId={userId} onDismiss={() => setShowTermExplorer(false)} onExploreWithArya={(prompt) => { setShowTermExplorer(false); parentNavigation?.navigate('Chat', { prefillQuestion: prompt }); }} /> : null}
     </View>
   );
 }

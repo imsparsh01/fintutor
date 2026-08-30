@@ -178,6 +178,16 @@ class AwardRuleTests(ProgressionTestBase):
         # Two across calculators per day is the ceiling — the third type earns nothing.
         self.assertEqual(self.points(), 24 + 10)
 
+    def test_scenario_limited_per_type_and_across_types_per_day(self) -> None:
+        for i in range(3):
+            self.emit("scenario_completed", subject_key="idle_cash", key=f"idle-{i}")
+        # Re-running or reopening one type awards once, independent of its values/outcome.
+        self.assertEqual(self.points(), 15 + 10)
+        self.emit("scenario_completed", subject_key="debt_cost", key="debt-0")
+        self.emit("scenario_completed", subject_key="term_household_support", key="term-0")
+        # A second type awards; the third type is recorded but earns nothing that day.
+        self.assertEqual(self.points(), 30 + 10)
+
     def test_revisit_requires_seven_days_after_first_exploration(self) -> None:
         self.emit("teaching_moment_explored", subject_key="compounding")
         baseline = self.points()
