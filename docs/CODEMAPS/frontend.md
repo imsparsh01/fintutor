@@ -65,7 +65,9 @@ ToolsScreen             screens/                   Tools tab — 9 calculators +
                                                    Scenarios; focused explorers remain contextual (BQ-141)
 CalculatorScreen        screens/ (~670)            Hidden tab — 8 manual calculators with strict whole-string
                                                    inputs, typed errors, edit invalidation, reset and frozen
-                                                   result evidence; Credit-card Payoff is manual-only;
+                                                   result evidence; every current valid result has an exact
+                                                   confirmed privacy-minimised Arya mechanism handoff;
+                                                   Credit-card Payoff is manual-only;
                                                    primary ResultCard emits after a valid result renders
 ScenarioScreen          screens/                   Hidden tab — S-05/S-03/S-06/S-07/S-01 with excluded-by-default
                                                    typed candidates, strict input, clean reopen/reset, D-168
@@ -115,7 +117,8 @@ LoanVsInvestModal           components/        Authenticated S-02 prepayment exp
                                                current-result invalidation/focus, retry/reset and source evidence
 EmergencyCoverageTool      components/          Shared S-05/C-14 editable form; independently loaded budget/FD
                                                values remain source-labelled excluded candidates until explicit
-                                               inclusion; strict input, reset, frozen evidence and accessibility
+                                               inclusion; strict input, reset, frozen evidence, confirmed Arya
+                                               mechanism handoff and accessibility
 EsopExerciseCostModal       components/        ESOP cost today with generation-safe retry, India-date/
                                                recorded-FMV provenance and accessible current-result focus
 TaxSavingRoomModal          components/        Parked internal 80C evidence; no production launcher (BQ-136)

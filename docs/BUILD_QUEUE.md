@@ -16,14 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-153 — Calculator Arya and progression integration — READY
+### BQ-154 — Production Calculator exhaustive verification and parity gate — READY
 
-Traces to D-174/D-175/BQ-150. Objective: add the exact confirmed privacy-minimised Arya handoff to every
-eligible current Calculator result using calculator type, normalized finite inputs, formula boundary and
-omissions only. Cancel sends nothing. Ensure stable type-only completion after valid render, no events from
-invalid/changed/capped/handoff paths, and cap/failure isolation. Reuse existing Chat recovery and shared modal
-architecture. Accept: handoff and progression contracts pass; no model, backend, schema, dependency or
-persistence change. Size L. Depends on BQ-152.
+Traces to D-174/D-175/BQ-150. Objective: prove the configured production frontend/backend against all 55
+Calculator acceptance IDs and 51 canonical states. Include formula fixtures, API/privacy/isolation where
+Emergency candidates apply, offline/manual behavior, keyboard/accessibility, 320/390/1440/200%, themes/high
+contrast/reduced motion, native best-effort and console/DOM evidence. Prototype evidence is prohibited as
+production evidence. Accept: machine-complete 55-AC/51-state production evidence ledger with no critical open
+finding, followed by owner PASS / REVISE / PARK / ESCALATE. Size XL. Depends on BQ-153.
 
 ## BLOCKED — do not start
 

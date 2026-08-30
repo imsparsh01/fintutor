@@ -3,11 +3,13 @@ import { AccessibilityInfo, findNodeHandle, Platform, Pressable, ScrollView, Sty
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, font, radius, spacing } from '../design/tokens';
+import { ScenarioHandoffModal } from './ScenarioHandoffModal';
 import { fetchBudget } from '../lib/budget';
 import { calculateEmergencyCoverage, emergencyBudgetPrefill, emergencyCoverageSignature, emergencyFixedDepositPrefill, shouldEmitEmergencyCoverage } from '../lib/emergencyCoverage';
 import { formatRupees } from '../lib/format';
 import { fetchHoldings } from '../lib/holdings';
 import { parseScenarioNumber } from '../lib/scenarioNumbers';
+import { buildScenarioHandoffPrompt } from '../lib/scenarioHandoff';
 import type { MainTabsParamList } from '../navigation/types';
 
 type Props = { userId: string | null; surface: 'scenario' | 'calculator'; onComputed: () => void };
@@ -29,8 +31,9 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
   const [outgoingsCandidateIncluded, setOutgoingsCandidateIncluded] = useState(false);
   const [fdLoadFailed, setFdLoadFailed] = useState(false);
   const [budgetLoadFailed, setBudgetLoadFailed] = useState(false);
-  const [result, setResult] = useState<{ value: NonNullable<ReturnType<typeof calculateEmergencyCoverage>>; signature: string; inputsSummary: string; monthlyOutgoings: number } | null>(null);
+  const [result, setResult] = useState<{ value: NonNullable<ReturnType<typeof calculateEmergencyCoverage>>; signature: string; inputsSummary: string; monthlyOutgoings: number; handoffPrompt: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
     onComputedRef.current = onComputed;
@@ -41,7 +44,7 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
     setCash(''); setFixedDeposits(''); setOther(''); setOutgoings('');
     setFdCandidate(null); setOutgoingsCandidate(null); setFdCandidateIncluded(false); setOutgoingsCandidateIncluded(false);
     setFdLoadFailed(false); setBudgetLoadFailed(false);
-    setResult(null); setNotice(null);
+    setResult(null); setNotice(null); setConfirming(false);
     if (!userId) return () => { generation.current += 1; };
     fetchHoldings(userId).then((items) => {
       const hasFixedDeposit = items.some((item) => item.product_type === 'fd_rd' && String(item.characteristics.deposit_mode ?? '').toUpperCase() !== 'RD');
@@ -76,7 +79,8 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
     const fdSource = fdCandidateIncluded ? 'included from your recorded fixed-deposit data' : fixedDeposits === '' ? 'omitted' : 'entered by you';
     const outgoingsSource = outgoingsCandidateIncluded ? 'included from your recorded budget data' : 'entered by you';
     const inputsSummary = `${formatRupees(inputs.cashAndBank)} cash/bank (entered by you) · ${formatRupees(inputs.fixedDeposits)} fixed deposits (${fdSource}) · ${formatRupees(inputs.otherAccessible)} other accessible (${other === '' ? 'omitted' : 'entered by you'}) · ${formatRupees(inputs.monthlyOutgoings)} monthly outgoings (${outgoingsSource}).`;
-    setNotice(null); setResult({ value: next, signature: emergencyCoverageSignature(inputs), inputsSummary, monthlyOutgoings: inputs.monthlyOutgoings });
+    const handoffPrompt = buildScenarioHandoffPrompt({ scenarioType: 'emergency_coverage', surface: 'calculator', normalizedInputs: { cash_and_bank: inputs.cashAndBank, included_fixed_deposits: inputs.fixedDeposits, other_accessible: inputs.otherAccessible, monthly_outgoings: inputs.monthlyOutgoings }, formulaBoundary: 'Sum only included accessible balances, then divide by positive monthly outgoings.', omissions: 'Taxes, penalties, access delays, returns, changing expenses and any adequacy judgment.' }) ?? '';
+    setNotice(null); setResult({ value: next, signature: emergencyCoverageSignature(inputs), inputsSummary, monthlyOutgoings: inputs.monthlyOutgoings, handoffPrompt });
   }
 
   function reset() {
@@ -120,6 +124,8 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
       <Text style={styles.evidenceHeading}>Formula and convention</Text><Text style={styles.note}>{formatRupees(result.value.accessibleBalances)} of included accessible balances divided by {formatRupees(result.monthlyOutgoings)} of monthly outgoings.</Text>
       <Text style={styles.evidenceHeading}>Rounding, caps and omissions</Text><Text style={styles.note}>Months display to one decimal. Blank optional balances are omitted. Taxes, penalties, access delays, returns and changing expenses are not modeled.</Text>
       <Text style={styles.counted}>No number of months is labelled enough, safe or adequate.</Text>
+      <Pressable style={styles.aryaButton} accessibilityRole="button" onPress={() => setConfirming(true)}><Text style={styles.aryaButtonText}>Explore the mechanism with Arya</Text></Pressable>
+      <ScenarioHandoffModal visible={confirming} prompt={result.handoffPrompt} onCancel={() => setConfirming(false)} onConfirm={() => { setConfirming(false); navigation.navigate('Chat', { prefillQuestion: result.handoffPrompt }); }} />
     </View>}
     <View style={styles.teaching}><Text style={styles.teachingHeading}>What this does not model</Text><Text style={styles.note}>Taxes, penalties, access delays, returns, or changing expenses. Monthly outgoings stay editable; FinTutor does not decide which expenses you would cut. This result is not a target or a statement that the number of months is enough, safe, or adequate.</Text></View>
   </ScrollView>;
@@ -143,5 +149,6 @@ const styles = StyleSheet.create({
   note: { fontFamily: font.ui, fontSize: 14, lineHeight: 21, color: colors.inkSecondary }, loadNote: { fontFamily: font.ui, fontSize: 14, lineHeight: 20, color: colors.inkSecondary, marginBottom: spacing.md },
   button: { minHeight: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.lg }, buttonText: { fontFamily: font.uiMedium, color: colors.screen }, resetButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg }, resetButtonText: { fontFamily: font.uiMedium, color: colors.tutor },
   result: { backgroundColor: colors.screen, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.lg }, resultUnit: { fontFamily: font.uiMedium, color: colors.inkSecondary }, resultValue: { fontFamily: font.mono, fontSize: 36, color: colors.ink, marginVertical: spacing.sm }, evidenceHeading: { fontFamily: font.mono, fontSize: 11, letterSpacing: 0.8, color: colors.ink, marginTop: spacing.md, marginBottom: spacing.xs, textTransform: 'uppercase' }, counted: { fontFamily: font.ui, color: colors.ink, marginTop: spacing.md, lineHeight: 20 },
+  aryaButton: { minHeight: 48, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.lg, paddingHorizontal: spacing.md }, aryaButtonText: { fontFamily: font.uiMedium, color: colors.tutor },
   teaching: { borderTopWidth: 1, borderTopColor: colors.line, paddingTop: spacing.lg }, teachingHeading: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.ink, marginBottom: spacing.sm },
 });

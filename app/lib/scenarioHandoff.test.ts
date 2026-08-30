@@ -23,3 +23,16 @@ test('rejects unsafe type/field shapes and non-finite values', () => {
   assert.equal(buildScenarioHandoffPrompt({ ...base, normalizedInputs: { product_name: 'Real Fund' } }), null);
   assert.equal(buildScenarioHandoffPrompt({ ...base, normalizedInputs: {} }), null);
 });
+
+test('labels calculator payloads without weakening the shared privacy boundary', () => {
+  const prompt = buildScenarioHandoffPrompt({
+    scenarioType: 'credit_card_payoff',
+    surface: 'calculator',
+    normalizedInputs: { balance: 50000, annual_rate_percent: 24, fixed_monthly_payment: 5000 },
+    formulaBoundary: 'Monthly interest then fixed payment.',
+    omissions: 'Fees and new spending.',
+  });
+  assert.match(prompt!, /FinTutor calculator/);
+  assert.match(prompt!, /Calculator type: credit_card_payoff/);
+  assert.doesNotMatch(prompt!, /Scenario type/);
+});

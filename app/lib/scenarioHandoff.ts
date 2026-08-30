@@ -3,6 +3,7 @@ export interface ScenarioHandoffPayload {
   normalizedInputs: Record<string, string | number | null | undefined>;
   formulaBoundary: string;
   omissions: string;
+  surface?: 'scenario' | 'calculator';
 }
 
 const SAFE_TYPE = /^[a-z][a-z0-9_]*$/;
@@ -19,9 +20,11 @@ export function buildScenarioHandoffPrompt(payload: ScenarioHandoffPayload): str
     || (typeof value === 'string' && (!SAFE_STRING_VALUE.test(value) || value.length > 80)))) return null;
   if (!payload.formulaBoundary.trim() || !payload.omissions.trim()) return null;
   const inputs = entries.map(([key, value]) => `${key}=${value}`).join('; ');
+  const surface = payload.surface ?? 'scenario';
+  const surfaceLabel = surface === 'calculator' ? 'Calculator' : 'Scenario';
   return [
-    'Teach me the mechanism behind this FinTutor scenario without recommending an action.',
-    `Scenario type: ${payload.scenarioType}.`,
+    `Teach me the mechanism behind this FinTutor ${surface} without recommending an action.`,
+    `${surfaceLabel} type: ${payload.scenarioType}.`,
     `Normalized inputs: ${inputs}.`,
     `Formula boundary: ${payload.formulaBoundary}`,
     `Omissions: ${payload.omissions}`,

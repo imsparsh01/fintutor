@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-153 — Calculator Arya and progression integration — DONE 31-Aug-2026
+
+Traces to D-174/D-175/BQ-150. Objective: add the exact confirmed privacy-minimised Arya handoff to every
+eligible current Calculator result using calculator type, normalized finite inputs, formula boundary and
+omissions only. Cancel sends nothing. Ensure stable type-only completion after valid render, no events from
+invalid/changed/capped/handoff paths, and cap/failure isolation. Reuse existing Chat recovery and shared modal
+architecture. Accept: handoff and progression contracts pass; no model, backend, schema, dependency or
+persistence change. Size L. Depends on BQ-152.
+
 ## BQ-152 — Calculator UI lifecycle, evidence and candidate-boundary reconciliation — DONE 31-Aug-2026
 
 Traces to D-174/D-175/BQ-150. Objective: wire all nine production Calculators to strict raw inputs,

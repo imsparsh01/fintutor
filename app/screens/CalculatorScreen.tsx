@@ -11,10 +11,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { EmergencyCoverageTool } from '../components/EmergencyCoverageTool';
+import { ScenarioHandoffModal } from '../components/ScenarioHandoffModal';
 import { useAuth } from '../lib/AuthContext';
 import { calculateCompoundGrowth } from '../lib/compoundGrowth';
 import { calculateCagr, calculateHomeLoanEmi, calculateInflationImpact, calculateSipGoal } from '../lib/calculatorEngines';
@@ -23,6 +25,7 @@ import { calculateGoalAffordability } from '../lib/goalAffordability';
 import { calculateStepUpSip } from '../lib/stepUpSip';
 import { formatRupees } from '../lib/format';
 import { recordCalculatorCompleted } from '../lib/progression';
+import { buildScenarioHandoffPrompt } from '../lib/scenarioHandoff';
 import { parseScenarioNumber } from '../lib/scenarioNumbers';
 import type { CalculatorType, MainTabsParamList } from '../navigation/types';
 
@@ -139,6 +142,7 @@ function ResultCard({
   inputsUsed,
   mechanismNote,
   roundingAndOmissions,
+  handoffPrompt,
   onRendered,
 }: {
   value: string;
@@ -146,9 +150,12 @@ function ResultCard({
   inputsUsed: string;
   mechanismNote: string;
   roundingAndOmissions: string;
+  handoffPrompt: string;
   onRendered?: () => void;
 }) {
   const headingRef = useRef<Text>(null);
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabsParamList>>();
+  const [confirming, setConfirming] = useState(false);
   useEffect(() => {
     AccessibilityInfo.announceForAccessibility(`${unit}: ${value}`);
     if (Platform.OS !== 'web') {
@@ -167,8 +174,16 @@ function ResultCard({
       <Text style={styles.resultNote}>{mechanismNote}</Text>
       <Text style={styles.evidenceHeading}>Rounding, caps and omissions</Text>
       <Text style={styles.resultNote}>{roundingAndOmissions}</Text>
+      <Pressable style={styles.aryaBtn} accessibilityRole="button" onPress={() => setConfirming(true)}>
+        <Text style={styles.aryaBtnText}>Explore the mechanism with Arya</Text>
+      </Pressable>
+      <ScenarioHandoffModal visible={confirming} prompt={handoffPrompt} onCancel={() => setConfirming(false)} onConfirm={() => { setConfirming(false); navigation.navigate('Chat', { prefillQuestion: handoffPrompt }); }} />
     </View>
   );
+}
+
+function calculatorHandoff(calculatorType: CalculatorType, normalizedInputs: Record<string, number>, formulaBoundary: string, omissions: string): string {
+  return buildScenarioHandoffPrompt({ scenarioType: calculatorType, normalizedInputs, formulaBoundary, omissions, surface: 'calculator' }) ?? '';
 }
 
 function CalcWrapper({ title, children }: { title: string; children: React.ReactNode }) {
@@ -216,6 +231,7 @@ function SipGoalCalc({ onComputed }: CalcProps) {
           inputsUsed={`${formatRupees(parseScenarioNumber(target)!.value)} target · ${rate}% annual return · ${years} years — all entered by you.`}
           mechanismNote={`At ${rate}% annual return over ${years} years, this monthly SIP compounds to your target. Contributions are modeled at each month end and begin compounding in the following month. The formula is the inverse of the standard SIP corpus formula — it works backwards from your goal.`}
           roundingAndOmissions="The horizon rounds to modeled months and rupees display to two decimals. Tax, fees, volatility, rate changes and missed contributions are omitted."
+          handoffPrompt={calculatorHandoff('sip_goal', { target_amount: parseScenarioNumber(target)!.value, annual_rate_percent: parseScenarioNumber(rate)!.value, years: parseScenarioNumber(years)!.value }, 'Inverse future value of equal month-end contributions; horizon rounds to modeled months.', 'Tax, fees, volatility, rate changes and missed contributions.')}
           onRendered={onComputed}
         />
       )}
@@ -259,6 +275,7 @@ function EmiCalc({ onComputed }: CalcProps) {
             inputsUsed={`${formatRupees(parseScenarioNumber(principal)!.value)} principal · ${rate}% annual rate · ${tenure} years — all entered by you.`}
             mechanismNote={`Each EMI pays the interest accrued that month first; the remainder reduces the principal. Early in the tenure most of each payment goes toward interest.`}
             roundingAndOmissions="Tenure rounds to modeled months and rupees display to two decimals. Fees, prepayment, changing rates and lender-specific daily rounding are omitted."
+            handoffPrompt={calculatorHandoff('emi', { principal: parseScenarioNumber(principal)!.value, annual_rate_percent: parseScenarioNumber(rate)!.value, years: parseScenarioNumber(tenure)!.value }, 'Fixed monthly amortisation; monthly interest is added before principal reduction and tenure rounds to modeled months.', 'Fees, prepayment, changing rates and lender-specific daily rounding.')}
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
@@ -306,6 +323,7 @@ function InflationCalc({ onComputed }: CalcProps) {
           inputsUsed={`${formatRupees(parseScenarioNumber(present)!.value)} present cost · ${inflationRate}% annual inflation · ${years} years — all entered by you.`}
           mechanismNote={`At ${inflationRate}% annual inflation, purchasing power falls by roughly ${inflationRate}% a year. This is the same amount of money's worth, not the same rupee amount.`}
           roundingAndOmissions="The entered fractional-year horizon is preserved and rupees display to two decimals. Category variation and tax are omitted; the rate stays fixed."
+          handoffPrompt={calculatorHandoff('inflation', { present_cost: parseScenarioNumber(present)!.value, annual_rate_percent: parseScenarioNumber(inflationRate)!.value, years: parseScenarioNumber(years)!.value }, 'Annual compounding of the entered inflation rate over the entered horizon.', 'Category variation and tax; the entered rate remains fixed.')}
           onRendered={onComputed}
         />
       )}
@@ -350,6 +368,7 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
             inputsUsed={`${formatRupees(parseScenarioNumber(sip)!.value)} starting monthly contribution · ${stepup}% yearly step · ${rate}% annual return · ${years} whole years — all entered by you.`}
             mechanismNote={`Your SIP starts at ${formatRupees(parseScenarioNumber(sip)?.value ?? 0)}/month and increases by ${stepup}% each year. Contributions are modeled at each month end and begin compounding in the following month; each annual step-up starts with the first contribution of the new 12-month block.`}
             roundingAndOmissions="Only whole years are modeled; rupees display to two decimals. Fees, tax, volatility, rate/step changes and missed contributions are omitted."
+            handoffPrompt={calculatorHandoff('stepup_sip', { starting_monthly_contribution: parseScenarioNumber(sip)!.value, annual_step_percent: parseScenarioNumber(stepup)!.value, annual_return_percent: parseScenarioNumber(rate)!.value, years: parseScenarioNumber(years)!.value }, 'Month-end contributions; each annual step begins with the first contribution in the new 12-month block.', 'Fees, tax, volatility, rate or step changes, missed contributions and fractional years.')}
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
@@ -397,6 +416,7 @@ function CagrCalc({ onComputed }: CalcProps) {
           inputsUsed={`${formatRupees(parseScenarioNumber(initial)!.value)} initial value · ${formatRupees(parseScenarioNumber(final)!.value)} final value · ${years} years — all entered by you.`}
           mechanismNote={`CAGR (Compound Annual Growth Rate) is the year-on-year rate at which an investment grew as if it compounded smoothly. It describes what happened, not what will happen next.`}
           roundingAndOmissions="The percentage displays to two decimals. Interim cash flows, fees and tax are omitted; this is not a forecast."
+          handoffPrompt={calculatorHandoff('cagr_backward', { initial_value: parseScenarioNumber(initial)!.value, final_value: parseScenarioNumber(final)!.value, years: parseScenarioNumber(years)!.value }, 'Signed smooth historical annualised rate: (final / initial)^(1 / years) - 1.', 'Interim cash flows, fees, tax and any forecast claim.')}
           onRendered={onComputed}
         />
       )}
@@ -457,6 +477,7 @@ function CompoundGrowthCalc({ onComputed }: CalcProps) {
             inputsUsed={`${formatRupees(parseScenarioNumber(lumpSum)!.value)} starting amount · ${formatRupees(parseScenarioNumber(monthly)!.value)} monthly contribution · ${rate}% annual rate · ${years} years — all entered by you.`}
             mechanismNote={`This is a conditional model using your fixed ${rate}% annual rate, compounded monthly. Contributions are added at each month end and begin compounding in the following month.`}
             roundingAndOmissions="The horizon rounds to modeled months and rupees display to two decimals. Volatility, fees, tax, missed contributions and changing rates are omitted."
+            handoffPrompt={calculatorHandoff('compound_growth', { starting_amount: parseScenarioNumber(lumpSum)!.value, monthly_contribution: parseScenarioNumber(monthly)!.value, annual_rate_percent: parseScenarioNumber(rate)!.value, years: parseScenarioNumber(years)!.value }, 'Monthly compounding with contributions at month end; horizon rounds to modeled months.', 'Volatility, fees, tax, missed contributions and changing rates.')}
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total contributed</Text><Text style={styles.secondaryValue}>{formatRupees(result.totalContributed)}</Text></View>
@@ -533,6 +554,7 @@ function GoalAffordabilityCalc({ onComputed }: CalcProps) {
             inputsUsed={`${formatRupees(parseScenarioNumber(target)!.value)} target · ${formatRupees(parseScenarioNumber(current)!.value)} current amount · ${formatRupees(parseScenarioNumber(plannedMonthly)!.value)} planned monthly contribution · ${rate}% annual rate · ${years} years — all entered by you.`}
             mechanismNote={`Your current amount compounds for ${result.months} months. Each planned contribution enters at month end and begins compounding the following month.`}
             roundingAndOmissions="The horizon rounds to modeled months and rupees display to two decimals. Volatility, fees, tax, inflation, misses and changing rates are omitted."
+            handoffPrompt={calculatorHandoff('goal_affordability', { target_amount: parseScenarioNumber(target)!.value, current_amount: parseScenarioNumber(current)!.value, planned_monthly_contribution: parseScenarioNumber(plannedMonthly)!.value, annual_rate_percent: parseScenarioNumber(rate)!.value, years: parseScenarioNumber(years)!.value }, 'Current amount compounds monthly; inverse month-end contributions model the target gap over rounded months.', 'Volatility, fees, tax, inflation, missed contributions and changing rates.')}
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
@@ -602,7 +624,7 @@ function CreditCardPayoffCalc({ onComputed }: CalcProps) {
       {outcome?.kind === 'capped' ? <Text accessibilityRole="alert" style={styles.calcError}>This balance does not reach zero within the model’s {PAYOFF_MONTH_CAP.toLocaleString('en-IN')}-month safety limit, so no payoff result is shown.</Text> : null}
       {validResult ? (
         <>
-          <ResultCard unit="Modeled payoff time" value={`${validResult.months} months`} inputsUsed={`${formatRupees(parseScenarioNumber(balance)!.value)} balance · ${rate}% annual rate · ${formatRupees(parseScenarioNumber(payment)!.value)} fixed monthly payment — all entered by you.`} mechanismNote="Each month applies interest to the remaining balance first, then subtracts your fixed payment, clamped to the amount due in the final month." roundingAndOmissions={`The model stops without a result after ${PAYOFF_MONTH_CAP.toLocaleString('en-IN')} months. Rupees display to two decimals; new spending, fees, penalty interest, changes and issuer-specific daily rules are omitted.`} onRendered={onComputed} />
+          <ResultCard unit="Modeled payoff time" value={`${validResult.months} months`} inputsUsed={`${formatRupees(parseScenarioNumber(balance)!.value)} balance · ${rate}% annual rate · ${formatRupees(parseScenarioNumber(payment)!.value)} fixed monthly payment — all entered by you.`} mechanismNote="Each month applies interest to the remaining balance first, then subtracts your fixed payment, clamped to the amount due in the final month." roundingAndOmissions={`The model stops without a result after ${PAYOFF_MONTH_CAP.toLocaleString('en-IN')} months. Rupees display to two decimals; new spending, fees, penalty interest, changes and issuer-specific daily rules are omitted.`} handoffPrompt={calculatorHandoff('credit_card_payoff', { balance: parseScenarioNumber(balance)!.value, annual_rate_percent: parseScenarioNumber(rate)!.value, fixed_monthly_payment: parseScenarioNumber(payment)!.value }, `Monthly interest then fixed payment; final payment clamps to amount due and the search caps at ${PAYOFF_MONTH_CAP} months.`, 'New spending, fees, penalty interest, rate or payment changes and issuer-specific daily rules.')} onRendered={onComputed} />
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total paid</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.totalPaid)}</Text></View>
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Total interest</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.totalInterest)}</Text></View>
           <View style={styles.secondaryResult}><Text style={styles.secondaryLabel}>Final payment</Text><Text style={styles.secondaryValue}>{formatRupees(validResult.finalPayment)}</Text></View>
@@ -670,6 +692,8 @@ const styles = StyleSheet.create({
   calcBtnTextDisabled: { color: colors.inkMuted },
   resetBtn: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   resetBtnText: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.tutor },
+  aryaBtn: { minHeight: 48, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.xl, paddingHorizontal: spacing.md },
+  aryaBtnText: { fontFamily: font.uiSemibold, fontSize: 14, color: colors.tutor },
   resultCard: {
     backgroundColor: colors.canvas,
     borderRadius: radius.lg,
