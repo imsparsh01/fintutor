@@ -16,13 +16,14 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-145 — Reconcile Calculator PRD, journey and state matrix — READY
+### BQ-146 — Consolidate Calculator functional, money and safety contracts — READY
 
-Traces to D-173/D-148. Objective: audit the nine shipped Calculator surfaces and governing decisions, then
-create one current PRD, end-to-end journey and complete state matrix. Accept: target outcome, entry/return/exit,
-assumption ownership, formulas/timing/rounding, prefill provenance, invalid/edge/current-result lifecycle,
-recovery, privacy, accessibility and explicit exclusions are testable; contradictions and money-logic forks
-remain visible rather than silently resolved. Size L.
+Traces to D-173/D-148. Objective: specify suite-wide inputs/outputs, assumption authorship, formula/timing,
+numeric grammar/domains, rounding/caps, candidate provenance, result lifecycle, APIs/privacy, progression,
+Arya handoff eligibility, content neutrality, recovery and accessibility across all nine Calculators. Accept:
+each figure has source/unit/convention/unknown/error rules; every current BQ-145 fork remains explicit for
+BQ-147 owner routing rather than silently changing money logic; no production calculation changes. Size L.
+Depends on BQ-145.
 
 ## BLOCKED — do not start
 

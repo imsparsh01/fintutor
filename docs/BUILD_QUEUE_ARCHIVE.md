@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-145 — Reconcile Calculator PRD, journey and state matrix — DONE 30-Aug-2026
+
+Traces to D-173/D-148. Objective: audit the nine shipped Calculator surfaces and governing decisions, then
+create one current PRD, end-to-end journey and complete state matrix. Accept: target outcome, entry/return/exit,
+assumption ownership, formulas/timing/rounding, prefill provenance, invalid/edge/current-result lifecycle,
+recovery, privacy, accessibility and explicit exclusions are testable; contradictions and money-logic forks
+remain visible rather than silently resolved. Size L.
+
 ## BQ-144 — Production Scenario exhaustive verification and parity gate — DONE 30-Aug-2026
 
 Traces to D-166/D-172. Objective: prove production parity against all 96 AC IDs and 50 canonical states.
