@@ -12,6 +12,15 @@
 
 ---
 
+## BQ-146 — Consolidate Calculator functional, money and safety contracts — DONE 30-Aug-2026
+
+Traces to D-173/D-148. Objective: specify suite-wide inputs/outputs, assumption authorship, formula/timing,
+numeric grammar/domains, rounding/caps, candidate provenance, result lifecycle, APIs/privacy, progression,
+Arya handoff eligibility, content neutrality, recovery and accessibility across all nine Calculators. Accept:
+each figure has source/unit/convention/unknown/error rules; every current BQ-145 fork remains explicit for
+BQ-147 owner routing rather than silently changing money logic; no production calculation changes. Size L.
+Depends on BQ-145.
+
 ## BQ-145 — Reconcile Calculator PRD, journey and state matrix — DONE 30-Aug-2026
 
 Traces to D-173/D-148. Objective: audit the nine shipped Calculator surfaces and governing decisions, then

@@ -8,7 +8,8 @@ Authority order:
 2. owner decisions D-105, D-128, D-129, D-145, D-146, D-148, D-166 and D-173;
 3. `PRD.md` for outcome, scope and current contradictions;
 4. `JOURNEY_AND_STATES.md` for the end-to-end journey and complete state inventory;
-5. later BQ-146 contracts, BQ-147 acceptance/decision register and BQ-148 controlled prototype evidence.
+5. `CONTRACTS.md` for the consolidated suite contract and explicit owner forks;
+6. later BQ-147 acceptance/decision register and BQ-148 controlled prototype evidence.
 
 Production source remains authoritative for what ships today. These definition artifacts expose gaps; they do not silently change a formula or claim that the current implementation already meets the future contract.
 
