@@ -28,6 +28,10 @@ so they remain navigable without reserving visible tab-bar width.
 CalculatorScreen is also a hidden tab, entered from ToolsScreen via `{ type: CalculatorType; label }`.
 ScenarioScreen follows the same pattern via `{ type: ScenarioType; label }` (BQ-056).
 
+Calculator numeric engines: `lib/calculatorEngines.ts` owns SIP Goal, Home Loan EMI, Inflation Impact and
+CAGR exact D-174 domains/zero/fraction branches; `lib/stepUpSip.ts` owns bounded Step-up timing. The screen
+uses `parseScenarioNumber()` as the shared strict whole-string input boundary rather than permissive parsing.
+
 Hidden screens use `navigation.navigate('<parent tab>')` for their back control, NOT `goBack()` —
 a bottom-tab navigator defaults to `backBehavior: 'firstRoute'`, so `goBack()` lands on Home.
 

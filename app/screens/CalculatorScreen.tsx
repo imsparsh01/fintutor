@@ -17,12 +17,14 @@ import { colors, font, radius, spacing } from '../design/tokens';
 import { EmergencyCoverageTool } from '../components/EmergencyCoverageTool';
 import { useAuth } from '../lib/AuthContext';
 import { calculateCompoundGrowth } from '../lib/compoundGrowth';
+import { calculateCagr, calculateHomeLoanEmi, calculateInflationImpact, calculateSipGoal } from '../lib/calculatorEngines';
 import { calculateCreditCardPayoff, PAYOFF_MONTH_CAP } from '../lib/creditCardPayoff';
 import { calculateGoalAffordability } from '../lib/goalAffordability';
 import { calculateStepUpSip } from '../lib/stepUpSip';
 import { fetchHoldings, type Holding } from '../lib/holdings';
 import { formatRupees } from '../lib/format';
 import { recordCalculatorCompleted } from '../lib/progression';
+import { parseScenarioNumber } from '../lib/scenarioNumbers';
 import type { CalculatorType, MainTabsParamList } from '../navigation/types';
 
 // BQ-057 + BQ-078: calculator screens — all free-form input, pure frontend math.
@@ -64,6 +66,11 @@ export function CalculatorScreen() {
 // Every calculator passes this to its primary ResultCard. The card emits from an effect,
 // after React has committed the valid result to the screen.
 type CalcProps = { onComputed: () => void };
+
+const parseCalculatorInputs = (...raw: string[]): number[] | null => {
+  const parsed = raw.map((value) => parseScenarioNumber(value)?.value);
+  return parsed.every((value): value is number => value !== undefined) ? parsed : null;
+};
 
 // ─── Shared sub-components ────────────────────────────────────────────────────
 
@@ -168,12 +175,10 @@ function SipGoalCalc({ onComputed }: CalcProps) {
   const [result, setResult] = useState<number | null>(null);
 
   function calculate() {
-    const fv = parseFloat(target);
-    const n = parseFloat(years) * 12;
-    const r = parseFloat(rate) / 12 / 100;
-    if (!fv || !n || !r || r <= 0) return;
-    const sip = (fv * r) / (Math.pow(1 + r, n) - 1);
-    setResult(sip);
+    const values = parseCalculatorInputs(target, rate, years);
+    if (!values) return setResult(null);
+    const outcome = calculateSipGoal(values[0], values[1], values[2]);
+    setResult(outcome.ok ? outcome.result.monthlyContribution : null);
   }
 
   const ready = target !== '' && years !== '' && rate !== '';
@@ -206,13 +211,10 @@ function EmiCalc({ onComputed }: CalcProps) {
   const [result, setResult] = useState<{ emi: number; totalInterest: number } | null>(null);
 
   function calculate() {
-    const p = parseFloat(principal);
-    const r = parseFloat(rate) / 12 / 100;
-    const n = parseFloat(tenure) * 12;
-    if (!p || !r || !n || r <= 0) return;
-    const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-    const totalInterest = emi * n - p;
-    setResult({ emi, totalInterest });
+    const values = parseCalculatorInputs(principal, rate, tenure);
+    if (!values) return setResult(null);
+    const outcome = calculateHomeLoanEmi(values[0], values[1], values[2]);
+    setResult(outcome.ok ? outcome.result : null);
   }
 
   const ready = principal !== '' && rate !== '' && tenure !== '';
@@ -251,11 +253,10 @@ function InflationCalc({ onComputed }: CalcProps) {
   const [result, setResult] = useState<number | null>(null);
 
   function calculate() {
-    const p = parseFloat(present);
-    const i = parseFloat(inflationRate) / 100;
-    const n = parseFloat(years);
-    if (!p || !i || !n) return;
-    setResult(p * Math.pow(1 + i, n));
+    const values = parseCalculatorInputs(present, inflationRate, years);
+    if (!values) return setResult(null);
+    const outcome = calculateInflationImpact(values[0], values[1], values[2]);
+    setResult(outcome.ok ? outcome.result.futureCost : null);
   }
 
   const ready = present !== '' && inflationRate !== '' && years !== '';
@@ -289,11 +290,9 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
   const [result, setResult] = useState<{ corpus: number; invested: number } | null>(null);
 
   function calculate() {
-    const sipAmt = parseFloat(sip);
-    const su = parseFloat(stepup) / 100;
-    const yrs = parseInt(years, 10);
-    const modeled = calculateStepUpSip(sipAmt, su * 100, parseFloat(rate), yrs);
-    if (modeled) setResult(modeled);
+    const values = parseCalculatorInputs(sip, stepup, rate, years);
+    if (!values) return setResult(null);
+    setResult(calculateStepUpSip(values[0], values[1], values[2], values[3]));
   }
 
   const ready = sip !== '' && stepup !== '' && rate !== '' && years !== '';
@@ -310,7 +309,7 @@ function StepUpSipCalc({ onComputed }: CalcProps) {
           <ResultCard
             unit="Corpus at end of period"
             value={formatRupees(result.corpus)}
-            mechanismNote={`Your SIP starts at ${formatRupees(parseFloat(sip))}/month and increases by ${stepup}% each year. Contributions are modeled at each month end and begin compounding in the following month; each annual step-up starts with the first contribution of the new 12-month block.`}
+            mechanismNote={`Your SIP starts at ${formatRupees(parseScenarioNumber(sip)?.value ?? 0)}/month and increases by ${stepup}% each year. Contributions are modeled at each month end and begin compounding in the following month; each annual step-up starts with the first contribution of the new 12-month block.`}
             onRendered={onComputed}
           />
           <View style={styles.secondaryResult}>
@@ -333,11 +332,10 @@ function CagrCalc({ onComputed }: CalcProps) {
   const [result, setResult] = useState<number | null>(null);
 
   function calculate() {
-    const iv = parseFloat(initial);
-    const fv = parseFloat(final);
-    const n = parseFloat(years);
-    if (!iv || !fv || !n || iv <= 0 || n <= 0) return;
-    setResult((Math.pow(fv / iv, 1 / n) - 1) * 100);
+    const values = parseCalculatorInputs(initial, final, years);
+    if (!values) return setResult(null);
+    const outcome = calculateCagr(values[0], values[1], values[2]);
+    setResult(outcome.ok ? outcome.result.annualRatePercent : null);
   }
 
   const ready = initial !== '' && final !== '' && years !== '';

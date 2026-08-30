@@ -21,6 +21,14 @@ test('annual step-up starts with the first contribution of the next 12-month blo
 test('invalid inputs do not produce a modeled result', () => {
   assert.equal(calculateStepUpSip(0, 10, 12, 10), null);
   assert.equal(calculateStepUpSip(100, -1, 12, 10), null);
-  assert.equal(calculateStepUpSip(100, 10, 0, 10), null);
   assert.equal(calculateStepUpSip(100, 10, 12, 1.5), null);
+});
+
+test('zero rates are explicit valid inputs and exact ceilings are enforced', () => {
+  assert.deepEqual(calculateStepUpSip(1000, 0, 0, 1), { corpus: 12000, invested: 12000 });
+  assert.ok(calculateStepUpSip(1, 0, 0, 200));
+  assert.equal(calculateStepUpSip(1, 0, 0, 201), null);
+  assert.equal(calculateStepUpSip(1, 1001, 0, 1), null);
+  assert.equal(calculateStepUpSip(1, 0, 1001, 1), null);
+  assert.equal(calculateStepUpSip(1_000_000_000_001, 0, 0, 1), null);
 });

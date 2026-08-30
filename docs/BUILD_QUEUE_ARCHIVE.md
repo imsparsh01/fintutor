@@ -12,6 +12,13 @@
 
 ---
 
+## BQ-151 — Exact Calculator engine and numeric-domain reconciliation — DONE 31-Aug-2026
+
+Traces to D-174/D-175/BQ-150. Objective: extract or reconcile pure SIP Goal, Home Loan EMI, Inflation Impact,
+Step-up SIP and CAGR engines with approved strict grammar, exact domains, zero/fraction branches and safe finite
+intermediate/output guards. Accept: normal, exact-edge, just-outside, zero/equality/loss and overflow fixtures
+pass; no layout, candidate, Arya, progression, backend, schema or dependency change. Size L. Depends on BQ-150.
+
 ## BQ-150 — Calculator production-reconciliation plan — DONE 31-Aug-2026
 
 Traces to D-173/D-174/D-175. Objective: compare the frozen Calculator contract with current `app/`/`backend/`
