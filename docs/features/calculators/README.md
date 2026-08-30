@@ -11,6 +11,7 @@ Authority order:
 5. `CONTRACTS.md` for the consolidated suite contract and explicit owner forks;
 6. `ACCEPTANCE_MATRIX.md` and `DECISION_REGISTER.md` for BQ-147 evidence/routing;
 7. `prototype/` and `QA_EVIDENCE.md` for BQ-148 controlled interaction and exhaustive agent QA.
+8. `PRODUCTION_RECONCILIATION.md` for the post-PASS production build sequence and parity gate.
 
 Production source remains authoritative for what ships today. These definition artifacts expose gaps; they do not silently change a formula or claim that the current implementation already meets the future contract.
 

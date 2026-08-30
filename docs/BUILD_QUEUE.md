@@ -16,13 +16,12 @@ Rules for this file:
 
 ## READY — pick one of these
 
-### BQ-150 — Calculator production-reconciliation plan — READY
+### BQ-151 — Exact Calculator engine and numeric-domain reconciliation — READY
 
-Traces to D-173/D-174/D-175. Objective: compare the frozen Calculator contract with current `app/`/`backend/`
-and produce bounded production build items, dependencies and verification gates. Accept: every gap maps to an
-approved outcome; old formula engines, shared lifecycle/content, candidate scope, Arya/progression and exhaustive
-parity are separated where risk requires; every money/data/privacy/schema/dependency fork is escalated rather
-than implemented; no production code changes. Size M. Depends on BQ-149 PASS.
+Traces to D-174/D-175/BQ-150. Objective: extract or reconcile pure SIP Goal, Home Loan EMI, Inflation Impact,
+Step-up SIP and CAGR engines with approved strict grammar, exact domains, zero/fraction branches and safe finite
+intermediate/output guards. Accept: normal, exact-edge, just-outside, zero/equality/loss and overflow fixtures
+pass; no layout, candidate, Arya, progression, backend, schema or dependency change. Size L. Depends on BQ-150.
 
 ## BLOCKED — do not start
 

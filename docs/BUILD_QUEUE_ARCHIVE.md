@@ -12,6 +12,14 @@
 
 ---
 
+## BQ-150 — Calculator production-reconciliation plan — DONE 31-Aug-2026
+
+Traces to D-173/D-174/D-175. Objective: compare the frozen Calculator contract with current `app/`/`backend/`
+and produce bounded production build items, dependencies and verification gates. Accept: every gap maps to an
+approved outcome; old formula engines, shared lifecycle/content, candidate scope, Arya/progression and exhaustive
+parity are separated where risk requires; every money/data/privacy/schema/dependency fork is escalated rather
+than implemented; no production code changes. Size M. Depends on BQ-149 PASS.
+
 ## BQ-149 — Calculator owner validation walkthrough and disposition — DONE 31-Aug-2026
 
 Traces to D-173/D-174/D-148. Objective: present the tested Calculator prototype and record PASS / REVISE /
