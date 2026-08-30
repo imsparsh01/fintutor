@@ -116,9 +116,10 @@ ScenarioHandoffModal        components/        Exact privacy-minimised payload c
 LoanVsInvestModal           components/        Authenticated S-02 prepayment explorer with strict amount,
                                                current-result invalidation/focus, retry/reset and source evidence
 EmergencyCoverageTool      components/          Shared S-05/C-14 editable form; independently loaded budget/FD
-                                               values remain source-labelled excluded candidates until explicit
-                                               inclusion; strict input, reset, frozen evidence, confirmed Arya
-                                               mechanism handoff and accessibility
+                                               component evidence comes from the authenticated Scenario-candidate
+                                               API with source/version/field/retrieval metadata; values remain
+                                               excluded until explicit inclusion; typed permission/retry recovery,
+                                               strict input, reset, frozen evidence, Arya handoff and accessibility
 EsopExerciseCostModal       components/        ESOP cost today with generation-safe retry, India-date/
                                                recorded-FMV provenance and accessible current-result focus
 TaxSavingRoomModal          components/        Parked internal 80C evidence; no production launcher (BQ-136)

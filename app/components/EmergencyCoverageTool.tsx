@@ -4,12 +4,13 @@ import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { ScenarioHandoffModal } from './ScenarioHandoffModal';
-import { fetchBudget } from '../lib/budget';
-import { calculateEmergencyCoverage, emergencyBudgetPrefill, emergencyCoverageSignature, emergencyFixedDepositPrefill, shouldEmitEmergencyCoverage } from '../lib/emergencyCoverage';
+import { calculateEmergencyCoverage, emergencyCoverageSignature, shouldEmitEmergencyCoverage } from '../lib/emergencyCoverage';
 import { formatRupees } from '../lib/format';
-import { fetchHoldings } from '../lib/holdings';
 import { parseScenarioNumber } from '../lib/scenarioNumbers';
 import { buildScenarioHandoffPrompt } from '../lib/scenarioHandoff';
+import { fetchScenarioCandidates } from '../lib/scenarioCandidates';
+import { scenarioSourceFailure } from '../lib/scenarioSession';
+import { buildCalculatorCandidateOffer, type CalculatorCandidateOffer } from '../lib/calculatorCandidates';
 import type { MainTabsParamList } from '../navigation/types';
 
 type Props = { userId: string | null; surface: 'scenario' | 'calculator'; onComputed: () => void };
@@ -25,12 +26,12 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
   const [fixedDeposits, setFixedDeposits] = useState('');
   const [other, setOther] = useState('');
   const [outgoings, setOutgoings] = useState('');
-  const [fdCandidate, setFdCandidate] = useState<number | null>(null);
-  const [outgoingsCandidate, setOutgoingsCandidate] = useState<number | null>(null);
+  const [fdCandidate, setFdCandidate] = useState<CalculatorCandidateOffer | null>(null);
+  const [outgoingsCandidate, setOutgoingsCandidate] = useState<CalculatorCandidateOffer | null>(null);
+  const [sourcesLoading, setSourcesLoading] = useState(Boolean(userId));
   const [fdCandidateIncluded, setFdCandidateIncluded] = useState(false);
   const [outgoingsCandidateIncluded, setOutgoingsCandidateIncluded] = useState(false);
-  const [fdLoadFailed, setFdLoadFailed] = useState(false);
-  const [budgetLoadFailed, setBudgetLoadFailed] = useState(false);
+  const [sourceFailure, setSourceFailure] = useState<'retryable' | 'permission' | null>(null);
   const [result, setResult] = useState<{ value: NonNullable<ReturnType<typeof calculateEmergencyCoverage>>; signature: string; inputsSummary: string; monthlyOutgoings: number; handoffPrompt: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
@@ -40,23 +41,39 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
   }, [onComputed]);
 
   useEffect(() => {
-    const active = ++generation.current;
     setCash(''); setFixedDeposits(''); setOther(''); setOutgoings('');
     setFdCandidate(null); setOutgoingsCandidate(null); setFdCandidateIncluded(false); setOutgoingsCandidateIncluded(false);
-    setFdLoadFailed(false); setBudgetLoadFailed(false);
+    setSourcesLoading(Boolean(userId)); setSourceFailure(null);
     setResult(null); setNotice(null); setConfirming(false);
-    if (!userId) return () => { generation.current += 1; };
-    fetchHoldings(userId).then((items) => {
-      const hasFixedDeposit = items.some((item) => item.product_type === 'fd_rd' && String(item.characteristics.deposit_mode ?? '').toUpperCase() !== 'RD');
-      const candidate = hasFixedDeposit ? emergencyFixedDepositPrefill(items) : null;
-      if (generation.current === active) setFdCandidate(candidate === null ? null : Math.round(candidate));
-    }).catch(() => { if (generation.current === active) setFdLoadFailed(true); });
-    fetchBudget(userId).then((budget) => {
-      const candidate = emergencyBudgetPrefill(budget);
-      if (generation.current === active) setOutgoingsCandidate(candidate === null ? null : Math.round(candidate));
-    }).catch(() => { if (generation.current === active) setBudgetLoadFailed(true); });
+    if (userId) loadSources();
     return () => { generation.current += 1; };
   }, [userId]);
+
+  function loadSources() {
+    if (!userId) return;
+    const active = ++generation.current;
+    setSourcesLoading(true); setSourceFailure(null);
+    fetchScenarioCandidates().then((response) => {
+      if (generation.current !== active) return;
+      setFdCandidate(buildCalculatorCandidateOffer(response.fd_principal));
+      setOutgoingsCandidate(buildCalculatorCandidateOffer(response.monthly_outgoings));
+    }).catch((error) => {
+      if (generation.current !== active) return;
+      const failure = scenarioSourceFailure(error);
+      setSourceFailure(failure);
+      if (failure === 'permission') {
+        setCash(''); setFixedDeposits(''); setOther(''); setOutgoings('');
+        setFdCandidate(null); setOutgoingsCandidate(null); setFdCandidateIncluded(false); setOutgoingsCandidateIncluded(false);
+        setResult(null); setNotice(null); setConfirming(false);
+      }
+    })
+      .finally(() => { if (generation.current === active) setSourcesLoading(false); });
+  }
+
+  function retrySources() {
+    setNotice(result ? INPUTS_CHANGED_NOTICE : null); setResult(null);
+    loadSources();
+  }
 
   function edit(setter: (value: string) => void) {
     return (value: string) => { setter(value); setNotice(result ? INPUTS_CHANGED_NOTICE : null); setResult(null); };
@@ -106,14 +123,17 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
     <Text style={styles.heading}>{surface === 'scenario' ? 'Emergency runway' : 'Emergency Coverage'}</Text>
     <Text style={styles.question}>How many months would the accessible balances you enter cover at the monthly outgoings you enter?</Text>
     <Field label="Cash & bank balance" value={cash} onChange={edit(setCash)} />
-    {fdCandidate !== null && fixedDeposits === '' && <Candidate label="Recorded fixed-deposit principal" value={fdCandidate} onInclude={() => { setFixedDeposits(String(fdCandidate)); setFdCandidateIncluded(true); setNotice(result ? INPUTS_CHANGED_NOTICE : null); setResult(null); }} />}
+    {sourcesLoading && <Text style={styles.loadNote} accessibilityLiveRegion="polite">Loading recorded Emergency Coverage candidates… Manual entry remains available.</Text>}
+    {fdCandidate !== null && fixedDeposits === '' && <Candidate label="Recorded fixed-deposit principal" offer={fdCandidate} onInclude={() => { if (fdCandidate.total === null) return; setFixedDeposits(String(fdCandidate.total)); setFdCandidateIncluded(true); setNotice(result ? INPUTS_CHANGED_NOTICE : null); setResult(null); }} />}
     <Field label="Fixed-deposit principal to include (optional)" value={fixedDeposits} onChange={(value) => { setFdCandidateIncluded(false); edit(setFixedDeposits)(value); }} />
-    {fdLoadFailed && <Text style={styles.loadNote} accessibilityLiveRegion="polite">Recorded fixed deposits could not be loaded. You can still enter an amount manually.</Text>}
+    {!sourcesLoading && sourceFailure === null && fdCandidate === null && <Text style={styles.loadNote}>No recorded fixed-deposit candidate is available. This does not mean the amount is zero.</Text>}
     <Text style={styles.note}>Premature closure of a fixed deposit can reduce or delay the proceeds available.</Text>
     <Field label="Other amount you know you could access (optional)" value={other} onChange={edit(setOther)} />
-    {outgoingsCandidate !== null && outgoings === '' && <Candidate label="Recorded monthly budget outgoings" value={outgoingsCandidate} onInclude={() => { setOutgoings(String(outgoingsCandidate)); setOutgoingsCandidateIncluded(true); setNotice(result ? INPUTS_CHANGED_NOTICE : null); setResult(null); }} />}
+    {outgoingsCandidate !== null && outgoings === '' && <Candidate label="Recorded monthly outgoings" offer={outgoingsCandidate} onInclude={() => { if (outgoingsCandidate.total === null) return; setOutgoings(String(outgoingsCandidate.total)); setOutgoingsCandidateIncluded(true); setNotice(result ? INPUTS_CHANGED_NOTICE : null); setResult(null); }} />}
     <Field label="Monthly outgoings" value={outgoings} onChange={(value) => { setOutgoingsCandidateIncluded(false); edit(setOutgoings)(value); }} />
-    {budgetLoadFailed && <Text style={styles.loadNote} accessibilityLiveRegion="polite">Budget outgoings could not be loaded. You can still enter an amount manually.</Text>}
+    {!sourcesLoading && sourceFailure === null && outgoingsCandidate === null && <Text style={styles.loadNote}>No recorded monthly-outgoings candidate is available. This does not mean the amount is zero.</Text>}
+    {sourceFailure === 'retryable' && <><Text style={styles.loadNote} accessibilityRole="alert">Recorded candidates could not be loaded. Manual entry remains available; nothing will retry or upload automatically.</Text><Pressable style={styles.retryButton} onPress={retrySources} accessibilityRole="button"><Text style={styles.retryButtonText}>Retry recorded candidates</Text></Pressable></>}
+    {sourceFailure === 'permission' && <Text style={styles.loadNote} accessibilityRole="alert">Recorded candidates and this draft were cleared because your session no longer permits access. Sign in again to continue.</Text>}
     <Pressable style={styles.button} onPress={calculate} accessibilityRole="button"><Text style={styles.buttonText}>{surface === 'scenario' ? 'Run this scenario' : 'Calculate'}</Text></Pressable>
     <Pressable style={styles.resetButton} onPress={reset} accessibilityRole="button"><Text style={styles.resetButtonText}>Reset scenario</Text></Pressable>
     {notice && <Text style={styles.loadNote} accessibilityRole="alert" accessibilityLiveRegion="polite">{notice}</Text>}
@@ -131,8 +151,8 @@ export function EmergencyCoverageTool({ userId, surface, onComputed }: Props) {
   </ScrollView>;
 }
 
-function Candidate({ label, value, onInclude }: { label: string; value: number; onInclude: () => void }) {
-  return <View style={styles.candidate}><View><Text style={styles.candidateSource}>FROM YOUR RECORDED DATA · NOT YET INCLUDED</Text><Text style={styles.candidateLabel}>{label}: {formatRupees(value)}</Text></View><Pressable style={styles.includeButton} onPress={onInclude} accessibilityRole="button"><Text style={styles.includeButtonText}>Include</Text></Pressable></View>;
+function Candidate({ label, offer, onInclude }: { label: string; offer: CalculatorCandidateOffer; onInclude: () => void }) {
+  return <View style={styles.candidate}><View style={styles.candidateDetails}><Text style={styles.candidateSource}>FROM YOUR RECORDED DATA · EXCLUDED</Text><Text style={styles.candidateLabel}>{label}: {offer.total === null ? 'value unavailable' : formatRupees(offer.total)}</Text>{offer.candidates.map((candidate) => <Text key={`${candidate.source_kind}:${candidate.source_record_id}`} style={styles.candidateEvidence}>{candidate.source_label} · {candidate.source_fields.join(', ')} · record v{candidate.source_version} · {candidate.freshness_note} · retrieved {candidate.retrieved_at} · value {candidate.value_status}</Text>)}</View><Pressable style={[styles.includeButton, offer.total === null && styles.includeButtonDisabled]} onPress={onInclude} disabled={offer.total === null} accessibilityRole="button" accessibilityState={{ disabled: offer.total === null }}><Text style={styles.includeButtonText}>Include</Text></Pressable></View>;
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
@@ -140,14 +160,15 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.screen }, content: { padding: spacing.lg, paddingBottom: spacing.xxl },
+  screen: { flex: 1, backgroundColor: colors.screen }, content: { width: '100%', maxWidth: 720, alignSelf: 'center', padding: spacing.lg, paddingBottom: spacing.xxl },
   back: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center', marginBottom: spacing.sm }, backText: { fontFamily: font.uiMedium, color: colors.tutor, fontSize: 16 },
   heading: { fontFamily: font.uiSemibold, fontSize: 28, color: colors.ink, marginBottom: spacing.sm }, question: { fontFamily: font.ui, fontSize: 16, lineHeight: 24, color: colors.inkSecondary, marginBottom: spacing.lg },
   field: { marginBottom: spacing.md }, labelRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm }, label: { flex: 1, fontFamily: font.uiMedium, color: colors.ink, marginBottom: spacing.xs },
-  candidate: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm, padding: spacing.md, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, backgroundColor: colors.tutorSoft }, candidateSource: { fontFamily: font.mono, fontSize: 10, color: colors.inkMuted, marginBottom: spacing.xs }, candidateLabel: { fontFamily: font.uiMedium, color: colors.ink }, includeButton: { minHeight: 44, justifyContent: 'center', paddingHorizontal: spacing.md, borderRadius: radius.md, borderWidth: 1, borderColor: colors.tutor }, includeButtonText: { fontFamily: font.uiMedium, color: colors.tutor },
+  candidate: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm, padding: spacing.md, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, backgroundColor: colors.tutorSoft }, candidateDetails: { flex: 1 }, candidateSource: { fontFamily: font.mono, fontSize: 10, color: colors.inkMuted, marginBottom: spacing.xs }, candidateLabel: { fontFamily: font.uiMedium, color: colors.ink }, candidateEvidence: { fontFamily: font.ui, fontSize: 11, lineHeight: 16, color: colors.inkSecondary, marginTop: spacing.xs }, includeButton: { minHeight: 44, justifyContent: 'center', paddingHorizontal: spacing.md, borderRadius: radius.md, borderWidth: 1, borderColor: colors.tutor }, includeButtonDisabled: { opacity: 0.5 }, includeButtonText: { fontFamily: font.uiMedium, color: colors.tutor },
   inputRow: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, backgroundColor: colors.screen }, adorn: { paddingLeft: spacing.md, color: colors.inkSecondary }, input: { flex: 1, minHeight: 48, padding: spacing.md, fontFamily: font.mono, color: colors.ink },
   note: { fontFamily: font.ui, fontSize: 14, lineHeight: 21, color: colors.inkSecondary }, loadNote: { fontFamily: font.ui, fontSize: 14, lineHeight: 20, color: colors.inkSecondary, marginBottom: spacing.md },
   button: { minHeight: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.lg }, buttonText: { fontFamily: font.uiMedium, color: colors.screen }, resetButton: { minHeight: 44, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg }, resetButtonText: { fontFamily: font.uiMedium, color: colors.tutor },
+  retryButton: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center', borderWidth: 1, borderColor: colors.tutor, borderRadius: radius.md, paddingHorizontal: spacing.md, marginBottom: spacing.md }, retryButtonText: { fontFamily: font.uiMedium, color: colors.tutor },
   result: { backgroundColor: colors.screen, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.lg }, resultUnit: { fontFamily: font.uiMedium, color: colors.inkSecondary }, resultValue: { fontFamily: font.mono, fontSize: 36, color: colors.ink, marginVertical: spacing.sm }, evidenceHeading: { fontFamily: font.mono, fontSize: 11, letterSpacing: 0.8, color: colors.ink, marginTop: spacing.md, marginBottom: spacing.xs, textTransform: 'uppercase' }, counted: { fontFamily: font.ui, color: colors.ink, marginTop: spacing.md, lineHeight: 20 },
   aryaButton: { minHeight: 48, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.tutor, borderRadius: radius.md, marginTop: spacing.lg, paddingHorizontal: spacing.md }, aryaButtonText: { fontFamily: font.uiMedium, color: colors.tutor },
   teaching: { borderTopWidth: 1, borderTopColor: colors.line, paddingTop: spacing.lg }, teachingHeading: { fontFamily: font.uiSemibold, fontSize: 18, color: colors.ink, marginBottom: spacing.sm },

@@ -34,8 +34,10 @@ test('credit-card payoff is manual-only and Emergency candidates require inclusi
   const cardBlock = calculatorSource.slice(calculatorSource.indexOf('function CreditCardPayoffCalc'));
   assert.doesNotMatch(cardBlock, /fetchHoldings|selectedCard|recorded candidate/i);
   assert.match(cardBlock, /FinTutor does not select a card or payment for you/);
-  assert.match(emergencySource, /NOT YET INCLUDED/);
+  assert.match(emergencySource, /FROM YOUR RECORDED DATA · EXCLUDED/);
   assert.match(emergencySource, />Include</);
   assert.match(emergencySource, /fdCandidateIncluded/);
   assert.match(emergencySource, /outgoingsCandidateIncluded/);
+  assert.match(emergencySource, /fetchScenarioCandidates/);
+  assert.doesNotMatch(emergencySource, /fetchHoldings|fetchBudget/);
 });

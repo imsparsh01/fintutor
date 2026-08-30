@@ -640,7 +640,7 @@ function CreditCardPayoffCalc({ onComputed }: CalcProps) {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   screen: { flex: 1, backgroundColor: colors.screen },
-  content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
+  content: { width: '100%', maxWidth: 720, alignSelf: 'center', padding: spacing.xl, paddingBottom: spacing.xxxl },
   heading: {
     fontFamily: font.uiSemibold,
     fontSize: 22,
