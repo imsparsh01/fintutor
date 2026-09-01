@@ -20,6 +20,8 @@ test('all nine Calculator types receive current-result-only bounded handoffs', (
 test('handoff requires exact-payload confirmation and cancel performs no navigation', () => {
   assert.match(modal, /Nothing is sent until you confirm/);
   assert.match(modal, /onPress=\{onCancel\}/);
+  assert.match(modal, /event\.key === 'Escape'/);
+  assert.match(modal, /removeEventListener\('keydown', dismissOnEscape\)/);
   assert.doesNotMatch(modal, /navigate|authenticatedFetch|askQuestion/);
   assert.match(calculator, /onCancel=\{cancelHandoff\}/);
   assert.match(emergency, /onCancel=\{cancelHandoff\}/);

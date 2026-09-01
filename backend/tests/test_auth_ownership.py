@@ -51,6 +51,20 @@ class AuthenticatedOwnershipTests(unittest.TestCase):
     def test_public_health_does_not_require_a_token(self) -> None:
         self.assertEqual(TestClient(app).get("/health").status_code, 200)
 
+    def test_local_web_preview_origins_pass_cors_preflight(self) -> None:
+        client = TestClient(app)
+        for origin in ("http://localhost:4173", "http://127.0.0.1:4173"):
+            with self.subTest(origin=origin):
+                response = client.options(
+                    "/onboarding-assessment/start",
+                    headers={
+                        "Origin": origin,
+                        "Access-Control-Request-Method": "POST",
+                    },
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.headers["access-control-allow-origin"], origin)
+
     def test_missing_and_invalid_tokens_fail_closed(self) -> None:
         self.assertEqual(TestClient(app).get("/holdings").status_code, 401)
 

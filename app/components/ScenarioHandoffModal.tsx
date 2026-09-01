@@ -1,4 +1,5 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, font, radius, spacing } from '../design/tokens';
 import { typography } from '../design/typography';
 
@@ -8,6 +9,15 @@ export function ScenarioHandoffModal({ visible, prompt, onCancel, onConfirm }: {
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  useEffect(() => {
+    if (!visible || Platform.OS !== 'web') return;
+    const dismissOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onCancel();
+    };
+    document.addEventListener('keydown', dismissOnEscape);
+    return () => document.removeEventListener('keydown', dismissOnEscape);
+  }, [visible, onCancel]);
+
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
     <View style={styles.backdrop} accessibilityViewIsModal>
       <View style={styles.card}>
